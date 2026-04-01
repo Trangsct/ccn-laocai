@@ -528,18 +528,10 @@ function setupModal() {
         });
     }
 
-    const contactOverlay = document.getElementById('modal-contact-overlay');
-    if (contactOverlay) {
-        contactOverlay.addEventListener('click', (e) => {
-            if (e.target === contactOverlay) closeContactForm();
-        });
-    }
-
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
             closeGuideModal();
-            closeContactForm();
         }
     });
 }
@@ -643,25 +635,6 @@ function closeGuideModal() {
     document.body.style.overflow = '';
 }
 
-// ---- Contact Form Logic ----
-function showContactForm() {
-    const overlay = document.getElementById('modal-contact-overlay');
-    if(overlay) overlay.classList.add('show');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeContactForm() {
-    const overlay = document.getElementById('modal-contact-overlay');
-    if(overlay) overlay.classList.remove('show');
-    document.body.style.overflow = '';
-}
-
-function handleContactSubmit(e) {
-    e.preventDefault();
-    alert('Cảm ơn bạn đã quan tâm! Thông tin của bạn đã được gửi đến Ban quản lý. Chúng tôi sẽ liên hệ lại sớm nhất.');
-    closeContactForm();
-    e.target.reset();
-}
 
 // ---- Export to Excel ----
 function exportToExcel() {

@@ -87,9 +87,6 @@
             <button class="filter-btn filter-btn-outline" onclick="showHuongDanDauTu()">
                 📝 Hướng dẫn thủ tục đầu tư
             </button>
-            <button class="filter-btn" style="background:#2ecc71; color:white;" onclick="showContactForm()">
-                📞 Liên hệ tư vấn
-            </button>
         </div>
     </div>
 
@@ -330,46 +327,6 @@
         </div>
     </div>
 
-    <!-- ============ CONTACT FORM MODAL ============ -->
-    <div class="modal-overlay" id="modal-contact-overlay">
-        <div class="modal" style="max-width: 500px;">
-            <div class="modal-header" style="background: var(--secondary);">
-                <button class="modal-close" onclick="closeContactForm()">&times;</button>
-                <div class="modal-title" style="color:white;">📞 Đăng ký Tư vấn Đầu tư</div>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 20px; color: var(--text-secondary); font-size: 0.95rem;">Vui lòng để lại thông tin, cán bộ chuyên trách của Sở Công Thương sẽ liên hệ lại với quý nhà đầu tư trong vòng 24h.</p>
-                <form id="contact-form" onsubmit="handleContactSubmit(event)">
-                    <div style="margin-bottom: 15px;">
-                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Họ và tên *</label>
-                        <input type="text" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Số điện thoại *</label>
-                        <input type="tel" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Doanh nghiệp / Tổ chức</label>
-                        <input type="text" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Cụm công nghiệp quan tâm</label>
-                        <select style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
-                            <option>Tất cả / Chưa xác định</option>
-                            <optgroup label="31 Cụm đang chờ đầu tư">
-                                <option>CCN Bản Phiệt 1</option>
-                                <option>CCN Cam Đường 1</option>
-                                <option>Các CCN khác...</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    <button type="submit" class="filter-btn filter-btn-primary" style="width:100%; justify-content:center; padding:12px;">
-                        Gửi thông tin đăng ký
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- ============ SCRIPTS ============ -->
     <!-- Chart.js -->
