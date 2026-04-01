@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bản đồ quản lý các cụm công nghiệp trên địa bàn tỉnh Lào Cai. Tra cứu thông tin, vị trí, quy hoạch và tình hình hoạt động của các cụm công nghiệp.">
+    <meta name="keywords" content="cụm công nghiệp, Lào Cai, bản đồ, quy hoạch, đầu tư, khu công nghiệp">
+    <meta name="author" content="Sở Công Thương tỉnh Lào Cai">
+    <title>BẢN ĐỒ CỤM CÔNG NGHIỆP TỈNH LÀO CAI</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ============ HEADER BANNER ============ -->
+    <header class="header" id="header">
+        <div class="header-content">
+            <!-- Logo -->
+            <div class="header-logo">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized LC logo for Lao Cai -->
+                    <circle cx="50" cy="50" r="44" stroke="white" stroke-width="3" fill="rgba(255,255,255,0.1)"/>
+                    <path d="M30 30 L30 70 L55 70" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <path d="M75 35 C75 30, 65 25, 55 30 C50 33, 50 38, 55 42 C60 46, 75 48, 75 55 C75 65, 60 72, 50 68" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
+                    <text x="50" y="92" text-anchor="middle" fill="white" font-size="10" font-family="Montserrat" font-weight="700" letter-spacing="3">LÀO CAI</text>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <div class="header-text">
+                <div class="header-subtitle">Sở Công Thương tỉnh Lào Cai</div>
+                <h1 class="header-title">
+                    BẢN ĐỒ CỤM CÔNG NGHIỆP
+                    <span>TỈNH LÀO CAI</span>
+                </h1>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="header-stats">
+                <div class="header-stat">
+                    <div class="header-stat-number" id="header-total-ccn">54</div>
+                    <div class="header-stat-label">Tổng Cụm theo Quy Hoạch</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-number" id="header-total-dn">97</div>
+                    <div class="header-stat-label">Doanh nghiệp</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-number" id="header-total-dt">448.5</div>
+                    <div class="header-stat-label">Diện tích (ha)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ FILTER BAR ============ -->
+    <div class="filter-bar" id="filter-bar">
+        <div class="filter-content">
+            <!-- Search -->
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Tìm kiếm CCN..." autocomplete="off">
+            </div>
+
+            <!-- Filter by Status -->
+
+            <!-- Filter by Status -->
+            <select class="filter-select" id="trangthai-select">
+                <option value="all">Tất cả trạng thái</option>
+            </select>
+
+            <!-- Action Buttons -->
+            <button class="filter-btn filter-btn-primary" onclick="document.querySelector('.nav-tab[data-tab=\'quyhoach\']').click()">
+                📋 Quy hoạch tổng thể
+            </button>
+            <button class="filter-btn filter-btn-outline" onclick="showHuongDanDauTu()">
+                📝 Hướng dẫn thủ tục đầu tư
+            </button>
+            <button class="filter-btn" style="background:#2ecc71; color:white;" onclick="showContactForm()">
+                📞 Liên hệ tư vấn
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ NAVIGATION TABS ============ -->
+    <div class="nav-tabs">
+        <div class="nav-tabs-content">
+            <button class="nav-tab active" data-tab="map" id="tab-map">
+                🗺️ Bản đồ
+            </button>
+            <button class="nav-tab" data-tab="list" id="tab-list">
+                📋 Danh sách CCN
+            </button>
+            <button class="nav-tab" data-tab="quyhoach" id="tab-quyhoach">
+                ⏳ CCN Quy hoạch (Chưa ĐT)
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main-container">
+
+        <!-- === MAP SECTION === -->
+        <section id="map-section">
+            <div id="map-container">
+                <div id="map"></div>
+
+                <!-- Map Legend -->
+                <div class="map-legend">
+                    <h4>Chú giải</h4>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #27ae60;"></div>
+                        <span>Đang hoạt động</span>
+                        <span class="legend-count" id="legend-hoatdong">6</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #f39c12;"></div>
+                        <span>Đang xây dựng</span>
+                        <span class="legend-count" id="legend-xaydung">3</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #3498db;"></div>
+                        <span>Quy hoạch</span>
+                        <span class="legend-count" id="legend-quyhoach">3</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #e74c3c;"></div>
+                        <span>Tạm dừng</span>
+                        <span class="legend-count" id="legend-tamdung">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === STATS BAR === -->
+        <section class="stats-bar" id="stats-section">
+            <div class="stats-content" id="stats-content">
+                <!-- Rendered by JS -->
+            </div>
+        </section>
+
+        <!-- === CCN LIST SECTION === -->
+        <section class="ccn-section" id="list-section">
+            <div class="section-header">
+                <h2 class="section-title">Phân tích & Thống kê Cụm Công nghiệp</h2>
+            </div>
+            
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3 class="chart-title">Cơ cấu trạng thái CCN</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">So sánh Diện tích (ha)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 40px;">
+                <h2 class="section-title">Danh sách Chi tiết</h2>
+            </div>
+            <div class="ccn-grid" id="ccn-grid">
+                <!-- Rendered by JS -->
+            </div>
+        </section>
+
+        <!-- === QUY HOACH UNINVESTED SECTION === -->
+        <section class="doc-section" id="quyhoach-section" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title" style="margin-top:20px; font-size:1.4rem;">Danh sách 31 Cụm công nghiệp chờ Nhà đầu tư (Theo Quy hoạch đến 2030)</h2>
+                <button class="filter-btn" style="background:#27ae60; color:white; font-size:0.8rem; padding:6px 14px;" onclick="exportToExcel()">
+                    📊 Xuất Excel (31 cụm)
+                </button>
+            </div>
+            <div class="doc-layout" style="grid-template-columns: 1fr;">
+                <div class="doc-main">
+                    <div class="doc-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:50px; text-align:center;">STT</th>
+                                    <th style="width:200px">Tên CCN</th>
+                                    <th style="width:200px">Xã / Phường</th>
+                                    <th style="width:120px; text-align:right;">Diện tích QH (ha)</th>
+                                    <th>Hướng phát triển / Mở rộng</th>
+                                    <th style="width:120px; text-align:center;">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quyhoach-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem; font-style: italic;">
+                        Lưu ý: Các cụm công nghiệp này đã được phê duyệt trong danh mục nhưng chưa có nhà đầu tư kết cấu hạ tầng kỹ thuật. (Nguồn: Phương án Quy hoạch CCN 02.4.2026).
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sở Công Thương tỉnh Lào Cai</h3>
+                <p>📍 Tầng 4, Tòa nhà Trung tâm Hành chính,<br>Đường Trần Hưng Đạo, TP. Lào Cai</p>
+                <p>📞 Điện thoại: 02143.840.402</p>
+                <p>📧 Email: sct@laocai.gov.vn</p>
+                <p>🌐 Website: congthuong.laocai.gov.vn</p>
+            </div>
+            <div class="footer-section">
+                <h3>Liên kết nhanh</h3>
+                <ul>
+                    <li><a href="#">🏠 Trang chủ</a></li>
+                    <li><a href="#">🗺️ Bản đồ CCN</a></li>
+                    <li><a href="#">📋 Danh sách CCN</a></li>
+                    <li><a href="#">📝 Thủ tục đầu tư</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Thông tin</h3>
+                <ul>
+                    <li><a href="#">📊 Báo cáo tình hình CCN</a></li>
+                    <li><a href="#">📐 Quy hoạch phát triển</a></li>
+                    <li><a href="#">🔧 Hỗ trợ kỹ thuật</a></li>
+                    <li><a href="#">📩 Liên hệ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Sở Công Thương tỉnh Lào Cai. Bản quyền thuộc UBND tỉnh Lào Cai.</p>
+            <p>Phát triển bởi Trung tâm CNTT & Truyền thông tỉnh Lào Cai</p>
+        </div>
+    </footer>
+
+    <!-- ============ HOTLINE BUTTON ============ -->
+    <button class="hotline-btn" onclick="window.location.href='tel:02143840402'" id="hotline-btn">
+        📞
+        <div class="hotline-tooltip">Hotline: 02143.840.402</div>
+    </button>
+
+    <!-- ============ SCROLL TO TOP ============ -->
+    <button class="scroll-top" id="scroll-top">↑</button>
+
+    <!-- ============ DETAIL MODAL ============ -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal-content">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <!-- ============ INVESTMENT GUIDE MODAL ============ -->
+    <div class="modal-overlay" id="modal-guide-overlay">
+        <div class="modal" id="modal-guide-content" style="max-width: 900px;">
+            <div class="modal-header status-hoat-dong" style="background-color: var(--primary-color);">
+                <button class="modal-close" onclick="closeGuideModal()">&times;</button>
+                <div class="modal-title" style="color: white;">📚 Hướng dẫn Thủ tục Thành lập Cụm Công Nghiệp</div>
+            </div>
+            <div class="modal-body" style="background:#f8fafc;">
+                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">I. Căn cứ pháp lý</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--text-muted); line-height: 1.6;">
+                    <li>Nghị định số 32/2024/NĐ-CP ngày 15/3/2024 của Chính phủ về quản lý, phát triển cụm công nghiệp.</li>
+                    <li>Quyết định Quy chế quản lý cụm công nghiệp trên địa bàn tỉnh Lào Cai (2026).</li>
+                    <li>Thông tư số 14/2024/TT-BCT của Bộ Công Thương.</li>
+                </ul>
+
+                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">II. Điều kiện thành lập</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <div style="flex: 1; background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <strong>1. Có trong danh mục Quy hoạch</strong><br>
+                        <span style="font-size: 0.9rem; color: #64748b;">Đã có tên trong Danh mục tích hợp Quy hoạch tỉnh và phù hợp QH sử dụng đất.</span>
+                    </div>
+                    <div style="flex: 1; background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #27ae60; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <strong>2. Năng lực làm Chủ đầu tư</strong><br>
+                        <span style="font-size: 0.9rem; color: #64748b;">Doanh nghiệp/HTX có đủ tiêu cách pháp nhân và năng lực tài chính.</span>
+                    </div>
+                    <div style="flex: 1; background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <strong>3. Điều kiện tỷ lệ lấp đầy</strong><br>
+                        <span style="font-size: 0.9rem; color: #64748b;">Tỷ lệ lấp đầy trung bình các CCN trên địa bàn trên 50% HOẶC tổng quỹ đất chưa thuê ≤ 100 ha.</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">III. Quy trình 04 Bước nộp hồ sơ</h3>
+                <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B1</div>
+                            <div style="flex: 1;">Chủ đầu tư nộp văn bản đề nghị làm CĐT đến <b>UBND Xã/Phường</b>.</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B2</div>
+                            <div style="flex: 1;">UBND xã xin chấp thuận chủ trương đầu tư qua Sở Tài chính / UBND Tỉnh.</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B3</div>
+                            <div style="flex: 1;">Xã & CĐT lập <b>02 bộ hồ sơ</b> gửi tới <b>Sở Công Thương</b> thẩm định (15 ngày nhậm + 5 ngày lập).</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B4</div>
+                            <div style="flex: 1;">Sở Công Thương thẩm định (25 ngày) trình <b>UBND Tỉnh</b> quyết định (7 ngày).</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: right;">
+                    <button class="modal-btn-locate" onclick="closeGuideModal()" style="width: auto; padding: 10px 30px;">
+                        Đóng
+                    </button>
+                    <a href="mailto:sct@laocai.gov.vn?subject=Yêu cầu mẫu văn bản thành lập CCN" style="display: inline-block; background: #34495e; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; margin-left: 10px; font-weight: 500;">
+                        📧 Yêu cầu mẫu văn bản qua Email
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ CONTACT FORM MODAL ============ -->
+    <div class="modal-overlay" id="modal-contact-overlay">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header" style="background: var(--secondary);">
+                <button class="modal-close" onclick="closeContactForm()">&times;</button>
+                <div class="modal-title" style="color:white;">📞 Đăng ký Tư vấn Đầu tư</div>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: var(--text-secondary); font-size: 0.95rem;">Vui lòng để lại thông tin, cán bộ chuyên trách của Sở Công Thương sẽ liên hệ lại với quý nhà đầu tư trong vòng 24h.</p>
+                <form id="contact-form" onsubmit="handleContactSubmit(event)">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Họ và tên *</label>
+                        <input type="text" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Số điện thoại *</label>
+                        <input type="tel" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Doanh nghiệp / Tổ chức</label>
+                        <input type="text" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem;">Cụm công nghiệp quan tâm</label>
+                        <select style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px;">
+                            <option>Tất cả / Chưa xác định</option>
+                            <optgroup label="31 Cụm đang chờ đầu tư">
+                                <option>CCN Bản Phiệt 1</option>
+                                <option>CCN Cam Đường 1</option>
+                                <option>Các CCN khác...</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <button type="submit" class="filter-btn filter-btn-primary" style="width:100%; justify-content:center; padding:12px;">
+                        Gửi thông tin đăng ký
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SCRIPTS ============ -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- App Data -->
+    <script src="data.js"></script>
+    
+    <!-- App Logic -->
+    <script src="app.js"></script>
+
+</body>
+</html>

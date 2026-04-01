@@ -1,0 +1,237 @@
+// ============================================================
+// DỮ LIỆU CỤM CÔNG NGHIỆP TỈNH LÀO CAI
+// ============================================================
+
+const TINH_INFO = {
+    ten: "Lào Cai",
+    center: [22.4856, 103.9707],
+    zoom: 10,
+    hotline: "02143.840.402",
+    email: "sct@laocai.gov.vn",
+    diaChi: "Tầng 4, Tòa nhà Trung tâm Hành chính, Đường Trần Hưng Đạo, TP. Lào Cai",
+    coQuan: "Sở Công Thương tỉnh Lào Cai"
+};
+
+// Danh sách huyện/thành phố
+const HUYEN_LIST = [
+    { id: "all", ten: "Tất cả huyện/TP" },
+    { id: "tp-lao-cai", ten: "TP. Lào Cai" },
+    { id: "bao-thang", ten: "Bảo Thắng" },
+    { id: "bao-yen", ten: "Bảo Yên" },
+    { id: "bat-xat", ten: "Bát Xát" },
+    { id: "bac-ha", ten: "Bắc Hà" },
+    { id: "muong-khuong", ten: "Mường Khương" },
+    { id: "sa-pa", ten: "TX. Sa Pa" },
+    { id: "si-ma-cai", ten: "Si Ma Cai" },
+    { id: "van-ban", ten: "Văn Bàn" },
+    { id: "yen-binh", ten: "Yên Bình" },
+    { id: "van-chan", ten: "Văn Chấn" },
+    { id: "luc-yen", ten: "Lục Yên" },
+    { id: "tran-yen", ten: "Trấn Yên" },
+    { id: "van-yen", ten: "Văn Yên" },
+    { id: "khu-vuc-moi", ten: "Khu vực Sáp nhập" }
+];
+
+// Trạng thái cụm công nghiệp
+const TRANG_THAI = {
+    "hoat-dong": { ten: "Đang hoạt động", color: "#27ae60", icon: "🟢" },
+    "xay-dung": { ten: "Đang xây dựng", color: "#f39c12", icon: "🟡" },
+    "quy-hoach": { ten: "Quy hoạch", color: "#3498db", icon: "🔵" },
+    "tam-dung": { ten: "Tạm dừng", color: "#e74c3c", icon: "🔴" }
+};
+
+// Dữ liệu các cụm công nghiệp
+const CUM_CONG_NGHIEP = [
+    {
+        id: 1, ten: "CCN Đầm Hồng", huyen: "khu-vuc-moi", xa: "Phường Yên Bái, phường Văn Phú",
+        trangThai: "hoat-dong", dienTich: 16, dienTichDaChoThue: 11.99, tyLeLapDay: 100,
+        namThanhLap: 2009, soDoanhNghiep: 20, nganhNghe: "Đa ngành, vật liệu xây dựng, cơ khí", moTa: "Chủ đầu tư: UBND phường Yên Bái và phường Văn Phú",
+        haTang: "Đang hoạt động", quyetDinh: "Số 1245/QĐ-UBND", lat: 21.722, lng: 104.899
+    },
+    {
+        id: 2, ten: "CCN Âu Lâu", huyen: "khu-vuc-moi", xa: "Phường Âu Lâu",
+        trangThai: "hoat-dong", dienTich: 50, dienTichDaChoThue: 27.09, tyLeLapDay: 86.83,
+        namThanhLap: 2009, soDoanhNghiep: 4, nganhNghe: "Chế biến gỗ, tinh dầu, vật liệu xây dựng", moTa: "Chủ đầu tư: UBND phường Âu Lâu",
+        haTang: "Đang hoạt động", quyetDinh: "Số 1656/QĐ-UBND", lat: 21.733, lng: 104.888
+    },
+    {
+        id: 3, ten: "CCN Thịnh Hưng", huyen: "yen-binh", xa: "Xã Yên Bình",
+        trangThai: "hoat-dong", dienTich: 53.05, dienTichDaChoThue: 32.59, tyLeLapDay: 87.75,
+        namThanhLap: 2009, soDoanhNghiep: 3, nganhNghe: "May mặc xuất khẩu, chế biến sản phẩm gỗ", moTa: "Chủ đầu tư: UBND Xã Yên Bình",
+        haTang: "Đang hoạt động", quyetDinh: "Số 106/QĐ-UBND", lat: 21.758, lng: 104.891
+    },
+    {
+        id: 4, ten: "CCN Phú Thịnh 1", huyen: "yen-binh", xa: "Phường Văn Phú",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2022, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Liên danh công ty CP tập đoàn Đông Đô và công ty CP đầu tư XD số 9 Bắc Giang",
+        haTang: "Đang GPMB", quyetDinh: "Số 1689/QĐ-UBND", lat: 21.711, lng: 104.877
+    },
+    {
+        id: 5, ten: "CCN Phú Thịnh 2", huyen: "yen-binh", xa: "Phường Văn Phú, Xã Yên Bình",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2022, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty TNHH Lâm nghiệp 888 Yên Bái",
+        haTang: "Đang GPMB", quyetDinh: "Số 1454/QĐ-UBND", lat: 21.712, lng: 104.881
+    },
+    {
+        id: 6, ten: "CCN Phú Thịnh 3", huyen: "yen-binh", xa: "Phường Văn Phú, Xã Yên Bình",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2023, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty Cổ phần công nghiệp EUP",
+        haTang: "Đang GPMB", quyetDinh: "Số 2220/QĐ-UBND", lat: 21.713, lng: 104.885
+    },
+    {
+        id: 7, ten: "CCN Sơn Thịnh", huyen: "van-chan", xa: "Xã Văn Chấn",
+        trangThai: "hoat-dong", dienTich: 58.76, dienTichDaChoThue: 15.58, tyLeLapDay: 37.88,
+        namThanhLap: 2009, soDoanhNghiep: 2, nganhNghe: "Chế biến khoáng sản, nông lâm sản", moTa: "Chủ đầu tư: UBND Xã Văn Chấn",
+        haTang: "Đang hoạt động", quyetDinh: "Số 735/QĐ-UBND", lat: 21.583, lng: 104.532
+    },
+    {
+        id: 8, ten: "CCN Yên Thế", huyen: "luc-yen", xa: "Xã Lục Yên",
+        trangThai: "hoat-dong", dienTich: 39.97, dienTichDaChoThue: 11.26, tyLeLapDay: 40.24,
+        namThanhLap: 2006, soDoanhNghiep: 3, nganhNghe: "Đá hoa trắng, đá tự nhiên", moTa: "Chủ đầu tư: UBND Xã Lục Yên",
+        haTang: "Đang hoạt động", quyetDinh: "Số 346/QĐ-UBND", lat: 22.102, lng: 104.721
+    },
+    {
+        id: 9, ten: "CCN Báo Đáp", huyen: "tran-yen", xa: "Xã Trấn Yên",
+        trangThai: "hoat-dong", dienTich: 20, dienTichDaChoThue: 3.26, tyLeLapDay: 23.29,
+        namThanhLap: 2008, soDoanhNghiep: 2, nganhNghe: "Chế biến quế, ghép thanh ván", moTa: "Chủ đầu tư: UBND xã Trấn Yên",
+        haTang: "Đang hoạt động", quyetDinh: "Số 1583/QĐ-UBND", lat: 21.812, lng: 104.832
+    },
+    {
+        id: 10, ten: "CCN Hưng Khánh", huyen: "tran-yen", xa: "Xã Hưng Khánh",
+        trangThai: "hoat-dong", dienTich: 20, dienTichDaChoThue: 4.06, tyLeLapDay: 29.0,
+        namThanhLap: 2008, soDoanhNghiep: 2, nganhNghe: "Chế biến ván ép, măng", moTa: "Chủ đầu tư: UBND Xã Hưng Khánh",
+        haTang: "Đang hoạt động", quyetDinh: "Số 1584/QĐ-UBND", lat: 21.791, lng: 104.821
+    },
+    {
+        id: 11, ten: "CCN Minh Quân", huyen: "khu-vuc-moi", xa: "Phường Âu Lâu",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2019, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty TNHH 1TV HTCN Bảo Hưng",
+        haTang: "Đang GPMB", quyetDinh: "Số 2364/QĐ-UBND", lat: 21.734, lng: 104.889
+    },
+    {
+        id: 12, ten: "CCN Y Can", huyen: "tran-yen", xa: "Xã Quy Mông",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2025, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty CP luyện kim hóa chất Tây Bắc",
+        haTang: "Đang triển khai", quyetDinh: "Số 949/QĐ-UBND", lat: 21.851, lng: 104.811
+    },
+    {
+        id: 13, ten: "CCN Tây Cầu Mậu A", huyen: "van-yen", xa: "Xã Mậu A",
+        trangThai: "hoat-dong", dienTich: 35, dienTichDaChoThue: 11.16, tyLeLapDay: 45.55,
+        namThanhLap: 2009, soDoanhNghiep: 1, nganhNghe: "Sản xuất giấy đế xuất khẩu", moTa: "Chủ đầu tư: UBND xã Mậu A",
+        haTang: "Đang hoạt động", quyetDinh: "Số 1992/QĐ-UBND", lat: 21.902, lng: 104.654
+    },
+    {
+        id: 14, ten: "CCN Đông An", huyen: "van-yen", xa: "Xã Đông Cuông",
+        trangThai: "hoat-dong", dienTich: 34, dienTichDaChoThue: 11.14, tyLeLapDay: 48.35,
+        namThanhLap: 2010, soDoanhNghiep: 1, nganhNghe: "Thuốc BVTV, phân bón", moTa: "Chủ đầu tư: UBND Xã Đông Cuông",
+        haTang: "Đang hoạt động", quyetDinh: "Số 1934/QĐ-UBND", lat: 21.921, lng: 104.661
+    },
+    {
+        id: 15, ten: "CCN Yên Hợp", huyen: "van-yen", xa: "Xã Xuân Ái",
+        trangThai: "hoat-dong", dienTich: 12, dienTichDaChoThue: 9.46, tyLeLapDay: 78.87,
+        namThanhLap: 2024, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: UBND Xã Xuân Ái",
+        haTang: "Đang hoạt động", quyetDinh: "Số 2201/QĐ-UBND", lat: 21.895, lng: 104.643
+    },
+    {
+        id: 16, ten: "CCN Bắc Văn Yên", huyen: "van-yen", xa: "Xã Đông Cuông",
+        trangThai: "hoat-dong", dienTich: 55, dienTichDaChoThue: 33.9, tyLeLapDay: 88.05,
+        namThanhLap: 2017, soDoanhNghiep: 4, nganhNghe: "Sản xuất tinh bột sắn, tinh dầu quế", moTa: "Chủ đầu tư: UBND Xã Đông Cuông",
+        haTang: "Đang hoạt động", quyetDinh: "Số 667/QĐ-UBND", lat: 21.925, lng: 104.669
+    },
+    {
+        id: 17, ten: "CCN Bắc Duyên Hải", huyen: "tp-lao-cai", xa: "Phường Lào Cai",
+        trangThai: "hoat-dong", dienTich: 19.5, dienTichDaChoThue: 8.8, tyLeLapDay: 100,
+        namThanhLap: 2012, soDoanhNghiep: 91, nganhNghe: "Hỗ trợ cơ khí, sửa chữa ô tô", moTa: "Chủ đầu tư: UBND phường Lào Cai",
+        haTang: "Đang hoạt động", quyetDinh: "QĐ số 1023/QĐ-UBND", lat: 22.492, lng: 103.955
+    },
+    {
+        id: 18, ten: "CCN Đông Phố Mới", huyen: "tp-lao-cai", xa: "Phường Lào Cai",
+        trangThai: "hoat-dong", dienTich: 3.5, dienTichDaChoThue: 1.84, tyLeLapDay: 100,
+        namThanhLap: 2016, soDoanhNghiep: 16, nganhNghe: "Cơ khí, TT công nghiệp", moTa: "Chủ đầu tư: UBND phường Lào Cai",
+        haTang: "Đang hoạt động", quyetDinh: "QĐ số 2968/QĐ-UBND", lat: 22.475, lng: 103.978
+    },
+    {
+        id: 19, ten: "CCN Sơn Mãn", huyen: "tp-lao-cai", xa: "Phường Lào Cai",
+        trangThai: "hoat-dong", dienTich: 7.5, dienTichDaChoThue: 4.2, tyLeLapDay: 100,
+        namThanhLap: 2016, soDoanhNghiep: 40, nganhNghe: "Tiểu thủ công nghiệp, mộc, kho bãi", moTa: "Chủ đầu tư: UBND phường Lào Cai",
+        haTang: "Đang hoạt động", quyetDinh: "QĐ số 2967/QĐ-UBND", lat: 22.455, lng: 103.985
+    },
+    {
+        id: 20, ten: "CCN Phố Ràng", huyen: "bao-yen", xa: "Xã Bảo Yên",
+        trangThai: "hoat-dong", dienTich: 31.01, dienTichDaChoThue: 6.2, tyLeLapDay: 20,
+        namThanhLap: 2016, soDoanhNghiep: 3, nganhNghe: "Sản xuất, chế biến nông lâm sản", moTa: "Chủ đầu tư: UBND xã Bảo Yên",
+        haTang: "Đang hoạt động", quyetDinh: "QĐ số 2972/QĐ-UBND", lat: 22.180, lng: 104.370
+    },
+    {
+        id: 21, ten: "CCN Khánh Yên Thượng", huyen: "van-ban", xa: "Xã Văn Bàn",
+        trangThai: "hoat-dong", dienTich: 5.17, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2016, soDoanhNghiep: 1, nganhNghe: "Khai thác, chế biến khoáng sản", moTa: "Chủ đầu tư: UBND xã Văn Bàn",
+        haTang: "Đang triển khai", quyetDinh: "QĐ số 2971/QĐ-UBND", lat: 22.095, lng: 104.150
+    },
+    {
+        id: 22, ten: "CCN Thống Nhất 1", huyen: "bao-thang", xa: "Xã Gia Phú",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2025, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty CP đầu tư và phát triển Công nghiệp Lào Cai",
+        haTang: "Đang thực hiện GPMB", quyetDinh: "QĐ số 298/QĐ-UBND", lat: 22.381, lng: 104.051
+    },
+    {
+        id: 23, ten: "CCN Bảo Minh", huyen: "bao-thang", xa: "N/A",
+        trangThai: "xay-dung", dienTich: 20, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Sản xuất đa ngành", moTa: "Mới ký quyết định",
+        haTang: "Đang xây dựng", quyetDinh: "Quyết định thành lập mới", lat: 22.385, lng: 104.055
+    }
+];
+
+const CCN_CHUA_DAU_TU = [
+    { stt: 1, ten: "CCN Phú Thịnh 4", huyen: "yen-binh", xa: "Xã Yên Bình", dienTich: 75, huongPhatTrien: "" },
+    { stt: 2, ten: "CCN Tân Lĩnh", huyen: "luc-yen", xa: "Xã Tân Lĩnh", dienTich: 75, huongPhatTrien: "" },
+    { stt: 3, ten: "CCN Thượng Bằng La", huyen: "van-chan", xa: "Xã Thượng Bằng La", dienTich: 20, huongPhatTrien: "Sau 2030 mở rộng lên thành 50 ha" },
+    { stt: 4, ten: "CCN Bảo Thắng (Phố Lu)", huyen: "bao-thang", xa: "Xã Bảo Thắng", dienTich: 40, huongPhatTrien: "Sau 2030 mở rộng lên thành 75ha" },
+    { stt: 5, ten: "CCN Bản Phùng", huyen: "van-ban", xa: "Xã Văn Bàn", dienTich: 40, huongPhatTrien: "" },
+    { stt: 6, ten: "CCN Trà Trẩu", huyen: "bao-thang", xa: "Xã Bảo Thắng", dienTich: 35, huongPhatTrien: "Sau 2030 mở rộng lên thành 50ha" },
+    { stt: 7, ten: "CCN Xuân Ái", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 35, huongPhatTrien: "Tăng 40 ha" },
+    { stt: 8, ten: "CCN Tân Hợp", huyen: "van-yen", xa: "Xã Tân Hợp", dienTich: 40, huongPhatTrien: "Tăng 35 ha" },
+    { stt: 9, ten: "CCN Bát Xát", huyen: "bat-xat", xa: "Xã Bát Xát", dienTich: 53, huongPhatTrien: "Tăng 04 ha" },
+    { stt: 10, ten: "CCN Mường Khương", huyen: "muong-khuong", xa: "Xã Mường Khương", dienTich: 10, huongPhatTrien: "Tăng 20 ha" },
+    { stt: 11, ten: "CCN Tân An", huyen: "bao-yen", xa: "Xã Bảo Hà", dienTich: 16.5, huongPhatTrien: "Tăng 23,5 ha" },
+    { stt: 12, ten: "CCN Hòa Mạc", huyen: "van-ban", xa: "Xã Văn Bàn", dienTich: 7, huongPhatTrien: "Tăng 13 ha" },
+    { stt: 13, ten: "CCN Bản Phiệt 1", huyen: "tp-lao-cai", xa: "Phường Lào Cai", dienTich: 75, huongPhatTrien: "" },
+    { stt: 14, ten: "CCN Cam Đường 1", huyen: "tp-lao-cai", xa: "Phường Cam Đường", dienTich: 40, huongPhatTrien: "" },
+    { stt: 15, ten: "CCN Cam Đường 2", huyen: "tp-lao-cai", xa: "Phường Cam Đường", dienTich: 12, huongPhatTrien: "" },
+    { stt: 16, ten: "CCN Phố Ràng 1", huyen: "bao-yen", xa: "Xã Bảo Yên", dienTich: 56, huongPhatTrien: "" },
+    { stt: 17, ten: "CCN Phố Ràng 2", huyen: "bao-yen", xa: "Xã Bảo Yên", dienTich: 75, huongPhatTrien: "" },
+    { stt: 18, ten: "CCN Quang Kim 1", huyen: "bat-xat", xa: "Xã Bát Xát", dienTich: 55, huongPhatTrien: "" },
+    { stt: 19, ten: "CCN Mông Sơn", huyen: "yen-binh", xa: "Xã Bảo Ái", dienTich: 50, huongPhatTrien: "" },
+    { stt: 20, ten: "CCN Tân Nguyên", huyen: "yen-binh", xa: "Xã Bảo Ái", dienTich: 55, huongPhatTrien: "" },
+    { stt: 21, ten: "CCN An Bình", huyen: "van-yen", xa: "Xã Đông Cuông", dienTich: 50, huongPhatTrien: "" },
+    { stt: 22, ten: "CCN Ngòi A", huyen: "van-yen", xa: "Xã Mậu A", dienTich: 62, huongPhatTrien: "" },
+    { stt: 23, ten: "CCN Yên Hưng", huyen: "van-yen", xa: "Xã Mậu A", dienTich: 42, huongPhatTrien: "" },
+    { stt: 24, ten: "CCN Bản Phiệt 2", huyen: "tp-lao-cai", xa: "Phường Lào Cai", dienTich: 75, huongPhatTrien: "" },
+    { stt: 25, ten: "CCN Yên Hợp 1", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 63, huongPhatTrien: "" },
+    { stt: 26, ten: "CCN Yên Hợp 2", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 75, huongPhatTrien: "" },
+    { stt: 27, ten: "CCN Văn Chấn", huyen: "van-chan", xa: "Xã Văn Chấn", dienTich: 75, huongPhatTrien: "" },
+    { stt: 28, ten: "CCN Châu Quế", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 75, huongPhatTrien: "" },
+    { stt: 29, ten: "CCN Phú Thịnh 5", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },
+    { stt: 30, ten: "CCN Phú Thịnh 6", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },
+    { stt: 31, ten: "CCN Châu Quế Thượng", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 40, huongPhatTrien: "" }
+];
+
+
+// Đã chuyển tài liệu vào từng Cụm Công Nghiệp tại module app.js
+
+// Thống kê tổng hợp
+const THONG_KE = {
+    tongCCN: 54, // Tổng cộng 23 hiện hữu + 31 quy hoạch mới
+    dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
+    dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,
+    choDauTu: CCN_CHUA_DAU_TU.length,
+    dienTichHienHuu: CUM_CONG_NGHIEP.reduce((s, c) => s + c.dienTich, 0),
+    dienTichQuyHoach: CCN_CHUA_DAU_TU.reduce((s, c) => s + c.dienTich, 0),
+    tongDoanhNghiep: CUM_CONG_NGHIEP.reduce((s, c) => s + c.soDoanhNghiep, 0),
+    tyLeLapDayTB: (() => {
+        const active = CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong");
+        return active.length > 0
+            ? (active.reduce((s, c) => s + c.tyLeLapDay, 0) / active.length).toFixed(1)
+            : 0;
+    })()
+};
