@@ -5,22 +5,35 @@
 let map;
 let markers = [];
 let markerLayer;
-let currentView = 'map'; // 'map', 'list', 'docs'
+let currentView = 'map';
 let charts = {};
+let CUM_CONG_NGHIEP = [];
+let CCN_CHUA_DAU_TU = [];
 
 // ---- Initialize Application ----
 document.addEventListener('DOMContentLoaded', () => {
-    initMap();
-    updateHeaderStats();
-    renderStats();
-    initCharts();
-    renderCCNCards();
-    renderQuyHoachTable();
-    setupFilterListeners();
-    setupNavTabs();
-    setupScrollEffects();
-    setupModal();
-    animateOnScroll();
+    fetch('/ccn-data.json')
+        .then(r => r.json())
+        .then(data => {
+            CUM_CONG_NGHIEP = data.CUM_CONG_NGHIEP;
+            CCN_CHUA_DAU_TU = data.CCN_CHUA_DAU_TU;
+            initMap();
+            updateHeaderStats();
+            renderStats();
+            initCharts();
+            renderCCNCards();
+            renderQuyHoachTable();
+            setupFilterListeners();
+            setupNavTabs();
+            setupScrollEffects();
+            setupModal();
+            animateOnScroll();
+        })
+        .catch(() => {
+            // fallback: dùng data.js nếu fetch lỗi
+            CUM_CONG_NGHIEP = window._CCN_DATA || [];
+            CCN_CHUA_DAU_TU = window._CCN_CHUA_DAU_TU || [];
+        });
 });
 
 // ---- Update Header Stats ----

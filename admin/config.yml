@@ -1,0 +1,56 @@
+backend:
+  name: git-gateway
+  branch: main
+
+publish_mode: editorial_workflow
+
+locale: vi
+
+collections:
+  - name: "ccn_hien_huu"
+    label: "23 CCN Hiện hữu"
+    label_singular: "CCN"
+    folder: "_ccn"
+    create: false
+    identifier_field: id
+    format: json
+    files:
+      - label: "Toàn bộ dữ liệu CCN"
+        name: "ccn_data"
+        file: "ccn-data.json"
+        fields:
+          - label: "Danh sách CCN hiện hữu"
+            name: "CUM_CONG_NGHIEP"
+            widget: list
+            fields:
+              - { label: "ID", name: "id", widget: number }
+              - { label: "Tên CCN", name: "ten", widget: string }
+              - { label: "Xã / Phường", name: "xa", widget: string }
+              - label: "Trạng thái"
+                name: "trangThai"
+                widget: select
+                options:
+                  - { label: "Đang hoạt động", value: "hoat-dong" }
+                  - { label: "Đang xây dựng", value: "xay-dung" }
+                  - { label: "Quy hoạch", value: "quy-hoach" }
+                  - { label: "Tạm dừng", value: "tam-dung" }
+              - { label: "Diện tích (ha)", name: "dienTich", widget: number, value_type: float }
+              - { label: "Diện tích đã cho thuê (ha)", name: "dienTichDaChoThue", widget: number, value_type: float }
+              - { label: "Tỷ lệ lấp đầy (%)", name: "tyLeLapDay", widget: number, value_type: float }
+              - { label: "Số doanh nghiệp", name: "soDoanhNghiep", widget: number }
+              - { label: "Ngành nghề", name: "nganhNghe", widget: string }
+              - { label: "Mô tả / Chủ đầu tư", name: "moTa", widget: text }
+              - { label: "Hạ tầng", name: "haTang", widget: string }
+              - { label: "Quyết định thành lập", name: "quyetDinh", widget: string }
+              - { label: "Năm thành lập", name: "namThanhLap", widget: number, required: false }
+              - { label: "Tọa độ Lat", name: "lat", widget: number, value_type: float }
+              - { label: "Tọa độ Lng", name: "lng", widget: number, value_type: float }
+          - label: "31 CCN Quy hoạch (Chờ đầu tư)"
+            name: "CCN_CHUA_DAU_TU"
+            widget: list
+            fields:
+              - { label: "STT", name: "stt", widget: number }
+              - { label: "Tên CCN", name: "ten", widget: string }
+              - { label: "Xã / Phường", name: "xa", widget: string }
+              - { label: "Diện tích QH (ha)", name: "dienTich", widget: number, value_type: float }
+              - { label: "Hướng phát triển", name: "huongPhatTrien", widget: string, required: false }
