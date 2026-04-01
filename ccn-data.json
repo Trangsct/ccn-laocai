@@ -6,7 +6,7 @@
       "trangThai": "hoat-dong", "dienTich": 16, "dienTichDaChoThue": 11.99, "tyLeLapDay": 100,
       "namThanhLap": 2009, "soDoanhNghiep": 20,
       "nganhNghe": "Vật liệu XD, cơ khí, chế biến gỗ, chế biến cao lanh",
-      "moTa": "Chủ đầu tư: UBND phường Yên Bái & Văn Phú. 23 DA đăng ký; 20 đang HĐ, 3 tạm dừng; lấp đầy 100%. DN tiêu biểu: Cty CP Sứ Hoàng Liên Sơn (cao lanh 3,35ha), Cty CP KS Thành Công (cao lanh 1,42ha), DNTN Thanh Hương (đũa gỗ), Cty CP Mộc Hương-VN (ván ghép thanh), Cty CP Đồng Tâm Xanh (bê tông thương phẩm). 3 DA dừng: Cty CP Phú Yên, Cty CP CBLS Hoàng Lâm, Cty CP CBLS Thành Đạt. Khó khăn: 6 DN chưa làm được thủ tục thuê đất do QH di dời; Cty CP XNK LN Tây Bắc đang nuôi lợn gây ô nhiễm. Lưu ý: CCN trong diện rút QH trước 2030, chưa có đề án di dời.",
+      "moTa": "Chủ đầu tư: UBND phường Yên Bái & Văn Phú. 20 cơ sở đang hoạt động, lấp đầy 100%. DN tiêu biểu: Cty CP Sứ Hoàng Liên Sơn (cao lanh 3,35ha), Cty CP KS Thành Công (cao lanh 1,42ha), DNTN Thanh Hương (đũa gỗ), Cty CP Mộc Hương-VN (ván ghép thanh), Cty CP Đồng Tâm Xanh (bê tông thương phẩm), Cty TNHH KD&CBLS Chiến Thắng (ván ép), Cty CP Cơ khí&XD Yên Bái. Lưu ý: CCN trong diện rút khỏi quy hoạch trước 2030.",
       "haTang": "Đang hoạt động (trong diện rút QH 2030)", "quyetDinh": "Không có QĐ thành lập riêng (được giao trước 2009)",
       "lat": 21.722, "lng": 104.899
     },
@@ -16,7 +16,7 @@
       "trangThai": "hoat-dong", "dienTich": 50, "dienTichDaChoThue": 27.09, "tyLeLapDay": 86.83,
       "namThanhLap": 2009, "soDoanhNghiep": 4,
       "nganhNghe": "May mặc xuất khẩu, chế biến gỗ CNC, tinh dầu quế, sản xuất VLXD",
-      "moTa": "Chủ đầu tư: UBND phường Âu Lâu. 10 DA, vốn 755,9 tỷ; 4 DA HĐ, 6 đang XD. Đang HĐ: Cty TNHH MTV May Chiến Thắng (may XK 1,25 triệu SP/năm, 4,185ha), Cty TNHH Gỗ Tốt Hoàng Bách (gỗ CNC 1,2ha), Cty CP TM-SX LTT (bị cháy 30/7/2025 đang XD lại). Tạm dừng: Cty TNHH Minh Nghĩa (tinh dầu quế - đang xử lý môi trường). Đang triển khai: Cty CP JUNMA YB (gỗ XK, 3ha), Cty TNHH Cường Thủy (thực phẩm), Cty TNHH Hồng Nguyên VN (ván ép), Cty CP Nhựa LTT (hạt nhựa, 5,41ha, 263,8 tỷ). Khó khăn: chưa có hệ thống xử lý nước thải tập trung. QH mở rộng lên 75ha đến 2030.",
+      "moTa": "Chủ đầu tư: UBND phường Âu Lâu. 10 DA, vốn 755,9 tỷ; 4 DA HĐ, 6 đang XD. Đang HĐ: Cty TNHH MTV May Chiến Thắng (may XK 1,25 triệu SP/năm, 4,185ha), Cty TNHH Gỗ Tốt Hoàng Bách (gỗ CNC 1,2ha), Cty CP TM-SX LTT (SX VLXD, đang hoạt động). Tạm dừng: Cty TNHH Minh Nghĩa (tinh dầu quế - đang xử lý môi trường). Đang triển khai: Cty CP JUNMA YB (gỗ XK, 3ha), Cty TNHH Cường Thủy (thực phẩm), Cty TNHH Hồng Nguyên VN (ván ép), Cty CP Nhựa LTT (hạt nhựa, 5,41ha, 263,8 tỷ). Khó khăn: chưa có hệ thống xử lý nước thải tập trung. QH mở rộng lên 75ha đến 2030.",
       "haTang": "Đang hoạt động - QH mở rộng 75ha", "quyetDinh": "Không có QĐ thành lập riêng (được giao trước 2009)",
       "lat": 21.733, "lng": 104.888
     },
@@ -196,7 +196,7 @@
       "trangThai": "hoat-dong", "dienTich": 31.01, "dienTichDaChoThue": 6.2, "tyLeLapDay": 30.6,
       "namThanhLap": 2016, "soDoanhNghiep": 5,
       "nganhNghe": "Chế biến chè, tinh dầu quế, tinh bột sắn, gạch bê tông, ván ghép thanh",
-      "moTa": "Chủ đầu tư: UBND huyện Bảo Yên. Giáp Sông Chây (Bắc) và QL70 (Nam). Đang HĐ: (1) Cty TNHH Chè Đại Hưng - chè XK 960 tấn chè khô/năm, 1ha; (2) CN Cty TNHH MTV Triều Dương - tinh dầu quế 120 tấn/năm + Benzaldehyde 210 tấn/năm, 2,4ha (vướng: nhà máy Benzaldehyde đã đầu tư xong nhưng chưa được thẩm định thiết kế - công trình cấp I); (3) HTX Thuận Tiến - tinh bột sắn, 0,617ha; (4) HTX Tân Tiến Đạt - gạch bê tông, 0,339ha; (5) Hộ KD ván ghép xoan, 0,137ha. Đang triển khai: Cty TNHH XNK Đình Sơn - viên nén mùn cưa 20.000 tấn/năm, 6ha. Còn nhiều quỹ đất trống.",
+      "moTa": "Chủ đầu tư: UBND huyện Bảo Yên. Giáp Sông Chây (Bắc) và QL70 (Nam). Đang HĐ: (1) Cty TNHH Chè Đại Hưng - chè XK 960 tấn chè khô/năm, 1ha; (2) CN Cty TNHH MTV Triều Dương - tinh dầu quế 120 tấn/năm + Benzaldehyde 210 tấn/năm, 2,4ha; (3) HTX Thuận Tiến - tinh bột sắn, 0,617ha; (4) HTX Tân Tiến Đạt - gạch bê tông, 0,339ha; (5) Hộ KD ván ghép xoan, 0,137ha. Đang triển khai: Cty TNHH XNK Đình Sơn - viên nén mùn cưa 20.000 tấn/năm, 6ha. Còn nhiều quỹ đất trống.",
       "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 2972/QĐ-UBND ngày 09/9/2016",
       "lat": 22.180, "lng": 104.370
     },
@@ -216,7 +216,7 @@
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
       "namThanhLap": 2025, "soDoanhNghiep": 0,
       "nganhNghe": "Đa ngành (đang GPMB)",
-      "moTa": "Chủ đầu tư: Cty CP ĐT&PT Công nghiệp Lào Cai. Tiến độ: Kiểm đếm 152/152 hộ; đã chi trả 9 hộ; di chuyển 94/105 mộ; ban hành 55/66 QĐ thu hồi GCN. Khó khăn: đường từ IC18 cao tốc đến CCN chậm (dự kiến hoàn thành trước 6/2027); đất tái định cư chưa có; mộ di chuyển vướng; bản đồ địa chính chồng lấn. Yêu cầu: UBND xã Gia Phú hoàn thành GPMB Quý I/2026. Là CCN trọng điểm tỉnh Lào Cai giai đoạn 2025-2030.",
+      "moTa": "Chủ đầu tư: Cty CP ĐT&PT Công nghiệp Lào Cai. Đang triển khai GPMB: kiểm đếm 152/152 hộ, đã ban hành 55/66 QĐ thu hồi GCN. Đường kết nối từ IC18 cao tốc Nội Bài - Lào Cai đến CCN đang thi công (dự kiến hoàn thành 6/2027). Là CCN trọng điểm tỉnh Lào Cai giai đoạn 2025-2030.",
       "haTang": "Đang GPMB & xây dựng đường kết nối IC18", "quyetDinh": "QĐ số 298/QĐ-UBND ngày 20/02/2025",
       "lat": 22.381, "lng": 104.051
     },
