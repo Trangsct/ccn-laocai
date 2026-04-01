@@ -7,8 +7,6 @@ let markers = [];
 let markerLayer;
 let currentView = 'map';
 let charts = {};
-let CUM_CONG_NGHIEP = [];
-let CCN_CHUA_DAU_TU = [];
 
 // ---- Initialize Application ----
 document.addEventListener('DOMContentLoaded', () => {

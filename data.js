@@ -41,7 +41,7 @@ const TRANG_THAI = {
 };
 
 // Dữ liệu các cụm công nghiệp
-const CUM_CONG_NGHIEP = [
+let CUM_CONG_NGHIEP = [
     {
         id: 1, ten: "CCN Đầm Hồng", huyen: "khu-vuc-moi", xa: "Phường Yên Bái, phường Văn Phú",
         trangThai: "hoat-dong", dienTich: 16, dienTichDaChoThue: 11.99, tyLeLapDay: 100,
@@ -182,7 +182,7 @@ const CUM_CONG_NGHIEP = [
     }
 ];
 
-const CCN_CHUA_DAU_TU = [
+let CCN_CHUA_DAU_TU = [
     { stt: 1, ten: "CCN Phú Thịnh 4", huyen: "yen-binh", xa: "Xã Yên Bình", dienTich: 75, huongPhatTrien: "" },
     { stt: 2, ten: "CCN Tân Lĩnh", huyen: "luc-yen", xa: "Xã Tân Lĩnh", dienTich: 75, huongPhatTrien: "" },
     { stt: 3, ten: "CCN Thượng Bằng La", huyen: "van-chan", xa: "Xã Thượng Bằng La", dienTich: 20, huongPhatTrien: "Sau 2030 mở rộng lên thành 50 ha" },
