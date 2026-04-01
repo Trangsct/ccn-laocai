@@ -101,8 +101,8 @@
       "lat": 21.791, "lng": 104.821
     },
     {
-      "id": 11, "ten": "CCN Minh Quân", "huyen": "tran-yen",
-      "xa": "Xã Minh Quân, huyện Trấn Yên, tỉnh Lào Cai (Yên Bái cũ)",
+      "id": 11, "ten": "CCN Minh Quân", "huyen": "khu-vuc-moi",
+      "xa": "Phường Âu Lâu, tỉnh Lào Cai",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
       "namThanhLap": 2019, "soDoanhNghiep": 0,
       "nganhNghe": "Đa ngành (đang GPMB)",
@@ -221,8 +221,8 @@
       "lat": 22.381, "lng": 104.051
     },
     {
-      "id": 23, "ten": "CCN Bảo Minh", "huyen": "bao-thang",
-      "xa": "Huyện Bảo Thắng, tỉnh Lào Cai",
+      "id": 23, "ten": "CCN Bảo Minh", "huyen": "khu-vuc-moi",
+      "xa": "Phường Âu Lâu, tỉnh Lào Cai",
       "trangThai": "xay-dung", "dienTich": 20, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
       "namThanhLap": 2026, "soDoanhNghiep": 0,
       "nganhNghe": "Sản xuất đa ngành",
