@@ -4,8 +4,8 @@
 
 const TINH_INFO = {
     ten: "Lào Cai",
-    center: [22.4856, 103.9707],
-    zoom: 10,
+    center: [22.05, 104.35],
+    zoom: 9,
     hotline: "02143.840.402",
     email: "sct@laocai.gov.vn",
     diaChi: "Tầng 4, Tòa nhà Trung tâm Hành chính, Đường Trần Hưng Đạo, TP. Lào Cai",
@@ -220,7 +220,7 @@ const CCN_CHUA_DAU_TU = [
 // Đã chuyển tài liệu vào từng Cụm Công Nghiệp tại module app.js
 
 // Thống kê tổng hợp
-const THONG_KE = {
+let THONG_KE = {
     tongCCN: 54, // Tổng cộng 23 hiện hữu + 31 quy hoạch mới
     dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
     dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,

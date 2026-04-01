@@ -101,8 +101,8 @@
       "lat": 21.791, "lng": 104.821
     },
     {
-      "id": 11, "ten": "CCN Minh Quân", "huyen": "khu-vuc-moi",
-      "xa": "Phường Âu Lâu, tỉnh Lào Cai (Yên Bái cũ)",
+      "id": 11, "ten": "CCN Minh Quân", "huyen": "tran-yen",
+      "xa": "Xã Minh Quân, huyện Trấn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
       "namThanhLap": 2019, "soDoanhNghiep": 0,
       "nganhNghe": "Đa ngành (đang GPMB)",
@@ -143,7 +143,7 @@
     {
       "id": 15, "ten": "CCN Yên Hợp", "huyen": "van-yen",
       "xa": "Xã Xuân Ái, huyện Văn Yên, tỉnh Lào Cai (Yên Bái cũ)",
-      "trangThai": "hoat-dong", "dienTich": 12, "dienTichDaChoThue": 9.46, "tyLeLapDay": 78.87,
+      "trangThai": "xay-dung", "dienTich": 12, "dienTichDaChoThue": 9.46, "tyLeLapDay": 78.87,
       "namThanhLap": 2024, "soDoanhNghiep": 0,
       "nganhNghe": "Sản xuất gia vị, tinh dầu quế (đang xây dựng)",
       "moTa": "Chủ đầu tư: UBND xã Xuân Ái (Giai đoạn I: 12ha do Ban QLDA ĐTXD khu vực Trấn Yên làm CĐT). Doanh nghiệp đang triển khai: (1) Cty TNHH Hương Gia Vị Sơn Hà - nhà máy SX gia vị 4,769ha, vốn 286 tỷ, khởi công 11/7/2025 (vướng GPMB 7,3ha còn lại); (2) Cty CP SX & XK Phúc Long - tinh dầu quế 4,695ha. QH mở rộng GĐ II lên 75ha. QĐ 2201/QĐ-UBND ngày 06/11/2024.",
@@ -222,7 +222,7 @@
     },
     {
       "id": 23, "ten": "CCN Bảo Minh", "huyen": "bao-thang",
-      "xa": "Phường Âu Lâu, tỉnh Lào Cai (Yên Bái cũ)",
+      "xa": "Huyện Bảo Thắng, tỉnh Lào Cai",
       "trangThai": "xay-dung", "dienTich": 20, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
       "namThanhLap": 2026, "soDoanhNghiep": 0,
       "nganhNghe": "Sản xuất đa ngành",

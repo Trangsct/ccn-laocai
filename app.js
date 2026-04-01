@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             CUM_CONG_NGHIEP = data.CUM_CONG_NGHIEP;
             CCN_CHUA_DAU_TU = data.CCN_CHUA_DAU_TU;
+            // Tính lại THONG_KE từ dữ liệu mới (ghi đè giá trị cũ từ data.js)
+            THONG_KE = {
+                tongCCN: CUM_CONG_NGHIEP.length + CCN_CHUA_DAU_TU.length,
+                dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
+                dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,
+                choDauTu: CCN_CHUA_DAU_TU.length,
+                dienTichHienHuu: CUM_CONG_NGHIEP.reduce((s, c) => s + c.dienTich, 0),
+                dienTichQuyHoach: CCN_CHUA_DAU_TU.reduce((s, c) => s + c.dienTich, 0),
+                tongDoanhNghiep: CUM_CONG_NGHIEP.reduce((s, c) => s + c.soDoanhNghiep, 0)
+            };
             initMap();
             updateHeaderStats();
             renderStats();
