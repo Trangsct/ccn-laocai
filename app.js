@@ -402,16 +402,28 @@ function renderQuyHoachTable() {
     const tableBody = document.getElementById('quyhoach-table-body');
     if (!tableBody) return;
 
-    tableBody.innerHTML = CCN_CHUA_DAU_TU.map((ccn, idx) => `
-        <tr>
+    tableBody.innerHTML = CCN_CHUA_DAU_TU.map((ccn, idx) => {
+        let baoCaoBadge, baoCaoTooltip = '';
+        if (ccn.coBaoCao === true) {
+            baoCaoBadge = `<span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #86efac;white-space:nowrap;">✅ Đã có BC</span>`;
+            baoCaoTooltip = ccn.baoCao ? `<div style="font-size:0.78rem;color:#475569;margin-top:4px;font-style:italic;">${ccn.baoCao}</div>` : '';
+        } else if (ccn.coBaoCao === 'rar') {
+            baoCaoBadge = `<span style="background:#fef9c3;color:#b45309;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #fde047;white-space:nowrap;">📦 File .rar</span>`;
+            baoCaoTooltip = `<div style="font-size:0.78rem;color:#92400e;margin-top:4px;font-style:italic;">${ccn.baoCao}</div>`;
+        } else {
+            baoCaoBadge = `<span style="background:#fee2e2;color:#dc2626;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #fca5a5;white-space:nowrap;font-weight:600;">🔴 Chưa có báo cáo</span>`;
+            baoCaoTooltip = '';
+        }
+        return `
+        <tr style="${ccn.coBaoCao === false ? 'background:#fff5f5;' : ''}">
             <td style="text-align:center;">${idx + 1}</td>
             <td><strong>${ccn.ten}</strong></td>
             <td>${ccn.xa}</td>
             <td style="text-align:right;">${ccn.dienTich} ha</td>
-            <td>${ccn.huongPhatTrien || '-'}</td>
-            <td style="text-align:center;"><span class="status-badge" style="background:#fef3c7; color:#d97706; padding:4px 8px; border-radius:4px; font-size:0.8rem; border:1px solid #fde68a;">⏳ Chờ đầu tư</span></td>
-        </tr>
-    `).join('');
+            <td style="font-size:0.85rem;">${ccn.huongPhatTrien || '-'}${baoCaoTooltip}</td>
+            <td style="text-align:center;">${baoCaoBadge}</td>
+        </tr>`;
+    }).join('');
 }
 
 // ---- Render Documents Table ----
