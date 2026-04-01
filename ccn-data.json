@@ -1,198 +1,267 @@
 {
   "CUM_CONG_NGHIEP": [
     {
-      "id": 1, "ten": "CCN Đầm Hồng", "huyen": "khu-vuc-moi", "xa": "Phường Yên Bái, phường Văn Phú",
+      "id": 1, "ten": "CCN Đầm Hồng", "huyen": "khu-vuc-moi",
+      "xa": "Phường Yên Bái & Phường Văn Phú, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 16, "dienTichDaChoThue": 11.99, "tyLeLapDay": 100,
-      "namThanhLap": 2009, "soDoanhNghiep": 20, "nganhNghe": "Đa ngành, vật liệu xây dựng, cơ khí",
-      "moTa": "Chủ đầu tư: UBND phường Yên Bái và phường Văn Phú",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 1245/QĐ-UBND", "lat": 21.722, "lng": 104.899
+      "namThanhLap": 2009, "soDoanhNghiep": 20,
+      "nganhNghe": "Vật liệu XD, cơ khí, chế biến gỗ, chế biến cao lanh",
+      "moTa": "Chủ đầu tư: UBND phường Yên Bái & Văn Phú. Doanh nghiệp tiêu biểu: Cty CP Sứ Hoàng Liên Sơn (chế biến cao lanh 3,35ha), Cty CP KS Thành Công (cao lanh), DNTN Thanh Hương (đũa gỗ), Cty CP Mộc Hương-Việt Nam (ván ghép thanh), Cty CP Đồng Tâm Xanh (bê tông thương phẩm). Lưu ý: CCN trong diện rút khỏi quy hoạch đến 2030.",
+      "haTang": "Đang hoạt động (trong diện rút QH 2030)", "quyetDinh": "Không có QĐ thành lập riêng (được giao trước 2009)",
+      "lat": 21.722, "lng": 104.899
     },
     {
-      "id": 2, "ten": "CCN Âu Lâu", "huyen": "khu-vuc-moi", "xa": "Phường Âu Lâu",
+      "id": 2, "ten": "CCN Âu Lâu", "huyen": "khu-vuc-moi",
+      "xa": "Phường Âu Lâu, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 50, "dienTichDaChoThue": 27.09, "tyLeLapDay": 86.83,
-      "namThanhLap": 2009, "soDoanhNghiep": 4, "nganhNghe": "Chế biến gỗ, tinh dầu, vật liệu xây dựng",
-      "moTa": "Chủ đầu tư: UBND phường Âu Lâu",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 1656/QĐ-UBND", "lat": 21.733, "lng": 104.888
+      "namThanhLap": 2009, "soDoanhNghiep": 4,
+      "nganhNghe": "May mặc xuất khẩu, chế biến gỗ CNC, tinh dầu quế, sản xuất VLXD",
+      "moTa": "Chủ đầu tư: UBND phường Âu Lâu. Doanh nghiệp đang hoạt động: Cty TNHH MTV May Chiến Thắng (may XK), Cty TNHH Gỗ Tốt Hoàng Bách (chế biến gỗ CNC 1,2ha), Cty CP TM-SX LTT (VLXD - bị cháy 30/7/2025 đang XD lại). Nhiều dự án đang triển khai: JUNMA YB (gỗ XK), Cường Thủy (thực phẩm), EREX (nhựa), Hồng Nguyên VN (ván ép). Quy hoạch mở rộng lên 75ha đến 2030.",
+      "haTang": "Đang hoạt động - QH mở rộng 75ha", "quyetDinh": "Không có QĐ thành lập riêng (được giao trước 2009)",
+      "lat": 21.733, "lng": 104.888
     },
     {
-      "id": 3, "ten": "CCN Thịnh Hưng", "huyen": "yen-binh", "xa": "Xã Yên Bình",
+      "id": 3, "ten": "CCN Thịnh Hưng", "huyen": "yen-binh",
+      "xa": "Xã Yên Bình (thôn Đình Lâm & Ao Khoai), tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 53.05, "dienTichDaChoThue": 32.59, "tyLeLapDay": 87.75,
-      "namThanhLap": 2009, "soDoanhNghiep": 3, "nganhNghe": "May mặc xuất khẩu, chế biến sản phẩm gỗ",
-      "moTa": "Chủ đầu tư: UBND Xã Yên Bình",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 106/QĐ-UBND", "lat": 21.758, "lng": 104.891
+      "namThanhLap": 2009, "soDoanhNghiep": 3,
+      "nganhNghe": "May mặc xuất khẩu (FDI Hàn Quốc), sản xuất ván dán, sản xuất gạch VLXD",
+      "moTa": "Chủ đầu tư: UBND xã Yên Bình. Doanh nghiệp tiêu biểu: (1) Cty TNHH DAESEUNG GLOBAL (Hàn Quốc) - may XK 1,5 triệu SP/năm, đang hoạt động; (2) Cty TNHH Hoàng Gia Yên Bái - ván dán 20,3ha, đang hoạt động; (3) Cty CP VLCL và Xây lắp điện Việt Trung - gạch 4ha, đang hoạt động. Phê duyệt QĐ 106/QĐ-UBND ngày 5/9/2009.",
+      "haTang": "Đang hoạt động", "quyetDinh": "Số 106/QĐ-UBND ngày 05/9/2009",
+      "lat": 21.758, "lng": 104.891
     },
     {
-      "id": 4, "ten": "CCN Phú Thịnh 1", "huyen": "yen-binh", "xa": "Phường Văn Phú",
+      "id": 4, "ten": "CCN Phú Thịnh 1", "huyen": "yen-binh",
+      "xa": "Phường Văn Phú, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2022, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Chủ đầu tư: Liên danh công ty CP tập đoàn Đông Đô và công ty CP đầu tư XD số 9 Bắc Giang",
-      "haTang": "Đang GPMB", "quyetDinh": "Số 1689/QĐ-UBND", "lat": 21.711, "lng": 104.877
+      "namThanhLap": 2022, "soDoanhNghiep": 0,
+      "nganhNghe": "Đa ngành (đang GPMB)",
+      "moTa": "Chủ đầu tư: Liên danh Cty CP Tập đoàn Đông Đô & Cty CP ĐTXD số 9 Bắc Giang. Đang triển khai GPMB. Là 1 trong 3 CCN Phú Thịnh kết nối với đường trục chính đang thi công nối IC18 cao tốc Nội Bài – Lào Cai. Tổng 3 CCN Phú Thịnh (1+2+3) dự kiến thu hút đa ngành sản xuất.",
+      "haTang": "Đang GPMB", "quyetDinh": "Số 1689/QĐ-UBND ngày 28/9/2022",
+      "lat": 21.711, "lng": 104.877
     },
     {
-      "id": 5, "ten": "CCN Phú Thịnh 2", "huyen": "yen-binh", "xa": "Phường Văn Phú, Xã Yên Bình",
+      "id": 5, "ten": "CCN Phú Thịnh 2", "huyen": "yen-binh",
+      "xa": "Phường Văn Phú & Xã Yên Bình, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2022, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Chủ đầu tư: Công ty TNHH Lâm nghiệp 888 Yên Bái",
-      "haTang": "Đang GPMB", "quyetDinh": "Số 1454/QĐ-UBND", "lat": 21.712, "lng": 104.881
+      "namThanhLap": 2022, "soDoanhNghiep": 0,
+      "nganhNghe": "Đa ngành (đang GPMB)",
+      "moTa": "Chủ đầu tư: Cty TNHH Lâm nghiệp 888 Yên Bái. Đang triển khai GPMB. Nằm liền kề CCN Phú Thịnh 1 và 3.",
+      "haTang": "Đang GPMB", "quyetDinh": "Số 1454/QĐ-UBND ngày 24/8/2022",
+      "lat": 21.712, "lng": 104.881
     },
     {
-      "id": 6, "ten": "CCN Phú Thịnh 3", "huyen": "yen-binh", "xa": "Phường Văn Phú, Xã Yên Bình",
+      "id": 6, "ten": "CCN Phú Thịnh 3", "huyen": "yen-binh",
+      "xa": "Phường Văn Phú & Xã Yên Bình, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2023, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Chủ đầu tư: Công ty Cổ phần công nghiệp EUP",
-      "haTang": "Đang GPMB", "quyetDinh": "Số 2220/QĐ-UBND", "lat": 21.713, "lng": 104.885
+      "namThanhLap": 2023, "soDoanhNghiep": 0,
+      "nganhNghe": "Đa ngành (đang GPMB)",
+      "moTa": "Chủ đầu tư: Cty CP Công nghiệp EUP. Đang triển khai GPMB.",
+      "haTang": "Đang GPMB", "quyetDinh": "Số 2220/QĐ-UBND ngày 27/11/2023",
+      "lat": 21.713, "lng": 104.885
     },
     {
-      "id": 7, "ten": "CCN Sơn Thịnh", "huyen": "van-chan", "xa": "Xã Văn Chấn",
+      "id": 7, "ten": "CCN Sơn Thịnh", "huyen": "van-chan",
+      "xa": "Xã Sơn Thịnh, huyện Văn Chấn, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 58.76, "dienTichDaChoThue": 15.58, "tyLeLapDay": 37.88,
-      "namThanhLap": 2009, "soDoanhNghiep": 2, "nganhNghe": "Chế biến khoáng sản, nông lâm sản",
-      "moTa": "Chủ đầu tư: UBND Xã Văn Chấn",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 735/QĐ-UBND", "lat": 21.583, "lng": 104.532
+      "namThanhLap": 2009, "soDoanhNghiep": 2,
+      "nganhNghe": "Chế biến chè CTC xuất khẩu, tuyển chì-kẽm, nghiền bột thạch anh",
+      "moTa": "Chủ đầu tư: UBND xã Văn Chấn. Doanh nghiệp đang hoạt động: (1) Cty TNHH CB Nông lâm sản XK Đại Hoa - nhà máy chè CTC 1,85ha; (2) Cty CP Thịnh Đạt - tuyển chì-kẽm 40.000 tấn/năm 1,56ha. Đang triển khai: Cty TNHH MTV KT&CB KS Thạch Sơn (nghiền bột thạch anh), Cty CP Luyện kim mầu YB (đa kim loại, 10,65ha - 1.499 tỷ đồng).",
+      "haTang": "Đang hoạt động", "quyetDinh": "Số 735/QĐ-UBND",
+      "lat": 21.583, "lng": 104.532
     },
     {
-      "id": 8, "ten": "CCN Yên Thế", "huyen": "luc-yen", "xa": "Xã Lục Yên",
+      "id": 8, "ten": "CCN Yên Thế", "huyen": "luc-yen",
+      "xa": "Xã Yên Thế, huyện Lục Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 39.97, "dienTichDaChoThue": 11.26, "tyLeLapDay": 40.24,
-      "namThanhLap": 2006, "soDoanhNghiep": 3, "nganhNghe": "Đá hoa trắng, đá tự nhiên",
-      "moTa": "Chủ đầu tư: UBND Xã Lục Yên",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 346/QĐ-UBND", "lat": 22.102, "lng": 104.721
+      "namThanhLap": 2006, "soDoanhNghiep": 3,
+      "nganhNghe": "Chế biến đá hoa trắng, đá tự nhiên (FDI Ấn Độ & Trung Quốc)",
+      "moTa": "Chủ đầu tư: UBND xã Lục Yên. Doanh nghiệp: (1) Cty TNHH Đá cẩm thạch R.K VN (liên doanh với R.K Marble - Ấn Độ) - đá hoa trắng 5,95ha, vốn 220 tỷ; (2) Darpan Stonex Private Limited (Ấn Độ) & Cty TNHH Hoàng Tuân - đá tự nhiên RAMOJI 3,76ha, vốn 80 tỷ; (3) WANG KAI MING & FENG JUN XIANG (TQ) - Cty TNHH An Hòa VN - đá xẻ 1,55ha. QH mở rộng lên 55ha đến 2030.",
+      "haTang": "Đang hoạt động - QH mở rộng 55ha", "quyetDinh": "Số 346/QĐ-UBND",
+      "lat": 22.102, "lng": 104.721
     },
     {
-      "id": 9, "ten": "CCN Báo Đáp", "huyen": "tran-yen", "xa": "Xã Trấn Yên",
+      "id": 9, "ten": "CCN Báo Đáp", "huyen": "tran-yen",
+      "xa": "Xã Báo Đáp, huyện Trấn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 20, "dienTichDaChoThue": 3.26, "tyLeLapDay": 23.29,
-      "namThanhLap": 2008, "soDoanhNghiep": 2, "nganhNghe": "Chế biến quế, ghép thanh ván",
-      "moTa": "Chủ đầu tư: UBND xã Trấn Yên",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 1583/QĐ-UBND", "lat": 21.812, "lng": 104.832
+      "namThanhLap": 2008, "soDoanhNghiep": 2,
+      "nganhNghe": "Chế biến quế vỏ, sản xuất ván ghép thanh xuất khẩu",
+      "moTa": "Chủ đầu tư: UBND xã Trấn Yên. Doanh nghiệp: (1) Cty TNHH Bắc Sơn - thu mua, sơ chế quế vỏ các loại 0,98ha (từ 2005); (2) DNTN Đăng Khoa - ván ghép thanh 0,586ha (từ 2006). Đang triển khai: Cty CP & UD ATECH (lọc cao lanh 0,67ha), DNTN Đăng Khoa mở rộng thêm 1,02ha. Phê duyệt QĐ 1583/QĐ-UBND 10/10/2008.",
+      "haTang": "Đang hoạt động", "quyetDinh": "Số 1583/QĐ-UBND ngày 10/10/2008",
+      "lat": 21.812, "lng": 104.832
     },
     {
-      "id": 10, "ten": "CCN Hưng Khánh", "huyen": "tran-yen", "xa": "Xã Hưng Khánh",
+      "id": 10, "ten": "CCN Hưng Khánh", "huyen": "tran-yen",
+      "xa": "Xã Hưng Khánh, huyện Trấn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 20, "dienTichDaChoThue": 4.06, "tyLeLapDay": 29.0,
-      "namThanhLap": 2008, "soDoanhNghiep": 2, "nganhNghe": "Chế biến ván ép, măng",
-      "moTa": "Chủ đầu tư: UBND Xã Hưng Khánh",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 1584/QĐ-UBND", "lat": 21.791, "lng": 104.821
+      "namThanhLap": 2008, "soDoanhNghiep": 2,
+      "nganhNghe": "Sản xuất ván ép, chế biến măng xuất khẩu",
+      "moTa": "Chủ đầu tư: UBND xã Hưng Khánh. Doanh nghiệp: (1) Cty CP Greeneco Việt Nam - nhà máy ván ép 1,18ha, vốn 97,9 tỷ, đi vào HĐ T7/2025; (2) Cty CP Yamazaki + HTX NN & PTNT Hưng Thành - nhà máy chế biến măng Yamazaki VN 2,84ha, vốn 30 tỷ. Lưu ý: đường QL37 vào CCN nhỏ, hẹp, cần mở rộng. Phê duyệt QĐ 1584/QĐ-UBND 10/10/2008.",
+      "haTang": "Đang hoạt động", "quyetDinh": "Số 1584/QĐ-UBND ngày 10/10/2008",
+      "lat": 21.791, "lng": 104.821
     },
     {
-      "id": 11, "ten": "CCN Minh Quân", "huyen": "khu-vuc-moi", "xa": "Phường Âu Lâu",
+      "id": 11, "ten": "CCN Minh Quân", "huyen": "khu-vuc-moi",
+      "xa": "Phường Âu Lâu, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2019, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Chủ đầu tư: Công ty TNHH 1TV HTCN Bảo Hưng",
-      "haTang": "Đang GPMB", "quyetDinh": "Số 2364/QĐ-UBND", "lat": 21.734, "lng": 104.889
+      "namThanhLap": 2019, "soDoanhNghiep": 0,
+      "nganhNghe": "Đa ngành (đang GPMB)",
+      "moTa": "Chủ đầu tư: Cty TNHH 1TV Hạ tầng CN Bảo Hưng. Đang triển khai GPMB nhưng chậm tiến độ. Diện tích đất CN: 53,49ha. Chủ đầu tư đang triển khai cầm chừng, UBND tỉnh đang đôn đốc.",
+      "haTang": "Đang GPMB (chậm tiến độ)", "quyetDinh": "Số 2364/QĐ-UBND ngày 18/10/2019",
+      "lat": 21.734, "lng": 104.889
     },
     {
-      "id": 12, "ten": "CCN Y Can", "huyen": "tran-yen", "xa": "Xã Quy Mông",
+      "id": 12, "ten": "CCN Y Can", "huyen": "tran-yen",
+      "xa": "Xã Quy Mông, huyện Trấn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2025, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Chủ đầu tư: Công ty CP luyện kim hóa chất Tây Bắc",
-      "haTang": "Đang triển khai", "quyetDinh": "Số 949/QĐ-UBND", "lat": 21.851, "lng": 104.811
+      "namThanhLap": 2025, "soDoanhNghiep": 0,
+      "nganhNghe": "Đa ngành (mới thành lập)",
+      "moTa": "Chủ đầu tư: Cty CP Luyện kim hóa chất Tây Bắc. Mới được phê duyệt thành lập 06/5/2025. Đang triển khai các bước đầu tiên.",
+      "haTang": "Mới thành lập, đang triển khai", "quyetDinh": "Số 949/QĐ-UBND ngày 06/5/2025",
+      "lat": 21.851, "lng": 104.811
     },
     {
-      "id": 13, "ten": "CCN Tây Cầu Mậu A", "huyen": "van-yen", "xa": "Xã Mậu A",
+      "id": 13, "ten": "CCN Tây Cầu Mậu A", "huyen": "van-yen",
+      "xa": "Xã Mậu A, huyện Văn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 35, "dienTichDaChoThue": 11.16, "tyLeLapDay": 45.55,
-      "namThanhLap": 2009, "soDoanhNghiep": 1, "nganhNghe": "Sản xuất giấy đế xuất khẩu",
-      "moTa": "Chủ đầu tư: UBND xã Mậu A",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 1992/QĐ-UBND", "lat": 21.902, "lng": 104.654
+      "namThanhLap": 2009, "soDoanhNghiep": 1,
+      "nganhNghe": "Sản xuất giấy đế xuất khẩu",
+      "moTa": "Chủ đầu tư: UBND xã Mậu A. Doanh nghiệp đang hoạt động: Cty CP CB Nông lâm sản Yên Bái - sản xuất giấy đế xuất khẩu 1,2ha. Lưu ý: CCN trong diện rút khỏi quy hoạch đến 2030. Hai dự án khác (Hoàng Đạo và Đồng Tiến) không triển khai.",
+      "haTang": "Đang hoạt động (trong diện rút QH 2030)", "quyetDinh": "Số 1992/QĐ-UBND",
+      "lat": 21.902, "lng": 104.654
     },
     {
-      "id": 14, "ten": "CCN Đông An", "huyen": "van-yen", "xa": "Xã Đông Cuông",
+      "id": 14, "ten": "CCN Đông An", "huyen": "van-yen",
+      "xa": "Xã Đông Cuông, huyện Văn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 34, "dienTichDaChoThue": 11.14, "tyLeLapDay": 48.35,
-      "namThanhLap": 2010, "soDoanhNghiep": 1, "nganhNghe": "Thuốc BVTV, phân bón",
-      "moTa": "Chủ đầu tư: UBND Xã Đông Cuông",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 1934/QĐ-UBND", "lat": 21.921, "lng": 104.661
+      "namThanhLap": 2010, "soDoanhNghiep": 1,
+      "nganhNghe": "Gia công, sang chai, đóng gói thuốc BVTV và phân bón",
+      "moTa": "Chủ đầu tư: UBND xã Đông Cuông. Doanh nghiệp: Cty CP BMC Yên Bái - gia công, sang chai đóng gói thuốc BVTV, thuốc trừ côn trùng và sản xuất phân bón 11,14ha, vốn 230,174 tỷ đồng, QĐ 1170/QĐ-UBND ngày 15/6/2021. Hiện đang hoạt động sản xuất.",
+      "haTang": "Đang hoạt động", "quyetDinh": "Số 1934/QĐ-UBND",
+      "lat": 21.921, "lng": 104.661
     },
     {
-      "id": 15, "ten": "CCN Yên Hợp", "huyen": "van-yen", "xa": "Xã Xuân Ái",
+      "id": 15, "ten": "CCN Yên Hợp", "huyen": "van-yen",
+      "xa": "Xã Xuân Ái, huyện Văn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 12, "dienTichDaChoThue": 9.46, "tyLeLapDay": 78.87,
-      "namThanhLap": 2024, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Chủ đầu tư: UBND Xã Xuân Ái",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 2201/QĐ-UBND", "lat": 21.895, "lng": 104.643
+      "namThanhLap": 2024, "soDoanhNghiep": 0,
+      "nganhNghe": "Sản xuất gia vị, tinh dầu quế (đang xây dựng)",
+      "moTa": "Chủ đầu tư: UBND xã Xuân Ái (Giai đoạn I: 12ha do Ban QLDA ĐTXD khu vực Trấn Yên làm CĐT). Doanh nghiệp đang triển khai: (1) Cty TNHH Hương Gia Vị Sơn Hà - nhà máy SX gia vị 4,769ha, vốn 286 tỷ, khởi công 11/7/2025 (vướng GPMB 7,3ha còn lại); (2) Cty CP SX & XK Phúc Long - tinh dầu quế 4,695ha. QH mở rộng GĐ II lên 75ha. QĐ 2201/QĐ-UBND ngày 06/11/2024.",
+      "haTang": "Mới thành lập, đang GPMB & XDCB", "quyetDinh": "Số 2201/QĐ-UBND ngày 06/11/2024",
+      "lat": 21.895, "lng": 104.643
     },
     {
-      "id": 16, "ten": "CCN Bắc Văn Yên", "huyen": "van-yen", "xa": "Xã Đông Cuông",
+      "id": 16, "ten": "CCN Bắc Văn Yên", "huyen": "van-yen",
+      "xa": "Xã Đông Cuông, huyện Văn Yên, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "hoat-dong", "dienTich": 55, "dienTichDaChoThue": 33.9, "tyLeLapDay": 88.05,
-      "namThanhLap": 2017, "soDoanhNghiep": 4, "nganhNghe": "Sản xuất tinh bột sắn, tinh dầu quế",
-      "moTa": "Chủ đầu tư: UBND Xã Đông Cuông",
-      "haTang": "Đang hoạt động", "quyetDinh": "Số 667/QĐ-UBND", "lat": 21.925, "lng": 104.669
+      "namThanhLap": 2017, "soDoanhNghiep": 4,
+      "nganhNghe": "Chế biến tinh bột sắn, sản xuất giấy đế XK, tinh dầu quế & sả, điện sinh khối",
+      "moTa": "Chủ đầu tư: UBND xã Đông Cuông. Doanh nghiệp đang hoạt động: (1) Cty CP Nông lâm sản TP Yên Bái - bột biến tính sắn NM sắn số 1, 15ha, vốn 74,3 tỷ; (2) Cty TNHH HaPaco Yên Sơn - giấy đế xuất khẩu 1ha, vốn 5,4 tỷ; (3) Cty CP XNK Đạt Thành - tinh dầu quế & sả 3,96ha, vốn 50 tỷ. Đang XDCB: Cty CP EREX (Nhật Bản) - nhà máy điện sinh khối 10,76ha, vốn 2.971 tỷ đồng. Điện SH Yên Bái 1 - dự án lớn nhất CCN. QĐ 667/QĐ-UBND.",
+      "haTang": "Đang hoạt động", "quyetDinh": "Số 667/QĐ-UBND",
+      "lat": 21.925, "lng": 104.669
     },
     {
-      "id": 17, "ten": "CCN Bắc Duyên Hải", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai",
+      "id": 17, "ten": "CCN Bắc Duyên Hải", "huyen": "tp-lao-cai",
+      "xa": "Phường Duyên Hải, thành phố Lào Cai",
       "trangThai": "hoat-dong", "dienTich": 19.5, "dienTichDaChoThue": 8.8, "tyLeLapDay": 100,
-      "namThanhLap": 2012, "soDoanhNghiep": 91, "nganhNghe": "Hỗ trợ cơ khí, sửa chữa ô tô",
-      "moTa": "Chủ đầu tư: UBND phường Lào Cai",
-      "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 1023/QĐ-UBND", "lat": 22.492, "lng": 103.955
+      "namThanhLap": 2012, "soDoanhNghiep": 91,
+      "nganhNghe": "Sửa chữa ô tô, gia công cơ khí, tiểu thủ công nghiệp, kho bãi",
+      "moTa": "Chủ đầu tư: UBND phường Lào Cai. Gồm 2 khu: Khu 1 (7ha) + Khu 2 (12,5ha). Tổng 91 cơ sở đang hoạt động. Tiêu biểu: Cty TNHH Hùng Vương (sửa ô tô), Cty TNHH Lương Hương (ô tô, kho), nhiều cơ sở cơ khí sửa chữa. Lưu ý: Sau năm 2030 rút khỏi quy hoạch do phát triển đô thị.",
+      "haTang": "Đang hoạt động (rút QH sau 2030)", "quyetDinh": "QĐ số 1023/QĐ-UBND ngày 11/5/2012",
+      "lat": 22.492, "lng": 103.955
     },
     {
-      "id": 18, "ten": "CCN Đông Phố Mới", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai",
+      "id": 18, "ten": "CCN Đông Phố Mới", "huyen": "tp-lao-cai",
+      "xa": "Phường Phố Mới, thành phố Lào Cai",
       "trangThai": "hoat-dong", "dienTich": 3.5, "dienTichDaChoThue": 1.84, "tyLeLapDay": 100,
-      "namThanhLap": 2016, "soDoanhNghiep": 16, "nganhNghe": "Cơ khí, TT công nghiệp",
-      "moTa": "Chủ đầu tư: UBND phường Lào Cai",
-      "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 2968/QĐ-UBND", "lat": 22.475, "lng": 103.978
+      "namThanhLap": 2016, "soDoanhNghiep": 16,
+      "nganhNghe": "Mộc dân dụng, gia công cơ khí, sản xuất than tổ ong",
+      "moTa": "Chủ đầu tư: UBND phường Lào Cai. 16 cơ sở đang hoạt động. Tiêu biểu: DNTN Châu Nhi (cơ khí), Nguyễn Văn Tiến (cơ khí), Phạm Thị Dung (SX ô tô, gạch), Bùi Tất Khôi (chế biến gỗ), Nguyễn Văn Quế (mộc). Lưu ý: Rút khỏi quy hoạch trước năm 2030.",
+      "haTang": "Đang hoạt động (rút QH trước 2030)", "quyetDinh": "QĐ số 2968/QĐ-UBND ngày 09/9/2016",
+      "lat": 22.475, "lng": 103.978
     },
     {
-      "id": 19, "ten": "CCN Sơn Mãn", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai",
+      "id": 19, "ten": "CCN Sơn Mãn", "huyen": "tp-lao-cai",
+      "xa": "Thôn Sơn Mãn, xã Vạn Hòa, thành phố Lào Cai",
       "trangThai": "hoat-dong", "dienTich": 7.5, "dienTichDaChoThue": 4.2, "tyLeLapDay": 100,
-      "namThanhLap": 2016, "soDoanhNghiep": 40, "nganhNghe": "Tiểu thủ công nghiệp, mộc, kho bãi",
-      "moTa": "Chủ đầu tư: UBND phường Lào Cai",
-      "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 2967/QĐ-UBND", "lat": 22.455, "lng": 103.985
+      "namThanhLap": 2016, "soDoanhNghiep": 32,
+      "nganhNghe": "Tiểu thủ công nghiệp, cơ khí sửa chữa, mộc, vật liệu xây dựng",
+      "moTa": "Chủ đầu tư: UBND phường Lào Cai. 43 lô, trong đó 32 cơ sở đang hoạt động, 11 cơ sở dừng. Giai đoạn 1 (2,5ha) đã lấp đầy 100%. Tiêu biểu: Cty TNHH MTV Đại Phát, Cty CP TM Lào Cai, Cty CP Tây Bắc, Cty tư vấn TK tổng hợp Tám Thành. Lưu ý: Rút khỏi quy hoạch trước năm 2030.",
+      "haTang": "Đang hoạt động (rút QH trước 2030)", "quyetDinh": "QĐ số 2967/QĐ-UBND ngày 09/9/2016",
+      "lat": 22.455, "lng": 103.985
     },
     {
-      "id": 20, "ten": "CCN Phố Ràng", "huyen": "bao-yen", "xa": "Xã Bảo Yên",
+      "id": 20, "ten": "CCN Phố Ràng", "huyen": "bao-yen",
+      "xa": "Thị trấn Phố Ràng, huyện Bảo Yên, tỉnh Lào Cai",
       "trangThai": "hoat-dong", "dienTich": 31.01, "dienTichDaChoThue": 6.2, "tyLeLapDay": 20,
-      "namThanhLap": 2016, "soDoanhNghiep": 3, "nganhNghe": "Sản xuất, chế biến nông lâm sản",
-      "moTa": "Chủ đầu tư: UBND xã Bảo Yên",
-      "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 2972/QĐ-UBND", "lat": 22.180, "lng": 104.370
+      "namThanhLap": 2016, "soDoanhNghiep": 5,
+      "nganhNghe": "Chế biến chè, tinh dầu quế, tinh bột sắn, gạch bê tông, ván ghép thanh",
+      "moTa": "Chủ đầu tư: UBND huyện Bảo Yên. Giáp Sông Chây (Bắc) và QL70 (Nam). Doanh nghiệp đang hoạt động: (1) Cty TNHH Chè Đại Hưng - SX chè XK 1ha, công suất 960 tấn chè khô/năm (từ 2005); (2) Chi nhánh Cty TNHH MTV Triều Dương - tinh dầu quế 6ha, 120 tấn/năm; (3) HTX Thuận Tiến - tinh bột sắn; (4) HTX Tân Tiến Đạt - gạch bê tông 0,34ha; (5) Hộ kinh doanh ván ghép xoan. Còn nhiều quỹ đất trống chờ nhà đầu tư.",
+      "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 2972/QĐ-UBND ngày 09/9/2016",
+      "lat": 22.180, "lng": 104.370
     },
     {
-      "id": 21, "ten": "CCN Khánh Yên Thượng", "huyen": "van-ban", "xa": "Xã Văn Bàn",
-      "trangThai": "hoat-dong", "dienTich": 5.17, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2016, "soDoanhNghiep": 1, "nganhNghe": "Khai thác, chế biến khoáng sản",
-      "moTa": "Chủ đầu tư: UBND xã Văn Bàn",
-      "haTang": "Đang triển khai", "quyetDinh": "QĐ số 2971/QĐ-UBND", "lat": 22.095, "lng": 104.150
+      "id": 21, "ten": "CCN Khánh Yên Thượng", "huyen": "van-ban",
+      "xa": "Xã Khánh Yên Thượng, huyện Văn Bàn, tỉnh Lào Cai",
+      "trangThai": "hoat-dong", "dienTich": 5.17, "dienTichDaChoThue": 1.05, "tyLeLapDay": 35,
+      "namThanhLap": 2016, "soDoanhNghiep": 1,
+      "nganhNghe": "Sản xuất gạch ba banh",
+      "moTa": "Chủ đầu tư: UBND huyện Văn Bàn. Giáp đường liên xã số 15 (Nam) và suối Nà Lộc (Tây). Doanh nghiệp: HTX Mường Thát - sản xuất gạch ba banh 1,05ha, công suất 1,2 triệu viên/năm, vốn 11 triệu đồng. Quy mô nhỏ (5,17ha), còn nhiều quỹ đất chờ nhà đầu tư.",
+      "haTang": "Đang hoạt động", "quyetDinh": "QĐ số 2971/QĐ-UBND ngày 09/9/2016",
+      "lat": 22.095, "lng": 104.150
     },
     {
-      "id": 22, "ten": "CCN Thống Nhất 1", "huyen": "bao-thang", "xa": "Xã Gia Phú",
+      "id": 22, "ten": "CCN Thống Nhất 1", "huyen": "bao-thang",
+      "xa": "Xã Gia Phú, huyện Bảo Thắng, tỉnh Lào Cai",
       "trangThai": "xay-dung", "dienTich": 75, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2025, "soDoanhNghiep": 0, "nganhNghe": "Đa ngành",
-      "moTa": "Công ty CP đầu tư và phát triển Công nghiệp Lào Cai",
-      "haTang": "Đang thực hiện GPMB", "quyetDinh": "QĐ số 298/QĐ-UBND", "lat": 22.381, "lng": 104.051
+      "namThanhLap": 2025, "soDoanhNghiep": 0,
+      "nganhNghe": "Đa ngành (đang GPMB)",
+      "moTa": "Chủ đầu tư: Cty CP Đầu tư và Phát triển Công nghiệp Lào Cai. Đang triển khai GPMB. Đường kết nối từ IC18 cao tốc Nội Bài – Lào Cai đến CCN đang thi công. Là CCN trọng điểm của tỉnh Lào Cai (cũ) giai đoạn 2025-2030.",
+      "haTang": "Đang GPMB & xây dựng đường kết nối IC18", "quyetDinh": "QĐ số 298/QĐ-UBND ngày 20/02/2025",
+      "lat": 22.381, "lng": 104.051
     },
     {
-      "id": 23, "ten": "CCN Bảo Minh", "huyen": "bao-thang", "xa": "N/A",
+      "id": 23, "ten": "CCN Bảo Minh", "huyen": "bao-thang",
+      "xa": "Phường Âu Lâu, tỉnh Lào Cai (Yên Bái cũ)",
       "trangThai": "xay-dung", "dienTich": 20, "dienTichDaChoThue": 0, "tyLeLapDay": 0,
-      "namThanhLap": 2026, "soDoanhNghiep": 0, "nganhNghe": "Sản xuất đa ngành",
-      "moTa": "Mới ký quyết định",
-      "haTang": "Đang xây dựng", "quyetDinh": "Quyết định thành lập mới", "lat": 22.385, "lng": 104.055
+      "namThanhLap": 2026, "soDoanhNghiep": 0,
+      "nganhNghe": "Sản xuất đa ngành",
+      "moTa": "Mới ký quyết định thành lập 2026. Đang triển khai các bước đầu.",
+      "haTang": "Đang xây dựng", "quyetDinh": "Quyết định thành lập mới 2026",
+      "lat": 22.385, "lng": 104.055
     }
   ],
   "CCN_CHUA_DAU_TU": [
-    { "stt": 1, "ten": "CCN Phú Thịnh 4", "huyen": "yen-binh", "xa": "Xã Yên Bình", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 2, "ten": "CCN Tân Lĩnh", "huyen": "luc-yen", "xa": "Xã Tân Lĩnh", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 3, "ten": "CCN Thượng Bằng La", "huyen": "van-chan", "xa": "Xã Thượng Bằng La", "dienTich": 20, "huongPhatTrien": "Sau 2030 mở rộng lên thành 50 ha" },
-    { "stt": 4, "ten": "CCN Bảo Thắng (Phố Lu)", "huyen": "bao-thang", "xa": "Xã Bảo Thắng", "dienTich": 40, "huongPhatTrien": "Sau 2030 mở rộng lên thành 75ha" },
-    { "stt": 5, "ten": "CCN Bản Phùng", "huyen": "van-ban", "xa": "Xã Văn Bàn", "dienTich": 40, "huongPhatTrien": "" },
-    { "stt": 6, "ten": "CCN Trà Trẩu", "huyen": "bao-thang", "xa": "Xã Bảo Thắng", "dienTich": 35, "huongPhatTrien": "Sau 2030 mở rộng lên thành 50ha" },
-    { "stt": 7, "ten": "CCN Xuân Ái", "huyen": "van-yen", "xa": "Xã Xuân Ái", "dienTich": 35, "huongPhatTrien": "Tăng 40 ha" },
-    { "stt": 8, "ten": "CCN Tân Hợp", "huyen": "van-yen", "xa": "Xã Tân Hợp", "dienTich": 40, "huongPhatTrien": "Tăng 35 ha" },
-    { "stt": 9, "ten": "CCN Bát Xát", "huyen": "bat-xat", "xa": "Xã Bát Xát", "dienTich": 53, "huongPhatTrien": "Tăng 04 ha" },
-    { "stt": 10, "ten": "CCN Mường Khương", "huyen": "muong-khuong", "xa": "Xã Mường Khương", "dienTich": 10, "huongPhatTrien": "Tăng 20 ha" },
-    { "stt": 11, "ten": "CCN Tân An", "huyen": "bao-yen", "xa": "Xã Bảo Hà", "dienTich": 16.5, "huongPhatTrien": "Tăng 23,5 ha" },
-    { "stt": 12, "ten": "CCN Hòa Mạc", "huyen": "van-ban", "xa": "Xã Văn Bàn", "dienTich": 7, "huongPhatTrien": "Tăng 13 ha" },
-    { "stt": 13, "ten": "CCN Bản Phiệt 1", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 14, "ten": "CCN Cam Đường 1", "huyen": "tp-lao-cai", "xa": "Phường Cam Đường", "dienTich": 40, "huongPhatTrien": "" },
-    { "stt": 15, "ten": "CCN Cam Đường 2", "huyen": "tp-lao-cai", "xa": "Phường Cam Đường", "dienTich": 12, "huongPhatTrien": "" },
-    { "stt": 16, "ten": "CCN Phố Ràng 1", "huyen": "bao-yen", "xa": "Xã Bảo Yên", "dienTich": 56, "huongPhatTrien": "" },
-    { "stt": 17, "ten": "CCN Phố Ràng 2", "huyen": "bao-yen", "xa": "Xã Bảo Yên", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 18, "ten": "CCN Quang Kim 1", "huyen": "bat-xat", "xa": "Xã Bát Xát", "dienTich": 55, "huongPhatTrien": "" },
-    { "stt": 19, "ten": "CCN Mông Sơn", "huyen": "yen-binh", "xa": "Xã Bảo Ái", "dienTich": 50, "huongPhatTrien": "" },
-    { "stt": 20, "ten": "CCN Tân Nguyên", "huyen": "yen-binh", "xa": "Xã Bảo Ái", "dienTich": 55, "huongPhatTrien": "" },
-    { "stt": 21, "ten": "CCN An Bình", "huyen": "van-yen", "xa": "Xã Đông Cuông", "dienTich": 50, "huongPhatTrien": "" },
-    { "stt": 22, "ten": "CCN Ngòi A", "huyen": "van-yen", "xa": "Xã Mậu A", "dienTich": 62, "huongPhatTrien": "" },
-    { "stt": 23, "ten": "CCN Yên Hưng", "huyen": "van-yen", "xa": "Xã Mậu A", "dienTich": 42, "huongPhatTrien": "" },
-    { "stt": 24, "ten": "CCN Bản Phiệt 2", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 25, "ten": "CCN Yên Hợp 1", "huyen": "van-yen", "xa": "Xã Xuân Ái", "dienTich": 63, "huongPhatTrien": "" },
-    { "stt": 26, "ten": "CCN Yên Hợp 2", "huyen": "van-yen", "xa": "Xã Xuân Ái", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 27, "ten": "CCN Văn Chấn", "huyen": "van-chan", "xa": "Xã Văn Chấn", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 28, "ten": "CCN Châu Quế", "huyen": "van-yen", "xa": "Xã Châu Quế", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 29, "ten": "CCN Phú Thịnh 5", "huyen": "yen-binh", "xa": "Phường Văn Phú", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 30, "ten": "CCN Phú Thịnh 6", "huyen": "yen-binh", "xa": "Phường Văn Phú", "dienTich": 75, "huongPhatTrien": "" },
-    { "stt": 31, "ten": "CCN Châu Quế Thượng", "huyen": "van-yen", "xa": "Xã Châu Quế", "dienTich": 40, "huongPhatTrien": "" }
+    { "stt": 1, "ten": "CCN Phú Thịnh 4", "huyen": "yen-binh", "xa": "Xã Yên Bình, Phường Văn Phú", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 2, "ten": "CCN Hợp Minh", "huyen": "khu-vuc-moi", "xa": "Phường Âu Lâu, TP. Yên Bái", "dienTich": 37.4, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 3, "ten": "CCN An Thịnh", "huyen": "van-yen", "xa": "Xã Mậu A", "dienTich": 30, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 4, "ten": "CCN Xuân Ái (mở rộng)", "huyen": "van-yen", "xa": "Xã Xuân Ái", "dienTich": 35, "huongPhatTrien": "Giai đoạn II của CCN Yên Hợp, mở rộng 63ha" },
+    { "stt": 5, "ten": "CCN Tân Hợp", "huyen": "van-yen", "xa": "Xã Tân Hợp", "dienTich": 40, "huongPhatTrien": "Giai đoạn 2025-2030, mở rộng 75ha sau 2030" },
+    { "stt": 6, "ten": "CCN Bảo Hưng 2", "huyen": "khu-vuc-moi", "xa": "Phường Âu Lâu, TP. Yên Bái", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 7, "ten": "CCN Tân Lĩnh", "huyen": "luc-yen", "xa": "Xã Tân Lĩnh", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 8, "ten": "CCN Thượng Bằng La", "huyen": "van-chan", "xa": "Xã Thượng Bằng La", "dienTich": 20, "huongPhatTrien": "Mở rộng lên 50ha sau 2030" },
+    { "stt": 9, "ten": "CCN Thống Nhất 2", "huyen": "bao-thang", "xa": "Xã Gia Phú", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 10, "ten": "CCN Thống Nhất 3", "huyen": "bao-thang", "xa": "Xã Gia Phú", "dienTich": 30, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 11, "ten": "CCN Bát Xát", "huyen": "bat-xat", "xa": "Xã Bát Xát", "dienTich": 53, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 12, "ten": "CCN TT Phố Lu (Bảo Thắng)", "huyen": "bao-thang", "xa": "Xã Phố Lu", "dienTich": 40, "huongPhatTrien": "Mở rộng lên 75ha sau 2030" },
+    { "stt": 13, "ten": "CCN Bản Phùng", "huyen": "van-ban", "xa": "Xã Văn Bàn", "dienTich": 40, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 14, "ten": "CCN Mường Khương", "huyen": "muong-khuong", "xa": "Xã Mường Khương", "dienTich": 10, "huongPhatTrien": "Giai đoạn 2025-2030" },
+    { "stt": 15, "ten": "CCN Bản Phiệt 1", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai", "dienTich": 75, "huongPhatTrien": "Giai đoạn sau 2030 (CCN Cam Đường)" },
+    { "stt": 16, "ten": "CCN Cam Đường 1", "huyen": "tp-lao-cai", "xa": "Phường Cam Đường", "dienTich": 40, "huongPhatTrien": "Giai đoạn sau 2030" },
+    { "stt": 17, "ten": "CCN Cam Đường 2", "huyen": "tp-lao-cai", "xa": "Phường Cam Đường", "dienTich": 12, "huongPhatTrien": "Giai đoạn sau 2030" },
+    { "stt": 18, "ten": "CCN Phố Ràng 1", "huyen": "bao-yen", "xa": "Xã Bảo Yên", "dienTich": 56, "huongPhatTrien": "Mở rộng CCN Phố Ràng giai đoạn 2025-2030" },
+    { "stt": 19, "ten": "CCN Phố Ràng 2", "huyen": "bao-yen", "xa": "Xã Bảo Yên", "dienTich": 75, "huongPhatTrien": "Mở rộng CCN Phố Ràng sau 2030" },
+    { "stt": 20, "ten": "CCN Trà Trẩu", "huyen": "bao-thang", "xa": "Xã Bảo Thắng", "dienTich": 35, "huongPhatTrien": "Mở rộng lên 50ha sau 2030" },
+    { "stt": 21, "ten": "CCN Tân An", "huyen": "bao-yen", "xa": "Xã Bảo Hà", "dienTich": 16.5, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 22, "ten": "CCN Hòa Mạc", "huyen": "van-ban", "xa": "Xã Văn Bàn", "dienTich": 7, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 23, "ten": "CCN Mông Sơn", "huyen": "yen-binh", "xa": "Xã Bảo Ái", "dienTich": 50, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 24, "ten": "CCN Tân Nguyên", "huyen": "yen-binh", "xa": "Xã Bảo Ái", "dienTich": 55, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 25, "ten": "CCN An Bình", "huyen": "van-yen", "xa": "Xã Đông Cuông", "dienTich": 50, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 26, "ten": "CCN Ngòi A", "huyen": "van-yen", "xa": "Xã Mậu A", "dienTich": 62, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 27, "ten": "CCN Yên Hưng", "huyen": "van-yen", "xa": "Xã Mậu A", "dienTich": 42, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 28, "ten": "CCN Bản Phiệt 2", "huyen": "tp-lao-cai", "xa": "Phường Lào Cai", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 29, "ten": "CCN Yên Hợp 1", "huyen": "van-yen", "xa": "Xã Xuân Ái", "dienTich": 63, "huongPhatTrien": "Giai đoạn II mở rộng sau 2030" },
+    { "stt": 30, "ten": "CCN Văn Chấn", "huyen": "van-chan", "xa": "Xã Văn Chấn", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2031-2050" },
+    { "stt": 31, "ten": "CCN Châu Quế", "huyen": "van-yen", "xa": "Xã Châu Quế", "dienTich": 75, "huongPhatTrien": "Giai đoạn 2031-2050" }
   ]
 }
