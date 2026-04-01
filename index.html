@@ -384,6 +384,7 @@
     <!-- App Logic -->
     <script src="app.js"></script>
     <script>
+      // Xử lý token xác nhận từ email (đặt mật khẩu, xác nhận tài khoản)
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", user => {
           if (!user) {
@@ -392,6 +393,16 @@
             });
           }
         });
+        // Tự động mở hộp thoại khi có token trong URL (từ email)
+        const hash = window.location.hash;
+        if (hash && (
+          hash.includes('confirmation_token') ||
+          hash.includes('recovery_token') ||
+          hash.includes('invite_token') ||
+          hash.includes('access_token')
+        )) {
+          window.netlifyIdentity.open();
+        }
       }
     </script>
 
