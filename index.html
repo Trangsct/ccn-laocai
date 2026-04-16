@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Bản đồ quản lý các cụm công nghiệp trên địa bàn tỉnh Lào Cai. Tra cứu thông tin, vị trí, quy hoạch và tình hình hoạt động của các cụm công nghiệp.">
-    <meta name="keywords" content="cụm công nghiệp, Lào Cai, bản đồ, quy hoạch, đầu tư, khu công nghiệp">
+    <meta name="description" content="Cổng thông tin Khu, Cụm công nghiệp tỉnh Lào Cai. Tra cứu thông tin, vị trí, quy hoạch và tình hình hoạt động.">
+    <meta name="keywords" content="khu công nghiệp, cụm công nghiệp, Lào Cai, bản đồ, quy hoạch, đầu tư">
     <meta name="author" content="Sở Công Thương tỉnh Lào Cai">
-    <title>BẢN ĐỒ CỤM CÔNG NGHIỆP TỈNH LÀO CAI</title>
+    <title>Khu, Cụm công nghiệp tỉnh Lào Cai - Sở Công Thương</title>
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -23,93 +23,234 @@
 </head>
 <body>
 
-    <!-- ============ HEADER BANNER ============ -->
+    <!-- ============ HEADER ============ -->
     <header class="header" id="header">
         <div class="header-content">
-            <!-- Logo -->
             <div class="header-logo">
                 <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Stylized LC logo for Lao Cai -->
                     <circle cx="50" cy="50" r="44" stroke="white" stroke-width="3" fill="rgba(255,255,255,0.1)"/>
                     <path d="M30 30 L30 70 L55 70" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                     <path d="M75 35 C75 30, 65 25, 55 30 C50 33, 50 38, 55 42 C60 46, 75 48, 75 55 C75 65, 60 72, 50 68" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
                     <text x="50" y="92" text-anchor="middle" fill="white" font-size="10" font-family="Montserrat" font-weight="700" letter-spacing="3">LÀO CAI</text>
                 </svg>
             </div>
-
-            <!-- Title -->
             <div class="header-text">
                 <div class="header-subtitle">Sở Công Thương tỉnh Lào Cai</div>
-                <h1 class="header-title">
-                    BẢN ĐỒ CỤM CÔNG NGHIỆP
-                    <span>TỈNH LÀO CAI</span>
-                </h1>
+                <h1 class="header-title">THÔNG TIN KHU, CỤM CÔNG NGHIỆP TỈNH LÀO CAI</h1>
             </div>
-
-            <!-- Quick Stats -->
             <div class="header-stats">
-                <div class="header-stat">
-                    <div class="header-stat-number" id="header-total-ccn">54</div>
-                    <div class="header-stat-label">Tổng Cụm theo Quy Hoạch</div>
-                </div>
-                <div class="header-stat">
-                    <div class="header-stat-number" id="header-total-dn">97</div>
-                    <div class="header-stat-label">Doanh nghiệp</div>
-                </div>
-                <div class="header-stat">
-                    <div class="header-stat-number" id="header-total-dt">448.5</div>
-                    <div class="header-stat-label">Diện tích (ha)</div>
-                </div>
+                <div class="header-stat"><div class="header-stat-number">20</div><div class="header-stat-label">KCN (QH 2030)</div></div>
+                <div class="header-stat"><div class="header-stat-number">23</div><div class="header-stat-label">CCN đã TL (904 ha)</div></div>
+                <div class="header-stat"><div class="header-stat-number">31</div><div class="header-stat-label">CCN chưa TL</div></div>
+                <div class="header-stat"><div class="header-stat-number">461+</div><div class="header-stat-label">Dự án đầu tư</div></div>
             </div>
         </div>
     </header>
 
-    <!-- ============ FILTER BAR ============ -->
-    <div class="filter-bar" id="filter-bar">
-        <div class="filter-content">
-            <!-- Search -->
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" placeholder="Tìm kiếm CCN..." autocomplete="off">
+    <!-- ============ MAIN NAV ============ -->
+    <nav class="main-nav" id="main-nav">
+        <div class="nav-inner">
+            <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
+            <div class="nav-menu" id="ccn-sidebar">
+                <button class="sidebar-close" id="sidebar-close" onclick="closeSidebar()">&times;</button>
+                <!-- 1. Trang chủ -->
+                <button class="nav-item active" data-tab="dashboard" id="tab-dashboard">🏠 Trang chủ</button>
+                <!-- 2. KCN dropdown -->
+                <div class="nav-dropdown">
+                    <button class="nav-item nav-has-sub">🏭 Khu CN <span class="arrow">▾</span></button>
+                    <div class="nav-sub">
+                        <button class="nav-item" data-tab="kcn" id="tab-kcn">🗺️ Bản đồ KCN</button>
+                        <button class="nav-item" data-tab="listkcn" id="tab-listkcn">📋 Danh sách KCN</button>
+                    </div>
+                </div>
+                <!-- 3. CCN dropdown -->
+                <div class="nav-dropdown">
+                    <button class="nav-item nav-has-sub">📦 Cụm CN <span class="arrow">▾</span></button>
+                    <div class="nav-sub">
+                        <button class="nav-item" data-tab="map" id="tab-map">🗺️ Bản đồ CCN đã TL (23)</button>
+                        <button class="nav-item" data-tab="ccnqh" id="tab-ccnqh">🗺️ Bản đồ CCN QH (31)</button>
+                        <button class="nav-item" data-tab="list" id="tab-list">📋 Danh sách CCN đã TL</button>
+                        <button class="nav-item" data-tab="listqh" id="tab-listqh">📋 Danh sách CCN chưa TL</button>
+                    </div>
+                </div>
+                <!-- 4. Văn bản -->
+                <button class="nav-item" data-tab="vanban" id="tab-vanban">📜 Văn bản</button>
+                <!-- 5. Tin tức -->
+                <button class="nav-item" data-tab="tintuc" id="tab-tintuc">📰 Tin tức</button>
             </div>
-
-            <!-- Filter by Status -->
-
-            <!-- Filter by Status -->
-            <select class="filter-select" id="trangthai-select">
-                <option value="all">Tất cả trạng thái</option>
-            </select>
-
-            <!-- Action Buttons -->
-            <button class="filter-btn filter-btn-primary" onclick="document.querySelector('.nav-tab[data-tab=\'quyhoach\']').click()">
-                📋 Quy hoạch tổng thể
-            </button>
-            <button class="filter-btn filter-btn-outline" onclick="showHuongDanDauTu()">
-                📝 Hướng dẫn thủ tục đầu tư
-            </button>
+            <!-- Search -->
+            <div class="search-box nav-search">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Tìm kiếm..." autocomplete="off">
+            </div>
         </div>
-    </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    <!-- ============ NAVIGATION TABS ============ -->
-    <div class="nav-tabs">
-        <div class="nav-tabs-content">
-            <button class="nav-tab active" data-tab="map" id="tab-map">
-                🗺️ Bản đồ
-            </button>
-            <button class="nav-tab" data-tab="list" id="tab-list">
-                📋 Danh sách CCN
-            </button>
-            <button class="nav-tab" data-tab="quyhoach" id="tab-quyhoach">
-                ⏳ CCN Quy hoạch (Chưa ĐT)
-            </button>
-        </div>
+    <!-- ============ BOTTOM NAV (Mobile) ============ -->
+    <div class="bottom-nav" id="bottom-nav">
+        <button class="bottom-nav-item active" data-tab="dashboard">🏠<span>Trang chủ</span></button>
+        <button class="bottom-nav-item" data-tab="kcn">🏭<span>Khu CN</span></button>
+        <button class="bottom-nav-item" data-tab="map">📦<span>Cụm CN</span></button>
+        <button class="bottom-nav-item" data-tab="vanban">📜<span>Văn bản</span></button>
+        <button class="bottom-nav-item" data-tab="tintuc">📰<span>Tin tức</span></button>
     </div>
 
     <!-- ============ MAIN CONTENT ============ -->
     <main class="main-container">
 
+        <!-- === DASHBOARD === -->
+        <section id="dashboard-section">
+            <div style="max-width:1200px; margin:0 auto; padding:24px 16px;">
+                <!-- Quick Stats Cards -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:28px;">
+                    <div onclick="document.querySelector('[data-tab=kcn]').click()" style="cursor:pointer; background:linear-gradient(135deg,#0d47a1,#1565c0); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(13,71,161,0.3);">
+                        <div style="font-size:2.2rem; font-weight:800;">20</div>
+                        <div style="font-size:0.95rem; opacity:0.9;">Khu công nghiệp</div>
+                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">7 đã TL + 14 chưa TL - 1 rút QH</div>
+                    </div>
+                    <div onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer; background:linear-gradient(135deg,#2e7d32,#43a047); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(46,125,50,0.3);">
+                        <div style="font-size:2.2rem; font-weight:800;">23</div>
+                        <div style="font-size:0.95rem; opacity:0.9;">CCN đã thành lập</div>
+                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">904 ha | 233 dự án | 16 đang HĐ</div>
+                    </div>
+                    <div onclick="document.querySelector('[data-tab=quyhoach]').click()" style="cursor:pointer; background:linear-gradient(135deg,#e65100,#f57c00); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(230,81,0,0.3);">
+                        <div style="font-size:2.2rem; font-weight:800;">31</div>
+                        <div style="font-size:0.95rem; opacity:0.9;">CCN chưa thành lập</div>
+                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">Đang thu hút đầu tư hạ tầng</div>
+                    </div>
+                    <div onclick="document.querySelector('[data-tab=vanban]').click()" style="cursor:pointer; background:linear-gradient(135deg,#4a148c,#7b1fa2); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(74,20,140,0.3);">
+                        <div style="font-size:2.2rem; font-weight:800;">5</div>
+                        <div style="font-size:0.95rem; opacity:0.9;">Văn bản pháp quy</div>
+                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">NQ34, KH134, Quy chế, Luật ĐT 2025</div>
+                    </div>
+                </div>
+
+                <!-- 2 Cards: KCN + CCN -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px;">
+                    <div onclick="document.querySelector('[data-tab=kcn]').click()" style="cursor:pointer; background:#fff; border-radius:12px; padding:24px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:transform 0.2s;">
+                        <h3 style="color:#0d47a1; font-size:1.15rem; margin:0 0 12px;">🏭 Khu công nghiệp (KCN)</h3>
+                        <p style="color:#555; font-size:0.92rem; line-height:1.6; margin:0 0 8px;"><b>20 KCN</b> theo QH đến 2030 (5.797 ha): 07 đã thành lập (2.139 ha, 228 DA) + 14 chưa thành lập − 01 rút khỏi QH (Đông Phố Mới).</p>
+                        <p style="color:#555; font-size:0.85rem; margin:0 0 12px;">Hiện tại: 6 đang HĐ, 1 đang XD (Trấn Yên), 14 đang thu hút đầu tư</p>
+                        <span style="color:#0d47a1; font-weight:600; font-size:0.9rem;">Xem bản đồ KCN →</span>
+                    </div>
+                    <div onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer; background:#fff; border-radius:12px; padding:24px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:transform 0.2s;">
+                        <h3 style="color:#2e7d32; font-size:1.15rem; margin:0 0 12px;">📦 Cụm công nghiệp (CCN)</h3>
+                        <p style="color:#555; font-size:0.92rem; line-height:1.6; margin:0 0 8px;">23 CCN đã thành lập (904 ha), thu hút 233 dự án, tổng vốn 8.170 tỷ đồng. 31 CCN chưa thành lập đang thu hút nhà đầu tư hạ tầng.</p>
+                        <p style="color:#555; font-size:0.85rem; margin:0 0 12px;">QH đến 2030: <b>54 CCN (2.928 ha)</b> | Tầm nhìn 2050: <b>62 CCN (3.779 ha)</b></p>
+                        <span style="color:#2e7d32; font-weight:600; font-size:0.9rem;">Xem bản đồ CCN →</span>
+                    </div>
+                </div>
+
+                <!-- Giới thiệu tóm tắt -->
+                <div style="background:#fff; border-radius:12px; padding:24px; border:1px solid #ddd; margin-bottom:28px;">
+                    <h3 style="color:var(--primary); font-size:1.15rem; margin:0 0 12px;">📖 Giới thiệu</h3>
+                    <p style="color:#333; font-size:0.95rem; line-height:1.8; margin:0; text-align:justify;">Tỉnh Lào Cai hiện có <b>07 KCN đã thành lập</b> (2.139 ha, 228 DA) và <b>23 CCN đã thành lập</b> (904 ha, 233 DA, vốn 8.170 tỷ). Theo QH tỉnh (QĐ 525/2026), đến 2030 phát triển lên <b>20 KCN</b> (= 7 đã TL + 14 chưa TL − 1 rút QH, tổng <b>5.797 ha</b>) và <b>54 CCN</b> (tổng <b>2.928 ha</b>). Tầm nhìn 2050: <b>22 KCN (8.078 ha)</b> và <b>62 CCN (3.779 ha)</b>. Nghị quyết 34-NQ/TU xác định phát triển khu, cụm công nghiệp là đột phá chiến lược để đưa cơ cấu CN-XD chiếm 45,3% GRDP vào năm 2030.</p>
+                    <button class="nav-item" data-tab="gioithieu" style="margin-top:12px; color:var(--primary); font-weight:600; background:none; border:none; cursor:pointer; padding:0; font-size:0.9rem;">Đọc thêm →</button>
+                </div>
+
+                <!-- Quick links -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                    <button class="nav-item" data-tab="vanban" style="background:#f0f6ff; border:1px solid #c3d9f7; border-radius:10px; padding:16px; text-align:center; cursor:pointer; font-size:0.9rem; font-weight:600; color:#1565c0;">📜 Quy chế quản lý CCN</button>
+                    <button onclick="showHuongDanDauTu()" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px; text-align:center; cursor:pointer; font-size:0.9rem; font-weight:600; color:#16a34a; font-family:inherit;">📝 Hướng dẫn thủ tục đầu tư</button>
+                    <a href="https://bando.laocai.gov.vn/" target="_blank" style="background:#fef9c3; border:1px solid #fde68a; border-radius:10px; padding:16px; text-align:center; font-size:0.9rem; font-weight:600; color:#92400e; text-decoration:none; display:block;">🗺️ Bản đồ tỉnh Lào Cai</a>
+                    <a href="https://sct.laocai.gov.vn" target="_blank" style="background:#fce4ec; border:1px solid #f8bbd0; border-radius:10px; padding:16px; text-align:center; font-size:0.9rem; font-weight:600; color:#c62828; text-decoration:none; display:block;">🌐 Sở Công Thương Lào Cai</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- === DANH SACH KCN TONG HOP === -->
+        <section class="ccn-section" id="listkcn-section" style="display:none;">
+            <div class="section-header" style="margin-top:20px;">
+                <h2 class="section-title">Danh sách 21 Khu công nghiệp (QH đến 2030: 20 KCN = 21 - 1 rút QH)</h2>
+            </div>
+            <div class="ccn-grid" id="kcn-grid">
+                <!-- Rendered by JS -->
+            </div>
+        </section>
+
+        <!-- === GIOI THIEU SECTION === -->
+        <section class="doc-section" id="gioithieu-section" style="display: none;">
+            <div style="max-width:860px; margin:0 auto; padding:20px 0; font-family:'Times New Roman', Times, serif;">
+                <div style="text-align:center; margin-bottom:32px;">
+                    <h2 style="font-size:1.6rem; color:#c62828; font-weight:700; text-transform:uppercase; line-height:1.5; margin-bottom:4px;">Tổng quan về Khu công nghiệp, Cụm công nghiệp</h2>
+                    <h3 style="font-size:1.3rem; color:#c62828; font-weight:700; text-transform:uppercase; margin:0;">trên địa bàn tỉnh Lào Cai</h3>
+                </div>
+
+                <div style="font-size:1.25rem; line-height:2; color:#222; text-align:justify;">
+
+                    <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">I. GIỚI THIỆU CHUNG</h3>
+
+                    <p style="text-indent:2em;">Lào Cai là tỉnh miền núi biên giới phía Bắc, có vị trí địa chiến lược là cửa ngõ giao thương với Trung Quốc qua cửa khẩu quốc tế Lào Cai. Với địa hình trải dài theo các thung lũng sông Hồng, sông Chảy, tài nguyên khoáng sản phong phú (Apatit, sắt, đồng, cao lanh) cùng lợi thế về nông lâm sản, Lào Cai hội tụ đủ điều kiện để phát triển hệ thống khu công nghiệp (KCN) và cụm công nghiệp (CCN) đa dạng.</p>
+
+                    <p style="text-indent:2em;">Thực hiện Nghị quyết số 34-NQ/TU của Ban Chấp hành Đảng bộ tỉnh về phát triển khu, cụm công nghiệp; Quyết định số 525/QĐ-UBND ngày 25/02/2026 của Chủ tịch UBND tỉnh về phê duyệt điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030, tầm nhìn đến năm 2050; Kế hoạch số 134 ngày 26/3/2026 của UBND tỉnh triển khai thực hiện Nghị quyết 34, hệ thống KCN, CCN tỉnh Lào Cai đang đứng trước giai đoạn phát triển mang tính đột phá.</p>
+
+                    <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">II. HIỆN TRẠNG KHU CÔNG NGHIỆP</h3>
+
+                    <p style="text-indent:2em;">Đến năm 2025, toàn tỉnh có <b>07 khu công nghiệp</b> đã được thành lập với tổng diện tích <b>2.138,89 ha</b>, thu hút tổng cộng <b>228 dự án</b> đầu tư. Tỷ lệ lấp đầy bình quân đạt khoảng 85-95%. Cụ thể:</p>
+
+                    <p style="text-indent:2em;">- <b>KCN Đông Phố Mới</b> (100 ha): 41 DA, lấp đầy trên 90%. Đang thực hiện di dời phục vụ dự án đường sắt tốc độ cao Lào Cai - Hà Nội - Hải Phòng.</p>
+                    <p style="text-indent:2em;">- <b>KCN Bắc Duyên Hải</b> (85 ha): 63 DA, lấp đầy trên 90%. Sẽ chuyển đổi chức năng theo QH Khu kinh tế cửa khẩu Lào Cai đến 2045.</p>
+                    <p style="text-indent:2em;">- <b>KCN Tằng Loỏng</b> (1.100 ha): KCN tuyển khoáng, luyện kim, hóa chất lớn nhất cả nước. 29 DA, lấp đầy 85%.</p>
+                    <p style="text-indent:2em;">- <b>KCN Phía Nam</b> (400 ha): 66 DA, lấp đầy 91,54%. Đa ngành, 12 DA FDI.</p>
+                    <p style="text-indent:2em;">- <b>KCN Âu Lâu</b> (120 ha): 12 DA, lấp đầy 84,15%.</p>
+                    <p style="text-indent:2em;">- <b>KCN Minh Quân</b> (75 ha): 17 DA, lấp đầy 94,65% — cao nhất trong các KCN.</p>
+                    <p style="text-indent:2em;">- <b>KCN Trấn Yên</b> (339 ha): Phê duyệt chủ trương đầu tư GĐ I (254,59 ha) theo QĐ 1438/TTg. Đang triển khai san nền.</p>
+
+                    <p style="text-indent:2em;"><b>Đánh giá:</b> Quỹ đất trống trong các KCN đã thành lập còn rất ít (tổng cộng dưới 50 ha). KCN Đông Phố Mới sắp phải di dời. Một số KCN chưa hoàn thiện hạ tầng xử lý nước thải tập trung.</p>
+
+                    <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">III. HIỆN TRẠNG CỤM CÔNG NGHIỆP</h3>
+
+                    <p style="text-indent:2em;">Đến đầu năm 2026, trên địa bàn tỉnh có <b>23 cụm công nghiệp</b> đã được thành lập với tổng diện tích <b>903,78 ha</b>. Phân loại theo chủ đầu tư: 15 CCN do UBND cấp xã quản lý (448,46 ha); 01 CCN do Ban QLDA ĐTXD khu vực Trấn Yên (CCN Yên Hợp GĐ I, 12 ha); 07 CCN do doanh nghiệp làm chủ đầu tư (Phú Thịnh 1, 2, 3, Minh Quân, Y Can, Thống Nhất I, Bảo Minh).</p>
+
+                    <p style="text-indent:2em;">Tổng cộng đã thu hút <b>233 dự án</b> đăng ký đầu tư với tổng mức đầu tư <b>8.170 tỷ đồng</b>. Trong đó: 198 DA đã đi vào hoạt động (85%); 32 DA đang triển khai xây dựng (13,7%); 03 DA tạm dừng (1,3%).</p>
+
+                    <p style="text-indent:2em;">Các CCN có tỷ lệ lấp đầy cao: CCN Đầm Hồng (100%), CCN Bắc Duyên Hải (100%, 104 cơ sở), CCN Đông Phố Mới (100%), CCN Sơn Mãn (100%), CCN Âu Lâu (90,64%).</p>
+
+                    <p style="text-indent:2em;"><b>Hạn chế:</b> Chưa có CCN nào có hệ thống xử lý nước thải tập trung. Nhiều CCN mới thành lập đang GPMB, chưa có mặt bằng sạch. Năng lực quản lý CCN cấp xã còn hạn chế.</p>
+
+                    <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">IV. QUY HOẠCH ĐẾN NĂM 2030, TẦM NHÌN ĐẾN NĂM 2050</h3>
+
+                    <h4 style="font-size:1.1rem; font-weight:700; margin:20px 0 8px; text-indent:2em;">1. Khu công nghiệp</h4>
+
+                    <p style="text-indent:2em;">Đến năm 2030, toàn tỉnh phấn đấu có <b>20 KCN</b> với tổng diện tích khoảng <b>5.797 ha</b> (= 07 đã thành lập + 14 chưa thành lập − 01 rút khỏi QH). Cụ thể:</p>
+                    <p style="text-indent:2em;">- Giữ nguyên 07 KCN (02 đã TL + 05 chưa TL), tổng DT 1.871 ha.</p>
+                    <p style="text-indent:2em;">- Điều chỉnh tăng diện tích 04 KCN đã TL và 01 KCN chưa TL.</p>
+                    <p style="text-indent:2em;">- Điều chỉnh giảm diện tích 02 KCN (Cốc Mỳ-Trịnh Tường, Minh Quân).</p>
+                    <p style="text-indent:2em;">- Bổ sung mới 06 KCN (1.126 ha): Bát Xát, Cam Đường, Thống Nhất, Việt Hồng 1, Việt Hồng 2, Phú Xuân 1.</p>
+                    <p style="text-indent:2em;">- Đẩy nhanh tiến độ KCN Phú Xuân (300 ha) từ sau 2030 lên 2026-2030.</p>
+                    <p style="text-indent:2em;">- Đưa ra khỏi QH: KCN Đông Phố Mới (100 ha) — di dời phục vụ đường sắt tốc độ cao.</p>
+
+                    <p style="text-indent:2em;">Tầm nhìn 2050: <b>22 KCN</b> với tổng diện tích khoảng <b>8.078 ha</b>. Bổ sung thêm KCN Cam Cọn (200 ha) và KCN Châu Quế (300 ha).</p>
+
+                    <h4 style="font-size:1.1rem; font-weight:700; margin:20px 0 8px; text-indent:2em;">2. Cụm công nghiệp</h4>
+
+                    <p style="text-indent:2em;">Đến năm 2030, toàn tỉnh phấn đấu có <b>54 CCN</b> với tổng diện tích khoảng <b>2.928 ha</b>. Cụ thể:</p>
+                    <p style="text-indent:2em;">- Giữ nguyên 20 CCN (12 đã TL + 08 chưa TL), tổng DT 1.056,64 ha.</p>
+                    <p style="text-indent:2em;">- Điều chỉnh tăng diện tích 12 CCN.</p>
+                    <p style="text-indent:2em;">- Đưa ra khỏi QH 13 CCN (06 đã TL + 07 chưa TL, tổng 310 ha). Trong đó CCN Đầm Hồng, Đông Phố Mới, Sơn Mãn di dời phục vụ đường sắt; CCN Thống Nhất 2, 3 chuyển thành KCN.</p>
+                    <p style="text-indent:2em;">- Bổ sung mới 17 CCN (970 ha).</p>
+                    <p style="text-indent:2em;">- Điều chỉnh tiến độ 03 CCN từ sau 2030 lên 2026-2030 (190 ha).</p>
+
+                    <p style="text-indent:2em;">Tầm nhìn 2050: <b>62 CCN</b> với tổng diện tích khoảng <b>3.779 ha</b>.</p>
+
+                    <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">V. ĐÁNH GIÁ TỔNG QUÁT VÀ TRIỂN VỌNG</h3>
+
+                    <p style="text-indent:2em;">Tổng hợp đến đầu năm 2026: <b>07 KCN</b> (2.138,89 ha) và <b>23 CCN</b> (903,78 ha) đã thành lập, tổng diện tích trên <b>3.042 ha</b>. Thu hút trên <b>460 dự án/cơ sở</b> với tổng vốn đăng ký hàng chục nghìn tỷ đồng, tạo việc làm cho hàng nghìn lao động.</p>
+
+                    <p style="text-indent:2em;">Với quy hoạch mở rộng lên <b>20 KCN (5.797 ha)</b> và <b>54 CCN (2.928 ha)</b> vào năm 2030, tổng quỹ đất công nghiệp tăng gấp gần 3 lần. Tầm nhìn 2050: <b>22 KCN (8.078 ha)</b> và <b>62 CCN (3.779 ha)</b>. Đây là dư địa rất lớn cho phát triển công nghiệp, thực hiện mục tiêu Nghị quyết 34 đưa cơ cấu Công nghiệp - Xây dựng chiếm <b>45,3% GRDP</b>, tăng trưởng GRDP bình quân từ 11%/năm trở lên.</p>
+
+                    <p style="text-indent:2em;">Mỗi KCN, CCN được lấp đầy không chỉ mang ý nghĩa về thành tích kinh tế mà còn tạo hàng trăm, hàng nghìn việc làm cho người dân địa phương, đóng góp nguồn thu ngân sách để tái đầu tư cho hạ tầng xã hội, góp phần đưa Lào Cai trở thành tỉnh phát triển khá trong vùng Trung du và Miền núi phía Bắc.</p>
+
+                    <div style="margin-top:28px; padding-top:16px; border-top:1px solid #ddd; font-size:0.95rem; font-style:italic; color:#666;">
+                        <p>Nguồn: Báo cáo tình hình phát triển KCN, CCN tỉnh Lào Cai (Sở Công Thương, tháng 4/2026); Quyết định số 525/QĐ-UBND ngày 25/02/2026; Nghị quyết 34-NQ/TU; Kế hoạch số 134 ngày 26/3/2026 của UBND tỉnh.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- === MAP SECTION === -->
-        <section id="map-section">
+        <section id="map-section" style="display:none;">
             <div id="map-container">
                 <div id="map"></div>
 
@@ -138,17 +279,23 @@
                     </div>
                 </div>
             </div>
+            <!-- Filter below map -->
+            <div style="padding: 10px 16px; background:#f8f9fa; border-top:1px solid #e0e0e0;">
+                <select class="filter-select" id="trangthai-select" style="width:220px;">
+                    <option value="all">Tất cả trạng thái</option>
+                </select>
+            </div>
         </section>
 
         <!-- === STATS BAR === -->
-        <section class="stats-bar" id="stats-section">
+        <section class="stats-bar" id="stats-section" style="display:none;">
             <div class="stats-content" id="stats-content">
                 <!-- Rendered by JS -->
             </div>
         </section>
 
         <!-- === CCN LIST SECTION === -->
-        <section class="ccn-section" id="list-section">
+        <section class="ccn-section" id="list-section" style="display:none;">
             <div class="section-header">
                 <h2 class="section-title">Phân tích & Thống kê Cụm Công nghiệp</h2>
             </div>
@@ -176,10 +323,72 @@
             </div>
         </section>
 
-        <!-- === QUY HOACH UNINVESTED SECTION === -->
+        <!-- === BAN DO CCN QUY HOACH === -->
+        <section id="ccnqh-section" style="display: none;">
+            <div id="ccnqh-map-container" style="position:relative;">
+                <div id="ccnqh-map" style="height:65vh; min-height:450px; width:100%;"></div>
+                <div class="map-legend" style="z-index:800;">
+                    <h4>31 CCN chưa thành lập</h4>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #1565c0;"></div>
+                        <span>Vị trí QH</span>
+                        <span class="legend-count">31</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng 31 CCN phía dưới bản đồ -->
+            <div class="section-header" style="margin-top:20px; padding:0 16px;">
+                <h2 class="section-title" style="font-size:1.4rem;">Danh sách 31 Cụm công nghiệp chưa thành lập (Quy hoạch đến 2030)</h2>
+                <button class="filter-btn" style="background:#27ae60; color:white; font-size:0.8rem; padding:6px 14px;" onclick="exportToExcel()">
+                    📊 Xuất Excel (31 cụm)
+                </button>
+            </div>
+            <div style="padding:0 16px;">
+                <div class="doc-table" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:50px; text-align:center;">STT</th>
+                                <th style="width:200px">Tên CCN</th>
+                                <th style="width:200px">Xã / Phường</th>
+                                <th style="width:120px; text-align:right;">Diện tích QH (ha)</th>
+                                <th>Hướng phát triển / Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ccnqh-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem; font-style: italic;">
+                    Nguồn: Phương án Quy hoạch CCN (QĐ 525/QĐ-UBND ngày 25/02/2026). Báo cáo địa phương ngày 02/4/2026.
+                </div>
+            </div>
+        </section>
+
+        <!-- === DANH SACH CCN CHUA TL === -->
+        <section class="ccn-section" id="listqh-section" style="display:none;">
+            <div class="section-header" style="margin-top:20px;">
+                <h2 class="section-title">Danh sách 31 CCN chưa thành lập</h2>
+            </div>
+            <div class="ccn-grid" id="ccnqh-grid">
+                <!-- Rendered by JS -->
+            </div>
+        </section>
+
+        <!-- === QUY HOACH UNINVESTED SECTION (legacy, hidden) === -->
         <section class="doc-section" id="quyhoach-section" style="display: none;">
+            <div style="margin-top:20px; margin-bottom:32px; text-align:center; padding:32px; background:#f0f6ff; border-radius:12px; border:1px solid #c3d9f7;">
+                <div style="font-size:1.1rem; font-weight:600; color:#1565c0; margin-bottom:8px;">Quy hoạch tổng thể tỉnh Lào Cai 2021–2030, tầm nhìn đến 2050</div>
+                <div style="color:#555; font-size:0.9rem; margin-bottom:20px;">Quyết định phê duyệt điều chỉnh Quy hoạch tỉnh Lào Cai</div>
+                <a href="https://laocai.gov.vn/quy-hoach-phat-trien-ktxh/phe-duyet-dieu-chinh-quy-hoach-tinh-lao-cai-thoi-ky-2021-2030-tam-nhin-den-nam-2050-1569025" target="_blank"
+                   style="background:#1565c0;color:white;padding:12px 28px;border-radius:8px;font-size:1rem;font-weight:600;text-decoration:none;display:inline-block;">
+                    🔗 Mở trang đầy đủ
+                </a>
+            </div>
             <div class="section-header">
-                <h2 class="section-title" style="margin-top:20px; font-size:1.4rem;">Danh sách 31 Cụm công nghiệp chờ Nhà đầu tư (Theo Quy hoạch đến 2030)</h2>
+                <h2 class="section-title" style="margin-top:20px; font-size:1.4rem;">Danh sách 31 Cụm công nghiệp chưa thành lập (Theo Quy hoạch đến 2030)</h2>
                 <button class="filter-btn" style="background:#27ae60; color:white; font-size:0.8rem; padding:6px 14px;" onclick="exportToExcel()">
                     📊 Xuất Excel (31 cụm)
                 </button>
@@ -209,6 +418,450 @@
                 </div>
             </div>
         </section>
+
+        <!-- === QUY CHE SECTION === -->
+        <section class="doc-section" id="quyche-section" style="display: none;">
+            <div style="max-width:960px; margin:0 auto; padding:20px 0;">
+                <div style="text-align:center; margin-bottom:24px;">
+                    <h2 style="font-size:1.4rem; color:var(--primary); margin-bottom:8px;">Quy chế quản lý Cụm công nghiệp trên địa bàn tỉnh Lào Cai</h2>
+                    <p style="color:#555; font-size:0.95rem;">Quyết định ban hành Quy chế quản lý CCN - Trình ngày 03/02/2026</p>
+                </div>
+
+                <!-- Link to official page -->
+                <div style="background:#f0f6ff; border:1px solid #c3d9f7; border-radius:12px; padding:24px; margin-bottom:24px; text-align:center;">
+                    <div style="font-size:1rem; font-weight:600; color:#1565c0; margin-bottom:12px;">Xem trên Cổng thông tin Sở Công Thương</div>
+                    <a href="https://sct.laocai.gov.vn/van-ban-phap-quy/quyet-dinh-ban-hanh-quy-che-quan-ly-cum-cong-nghiep-tren-dia-ban-tinh-lao-cai-1572916" target="_blank"
+                       style="background:#1565c0;color:white;padding:12px 28px;border-radius:8px;font-size:1rem;font-weight:600;text-decoration:none;display:inline-block;">
+                        🔗 Mở trang Sở Công Thương
+                    </a>
+                </div>
+
+                <!-- PDF embed -->
+                <div style="background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden; margin-bottom:24px;">
+                    <div style="background:var(--primary); color:white; padding:12px 20px; font-weight:600; font-size:0.95rem;">
+                        📄 Toàn văn Quyết định ban hành Quy chế
+                    </div>
+                    <iframe src="quyet-dinh-quy-che-ccn-lao-cai-2026.pdf" width="100%" height="800" style="border:none; display:block;"
+                        title="Quyết định ban hành Quy chế CCN tỉnh Lào Cai" class="pdf-iframe">
+                    </iframe>
+                    <div style="padding:12px 20px; background:#f8f9fa; border-top:1px solid #ddd; text-align:center;">
+                        <a href="quyet-dinh-quy-che-ccn-lao-cai-2026.pdf" target="_blank" style="color:var(--primary); font-weight:600; text-decoration:none;">
+                            📄 Xem/Tải file PDF
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Related documents -->
+                <div style="background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px;">
+                    <h3 style="font-size:1.1rem; margin-bottom:16px; color:var(--text-primary);">📚 Văn bản pháp quy liên quan</h3>
+                    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;">
+                        <li><a href="https://sct.laocai.gov.vn/van-ban-phap-quy/quyet-dinh-ban-hanh-quy-che-quan-ly-cum-cong-nghiep-tren-dia-ban-tinh-lao-cai-1572916" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:500;">📜 Quyết định ban hành Quy chế quản lý CCN tỉnh Lào Cai</a></li>
+                        <li><a href="https://vanban.chinhphu.vn/?pageid=27160&docid=212382" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:500;">📋 Nghị định 32/2024/NĐ-CP về quản lý, phát triển CCN</a></li>
+                        <li><a href="https://vanban.chinhphu.vn/?pageid=27160&docid=207676" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:500;">📋 Nghị định 139/2025/NĐ-CP sửa đổi NĐ 68/2017 về quản lý CCN</a></li>
+                        <li><a href="https://laocai.gov.vn/quy-hoach-phat-trien-ktxh/phe-duyet-dieu-chinh-quy-hoach-tinh-lao-cai-thoi-ky-2021-2030-tam-nhin-den-nam-2050-1569025" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:500;">📋 Quy hoạch tỉnh Lào Cai 2021-2030, tầm nhìn 2050</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- === NGHI QUYET 34 SECTION === -->
+        <section class="doc-section" id="nghiquyet-section" style="display: none;">
+            <div style="max-width:960px; margin:0 auto; padding:20px 0;">
+                <div style="text-align:center; margin-bottom:24px;">
+                    <h2 style="font-size:1.4rem; color:var(--primary); margin-bottom:8px;">Nghị quyết số 34 về phát triển Cụm công nghiệp</h2>
+                    <p style="color:#555; font-size:0.95rem;">Nghị quyết của Ban thường vụ Tỉnh ủy Lào Cai</p>
+                </div>
+
+                <div style="background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden; margin-bottom:24px;">
+                    <div style="background:#c62828; color:white; padding:12px 20px; font-weight:600; font-size:0.95rem;">
+                        📕 Toàn văn Nghị quyết số 34
+                    </div>
+                    <iframe src="nghi-quyet-34.pdf" width="100%" height="800" style="border:none; display:block;"
+                        title="Nghị quyết số 34" class="pdf-iframe">
+                    </iframe>
+                    <div style="padding:12px 20px; background:#f8f9fa; border-top:1px solid #ddd; text-align:center;">
+                        <a href="nghi-quyet-34.pdf" target="_blank" style="color:#c62828; font-weight:600; text-decoration:none;">
+                            📄 Xem/Tải Nghị quyết 34 (PDF)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === KE HOACH SECTION === -->
+        <section class="doc-section" id="kehoach-section" style="display: none;">
+            <div style="max-width:960px; margin:0 auto; padding:20px 0;">
+                <div style="text-align:center; margin-bottom:24px;">
+                    <h2 style="font-size:1.4rem; color:var(--primary); margin-bottom:8px;">Kế hoạch thực hiện Nghị quyết số 34</h2>
+                    <p style="color:#555; font-size:0.95rem;">Kế hoạch số 134 ngày 26/3/2026 của UBND tỉnh Lào Cai triển khai thực hiện Nghị quyết 34 về phát triển CCN</p>
+                </div>
+
+                <div style="background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden; margin-bottom:24px;">
+                    <div style="background:#2e7d32; color:white; padding:12px 20px; font-weight:600; font-size:0.95rem;">
+                        📗 Toàn văn Kế hoạch thực hiện Nghị quyết 34
+                    </div>
+                    <iframe src="ke-hoach-thuc-hien-nq34.pdf" width="100%" height="800" style="border:none; display:block;"
+                        title="Kế hoạch thực hiện NQ34" class="pdf-iframe">
+                    </iframe>
+                    <div style="padding:12px 20px; background:#f8f9fa; border-top:1px solid #ddd; text-align:center;">
+                        <a href="ke-hoach-thuc-hien-nq34.pdf" target="_blank" style="color:#2e7d32; font-weight:600; text-decoration:none;">
+                            📄 Xem/Tải Kế hoạch (PDF)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === VAN BAN SECTION (gộp tất cả tài liệu) === -->
+        <section class="doc-section" id="vanban-section" style="display: none;">
+            <div style="max-width:960px; margin:0 auto; padding:20px 0;">
+                <div style="text-align:center; margin-bottom:28px;">
+                    <h2 style="font-size:1.4rem; color:var(--primary);">Văn bản pháp quy - Tài liệu</h2>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr; gap:16px;">
+                    <!-- Quy chế -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="document.querySelector('[data-tab=quyche]').click()">
+                        <div style="font-size:2.2rem;">📜</div>
+                        <div style="flex:1;">
+                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:var(--primary);">Quy chế quản lý Cụm công nghiệp tỉnh Lào Cai</h4>
+                            <p style="margin:0; font-size:0.88rem; color:#666;">Quyết định ban hành Quy chế — Trình ngày 03/02/2026</p>
+                        </div>
+                        <span style="color:var(--primary); font-weight:600;">Xem →</span>
+                    </div>
+                    <!-- NQ34 -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="document.querySelector('[data-tab=nghiquyet]').click()">
+                        <div style="font-size:2.2rem;">📕</div>
+                        <div style="flex:1;">
+                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:#c62828;">Nghị quyết số 34 về phát triển Cụm công nghiệp</h4>
+                            <p style="margin:0; font-size:0.88rem; color:#666;">Nghị quyết của Ban thường vụ Tỉnh ủy Lào Cai</p>
+                        </div>
+                        <span style="color:#c62828; font-weight:600;">Xem →</span>
+                    </div>
+                    <!-- KH134 -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="document.querySelector('[data-tab=kehoach]').click()">
+                        <div style="font-size:2.2rem;">📗</div>
+                        <div style="flex:1;">
+                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:#2e7d32;">Kế hoạch số 134 thực hiện Nghị quyết 34</h4>
+                            <p style="margin:0; font-size:0.88rem; color:#666;">Kế hoạch số 134 ngày 26/3/2026 của UBND tỉnh Lào Cai</p>
+                        </div>
+                        <span style="color:#2e7d32; font-weight:600;">Xem →</span>
+                    </div>
+                    <!-- Hướng dẫn -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="showHuongDanDauTu()">
+                        <div style="font-size:2.2rem;">📝</div>
+                        <div style="flex:1;">
+                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:#e65100;">Hướng dẫn thủ tục đầu tư CCN</h4>
+                            <p style="margin:0; font-size:0.88rem; color:#666;">Quy trình 4 bước thành lập CCN theo Luật Đầu tư 2025</p>
+                        </div>
+                        <span style="color:#e65100; font-weight:600;">Xem →</span>
+                    </div>
+                    <!-- Bản đồ PDF -->
+                    <a href="ban-do-khu-cum-cn-2025.pdf" target="_blank" style="text-decoration:none; background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; display:flex; align-items:center; gap:16px;">
+                        <div style="font-size:2.2rem;">🗺️</div>
+                        <div style="flex:1;">
+                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:#0d47a1;">Bản đồ tổng hợp Khu, Cụm CN 2025</h4>
+                            <p style="margin:0; font-size:0.88rem; color:#666;">File PDF bản đồ tổng thể</p>
+                        </div>
+                        <span style="color:#0d47a1; font-weight:600;">Tải PDF →</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- === TIN TUC SECTION === -->
+        <section class="doc-section" id="tintuc-section" style="display: none;">
+            <div style="max-width:860px; margin:0 auto; padding:20px 0;">
+                <div style="text-align:center; margin-bottom:28px;">
+                    <h2 style="font-size:1.5rem; color:var(--primary); margin-bottom:8px; font-family:'Roboto',sans-serif;">Tin tức - Hoạt động</h2>
+                </div>
+
+                <!-- === DANH SÁCH TÓM TẮT === -->
+                <div id="news-list">
+                    <!-- Card tin 2 (mới nhất: 10/4/2026) -->
+                    <div class="news-card" onclick="openNews(2)" style="display:flex; gap:16px; background:#fff; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; cursor:pointer; transition:box-shadow 0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.05);" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.05)'">
+                        <div style="width:160px; height:100px; background:linear-gradient(135deg,#0d47a1,#1976d2); border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:2rem;">📋</div>
+                        <div style="flex:1; min-width:0;">
+                            <h3 style="font-size:1rem; font-weight:700; color:#1a2332; margin:0 0 6px; line-height:1.4;">Báo cáo tình hình triển khai Nghị quyết số 34-NQ/TU về phát triển KCN, CCN (Quý I/2026)</h3>
+                            <p style="font-size:0.85rem; color:#666; margin:0 0 6px;">📅 10/4/2026 | Sở Công Thương tỉnh Lào Cai</p>
+                            <p style="font-size:0.88rem; color:#555; margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">GTSXCN đạt 15.223,7 tỷ đồng, IIP tăng 11,78%. GPMB đạt 98,30 ha/500 ha (20% mục tiêu). CCN Bảo Minh đã thành lập. KCN Bản Qua, Võ Lao đã trình thẩm định...</p>
+                        </div>
+                    </div>
+                    <!-- Card tin 1 (02/4/2026) -->
+                    <div class="news-card" onclick="openNews(1)" style="display:flex; gap:16px; background:#fff; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; cursor:pointer; transition:box-shadow 0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.05);" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.05)'">
+                        <img src="hoi-nghi-ccn-02042026.jpg" alt="" style="width:160px; height:100px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+                        <div style="flex:1; min-width:0;">
+                            <h3 style="font-size:1rem; font-weight:700; color:#1a2332; margin:0 0 6px; line-height:1.4;">Sở Công Thương Lào Cai tổ chức Hội nghị triển khai thu hút đầu tư hạ tầng các CCN chưa có chủ đầu tư</h3>
+                            <p style="font-size:0.85rem; color:#666; margin:0 0 6px;">📅 02/4/2026 | Phòng Quản lý công nghiệp</p>
+                            <p style="font-size:0.88rem; color:#555; margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">Đ/c Hoàng Chí Hiền - Giám đốc Sở Công Thương chủ trì Hội nghị triển khai công tác thu hút đầu tư hạ tầng các CCN đã được quy hoạch nhưng chưa có chủ đầu tư...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === NỘI DUNG BÀI ĐẦY ĐỦ (ẩn mặc định) === -->
+
+                <!-- Bài 1 đầy đủ -->
+                <div id="news-detail-1" style="display:none;">
+                    <button onclick="closeNews()" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--primary); font-weight:600; margin-bottom:16px; padding:0; font-family:inherit;">← Quay lại danh sách tin</button>
+                <article style="background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden; margin-bottom:24px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    <div style="padding:32px 36px; font-family:'Times New Roman', Times, serif;">
+                        <h3 style="font-size:1.35rem; font-weight:700; color:#c62828; text-align:center; text-transform:uppercase; line-height:1.6; margin-bottom:8px;">
+                            Sở Công Thương Lào Cai tổ chức Hội nghị triển khai thu hút đầu tư hạ tầng các cụm công nghiệp chưa có chủ đầu tư
+                        </h3>
+                        <div style="text-align:center; font-size:0.95rem; color:#666; margin-bottom:24px; font-style:italic;">
+                            Ngày 02/4/2026 | Hội trường Sở Công Thương tỉnh Lào Cai
+                        </div>
+
+                        <!-- Ảnh minh họa -->
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <img src="hoi-nghi-ccn-02042026.jpg" alt="Hội nghị triển khai thu hút đầu tư hạ tầng CCN" style="max-width:100%; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+                            <p style="font-size:0.9rem; color:#666; font-style:italic; margin-top:8px;">Đ/c Hoàng Chí Hiền - Giám đốc Sở Công Thương phát biểu khai mạc Hội nghị</p>
+                        </div>
+
+                        <!-- Nội dung bản tin -->
+                        <div style="font-size:1.1rem; line-height:2; color:#222; text-align:justify;">
+                            <p style="text-indent:2em;">Sáng ngày 02/4/2026, tại Hội trường Sở Công Thương tỉnh Lào Cai, đồng chí <b>Hoàng Chí Hiền</b> - Giám đốc Sở Công Thương chủ trì Hội nghị triển khai công tác thu hút đầu tư hạ tầng các cụm công nghiệp (CCN) đã được quy hoạch nhưng chưa có chủ đầu tư trên địa bàn tỉnh. Tham dự Hội nghị có lãnh đạo UBND, Phòng Kinh tế/Phòng Kinh tế - Hạ tầng và Đô thị các xã, phường có CCN quy hoạch cùng lãnh đạo, chuyên viên Phòng Quản lý Công nghiệp thuộc Sở.</p>
+
+                            <p style="text-indent:2em;">Theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của Chủ tịch UBND tỉnh Lào Cai về phê duyệt điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030, tầm nhìn đến năm 2050, đến năm 2030, trên địa bàn tỉnh có tổng số <b>54 cụm công nghiệp</b>. Trong đó, có 17 CCN bổ sung mới với tổng diện tích khoảng 970 ha và 03 CCN được điều chỉnh tiến độ từ giai đoạn sau năm 2030 lên giai đoạn 2026-2030.</p>
+
+                            <p style="text-indent:2em;">Phát biểu khai mạc Hội nghị, Giám đốc Sở Công Thương <b>Hoàng Chí Hiền</b> nhấn mạnh: việc quy hoạch đã tạo cơ sở pháp lý vững chắc để các địa phương và nhà đầu tư triển khai. Tuy nhiên, thực tế cho thấy một số lượng đáng kể các CCN đã có trong quy hoạch nhưng đến nay vẫn chưa xác định được chủ đầu tư hạ tầng, dẫn đến quỹ đất quy hoạch công nghiệp chưa được khai thác, tiềm năng phát triển kinh tế - xã hội của địa phương chưa được phát huy tương xứng. Đây chính là <i>"nút thắt"</i> cần được tháo gỡ một cách quyết liệt, đồng bộ.</p>
+
+                            <p style="text-indent:2em;">Hội nghị được tổ chức nhằm <b>ba mục tiêu cốt lõi</b>:</p>
+                            <p style="text-indent:2em;"><i>Một là,</i> nắm bắt toàn diện hiện trạng quỹ đất, hạ tầng kỹ thuật, tình hình giải phóng mặt bằng tại từng vị trí quy hoạch CCN;</p>
+                            <p style="text-indent:2em;"><i>Hai là,</i> làm rõ những khó khăn, vướng mắc thực chất mà các địa phương và nhà đầu tư đang đối mặt;</p>
+                            <p style="text-indent:2em;"><i>Ba là,</i> cùng bàn thảo, đề xuất các giải pháp, cơ chế, chính sách đột phá để đẩy nhanh tiến độ thu hút chủ đầu tư hạ tầng CCN.</p>
+
+                            <p style="text-indent:2em;">Giám đốc Sở đề nghị UBND các xã, phường tập trung vào <b>04 nội dung trọng tâm</b>: Báo cáo trung thực, đầy đủ hiện trạng đất đai tại khu vực quy hoạch CCN (diện tích, loại đất, số hộ ảnh hưởng, tỷ lệ hộ dân tộc thiểu số, hộ nghèo); đánh giá thẳng thắn khả năng kết nối hạ tầng kỹ thuật giao thông, điện, cấp thoát nước và xác định rõ các điểm nghẽn cần đầu tư bổ sung; phân tích thực chất nguyên nhân chưa thu hút được chủ đầu tư - do hạ tầng chưa đồng bộ, xa vùng nguyên liệu, thủ tục hành chính phức tạp hay cơ chế ưu đãi chưa đủ hấp dẫn; đồng thời mạnh dạn đề xuất kiến nghị cụ thể về cơ chế, chính sách hỗ trợ.</p>
+
+                            <p style="text-indent:2em;">Tại Hội nghị, đại diện các xã, phường đã báo cáo sơ bộ phương án phát triển từng CCN trên địa bàn theo mẫu thống nhất, bao gồm: hiện trạng đất đai và khả năng giải phóng mặt bằng, phương án bố trí tái định cư, điều kiện kết nối hạ tầng kỹ thuật. Các địa phương cũng kiến nghị Sở Công Thương phối hợp với các ngành liên quan tháo gỡ một số vấn đề trọng tâm: đơn giá bồi thường giải phóng mặt bằng khi phát triển CCN theo quy hoạch; hướng dẫn trình tự, thủ tục thành lập CCN; hỗ trợ đầu tư các công trình hạ tầng phụ trợ ngoài hàng rào như đường giao thông, điện, nước kết nối vào CCN; điều chỉnh cục bộ quy hoạch chung cấp xã sau khi thực hiện mô hình chính quyền địa phương hai cấp để có cơ sở triển khai quy hoạch CCN; hỗ trợ địa phương trong công tác xúc tiến, kêu gọi nhà đầu tư.</p>
+
+                            <p style="text-indent:2em;"><b>Nghị quyết số 34-NQ/TU</b> của Ban Chấp hành Đảng bộ tỉnh và <b>Đề án 08-ĐA/TU</b> đã xác định phát triển khu, cụm công nghiệp là một trong những đột phá chiến lược để hiện thực hóa mục tiêu tăng trưởng GRDP bình quân từ 11%/năm trở lên, đưa cơ cấu Công nghiệp - Xây dựng chiếm 45,3% GRDP vào năm 2030. Mỗi CCN được lấp đầy không chỉ mang ý nghĩa về thành tích kinh tế mà còn tạo hàng trăm, hàng nghìn việc làm cho người dân địa phương, đóng góp nguồn thu ngân sách để tái đầu tư cho hạ tầng xã hội.</p>
+
+                            <p style="text-indent:2em;">Kết luận Hội nghị, Giám đốc Sở Công Thương <b>Hoàng Chí Hiền</b> khẳng định: Sở Công Thương cam kết đồng hành cùng các địa phương trong toàn bộ quá trình, từ hướng dẫn lập hồ sơ, thẩm định thủ tục đến kết nối với các nhà đầu tư tiềm năng. Trên cơ sở các ý kiến trao đổi tại Hội nghị, Sở sẽ tổng hợp, phân loại và tham mưu UBND tỉnh xem xét, giải quyết những nội dung vượt thẩm quyền, đồng thời kiến nghị lên Bộ Công Thương và các Bộ, ngành liên quan; chỉ đạo phòng chuyên môn phối hợp chặt chẽ với các cơ quan chức năng tập trung giải quyết những tồn tại, vướng mắc hiện nay, quyết tâm tạo bước đột phá trong thu hút đầu tư hạ tầng các cụm công nghiệp năm 2026 và những năm tiếp theo./.</p>
+                        </div>
+
+                        <!-- Chân bản tin -->
+                        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e0e0e0; text-align:right;">
+                            <p style="font-size:1.05rem; font-style:italic; color:#555; margin:0;"><b>Phòng Quản lý công nghiệp</b></p>
+                        </div>
+                    </div>
+                </article>
+                </div>
+
+                <!-- Bài 2 đầy đủ -->
+                <div id="news-detail-2" style="display:none;">
+                    <button onclick="closeNews()" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--primary); font-weight:600; margin-bottom:16px; padding:0; font-family:inherit;">← Quay lại danh sách tin</button>
+                <article style="background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden; margin-bottom:24px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    <div style="padding:32px 36px; font-family:'Times New Roman', Times, serif;">
+                        <h3 style="font-size:1.35rem; font-weight:700; color:#c62828; text-align:center; text-transform:uppercase; line-height:1.6; margin-bottom:8px;">
+                            Báo cáo tình hình triển khai thực hiện Nghị quyết số 34-NQ/TU về phát triển các khu công nghiệp, cụm công nghiệp trên địa bàn tỉnh Lào Cai (Quý I năm 2026)
+                        </h3>
+                        <div style="text-align:center; font-size:0.95rem; color:#666; margin-bottom:24px; font-style:italic;">
+                            Ngày 10/4/2026 | Sở Công Thương tỉnh Lào Cai
+                        </div>
+
+                        <div style="font-size:1.1rem; line-height:2; color:#222; text-align:justify;">
+
+                            <h4 style="font-size:1.1rem; color:var(--primary); font-weight:700; margin:20px 0 8px; text-indent:2em;">I. KẾT QUẢ TRIỂN KHAI THỰC HIỆN</h4>
+
+                            <p style="text-indent:2em;"><b>1. Bối cảnh kinh tế quý I/2026:</b> Giá trị sản xuất công nghiệp đạt <b>15.223,7 tỷ đồng</b> (tăng 2,01% so cùng kỳ), chỉ số IIP tăng 11,78%. Tổng mức lưu chuyển hàng hóa đạt 22.000 tỷ đồng (tăng 12%). Kim ngạch XNK đạt 758,65 triệu USD (tăng 15,9%). Tuy nhiên, chi phí đầu vào tăng cao: xăng dầu tăng 24,5-87,3%, thép tăng 34,38%.</p>
+
+                            <p style="text-indent:2em;"><b>2. Công tác tham mưu, ban hành văn bản:</b> Tham mưu ban hành Kế hoạch số 134/KH-UBND; trình ban hành Quy chế quản lý CCN; tổ chức chuỗi Hội nghị tháo gỡ khó khăn tại 04 KCN và 06 CCN trọng điểm; hoàn thành tham gia ý kiến hồ sơ KCN Bản Qua, Võ Lao; thẩm định hồ sơ CCN Bản Phùng, An Thịnh; thành lập Hội đồng lựa chọn chủ đầu tư CCN Bảo Hưng 2.</p>
+
+                            <p style="text-indent:2em;"><b>3. Hiện trạng:</b> 07 KCN (2.138,89 ha, 228 DA, lấp đầy >85%). 23 CCN (903,78 ha, 233 DA). Quỹ đất trống KCN còn rất ít (dưới 50 ha). KCN Trấn Yên (GĐ I: 254,59 ha) đang san nền.</p>
+
+                            <p style="text-indent:2em;"><b>4. GPMB và tạo mặt bằng sạch:</b> Mục tiêu NQ: 500 ha. Quý I đạt <b>98,30 ha</b> (KCN: 88,30 ha, CCN: 10 ha), đạt ~20% mục tiêu. KCN Trấn Yên đóng góp lớn nhất (82,70 ha). DT đã đền bù lũy kế 213,88 ha nhưng chủ yếu chưa san gạt thành mặt bằng sạch.</p>
+
+                            <p style="text-indent:2em;"><b>5. Thành lập mới:</b> Mục tiêu: 02 KCN + 05 CCN. Kết quả: CCN Bảo Minh đã thành lập (1/5). Hồ sơ CCN Bản Phùng đã trình UBND tỉnh. KCN Bản Qua và Võ Lao đã trình thẩm định.</p>
+
+                            <p style="text-indent:2em;"><b>6. Các nhiệm vụ khác:</b> Di dời KCN Đông Phố Mới, CCN Đông Phố Mới, CCN Sơn Mãn phục vụ đường sắt tốc độ cao. Xây dựng Đề án chuyển đổi KCN Tằng Loỏng sang KCN sinh thái. Triển khai xử lý nước thải tại 04 KCN.</p>
+
+                            <h4 style="font-size:1.1rem; color:var(--primary); font-weight:700; margin:20px 0 8px; text-indent:2em;">II. KHÓ KHĂN, VƯỚNG MẮC</h4>
+
+                            <p style="text-indent:2em;">- GPMB là khó khăn lớn nhất: đơn giá bồi thường chưa sát, vướng chồng lấn ranh giới (3 CCN Phú Thịnh với Cty Chè Văn Hưng).</p>
+                            <p style="text-indent:2em;">- Nhiều KCN/CCN mới đang hoàn thiện thủ tục pháp lý. QH chung cấp xã đang lập mới sau mô hình chính quyền hai cấp.</p>
+                            <p style="text-indent:2em;">- Chi phí đầu vào tăng đột biến. Logistics chiếm 35-40% chi phí sản xuất.</p>
+                            <p style="text-indent:2em;">- Nguồn vốn ngân sách chưa đáp ứng (nhu cầu 1.280 tỷ). Chưa có CCN nào có xử lý nước thải tập trung.</p>
+
+                            <h4 style="font-size:1.1rem; color:var(--primary); font-weight:700; margin:20px 0 8px; text-indent:2em;">III. PHƯƠNG HƯỚNG 9 THÁNG CUỐI NĂM 2026</h4>
+
+                            <p style="text-indent:2em;">- Tập trung GPMB: Quý II hoàn thành thêm 31 ha tại 3 CCN Phú Thịnh và 76,75 ha tại KCN Phía Nam.</p>
+                            <p style="text-indent:2em;">- Xử lý chồng lấn 3 CCN Phú Thịnh; đẩy nhanh đường trục IC18 → CCN Thống Nhất; nhà máy XLNT CCN Âu Lâu.</p>
+                            <p style="text-indent:2em;">- Hoàn thiện thành lập CCN Bản Phùng, Bảo Hưng 2, Yên Hợp GĐ II; KCN Bản Qua, Võ Lao trong quý II.</p>
+                            <p style="text-indent:2em;">- Hoàn thành XLNT tập trung tại 04 KCN (Tằng Loỏng, Phía Nam, Minh Quân, Âu Lâu).</p>
+                            <p style="text-indent:2em;">- Tổ chức 03 Hội nghị chuyên đề: gặp mặt chủ đầu tư khoáng sản, thủy điện; phổ biến quy chế CCN cho các xã/phường.</p>
+
+                            <h4 style="font-size:1.1rem; color:var(--primary); font-weight:700; margin:20px 0 8px; text-indent:2em;">IV. KIẾN NGHỊ, ĐỀ XUẤT</h4>
+
+                            <p style="text-indent:2em;">- <b>Tỉnh ủy:</b> Chỉ đạo cấp ủy, chính quyền cấp xã coi GPMB là nhiệm vụ chính trị trọng tâm. Cho phép Sở CT chủ trì họp liên ngành hằng tháng.</p>
+                            <p style="text-indent:2em;">- <b>UBND tỉnh:</b> Thành lập Tổ công tác GPMB trọng điểm. Bố trí đủ vốn ngân sách. Giải quyết vướng mắc đất đai, đẩy nhanh QH chung cấp xã.</p>
+                            <p style="text-indent:2em;">- <b>Trung ương:</b> Sửa đổi NĐ 32/2024; hướng dẫn NĐ 58/2025 về điện mặt trời mái nhà; ban hành QCVN trụ sạc điện ô tô để thu hút đầu tư năng lượng xanh vào KCN/CCN.</p>
+                        </div>
+
+                        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e0e0e0; text-align:right;">
+                            <p style="font-size:1.05rem; font-style:italic; color:#555; margin:0;"><b>Sở Công Thương tỉnh Lào Cai</b></p>
+                        </div>
+                    </div>
+                </article>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- === KHU CONG NGHIEP SECTION === -->
+        <section id="kcn-section" style="display: none;">
+            <!-- Bản đồ KCN -->
+            <div id="kcn-map-container" style="position:relative;">
+                <div id="kcn-map" style="height:65vh; min-height:450px; width:100%;"></div>
+                <!-- KCN Legend -->
+                <div class="map-legend" style="z-index:800;">
+                    <h4>Chú giải KCN (QH 2030: 20)</h4>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #2e7d32;"></div>
+                        <span>Đang hoạt động</span>
+                        <span class="legend-count">5</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #f57f17;"></div>
+                        <span>Đang xây dựng</span>
+                        <span class="legend-count">1</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #3949ab;"></div>
+                        <span>Quy hoạch (chưa TL)</span>
+                        <span class="legend-count">14</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #c62828;"></div>
+                        <span>Rút khỏi QH</span>
+                        <span class="legend-count">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng danh sách KCN -->
+            <section class="stats-bar">
+                <div style="max-width:1200px; margin:0 auto; padding:20px;">
+                    <h2 style="font-size:1.2rem; color:var(--text-primary); margin-bottom:16px; text-align:center;">🏭 Danh sách 07 Khu công nghiệp đã thành lập trên địa bàn tỉnh Lào Cai</h2>
+                    <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; min-width:750px; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                            <thead>
+                                <tr style="background:#0d47a1; color:#fff;">
+                                    <th style="padding:12px 10px; text-align:center; width:40px;">STT</th>
+                                    <th style="padding:12px 10px;">Tên KCN</th>
+                                    <th style="padding:12px 10px;">Vị trí</th>
+                                    <th style="padding:12px 10px; text-align:right; width:90px;">DT (ha)</th>
+                                    <th style="padding:12px 10px; width:120px;">Trạng thái</th>
+                                    <th style="padding:12px 10px;">Thông tin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">1</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Đông Phố Mới</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Phường Lào Cai, TP. Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">100</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang HĐ</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><b style="color:#c62828;">⚠️ Rút khỏi QH.</b> 41 DA, lấp đầy >90%. Di dời phục vụ ĐS tốc độ cao → KCN Bát Xát.</td>
+                                </tr>
+                                <tr style="background:#f8f9fa;">
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">2</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Bắc Duyên Hải</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Phường Lào Cai, TP. Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">85</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang HĐ</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">63 DA, lấp đầy >90%. Sẽ chuyển đổi chức năng theo QH Khu KT cửa khẩu LC 2045.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">3</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Tằng Loỏng</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Xã Tằng Loỏng, tỉnh Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">1.100</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang HĐ</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">KCN tuyển khoáng, hóa chất lớn nhất cả nước. 29 DA, lấp đầy 85%.</td>
+                                </tr>
+                                <tr style="background:#f8f9fa;">
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">4</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Phía Nam</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Phường Văn Phú, tỉnh Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">400</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang HĐ</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">66 DA, lấp đầy 91,54%. Còn 26,72 ha. Đa ngành, 12 DA FDI.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">5</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Âu Lâu</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Phường Âu Lâu, tỉnh Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">120</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang HĐ</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">12 DA, lấp đầy 84,15%. Còn 13,13 ha.</td>
+                                </tr>
+                                <tr style="background:#f8f9fa;">
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">6</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Minh Quân</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Phường Âu Lâu, tỉnh Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">75</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang HĐ</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">17 DA, lấp đầy 94,65% (cao nhất). Còn 4,01 ha.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:10px; text-align:center; border-bottom:1px solid #eee;">7</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee; font-weight:600;">KCN Trấn Yên</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">Phường Âu Lâu, tỉnh Lào Cai</td>
+                                    <td style="padding:10px; text-align:right; border-bottom:1px solid #eee;">339</td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;"><span style="background:#fef9c3;color:#b45309;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đang XD</span></td>
+                                    <td style="padding:10px; border-bottom:1px solid #eee;">GĐ I: 254,59 ha (QĐ 1438/TTg 20/11/2024). Đang san nền.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Bảng 13 KCN chưa thành lập -->
+                    <h2 style="font-size:1.2rem; color:var(--text-primary); margin:28px 0 16px; text-align:center;">📋 13 Khu công nghiệp chưa thành lập (Quy hoạch đến 2030)</h2>
+                    <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; min-width:750px; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                            <thead>
+                                <tr style="background:#1565c0; color:#fff;">
+                                    <th style="padding:12px 10px; text-align:center; width:40px;">STT</th>
+                                    <th style="padding:12px 10px;">Tên KCN</th>
+                                    <th style="padding:12px 10px;">Vị trí</th>
+                                    <th style="padding:12px 10px; text-align:right; width:90px;">DT (ha)</th>
+                                    <th style="padding:12px 10px;">Phân loại</th>
+                                    <th style="padding:12px 10px;">Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">1</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Bản Qua</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Bản Qua, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">107</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#e0e7ff;color:#4338ca;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Giữ nguyên QH</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">2</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Y Can</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Y Can, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">350</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#e0e7ff;color:#4338ca;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Giữ nguyên QH</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">3</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Đông An</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Đông An, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">350</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#e0e7ff;color:#4338ca;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Giữ nguyên QH</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">4</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Thịnh Hưng</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Yên Bình, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">104</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#e0e7ff;color:#4338ca;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Giữ nguyên QH</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">5</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Lục Yên</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Tân Lĩnh, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">221</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#e0e7ff;color:#4338ca;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Giữ nguyên QH</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">6</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Võ Lao GĐ 1</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Võ Lao, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">500</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#fef9c3;color:#92400e;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Tăng DT</span></td><td style="padding:10px;border-bottom:1px solid #eee;">Tăng từ 200 → 500 ha (+300 ha)</td></tr>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">7</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Cốc Mỳ-Trịnh Tường GĐ 1</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Trịnh Tường, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">500</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#fee2e2;color:#991b1b;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Giảm DT</span></td><td style="padding:10px;border-bottom:1px solid #eee;">Giảm từ 800 → 500 ha (-300 ha)</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">8</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Phú Xuân</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Phú Xuân, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">300</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#fef9c3;color:#92400e;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Đẩy nhanh tiến độ</span></td><td style="padding:10px;border-bottom:1px solid #eee;">Từ sau 2030 lên GĐ 2026-2030</td></tr>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">9</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Bát Xát</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Bát Xát, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">76</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Bổ sung mới</span></td><td style="padding:10px;border-bottom:1px solid #eee;">Phục vụ di chuyển từ KCN Đông Phố Mới</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">10</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Cam Đường</td><td style="padding:10px;border-bottom:1px solid #eee;">Phường Cam Đường, TP. Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">200</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Bổ sung mới</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">11</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Thống Nhất</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Gia Phú, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">150</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Bổ sung mới</span></td><td style="padding:10px;border-bottom:1px solid #eee;">Chuyển từ CCN Thống Nhất</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">12</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Việt Hồng 1</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Việt Hồng, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">300</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Bổ sung mới</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">13</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Việt Hồng 2</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Việt Hồng, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">200</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Bổ sung mới</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                                <tr style="background:#f8f9fa;"><td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">14</td><td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">KCN Phú Xuân 1</td><td style="padding:10px;border-bottom:1px solid #eee;">Xã Phú Xuân, tỉnh Lào Cai</td><td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">200</td><td style="padding:10px;border-bottom:1px solid #eee;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">Bổ sung mới</span></td><td style="padding:10px;border-bottom:1px solid #eee;">GĐ 2025-2030</td></tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background:#e3f2fd; font-weight:600;">
+                                    <td colspan="3" style="padding:12px 10px; border-top:2px solid #1565c0;">Tổng 14 KCN chưa thành lập</td>
+                                    <td style="padding:12px 10px; text-align:right; border-top:2px solid #1565c0;">3.558 ha</td>
+                                    <td colspan="2" style="padding:12px 10px; border-top:2px solid #1565c0;">5 giữ nguyên, 2 điều chỉnh DT, 1 đẩy nhanh, 6 bổ sung mới</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div style="margin-top:10px; font-size:0.85rem; color:#666; font-style:italic; text-align:center;">
+                        Nguồn: Báo cáo tình hình phát triển KCN, CCN tỉnh Lào Cai (Sở Công Thương, tháng 4/2026). QĐ 525/QĐ-UBND ngày 25/02/2026.
+                    </div>
+                    <div style="margin-top:12px; text-align:center;">
+                        <a href="ban-do-khu-cum-cn-2025.pdf" target="_blank" style="color:#0d47a1; font-weight:600; text-decoration:none; font-size:0.9rem;">📄 Xem/Tải bản đồ Khu, Cụm CN 2025 (PDF)</a>
+                    </div>
+                </div>
+            </section>
+        </section>
     </main>
 
     <!-- ============ FOOTER ============ -->
@@ -218,6 +871,7 @@
                 <h3>Sở Công Thương tỉnh Lào Cai</h3>
                 <p>📍 Số 165 - Đường Lý Thường Kiệt,<br>Phường Yên Bái, tỉnh Lào Cai</p>
                 <p>📞 Điện thoại: 02163.857.863</p>
+                <p>📱 Đ/c Trần Trọng Trang: <a href="tel:0912011358" style="color:#90caf9;">0912.011.358</a></p>
                 <p>📧 Email: contact-sct@laocai.gov.vn</p>
                 <p>🌐 Website: <a href="https://sct.laocai.gov.vn" target="_blank" style="color:#90caf9;">sct.laocai.gov.vn</a></p>
             </div>
@@ -226,29 +880,27 @@
                 <ul>
                     <li><a href="https://sct.laocai.gov.vn" target="_blank">🏠 Trang chủ Sở Công Thương</a></li>
                     <li><a href="https://dichvucong.gov.vn" target="_blank">🔧 Cổng dịch vụ công</a></li>
-                    <li><a href="https://laocaitrade.vn" target="_blank">🛒 Sàn thương mại điện tử</a></li>
-                    <li><a href="#" onclick="document.querySelector('.nav-tab[data-tab=\'quyhoach\']').click(); return false;">📋 Quy hoạch CCN</a></li>
+                    <li><a href="#" onclick="document.querySelector('[data-tab=\'quyhoach\']').click(); return false;">📋 Quy hoạch CCN</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Thông tin</h3>
                 <ul>
                     <li><a href="https://sct.laocai.gov.vn/gioi-thieu" target="_blank">🏛️ Giới thiệu Sở</a></li>
-                    <li><a href="https://sct.laocai.gov.vn/tin-tuc" target="_blank">📰 Tin tức - Thông báo</a></li>
                     <li><a href="#" onclick="showHuongDanDauTu(); return false;">📝 Thủ tục đầu tư CCN</a></li>
                     <li><a href="mailto:contact-sct@laocai.gov.vn">📩 Liên hệ</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>Lưu hành nội bộ. Bản quyền thuộc UBND tỉnh Lào Cai.</p>
+            <p>Lưu hành nội bộ.</p>
         </div>
     </footer>
 
     <!-- ============ HOTLINE BUTTON ============ -->
-    <button class="hotline-btn" onclick="window.location.href='tel:02163857863'" id="hotline-btn">
+    <button class="hotline-btn" onclick="window.location.href='tel:0912011358'" id="hotline-btn">
         📞
-        <div class="hotline-tooltip">Hotline: 02163.857.863</div>
+        <div class="hotline-tooltip">Hotline: 0912.011.358</div>
     </button>
 
     <!-- ============ SCROLL TO TOP ============ -->
@@ -271,6 +923,7 @@
             <div class="modal-body" style="background:#f8fafc;">
                 <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">I. Căn cứ pháp lý</h3>
                 <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--text-muted); line-height: 1.6;">
+                    <li>Luật Đầu tư năm 2025 (có hiệu lực từ 01/01/2026) — <b>Cụm công nghiệp không thuộc đối tượng phải cấp Quyết định chủ trương đầu tư.</b></li>
                     <li>Nghị định số 32/2024/NĐ-CP ngày 15/3/2024 của Chính phủ về quản lý, phát triển cụm công nghiệp.</li>
                     <li>Quyết định Quy chế quản lý cụm công nghiệp trên địa bàn tỉnh Lào Cai (2026).</li>
                     <li>Thông tư số 14/2024/TT-BCT của Bộ Công Thương.</li>
@@ -292,24 +945,27 @@
                     </div>
                 </div>
 
-                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">III. Quy trình 04 Bước nộp hồ sơ</h3>
+                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">III. Quy trình thành lập CCN (theo Luật Đầu tư 2025)</h3>
+                <div style="background:#fffbe6; border:1px solid #f5c518; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:0.92rem; color:#856404;">
+                    <b>Lưu ý:</b> Theo Luật Đầu tư 2025, dự án đầu tư xây dựng hạ tầng kỹ thuật cụm công nghiệp <b>không thuộc diện phải cấp Quyết định chủ trương đầu tư</b>. Nhà đầu tư thực hiện thủ tục thành lập CCN theo Nghị định 32/2024/NĐ-CP.
+                </div>
                 <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
                     <div style="display: flex; flex-direction: column; gap: 15px;">
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B1</div>
-                            <div style="flex: 1;">Chủ đầu tư nộp văn bản đề nghị làm CĐT đến <b>UBND Xã/Phường</b>.</div>
+                            <div style="flex: 1;">Chủ đầu tư nộp văn bản đề nghị làm CĐT hạ tầng kỹ thuật CCN đến <b>UBND xã/phường</b>.</div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B2</div>
-                            <div style="flex: 1;">UBND xã xin chấp thuận chủ trương đầu tư qua Sở Tài chính / UBND Tỉnh.</div>
+                            <div style="flex: 1;">UBND xã/phường & CĐT lập <b>02 bộ hồ sơ thành lập CCN</b> gửi tới <b>Sở Công Thương</b> thẩm định.</div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B3</div>
-                            <div style="flex: 1;">Xã & CĐT lập <b>02 bộ hồ sơ</b> gửi tới <b>Sở Công Thương</b> thẩm định (15 ngày nhậm + 5 ngày lập).</div>
+                            <div style="flex: 1;">Sở Công Thương chủ trì thẩm định hồ sơ (lấy ý kiến các sở, ngành liên quan — 25 ngày làm việc).</div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B4</div>
-                            <div style="flex: 1;">Sở Công Thương thẩm định (25 ngày) trình <b>UBND Tỉnh</b> quyết định (7 ngày).</div>
+                            <div style="flex: 1;">Sở Công Thương trình <b>UBND Tỉnh</b> ban hành Quyết định thành lập CCN (7 ngày làm việc).</div>
                         </div>
                     </div>
                 </div>
