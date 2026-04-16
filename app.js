@@ -545,6 +545,7 @@ function setupNavTabs() {
         'nghiquyet': document.getElementById('nghiquyet-section'),
         'kehoach': document.getElementById('kehoach-section'),
         'ccnqh': document.getElementById('ccnqh-section'),
+        'ccnranhgioi': document.getElementById('ccnranhgioi-section'),
         'listqh': document.getElementById('listqh-section'),
         'listkcn': document.getElementById('listkcn-section'),
         'vanban': document.getElementById('vanban-section'),
@@ -596,6 +597,12 @@ function setupNavTabs() {
                     if (!window.ccnqhMap) initCCNQHMap();
                     else window.ccnqhMap.invalidateSize();
                     renderCCNQHTable();
+                }, 150);
+            }
+            if (target === 'ccnranhgioi') {
+                setTimeout(() => {
+                    if (!window.ranhGioiMap) initRanhGioiMap();
+                    else window.ranhGioiMap.invalidateSize();
                 }, 150);
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -763,6 +770,66 @@ function renderCCNQHTable() {
             '</td>' +
             '</tr>';
     }).join('');
+}
+
+// ---- Ranh Giới Polygon Map ----
+function initRanhGioiMap() {
+    window.ranhGioiMap = L.map('ccnranhgioi-map', {
+        center: [22.0, 104.4],
+        zoom: 9,
+        zoomControl: false
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(window.ranhGioiMap);
+
+    var satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; Esri'
+    });
+
+    L.control.zoom({ position: 'topleft' }).addTo(window.ranhGioiMap);
+    L.control.layers({
+        '🗺️ Bản đồ': L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'),
+        '🛰️ Ảnh vệ tinh': satLayer
+    }, {}, { position: 'topright' }).addTo(window.ranhGioiMap);
+
+    fetch('ccn-polygons.json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var bounds = [];
+            data.forEach(function(item) {
+                var isKCN = item.section === 'KCN';
+                var color = isKCN ? '#c62828' : '#1565c0';
+                var fillColor = isKCN ? '#ef5350' : '#42a5f5';
+
+                var polygon = L.polygon(item.coords, {
+                    color: color,
+                    weight: 2,
+                    fillColor: fillColor,
+                    fillOpacity: 0.35
+                }).addTo(window.ranhGioiMap);
+
+                polygon.bindPopup(
+                    '<div style="min-width:220px;">' +
+                    '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' +
+                    (isKCN ? '🏭 ' : '📦 ') + item.name + '</h3>' +
+                    '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' +
+                    '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích (tính từ tọa độ):</b> ' + item.area_ha + ' ha</p>' +
+                    '<p style="margin:6px 0 0;font-size:0.8rem;color:#666;font-style:italic;">Hệ tọa độ VN-2000, KT trục 104°45\'</p>' +
+                    '</div>'
+                );
+
+                // Tooltip hiện tên khi hover
+                polygon.bindTooltip(item.name, { permanent: false, direction: 'center', className: 'polygon-label' });
+
+                item.coords.forEach(function(c) { bounds.push(c); });
+            });
+            if (bounds.length > 0) {
+                window.ranhGioiMap.fitBounds(bounds, { padding: [20, 20] });
+            }
+        })
+        .catch(function(e) { console.error('Lỗi tải polygon:', e); });
 }
 
 // ---- CCN Quy Hoach Map (31 CCN chưa thành lập) ----
