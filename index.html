@@ -372,14 +372,18 @@
             <div id="ccnranhgioi-map-container" style="position:relative;">
                 <div id="ccnranhgioi-map" style="height:70vh; min-height:500px; width:100%;"></div>
                 <div class="map-legend" style="z-index:800;">
-                    <h4>Ranh giới chính xác</h4>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background: #1565c0;"></div>
-                        <span>Ranh giới CCN</span>
-                    </div>
+                    <h4>Ranh giới KCN/CCN</h4>
                     <div class="legend-item">
                         <div class="legend-dot" style="background: #c62828;"></div>
-                        <span>Ranh giới KCN</span>
+                        <span>KCN (chính xác)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #1565c0;"></div>
+                        <span>CCN (chính xác)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #ea580c;"></div>
+                        <span>⚠️ Ranh giới tạm</span>
                     </div>
                 </div>
             </div>
@@ -387,11 +391,15 @@
                 <div style="background:#fff; border-radius:8px; padding:16px; border:1px solid #ddd;">
                     <h3 style="color:var(--primary); font-size:1.1rem; margin:0 0 8px;">🗺️ Bản đồ ranh giới chính xác (theo tọa độ VN-2000)</h3>
                     <p style="color:#555; font-size:0.9rem; margin:0 0 8px; line-height:1.6;">
-                        Bản đồ hiển thị <b>ranh giới đa giác chính xác</b> của các CCN/KCN được trích xuất từ bảng tọa độ VN-2000 (kinh tuyến trục 104°45', múi chiếu 3°) trong văn bản quy hoạch.
-                        Click vào mỗi polygon để xem thông tin chi tiết. Dùng chuột lăn để phóng to/thu nhỏ.
+                        Bản đồ hiển thị <b>ranh giới đa giác</b> các KCN/CCN được trích xuất từ bảng tọa độ VN-2000 (kinh tuyến trục 104°45', múi chiếu 3°) trong văn bản quy hoạch. Click vào mỗi polygon để xem thông tin chi tiết.
                     </p>
-                    <p style="color:#666; font-size:0.85rem; margin:0; font-style:italic;">
-                        Nguồn: Tọa độ các CCN Quy hoạch đến năm 2030 (T4/2026). Diện tích tính toán dựa trên công thức Shoelace có thể chênh lệch nhỏ so với diện tích quy hoạch công bố.
+                    <div style="background:#fff7ed; border-left:3px solid #ea580c; padding:10px 14px; margin-top:10px; border-radius:4px;">
+                        <p style="color:#9a3412; font-size:0.88rem; margin:0; line-height:1.6;">
+                            <b>⚠️ Lưu ý:</b> Các polygon màu <b style="color:#ea580c;">cam (nét đứt)</b> là <b>ranh giới tạm</b> — minh họa quy mô theo diện tích công bố do tọa độ gốc nghi có sai sót đánh máy. Sau khi có tọa độ chuẩn sẽ cập nhật lại.
+                        </p>
+                    </div>
+                    <p style="color:#666; font-size:0.82rem; margin:8px 0 0; font-style:italic;">
+                        Nguồn: Tọa độ các CCN Quy hoạch đến 2030 (T4/2026); Đề xuất danh mục dự án đầu tư 2026-2030; Bảng tọa độ CCN Thống Nhất, Phú Thịnh 1-3.
                     </p>
                 </div>
             </div>

@@ -800,28 +800,44 @@ function initRanhGioiMap() {
             var bounds = [];
             data.forEach(function(item) {
                 var isKCN = item.section === 'KCN';
+                var isApprox = item.is_approx === true;
                 var color = isKCN ? '#c62828' : '#1565c0';
                 var fillColor = isKCN ? '#ef5350' : '#42a5f5';
+                // Polygon "làm đẹp" dùng màu cam và đường nét đứt
+                if (isApprox) {
+                    color = '#ea580c';
+                    fillColor = '#fb923c';
+                }
 
                 var polygon = L.polygon(item.coords, {
                     color: color,
                     weight: 2,
                     fillColor: fillColor,
-                    fillOpacity: 0.35
+                    fillOpacity: 0.35,
+                    dashArray: isApprox ? '6, 6' : null
                 }).addTo(window.ranhGioiMap);
 
+                var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? ' ⚠️' : '');
+                var approxNote = isApprox
+                    ? '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
+                      '<b>⚠️ Ranh giới tạm (minh họa quy mô)</b><br>' +
+                      (item.reason ? 'Lý do: ' + item.reason + '<br>' : '') +
+                      'Polygon chính thức đang được rà soát. Diện tích hiển thị theo quy hoạch công bố.' +
+                      '</div>'
+                    : '';
+
                 polygon.bindPopup(
-                    '<div style="min-width:220px;">' +
-                    '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' +
-                    (isKCN ? '🏭 ' : '📦 ') + item.name + '</h3>' +
-                    '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' +
-                    '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích (tính từ tọa độ):</b> ' + item.area_ha + ' ha</p>' +
-                    '<p style="margin:6px 0 0;font-size:0.8rem;color:#666;font-style:italic;">Hệ tọa độ VN-2000, KT trục 104°45\'</p>' +
+                    '<div style="min-width:240px;max-width:320px;">' +
+                    '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + displayName + '</h3>' +
+                    '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + item.area_ha + ' ha' +
+                    (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</p>' +
+                    (!isApprox ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
+                    approxNote +
+                    '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">Hệ tọa độ VN-2000, KT trục 104°45\'</p>' +
                     '</div>'
                 );
 
-                // Tooltip hiện tên khi hover
-                polygon.bindTooltip(item.name, { permanent: false, direction: 'center', className: 'polygon-label' });
+                polygon.bindTooltip(displayName, { permanent: false, direction: 'center', className: 'polygon-label' });
 
                 item.coords.forEach(function(c) { bounds.push(c); });
             });
