@@ -46,7 +46,10 @@
         104.975157
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Thịnh Hưng"
   },
   {
     "section": "KCN",
@@ -75,7 +78,10 @@
         104.58632
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Đông An"
   },
   {
     "section": "CCN",
@@ -105,7 +111,10 @@
       ]
     ],
     "is_approx": true,
-    "reason": "Chênh 122% so với DT công bố"
+    "reason": "Chênh 122% so với DT công bố",
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Mậu A"
   },
   {
     "section": "CCN",
@@ -135,7 +144,10 @@
       ]
     ],
     "is_approx": true,
-    "reason": "Chênh 383% so với DT công bố"
+    "reason": "Chênh 383% so với DT công bố",
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Bát Xát"
   },
   {
     "section": "CCN",
@@ -212,7 +224,10 @@
         104.033383
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Lào Cai"
   },
   {
     "section": "CCN",
@@ -265,7 +280,10 @@
         104.909822
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Âu Lâu"
   },
   {
     "section": "CCN",
@@ -366,7 +384,10 @@
         104.007901
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Cam Đường"
   },
   {
     "section": "CCN",
@@ -459,7 +480,10 @@
         104.018639
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Cam Đường"
   },
   {
     "section": "CCN",
@@ -496,7 +520,10 @@
         104.513101
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Châu Quế"
   },
   {
     "section": "CCN",
@@ -541,7 +568,10 @@
         104.910411
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Bảo Ái"
   },
   {
     "section": "CCN",
@@ -578,7 +608,10 @@
         104.704204
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Mậu A"
   },
   {
     "section": "CCN",
@@ -615,7 +648,10 @@
         104.96655
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "xay-dung",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Văn Phú"
   },
   {
     "section": "CCN",
@@ -645,7 +681,10 @@
       ]
     ],
     "is_approx": true,
-    "reason": "Chênh 57% so với DT công bố"
+    "reason": "Chênh 57% so với DT công bố",
+    "trangThai": "xay-dung",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Văn Phú"
   },
   {
     "section": "CCN",
@@ -674,7 +713,10 @@
         104.974893
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "xay-dung",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Văn Phú"
   },
   {
     "section": "CCN",
@@ -704,7 +746,10 @@
       ]
     ],
     "is_approx": true,
-    "reason": "Chênh 63% so với DT công bố"
+    "reason": "Chênh 63% so với DT công bố",
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Văn Phú"
   },
   {
     "section": "CCN",
@@ -733,7 +778,10 @@
         104.968451
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Văn Phú"
   },
   {
     "section": "CCN",
@@ -762,7 +810,10 @@
         104.968734
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Phường Văn Phú"
   },
   {
     "section": "CCN",
@@ -863,7 +914,10 @@
         103.905752
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Bát Xát"
   },
   {
     "section": "CCN",
@@ -984,7 +1038,10 @@
         104.036104
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "xay-dung",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Gia Phú"
   },
   {
     "section": "CCN",
@@ -1014,7 +1071,10 @@
       ]
     ],
     "is_approx": true,
-    "reason": "Chênh 88% so với DT công bố"
+    "reason": "Chênh 88% so với DT công bố",
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Tân Hợp"
   },
   {
     "section": "CCN",
@@ -1055,7 +1115,10 @@
         104.79844
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Bảo Ái"
   },
   {
     "section": "CCN",
@@ -1088,7 +1151,10 @@
         104.660046
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Văn Chấn"
   },
   {
     "section": "CCN",
@@ -1117,7 +1183,10 @@
         104.746201
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Mậu A"
   },
   {
     "section": "CCN",
@@ -1210,7 +1279,10 @@
         104.715407
       ]
     ],
-    "is_approx": false
+    "is_approx": false,
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2031-2050",
+    "xa": "Xã Xuân Ái"
   },
   {
     "section": "CCN",
@@ -1240,6 +1312,9 @@
       ]
     ],
     "is_approx": true,
-    "reason": "Chênh 46% so với DT công bố"
+    "reason": "Chênh 46% so với DT công bố",
+    "trangThai": "quy-hoach",
+    "giaiDoan": "2025-2030",
+    "xa": "Xã Xuân Ái"
   }
 ]

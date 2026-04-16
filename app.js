@@ -772,7 +772,10 @@ function renderCCNQHTable() {
     }).join('');
 }
 
-// ---- Ranh Giới Polygon Map ----
+// ---- Ranh Giới Polygon Map with filters ----
+window.ranhGioiData = [];
+window.ranhGioiLayers = [];
+
 function initRanhGioiMap() {
     window.ranhGioiMap = L.map('ccnranhgioi-map', {
         center: [22.0, 104.4],
@@ -797,55 +800,136 @@ function initRanhGioiMap() {
     fetch('ccn-polygons.json')
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            var bounds = [];
-            data.forEach(function(item) {
-                var isKCN = item.section === 'KCN';
-                var isApprox = item.is_approx === true;
-                var color = isKCN ? '#c62828' : '#1565c0';
-                var fillColor = isKCN ? '#ef5350' : '#42a5f5';
-                // Polygon "làm đẹp" dùng màu cam và đường nét đứt
-                if (isApprox) {
-                    color = '#ea580c';
-                    fillColor = '#fb923c';
-                }
-
-                var polygon = L.polygon(item.coords, {
-                    color: color,
-                    weight: 2,
-                    fillColor: fillColor,
-                    fillOpacity: 0.35,
-                    dashArray: isApprox ? '6, 6' : null
-                }).addTo(window.ranhGioiMap);
-
-                var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? ' ⚠️' : '');
-                var approxNote = isApprox
-                    ? '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
-                      '<b>⚠️ Ranh giới tạm (minh họa quy mô)</b><br>' +
-                      (item.reason ? 'Lý do: ' + item.reason + '<br>' : '') +
-                      'Polygon chính thức đang được rà soát. Diện tích hiển thị theo quy hoạch công bố.' +
-                      '</div>'
-                    : '';
-
-                polygon.bindPopup(
-                    '<div style="min-width:240px;max-width:320px;">' +
-                    '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + displayName + '</h3>' +
-                    '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + item.area_ha + ' ha' +
-                    (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</p>' +
-                    (!isApprox ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
-                    approxNote +
-                    '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">Hệ tọa độ VN-2000, KT trục 104°45\'</p>' +
-                    '</div>'
-                );
-
-                polygon.bindTooltip(displayName, { permanent: false, direction: 'center', className: 'polygon-label' });
-
-                item.coords.forEach(function(c) { bounds.push(c); });
+            window.ranhGioiData = data;
+            // Build xa options
+            var xaSet = Array.from(new Set(data.map(function(d){ return d.xa; }).filter(Boolean))).sort();
+            var xaSelect = document.getElementById('filter-xa');
+            xaSet.forEach(function(xa) {
+                var opt = document.createElement('option');
+                opt.value = xa; opt.textContent = xa;
+                xaSelect.appendChild(opt);
             });
-            if (bounds.length > 0) {
-                window.ranhGioiMap.fitBounds(bounds, { padding: [20, 20] });
-            }
+            // Bind filter change
+            ['filter-loai','filter-trangthai','filter-xa','filter-dientich','filter-timeline'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.addEventListener('change', applyRanhGioiFilters);
+                if (el && el.type === 'range') el.addEventListener('input', applyRanhGioiFilters);
+            });
+            renderRanhGioi(data);
         })
         .catch(function(e) { console.error('Lỗi tải polygon:', e); });
+}
+
+function resetFilters() {
+    document.getElementById('filter-loai').value = 'all';
+    document.getElementById('filter-trangthai').value = 'all';
+    document.getElementById('filter-xa').value = 'all';
+    document.getElementById('filter-dientich').value = 'all';
+    document.getElementById('filter-timeline').value = '0';
+    applyRanhGioiFilters();
+}
+
+function applyRanhGioiFilters() {
+    var loai = document.getElementById('filter-loai').value;
+    var tt = document.getElementById('filter-trangthai').value;
+    var xa = document.getElementById('filter-xa').value;
+    var dt = document.getElementById('filter-dientich').value;
+    var tl = document.getElementById('filter-timeline').value;
+    var tlLabels = ['Tất cả', '2025-2030', '2031-2050'];
+    document.getElementById('timeline-label').textContent = tlLabels[tl];
+
+    var filtered = window.ranhGioiData.filter(function(item) {
+        if (loai !== 'all' && item.section !== loai) return false;
+        if (tt !== 'all' && item.trangThai !== tt) return false;
+        if (xa !== 'all' && item.xa !== xa) return false;
+        if (tl === '1' && item.giaiDoan !== '2025-2030') return false;
+        if (tl === '2' && item.giaiDoan !== '2031-2050') return false;
+        if (dt !== 'all') {
+            var parts = dt.split('-');
+            var min = parseFloat(parts[0]), max = parseFloat(parts[1]);
+            if (item.area_ha < min || item.area_ha > max) return false;
+        }
+        return true;
+    });
+    document.getElementById('filter-count').textContent = 'Hiện: ' + filtered.length + '/' + window.ranhGioiData.length;
+    renderRanhGioi(filtered);
+}
+
+function renderRanhGioi(data) {
+    // Remove old layers
+    window.ranhGioiLayers.forEach(function(l) { window.ranhGioiMap.removeLayer(l); });
+    window.ranhGioiLayers = [];
+
+    var bounds = [];
+    var statusColors = {
+        'hoat-dong': '#2e7d32',
+        'xay-dung': '#f57f17',
+        'quy-hoach': '#1565c0',
+        'rut-qh': '#c62828'
+    };
+    var statusFillColors = {
+        'hoat-dong': '#66bb6a',
+        'xay-dung': '#ffa726',
+        'quy-hoach': '#42a5f5',
+        'rut-qh': '#ef5350'
+    };
+    var statusLabels = {
+        'hoat-dong': 'Đang hoạt động',
+        'xay-dung': 'Đang xây dựng',
+        'quy-hoach': 'Quy hoạch (chưa TL)',
+        'rut-qh': 'Rút khỏi QH'
+    };
+
+    data.forEach(function(item) {
+        var isKCN = item.section === 'KCN';
+        var isApprox = item.is_approx === true;
+        var color = statusColors[item.trangThai] || '#1565c0';
+        var fillColor = statusFillColors[item.trangThai] || '#42a5f5';
+        if (isApprox) {
+            color = '#ea580c';
+            fillColor = '#fb923c';
+        }
+
+        var polygon = L.polygon(item.coords, {
+            color: color,
+            weight: 2,
+            fillColor: fillColor,
+            fillOpacity: 0.4,
+            dashArray: isApprox ? '6, 6' : null
+        }).addTo(window.ranhGioiMap);
+        window.ranhGioiLayers.push(polygon);
+
+        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? ' ⚠️' : '');
+        var statusBadge = '<span style="display:inline-block; padding:2px 8px; border-radius:10px; background:' + color + '; color:#fff; font-size:0.72rem; font-weight:600;">' + (statusLabels[item.trangThai] || item.trangThai) + '</span>';
+        var approxNote = isApprox
+            ? '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
+              '<b>⚠️ Ranh giới tạm (minh họa quy mô)</b><br>' +
+              (item.reason ? 'Lý do: ' + item.reason + '<br>' : '') +
+              'Polygon chính thức đang được rà soát.' +
+              '</div>'
+            : '';
+
+        polygon.bindPopup(
+            '<div style="min-width:240px;max-width:320px;">' +
+            '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + displayName + '</h3>' +
+            '<p style="margin:2px 0;font-size:0.85rem;">' + statusBadge + ' &nbsp; <b>' + item.giaiDoan + '</b></p>' +
+            (item.xa ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + item.xa + '</p>' : '') +
+            '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + item.area_ha + ' ha' +
+            (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</p>' +
+            (!isApprox ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
+            approxNote +
+            '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">VN-2000, KT trục 104°45\'</p>' +
+            '</div>'
+        );
+
+        polygon.bindTooltip(displayName, { permanent: false, direction: 'center', className: 'polygon-label' });
+
+        item.coords.forEach(function(c) { bounds.push(c); });
+    });
+
+    if (bounds.length > 0) {
+        window.ranhGioiMap.fitBounds(bounds, { padding: [20, 20] });
+    }
 }
 
 // ---- CCN Quy Hoach Map (31 CCN chưa thành lập) ----
