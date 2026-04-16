@@ -75,6 +75,7 @@
                     </div>
                 </div>
                 <!-- 4. Văn bản -->
+                <button class="nav-item" data-tab="thongke" id="tab-thongke">📊 Thống kê</button>
                 <button class="nav-item" data-tab="vanban" id="tab-vanban">📜 Văn bản</button>
                 <!-- 5. Tin tức -->
                 <button class="nav-item" data-tab="tintuc" id="tab-tintuc">📰 Tin tức</button>
@@ -93,6 +94,7 @@
         <button class="bottom-nav-item active" data-tab="dashboard">🏠<span>Trang chủ</span></button>
         <button class="bottom-nav-item" data-tab="kcn">🏭<span>Khu CN</span></button>
         <button class="bottom-nav-item" data-tab="map">📦<span>Cụm CN</span></button>
+        <button class="bottom-nav-item" data-tab="thongke">📊<span>Thống kê</span></button>
         <button class="bottom-nav-item" data-tab="vanban">📜<span>Văn bản</span></button>
         <button class="bottom-nav-item" data-tab="tintuc">📰<span>Tin tức</span></button>
     </div>
@@ -680,6 +682,78 @@
                         <a href="ke-hoach-thuc-hien-nq34.pdf" target="_blank" style="color:#2e7d32; font-weight:600; text-decoration:none;">
                             📄 Xem/Tải Kế hoạch (PDF)
                         </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === THONG KE SECTION === -->
+        <section class="doc-section" id="thongke-section" style="display: none;">
+            <div style="max-width:1200px; margin:0 auto; padding:20px 12px;">
+                <div style="text-align:center; margin-bottom:24px;">
+                    <h2 style="font-size:1.4rem; color:var(--primary); margin-bottom:4px;">Thống kê trực quan Khu, Cụm công nghiệp</h2>
+                    <p style="color:#666; font-size:0.9rem;">Dữ liệu tổng hợp từ Quy hoạch tỉnh Lào Cai 2021-2030, tầm nhìn 2050</p>
+                </div>
+
+                <!-- KPI cards -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:24px;">
+                    <div style="background:linear-gradient(135deg,#0d47a1,#1565c0); color:#fff; border-radius:10px; padding:16px; text-align:center;">
+                        <div style="font-size:1.8rem; font-weight:800;" id="tk-total-kcn">21</div>
+                        <div style="font-size:0.85rem; opacity:0.9;">Tổng Khu CN (QH 2030)</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#2e7d32,#43a047); color:#fff; border-radius:10px; padding:16px; text-align:center;">
+                        <div style="font-size:1.8rem; font-weight:800;" id="tk-total-ccn">54</div>
+                        <div style="font-size:0.85rem; opacity:0.9;">Tổng Cụm CN (QH 2030)</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#e65100,#f57c00); color:#fff; border-radius:10px; padding:16px; text-align:center;">
+                        <div style="font-size:1.8rem; font-weight:800;" id="tk-total-dt">8.725</div>
+                        <div style="font-size:0.85rem; opacity:0.9;">Tổng DT (ha)</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#4a148c,#7b1fa2); color:#fff; border-radius:10px; padding:16px; text-align:center;">
+                        <div style="font-size:1.8rem; font-weight:800;" id="tk-total-da">461</div>
+                        <div style="font-size:0.85rem; opacity:0.9;">DA đầu tư (hiện tại)</div>
+                    </div>
+                </div>
+
+                <!-- Grid charts 2 cột -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(400px, 1fr)); gap:16px;">
+                    <!-- Chart 1: Trạng thái -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px;">
+                        <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">📊 Phân bố theo Trạng thái</h3>
+                        <div style="position:relative; height:260px;"><canvas id="chart-trangthai"></canvas></div>
+                    </div>
+
+                    <!-- Chart 2: Giai đoạn -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px;">
+                        <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">⏱️ Phân bố theo Giai đoạn</h3>
+                        <div style="position:relative; height:260px;"><canvas id="chart-giaidoan"></canvas></div>
+                    </div>
+
+                    <!-- Chart 3: KCN vs CCN -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px;">
+                        <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">🏭 KCN và 📦 CCN (số lượng & diện tích)</h3>
+                        <div style="position:relative; height:260px;"><canvas id="chart-loai"></canvas></div>
+                    </div>
+
+                    <!-- Chart 4: Top xã/phường -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px;">
+                        <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">📍 Top Xã/Phường theo Diện tích (ha)</h3>
+                        <div style="position:relative; height:260px;"><canvas id="chart-xa"></canvas></div>
+                    </div>
+
+                    <!-- Chart 5: Top KCN/CCN lớn nhất -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px; grid-column:1/-1;">
+                        <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">🏆 Top 12 KCN/CCN lớn nhất (ha)</h3>
+                        <div style="position:relative; height:400px;"><canvas id="chart-top"></canvas></div>
+                    </div>
+
+                    <!-- Chart 6: Timeline mở rộng -->
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px; grid-column:1/-1;">
+                        <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">📈 Lộ trình mở rộng theo thời gian</h3>
+                        <div style="position:relative; height:280px;"><canvas id="chart-timeline"></canvas></div>
+                        <p style="font-size:0.82rem; color:#666; margin:8px 0 0; font-style:italic; text-align:center;">
+                            Hiện tại: 7 KCN (2.139 ha) + 23 CCN (904 ha) = 30 khu/cụm — 3.043 ha
+                        </p>
                     </div>
                 </div>
             </div>
