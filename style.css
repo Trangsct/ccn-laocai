@@ -1472,6 +1472,12 @@ a:hover {
     .bottom-nav { display: flex; }
     .main-container { padding-bottom: 70px; }
 
+    /* On mobile: nav does not create stacking context, so sidebar z-index works globally */
+    .main-nav {
+        position: relative;
+        z-index: auto;
+    }
+
     /* Hide desktop nav, show as sidebar */
     .nav-menu {
         display: flex;
