@@ -783,29 +783,278 @@ function renderCCNQHTable() {
 
 // ---- Thong Ke - Biểu đồ trực quan ----
 function initThongKe() {
-    fetch('ccn-polygons.json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) { renderThongKeCharts(data); })
-        .catch(function(e) { console.error('Lỗi tải thống kê:', e); });
+    renderThongKeCharts();
 }
 
-function renderThongKeCharts(data) {
-    var statusLabels = {
-        'hoat-dong': 'Đang hoạt động',
-        'xay-dung': 'Đang xây dựng',
-        'quy-hoach': 'Quy hoạch',
-        'rut-qh': 'Rút khỏi QH'
-    };
-    var statusColors = {
-        'hoat-dong': '#2e7d32',
-        'xay-dung': '#f57f17',
-        'quy-hoach': '#1565c0',
-        'rut-qh': '#c62828'
-    };
+function renderThongKeCharts() {
+    // === DATA SOURCES ===
+    // 23 CCN đã TL (CUM_CONG_NGHIEP - từ data.js hoặc ccn-data.json)
+    var ccnHien = CUM_CONG_NGHIEP;
+    // 31 CCN chưa TL
+    var ccnQH = CCN_CHUA_DAU_TU;
+    // 21 KCN (7 đã TL + 14 chưa TL)
+    var kcnList = [
+        {ten:'KCN Phía Nam', xa:'Phường Văn Phú', dt:400, tt:'hoat-dong', da:66, ld:91.54, status:'da-tl'},
+        {ten:'KCN Trấn Yên', xa:'Phường Âu Lâu', dt:339, tt:'xay-dung', da:0, ld:0, status:'da-tl'},
+        {ten:'KCN Bản Qua (GĐ 1)', xa:'Xã Bản Qua', dt:107, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Y Can', xa:'Xã Y Can', dt:350, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Đông An', xa:'Xã Đông An', dt:350, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Thịnh Hưng (GĐ 1)', xa:'Xã Thịnh Hưng', dt:104, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Lục Yên (GĐ 1)', xa:'Xã Tân Lĩnh', dt:221, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Bắc Duyên Hải', xa:'Phường Lào Cai', dt:85, tt:'hoat-dong', da:63, ld:90, status:'da-tl'},
+        {ten:'KCN Tằng Loỏng', xa:'Xã Gia Phú', dt:1100, tt:'hoat-dong', da:29, ld:85, status:'da-tl'},
+        {ten:'KCN Âu Lâu', xa:'Phường Âu Lâu', dt:120, tt:'hoat-dong', da:12, ld:84.15, status:'da-tl'},
+        {ten:'KCN Minh Quân', xa:'Xã Minh Quân', dt:75, tt:'hoat-dong', da:17, ld:94.65, status:'da-tl'},
+        {ten:'KCN Cốc Mỳ - Trịnh Tường (GĐ 1)', xa:'Xã Trịnh Tường', dt:500, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Võ Lao (GĐ 1)', xa:'Xã Võ Lao', dt:500, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Phú Xuân', xa:'Xã Xuân Hòa', dt:300, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Bát Xát', xa:'Xã Bát Xát', dt:76, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Cam Đường', xa:'Phường Cam Đường', dt:200, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Thống Nhất', xa:'Xã Gia Phú', dt:150, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Việt Hồng 1', xa:'Xã Việt Hồng', dt:300, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Việt Hồng 2', xa:'Xã Việt Hồng', dt:200, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Phú Xuân 1', xa:'Xã Xuân Hòa', dt:200, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Đông Phố Mới', xa:'Phường Lào Cai', dt:100, tt:'rut-qh', da:41, ld:90, status:'rut-qh'}
+    ];
 
-    // === Chart 1: Trạng thái ===
+    // === CHART 1: Trạng thái tổng hợp (stacked bar) ===
+    var kcnHienHD = kcnList.filter(function(k){return k.status==='da-tl' && k.tt==='hoat-dong';}).length;
+    var kcnHienXD = kcnList.filter(function(k){return k.status==='da-tl' && k.tt==='xay-dung';}).length;
+    var kcnQHCount = kcnList.filter(function(k){return k.status==='chua-tl';}).length;
+    var kcnRut = kcnList.filter(function(k){return k.status==='rut-qh';}).length;
+    var ccnHienHD = ccnHien.filter(function(c){return c.trangThai==='hoat-dong';}).length;
+    var ccnHienXD = ccnHien.filter(function(c){return c.trangThai==='xay-dung';}).length;
+    var ccnQHCount = ccnQH.length;
+
+    new Chart(document.getElementById('chart-trangthai'), {
+        type: 'bar',
+        data: {
+            labels: ['Khu công nghiệp', 'Cụm công nghiệp'],
+            datasets: [
+                {label:'Đang hoạt động', data:[kcnHienHD, ccnHienHD], backgroundColor:'#2e7d32'},
+                {label:'Đang xây dựng', data:[kcnHienXD, ccnHienXD], backgroundColor:'#f57f17'},
+                {label:'Quy hoạch (chưa TL)', data:[kcnQHCount, ccnQHCount], backgroundColor:'#1565c0'},
+                {label:'Rút khỏi QH', data:[kcnRut, 0], backgroundColor:'#c62828'}
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+        }
+    });
+
+    // === CHART 2: So sánh hiện tại vs QH 2030 ===
+    new Chart(document.getElementById('chart-sosanh'), {
+        type: 'bar',
+        data: {
+            labels: ['KCN (số)','CCN (số)','KCN (1000 ha)','CCN (1000 ha)'],
+            datasets: [
+                {label:'Hiện tại (2025)', data:[7, 23, 2.139, 0.904], backgroundColor:'#90caf9'},
+                {label:'Quy hoạch 2030', data:[20, 54, 5.797, 2.928], backgroundColor:'#1565c0'},
+                {label:'Tầm nhìn 2050', data:[22, 62, 8.078, 3.779], backgroundColor:'#0d47a1'}
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // === CHART 3: Tỷ lệ lấp đầy 23 CCN ===
+    var ccnLD = ccnHien.slice().sort(function(a,b){return b.tyLeLapDay-a.tyLeLapDay;});
+    new Chart(document.getElementById('chart-lapday'), {
+        type: 'bar',
+        data: {
+            labels: ccnLD.map(function(c){return c.ten;}),
+            datasets: [{
+                label:'Tỷ lệ lấp đầy (%)',
+                data: ccnLD.map(function(c){return c.tyLeLapDay;}),
+                backgroundColor: ccnLD.map(function(c){
+                    if (c.tyLeLapDay>=90) return '#2e7d32';
+                    if (c.tyLeLapDay>=50) return '#f57f17';
+                    if (c.tyLeLapDay>0) return '#ea580c';
+                    return '#9ca3af';
+                }),
+                borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, max: 100 } }
+        }
+    });
+
+    // === CHART 4: Top 15 CCN theo số DN ===
+    var ccnDN = ccnHien.slice().sort(function(a,b){return b.soDoanhNghiep-a.soDoanhNghiep;}).slice(0, 15);
+    new Chart(document.getElementById('chart-doanhnghiep'), {
+        type: 'bar',
+        data: {
+            labels: ccnDN.map(function(c){return c.ten;}),
+            datasets: [{
+                label: 'Số doanh nghiệp',
+                data: ccnDN.map(function(c){return c.soDoanhNghiep;}),
+                backgroundColor: '#7b1fa2',
+                borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // === CHART 5: Diện tích 23 CCN đã TL ===
+    var ccnHienSorted = ccnHien.slice().sort(function(a,b){return b.dienTich-a.dienTich;});
+    new Chart(document.getElementById('chart-dt-ccn-hien'), {
+        type: 'bar',
+        data: {
+            labels: ccnHienSorted.map(function(c){return c.ten;}),
+            datasets: [{
+                label: 'Diện tích (ha)',
+                data: ccnHienSorted.map(function(c){return c.dienTich;}),
+                backgroundColor: ccnHienSorted.map(function(c){
+                    var colors = {'hoat-dong':'#2e7d32','xay-dung':'#f57f17','tam-dung':'#9ca3af'};
+                    return colors[c.trangThai] || '#1565c0';
+                }),
+                borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // === CHART 6: Diện tích 31 CCN chưa TL ===
+    var ccnQHSorted = ccnQH.slice().sort(function(a,b){return b.dienTich-a.dienTich;});
+    new Chart(document.getElementById('chart-dt-ccn-qh'), {
+        type: 'bar',
+        data: {
+            labels: ccnQHSorted.map(function(c){return c.ten;}),
+            datasets: [{
+                label: 'Diện tích QH (ha)',
+                data: ccnQHSorted.map(function(c){return c.dienTich;}),
+                backgroundColor: ccnQHSorted.map(function(c){
+                    return c.coBaoCao===true ? '#16a34a' : c.coBaoCao===false ? '#dc2626' : '#f59e0b';
+                }),
+                borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // === CHART 7: 21 KCN theo DT ===
+    var kcnSorted = kcnList.slice().sort(function(a,b){return b.dt-a.dt;});
+    new Chart(document.getElementById('chart-kcn'), {
+        type: 'bar',
+        data: {
+            labels: kcnSorted.map(function(k){return k.ten;}),
+            datasets: [{
+                label: 'Diện tích (ha)',
+                data: kcnSorted.map(function(k){return k.dt;}),
+                backgroundColor: kcnSorted.map(function(k){
+                    var c = {'hoat-dong':'#2e7d32','xay-dung':'#f57f17','quy-hoach':'#1565c0','rut-qh':'#c62828'};
+                    return c[k.tt];
+                }),
+                borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // === CHART 8: Top 15 xã/phường ===
+    var xaMap = {};
+    kcnList.forEach(function(k){ xaMap[k.xa] = (xaMap[k.xa]||0) + k.dt; });
+    ccnHien.forEach(function(c){
+        // Extract xã/phường từ field xa
+        var parts = c.xa.split(',');
+        var xa = parts[0].trim();
+        xaMap[xa] = (xaMap[xa]||0) + c.dienTich;
+    });
+    ccnQH.forEach(function(c){
+        var parts = c.xa.split(',');
+        var xa = parts[0].trim();
+        xaMap[xa] = (xaMap[xa]||0) + c.dienTich;
+    });
+    var xaSorted = Object.entries(xaMap).sort(function(a,b){return b[1]-a[1];}).slice(0, 15);
+    new Chart(document.getElementById('chart-xa'), {
+        type: 'bar',
+        data: {
+            labels: xaSorted.map(function(x){return x[0];}),
+            datasets: [{
+                label:'Diện tích (ha)',
+                data: xaSorted.map(function(x){return Math.round(x[1]);}),
+                backgroundColor: '#0891b2',
+                borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // === CHART 9: CCN đã TL - phân loại hoàn thiện ===
+    var tlHoanThien = ccnHien.filter(function(c){return c.tyLeLapDay>=90;}).length;
+    var tlCao = ccnHien.filter(function(c){return c.tyLeLapDay>=50 && c.tyLeLapDay<90;}).length;
+    var tlTB = ccnHien.filter(function(c){return c.tyLeLapDay>0 && c.tyLeLapDay<50;}).length;
+    var tlChuaCo = ccnHien.filter(function(c){return c.tyLeLapDay===0;}).length;
+    new Chart(document.getElementById('chart-hoanthien'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Lấp đầy ≥ 90%', 'Lấp đầy 50-89%', 'Lấp đầy < 50%', 'Chưa lấp đầy (0%)'],
+            datasets: [{
+                data: [tlHoanThien, tlCao, tlTB, tlChuaCo],
+                backgroundColor: ['#2e7d32','#f57f17','#ea580c','#9ca3af'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // === CHART 10: Timeline ===
+    new Chart(document.getElementById('chart-timeline'), {
+        type: 'line',
+        data: {
+            labels: ['Hiện tại (2025)', 'Quy hoạch 2030', 'Tầm nhìn 2050'],
+            datasets: [
+                {label:'KCN (số)', data:[7, 20, 22], borderColor:'#c62828', backgroundColor:'rgba(198,40,40,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
+                {label:'CCN (số)', data:[23, 54, 62], borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
+                {label:'Tổng DT (1000 ha)', data:[3.04, 8.73, 11.86], borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,0.15)', tension:0.3, fill:true, yAxisID:'y1', borderDash:[6,4], borderWidth:3, pointRadius:6}
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: { type:'linear', position:'left', title:{display:true, text:'Số lượng KCN/CCN'}, beginAtZero: true },
+                y1: { type:'linear', position:'right', title:{display:true, text:'Diện tích (nghìn ha)'}, beginAtZero: true, grid:{drawOnChartArea:false} }
+            }
+        }
+    });
+}
+
+// ---- Legacy dead code removed - wrap to prevent syntax errors ----
+/*
+DEAD_CODE_START
     var ttCount = {};
-    data.forEach(function(d) { ttCount[d.trangThai] = (ttCount[d.trangThai] || 0) + 1; });
     var ttKeys = Object.keys(ttCount);
     new Chart(document.getElementById('chart-trangthai'), {
         type: 'doughnut',
@@ -958,6 +1207,8 @@ function renderThongKeCharts(data) {
         }
     });
 }
+DEAD_CODE_END
+*/
 
 // ---- Ranh Giới Polygon Map with filters ----
 window.ranhGioiData = [];
