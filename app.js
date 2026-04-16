@@ -541,6 +541,7 @@ function setupNavTabs() {
         'quyche': document.getElementById('quyche-section'),
         'nghidinh32': document.getElementById('nghidinh32-section'),
         'nghidinh35': document.getElementById('nghidinh35-section'),
+        'thongtu14': document.getElementById('thongtu14-section'),
         'nghiquyet': document.getElementById('nghiquyet-section'),
         'kehoach': document.getElementById('kehoach-section'),
         'ccnqh': document.getElementById('ccnqh-section'),
