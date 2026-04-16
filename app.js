@@ -1248,10 +1248,9 @@ function initRanhGioiMap() {
                 xaSelect.appendChild(opt);
             });
             // Bind filter change
-            ['filter-loai','filter-trangthai','filter-xa','filter-dientich','filter-timeline'].forEach(function(id) {
+            ['filter-loai','filter-trangthai','filter-xa','filter-dientich'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.addEventListener('change', applyRanhGioiFilters);
-                if (el && el.type === 'range') el.addEventListener('input', applyRanhGioiFilters);
             });
             renderRanhGioi(data);
         })
@@ -1263,7 +1262,6 @@ function resetFilters() {
     document.getElementById('filter-trangthai').value = 'all';
     document.getElementById('filter-xa').value = 'all';
     document.getElementById('filter-dientich').value = 'all';
-    document.getElementById('filter-timeline').value = '0';
     applyRanhGioiFilters();
 }
 
@@ -1272,16 +1270,11 @@ function applyRanhGioiFilters() {
     var tt = document.getElementById('filter-trangthai').value;
     var xa = document.getElementById('filter-xa').value;
     var dt = document.getElementById('filter-dientich').value;
-    var tl = document.getElementById('filter-timeline').value;
-    var tlLabels = ['Tất cả', '2025-2030', '2031-2050'];
-    document.getElementById('timeline-label').textContent = tlLabels[tl];
 
     var filtered = window.ranhGioiData.filter(function(item) {
         if (loai !== 'all' && item.section !== loai) return false;
         if (tt !== 'all' && item.trangThai !== tt) return false;
         if (xa !== 'all' && item.xa !== xa) return false;
-        if (tl === '1' && item.giaiDoan !== '2025-2030') return false;
-        if (tl === '2' && item.giaiDoan !== '2031-2050') return false;
         if (dt !== 'all') {
             var parts = dt.split('-');
             var min = parseFloat(parts[0]), max = parseFloat(parts[1]);
