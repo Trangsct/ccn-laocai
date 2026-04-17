@@ -69,8 +69,8 @@
       "moTa": "Chủ đầu tư: Liên danh Cty CP Tập đoàn Đông Đô & Cty CP ĐTXD số 9 Bắc Giang. Tiến độ: Kiểm đếm 75/76 hộ; đã chi trả 18/76 hộ (10 tỷ). Khó khăn: vướng chồng lấn cty chè Văn Hưng và TT PTQĐ; đường trục CCN Phú Thịnh chậm. Yêu cầu hoàn thành GPMB trước 30/6/2026.",
       "haTang": "Đang GPMB",
       "quyetDinh": "Số 1689/QĐ-UBND ngày 28/9/2022",
-      "lat": 21.711,
-      "lng": 104.877
+      "lat": 21.69309,
+      "lng": 104.96714
     },
     {
       "id": 5,
@@ -87,8 +87,8 @@
       "moTa": "Chủ đầu tư: Cty TNHH Lâm nghiệp 888 Yên Bái. Tiến độ: Kiểm đếm 90/90 hộ; đã chi trả 54,243 tỷ cho 76/90 hộ (~50ha). Khó khăn: vướng chồng lấn; đường trục CCN Phú Thịnh chậm. Yêu cầu hoàn thành GPMB 75ha trước 30/6/2026.",
       "haTang": "Đang GPMB",
       "quyetDinh": "Số 1454/QĐ-UBND ngày 24/8/2022",
-      "lat": 21.712,
-      "lng": 104.881
+      "lat": 21.69556,
+      "lng": 104.97039
     },
     {
       "id": 6,
@@ -105,8 +105,8 @@
       "moTa": "Chủ đầu tư: Cty CP Công nghiệp EUP. Tiến độ: Kiểm đếm ~5ha; đang triển khai GPMB. Khó khăn: đường trục CCN Phú Thịnh chậm. Yêu cầu hoàn thành GPMB 75ha trước 30/6/2026.",
       "haTang": "Đang GPMB",
       "quyetDinh": "Số 2220/QĐ-UBND ngày 27/11/2023",
-      "lat": 21.713,
-      "lng": 104.885
+      "lat": 21.68488,
+      "lng": 104.97393
     },
     {
       "id": 7,
@@ -420,13 +420,13 @@
       "stt": 1,
       "ten": "CCN Phú Thịnh 4",
       "huyen": "yen-binh",
-      "xa": "TDP Đăng Thọ + Vạn Xuân, Phường Văn Phú",
+      "xa": "TDP Đăng Thọ + Vạn Xuân, Phường Văn Phú (28ha/75ha)",
       "dienTich": 75,
-      "huongPhatTrien": "Giai đoạn 2025-2030. Chế biến nông-lâm sản, may mặc, VLXD, cơ khí điện tử.",
+      "huongPhatTrien": "Giai đoạn 2021-2030. Chế biến nông lâm sản (gỗ rừng trồng, ván ép, MDF, viên nén, chế biến măng tre, thức ăn gia súc), may mặc, vật liệu xây dựng (gạch ngói không nung, bê tông đúc sẵn), cơ khí chế tạo, công nghiệp hỗ trợ, điện tử.",
       "coBaoCao": true,
-      "baoCao": "Đất chủ yếu rừng SX 26ha, không có rừng tự nhiên. ~20 hộ ảnh hưởng (3 hộ nghèo/CS). GPMB thuận lợi. Cách IC cao tốc NB-LC ~7km. Điện 35kV có sẵn, kế hoạch TBA 110kV. Có ống cấp nước thô D300 từ hồ Thác Bà.",
-      "lat": 21.7107,
-      "lng": 104.9358,
+      "baoCao": "Tổng 75ha (thuộc phường Văn Phú ~28ha, xã Yên Bình ~47ha). Đất: 26ha rừng SX, 1,5ha lúa, 0,05ha đất ở, 2ha công ích. Ảnh hưởng 20 hộ dân (3 hộ nghèo/CS), 2 hộ cần TĐC (bố trí tại quỹ đất TĐC Phú Thịnh). Không có rừng tự nhiên. Cách IC cao tốc NB-LC ~7km, QL70 ~5km, QL32C ~3km, QL2D ~0,5km, cầu Văn Phú-cảng Hương Lý ~1km. Điện 35kV có sẵn, kế hoạch TBA 110/35/22kV. Ống cấp nước thô D300 từ hồ Thác Bà dọc QL2D. Thoát nước ra hồ Thác Bà. Khó khăn: địa hình nhiều đồi, chi phí san nền lớn. Tọa độ VN-2000 4 điểm (KT 104°45'): (2401511.47, 523172.03), (2400955.95, 523692.73), (2401682.33, 524392.41), (2402210.04, 523844.10).",
+      "lat": 21.71111,
+      "lng": 104.9798,
       "ghiChu": "Đất rừng SX 26ha. ~20 hộ ảnh hưởng. Cách IC cao tốc NB-LC ~7km. Điện 35kV có sẵn. Có ống cấp nước D300 từ hồ Thác Bà."
     },
     {
@@ -818,6 +818,30 @@
       "lat": 21.695,
       "lng": 104.838,
       "ghiChu": "GĐ 2025-2030."
+    },
+    {
+      "stt": 32,
+      "ten": "CCN Phú Thịnh 5",
+      "huyen": "khu-vuc-moi",
+      "xa": "TDP Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
+      "dienTich": 75,
+      "huongPhatTrien": "Giai đoạn 2026-2030. Chế biến nông lâm sản (gỗ rừng trồng, ván ép, MDF, viên nén, chế biến măng tre, thức ăn gia súc), may mặc, vật liệu xây dựng (gạch ngói không nung, bê tông đúc sẵn), cơ khí chế tạo, công nghiệp hỗ trợ, điện tử.",
+      "coBaoCao": true,
+      "baoCao": "Diện tích 75ha chủ yếu đất nông lâm nghiệp: 42ha rừng SX, 8,5ha lúa, 2ha đất ở, 5ha công ích, 17,5ha NN khác. Ảnh hưởng 76 hộ dân (11 DTTS/nghèo/CS), 27 hộ cần TĐC (bố trí tại TĐC KCN Phía Nam và TĐC Phú Thịnh). Không có rừng tự nhiên. Cách IC cao tốc NB-LC ~5km, QL70 ~3,5km, QL32C ~3km, QL2D ~3,5km, cầu Văn Phú ~5km. Thuộc lưu vực Ngòi Sen → sông Hồng. Điện 35kV có sẵn. Có ống cấp nước D300 từ hồ Thác Bà. Khó khăn: địa hình nhiều đồi, nhà kiên cố trên đất thu hồi. Tọa độ VN-2000 (KT 104°45'): (2397130.48, 522607.15), (2396707.56, 522147.00), (2395829.81, 522965.26), (2396255.99, 523422.42).",
+      "lat": 21.66498,
+      "lng": 104.97016
+    },
+    {
+      "stt": 33,
+      "ten": "CCN Phú Thịnh 6",
+      "huyen": "khu-vuc-moi",
+      "xa": "TDP Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
+      "dienTich": 75,
+      "huongPhatTrien": "Giai đoạn 2026-2030. Chế biến nông lâm sản (gỗ rừng trồng, ván ép, MDF, viên nén, chế biến măng tre, thức ăn gia súc), may mặc, vật liệu xây dựng (gạch ngói không nung, bê tông đúc sẵn), cơ khí chế tạo, công nghiệp hỗ trợ, điện tử.",
+      "coBaoCao": true,
+      "baoCao": "Diện tích 75ha: 45ha rừng SX, 8ha lúa, 1ha đất ở, 7,5ha công ích, 13,5ha NN khác. Ảnh hưởng 9 hộ dân (9 hộ cần TĐC tại TĐC KCN Phía Nam và TĐC Phú Thịnh). Không có rừng tự nhiên. Cách IC cao tốc NB-LC ~5km, QL70 ~3,5km, QL32C ~3km, QL2D ~3,5km. Thuộc lưu vực Ngòi Sen → sông Hồng. Điện 35kV có sẵn, kế hoạch TBA 110/35/22kV. Có ống cấp nước D300 từ hồ Thác Bà. Tọa độ VN-2000 (KT 104°45'): (2397157.39, 522636.48), (2397430.67, 523168.44), (2396553.26, 523987.02), (2396162.23, 523564.19).",
+      "lat": 21.66809,
+      "lng": 104.97552
     }
   ],
   "KHU_CONG_NGHIEP": [

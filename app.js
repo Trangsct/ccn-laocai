@@ -1204,10 +1204,36 @@ function buildRanhGioiData(polygons) {
     var merged = [];
     var seen = {};
 
-    // 1. Đưa tất cả polygon chính thức vào trước (giữ nguyên dữ liệu)
+    // Hàm build mô tả phong phú từ source data
+    function describeKCN(k) { return k.moTa || ''; }
+    function describeCCN_HH(c) { return c.moTa || ''; }
+    function describeCCN_QH(c) { return c.ghiChu || c.baoCao || c.huongPhatTrien || ''; }
+
+    // Pre-index các source theo normName để match với polygon
+    var kcnByName = {}, ccnHHByName = {}, ccnQHByName = {};
+    (window.KHU_CONG_NGHIEP || []).forEach(function(k) { kcnByName[normName(k.ten)] = k; });
+    (window.CUM_CONG_NGHIEP || []).forEach(function(c) { ccnHHByName[normName(c.ten)] = c; });
+    (window.CCN_CHUA_DAU_TU || []).forEach(function(c) { ccnQHByName[normName(c.ten)] = c; });
+
+    // 1. Đưa tất cả polygon chính thức vào trước, MERGE thêm sourceDesc/xa
+    //    từ ccn-data.json nếu có match theo tên.
     polygons.forEach(function(p) {
-        merged.push(p);
-        seen[normName(p.name)] = true;
+        var key = normName(p.name);
+        var merged_item = Object.assign({}, p);
+        if (kcnByName[key]) {
+            merged_item.sourceDesc = merged_item.sourceDesc || describeKCN(kcnByName[key]);
+            if (!merged_item.xa || merged_item.xa === '') merged_item.xa = kcnByName[key].viTri || '';
+        } else if (ccnHHByName[key]) {
+            merged_item.sourceDesc = merged_item.sourceDesc || describeCCN_HH(ccnHHByName[key]);
+            // giữ xa polygon nếu có, nếu không lấy từ source
+        } else if (ccnQHByName[key]) {
+            merged_item.sourceDesc = merged_item.sourceDesc || describeCCN_QH(ccnQHByName[key]);
+            // CCN QH có xa chi tiết hơn -> overwrite nếu polygon xa ngắn hơn
+            var srcXa = ccnQHByName[key].xa || '';
+            if (srcXa && srcXa.length > (merged_item.xa || '').length) merged_item.xa = srcXa;
+        }
+        merged.push(merged_item);
+        seen[key] = true;
     });
 
     // 2. Với mỗi nguồn, nếu tên chưa có polygon -> tạo ô vuông cam synthetic
