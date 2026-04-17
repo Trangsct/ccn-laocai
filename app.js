@@ -1105,55 +1105,29 @@ function initRanhGioiMap() {
         opacity: 0.75
     });
 
-    // Overlay: Đường cao tốc + Quốc lộ chính (vẽ polyline thủ công)
+    // Overlay: Đường cao tốc + Quốc lộ chính + Mỏ khoáng sản
+    // Dữ liệu tách ra map-layers.json (tuyenDuong, moKhoangSan) - 2026-04-17
     var layerDuong = L.layerGroup();
-    var tuyenDuong = [
-        {ten:'Cao tốc Nội Bài - Lào Cai (CT05)', color:'#ef4444', w:4, coords:[
-            [21.15, 105.8],[21.3,105.6],[21.5,105.4],[21.7,105.2],[21.9,105.0],
-            [21.72,104.87],[22.0,104.6],[22.15,104.4],[22.35,104.1],[22.5,103.95]
-        ]},
-        {ten:'QL70 (Hà Nội - Lào Cai)', color:'#f59e0b', w:3, coords:[
-            [21.3,105.4],[21.7,104.9],[22.0,104.5],[22.1,104.38],[22.3,104.05],[22.48,103.95]
-        ]},
-        {ten:'QL4D (Lào Cai - Sa Pa - Lai Châu)', color:'#3b82f6', w:3, coords:[
-            [22.49,103.96],[22.45,103.85],[22.35,103.78],[22.33,103.83],[22.28,103.70]
-        ]},
-        {ten:'QL4E (Lào Cai - Bảo Thắng - Bảo Yên)', color:'#8b5cf6', w:3, coords:[
-            [22.49,103.96],[22.42,104.0],[22.33,104.08],[22.22,104.30],[22.18,104.36]
-        ]},
-        {ten:'QL279 (Văn Bàn - Mường La)', color:'#14b8a6', w:3, coords:[
-            [22.08,104.28],[22.0,104.25],[21.90,104.15],[21.85,104.0],[21.75,103.85]
-        ]},
-        {ten:'Tuyến đường sắt cao tốc LC-HN-HP (QH)', color:'#dc2626', w:3, dash:'10,6', coords:[
-            [22.50,103.97],[22.3,104.1],[22.1,104.4],[21.8,104.8],[21.5,105.2],[21.2,105.8]
-        ]}
-    ];
-    tuyenDuong.forEach(function(td) {
-        var poly = L.polyline(td.coords, {color: td.color, weight: td.w, opacity: 0.8, dashArray: td.dash || null}).addTo(layerDuong);
-        poly.bindTooltip(td.ten, {sticky: true, className: 'polygon-label'});
-    });
-
-    // Overlay: Mỏ khoáng sản chính
     var layerMoKs = L.layerGroup();
-    var mos = [
-        {ten:'Mỏ Apatit Tằng Loỏng', lat:22.335, lng:104.110, loai:'Apatit', icon:'⛏️'},
-        {ten:'Mỏ sắt Quý Xa (Văn Bàn)', lat:22.06, lng:104.15, loai:'Sắt', icon:'⚒️'},
-        {ten:'Mỏ đồng Sin Quyền (Bát Xát)', lat:22.55, lng:103.65, loai:'Đồng', icon:'🔶'},
-        {ten:'Mỏ cao lanh Sơn Mãn', lat:22.48, lng:103.98, loai:'Cao lanh', icon:'🪨'},
-        {ten:'Mỏ đồng Tả Phời (Bảo Thắng)', lat:22.31, lng:104.03, loai:'Đồng', icon:'🔶'},
-        {ten:'Mỏ sắt Làng Lếch (Văn Bàn)', lat:22.10, lng:104.22, loai:'Sắt', icon:'⚒️'},
-        {ten:'Mỏ Apatit Cam Đường', lat:22.42, lng:104.00, loai:'Apatit', icon:'⛏️'}
-    ];
-    mos.forEach(function(m) {
-        var icon = L.divIcon({
-            className: 'mo-marker',
-            html: '<div style="width:26px;height:26px;background:#7c2d12;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.3);">' + m.icon + '</div>',
-            iconSize: [26,26], iconAnchor: [13,13]
-        });
-        var marker = L.marker([m.lat, m.lng], {icon: icon}).addTo(layerMoKs);
-        marker.bindPopup('<b>' + m.ten + '</b><br>Loại: ' + m.loai);
-        marker.bindTooltip(m.ten, {direction:'top', offset:[0,-10]});
-    });
+    fetch('map-layers.json')
+        .then(function(r) { return r.json(); })
+        .then(function(mapLayers) {
+            (mapLayers.tuyenDuong || []).forEach(function(td) {
+                var poly = L.polyline(td.coords, {color: td.color, weight: td.w, opacity: 0.8, dashArray: td.dash || null}).addTo(layerDuong);
+                poly.bindTooltip(td.ten, {sticky: true, className: 'polygon-label'});
+            });
+            (mapLayers.moKhoangSan || []).forEach(function(m) {
+                var icon = L.divIcon({
+                    className: 'mo-marker',
+                    html: '<div style="width:26px;height:26px;background:#7c2d12;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.3);">' + m.icon + '</div>',
+                    iconSize: [26,26], iconAnchor: [13,13]
+                });
+                var marker = L.marker([m.lat, m.lng], {icon: icon}).addTo(layerMoKs);
+                marker.bindPopup('<b>' + m.ten + '</b><br>Loại: ' + m.loai);
+                marker.bindTooltip(m.ten, {direction:'top', offset:[0,-10]});
+            });
+        })
+        .catch(function(e) { console.error('Lỗi tải map-layers.json:', e); });
 
     // Overlay: Ranh giới hành chính (dùng OpenStreetMap boundaries style)
     var layerRanhGioiHC = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
