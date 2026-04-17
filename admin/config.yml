@@ -8,23 +8,39 @@ locale: vi
 
 collections:
   - name: "ccn_hien_huu"
-    label: "23 CCN Hiện hữu"
-    label_singular: "CCN"
-    folder: "_ccn"
-    create: false
-    identifier_field: id
+    label: "Dữ liệu CCN"
+    label_singular: "File dữ liệu"
     format: json
     files:
-      - label: "Toàn bộ dữ liệu CCN"
+      - label: "Toàn bộ dữ liệu CCN (ccn-data.json)"
         name: "ccn_data"
         file: "ccn-data.json"
         fields:
-          - label: "Danh sách CCN hiện hữu"
+          - label: "Danh sách 23 CCN hiện hữu"
             name: "CUM_CONG_NGHIEP"
             widget: list
             fields:
               - { label: "ID", name: "id", widget: number }
               - { label: "Tên CCN", name: "ten", widget: string }
+              - label: "Huyện / Khu vực"
+                name: "huyen"
+                widget: select
+                options:
+                  - { label: "TP. Lào Cai", value: "tp-lao-cai" }
+                  - { label: "Bảo Thắng", value: "bao-thang" }
+                  - { label: "Bảo Yên", value: "bao-yen" }
+                  - { label: "Bát Xát", value: "bat-xat" }
+                  - { label: "Bắc Hà", value: "bac-ha" }
+                  - { label: "Mường Khương", value: "muong-khuong" }
+                  - { label: "TX. Sa Pa", value: "sa-pa" }
+                  - { label: "Si Ma Cai", value: "si-ma-cai" }
+                  - { label: "Văn Bàn", value: "van-ban" }
+                  - { label: "Yên Bình", value: "yen-binh" }
+                  - { label: "Văn Chấn", value: "van-chan" }
+                  - { label: "Lục Yên", value: "luc-yen" }
+                  - { label: "Trấn Yên", value: "tran-yen" }
+                  - { label: "Văn Yên", value: "van-yen" }
+                  - { label: "Khu vực Sáp nhập", value: "khu-vuc-moi" }
               - { label: "Xã / Phường", name: "xa", widget: string }
               - label: "Trạng thái"
                 name: "trangThai"
@@ -45,12 +61,33 @@ collections:
               - { label: "Năm thành lập", name: "namThanhLap", widget: number, required: false }
               - { label: "Tọa độ Lat", name: "lat", widget: number, value_type: float }
               - { label: "Tọa độ Lng", name: "lng", widget: number, value_type: float }
-          - label: "31 CCN Quy hoạch (Chờ đầu tư)"
+          - label: "Danh sách 31 CCN Quy hoạch (Chờ đầu tư)"
             name: "CCN_CHUA_DAU_TU"
             widget: list
             fields:
               - { label: "STT", name: "stt", widget: number }
               - { label: "Tên CCN", name: "ten", widget: string }
+              - label: "Huyện / Khu vực"
+                name: "huyen"
+                widget: select
+                options:
+                  - { label: "TP. Lào Cai", value: "tp-lao-cai" }
+                  - { label: "Bảo Thắng", value: "bao-thang" }
+                  - { label: "Bảo Yên", value: "bao-yen" }
+                  - { label: "Bát Xát", value: "bat-xat" }
+                  - { label: "Bắc Hà", value: "bac-ha" }
+                  - { label: "Mường Khương", value: "muong-khuong" }
+                  - { label: "TX. Sa Pa", value: "sa-pa" }
+                  - { label: "Si Ma Cai", value: "si-ma-cai" }
+                  - { label: "Văn Bàn", value: "van-ban" }
+                  - { label: "Yên Bình", value: "yen-binh" }
+                  - { label: "Văn Chấn", value: "van-chan" }
+                  - { label: "Lục Yên", value: "luc-yen" }
+                  - { label: "Trấn Yên", value: "tran-yen" }
+                  - { label: "Văn Yên", value: "van-yen" }
+                  - { label: "Khu vực Sáp nhập", value: "khu-vuc-moi" }
               - { label: "Xã / Phường", name: "xa", widget: string }
               - { label: "Diện tích QH (ha)", name: "dienTich", widget: number, value_type: float }
-              - { label: "Hướng phát triển", name: "huongPhatTrien", widget: string, required: false }
+              - { label: "Hướng phát triển", name: "huongPhatTrien", widget: text, required: false }
+              - { label: "Đã có báo cáo khảo sát", name: "coBaoCao", widget: boolean, default: false, required: false }
+              - { label: "Nội dung báo cáo / khảo sát", name: "baoCao", widget: text, required: false }
