@@ -1285,4 +1285,35 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.j
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- App Data -->
+    <script src="data.js"></script>
+    
+    <!-- App Logic -->
+    <script src="app.js"></script>
+    <script>
+      // Xử lý token xác nhận từ email (đặt mật khẩu, xác nhận tài khoản)
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+        // Tự động mở hộp thoại khi có token trong URL (từ email)
+        const hash = window.location.hash;
+        if (hash && (
+          hash.includes('confirmation_token') ||
+          hash.includes('recovery_token') ||
+          hash.includes('invite_token') ||
+          hash.includes('access_token')
+        )) {
+          window.netlifyIdentity.open();
+        }
+      }
+    </script>
+
+</body>
+</html>
