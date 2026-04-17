@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             CUM_CONG_NGHIEP = data.CUM_CONG_NGHIEP;
             CCN_CHUA_DAU_TU = data.CCN_CHUA_DAU_TU;
+            window.KHU_CONG_NGHIEP = data.KHU_CONG_NGHIEP || [];
             // Tính lại THONG_KE từ dữ liệu mới (ghi đè giá trị cũ từ data.js)
             THONG_KE = {
                 tongCCN: CUM_CONG_NGHIEP.length + CCN_CHUA_DAU_TU.length,
@@ -642,30 +643,8 @@ function setupNavTabs() {
 
 // ---- KCN Map ----
 function initKCNMap() {
-    var kcnData = [
-        { ten: "KCN Đông Phố Mới ⚠️", viTri: "Phường Lào Cai, TP. Lào Cai", dienTich: 100, trangThai: "rut-qh", moTa: "41 DA, lấp đầy >90%. SẼ RÚT KHỎI QUY HOẠCH — di dời phục vụ đường sắt tốc độ cao LC-HN-HP → chuyển về KCN Bát Xát.", lat: 22.5017, lng: 103.9566 },
-        { ten: "KCN Bắc Duyên Hải", viTri: "Phường Lào Cai, TP. Lào Cai", dienTich: 85, trangThai: "hoat-dong", moTa: "63 DA, lấp đầy >90%. Sẽ chuyển đổi chức năng theo QH Khu KT cửa khẩu Lào Cai 2045.", lat: 22.5024, lng: 103.9562 },
-        { ten: "KCN Tằng Loỏng", viTri: "Xã Gia Phú, tỉnh Lào Cai", dienTich: 1100, trangThai: "hoat-dong", moTa: "KCN tuyển khoáng, hóa chất lớn nhất cả nước. 29 DA, lấp đầy 85%. Tiền thân từ NM Apatit (1994).", lat: 22.3331, lng: 104.1253 },
-        { ten: "KCN Phía Nam", viTri: "Phường Văn Phú, tỉnh Lào Cai", dienTich: 400, trangThai: "hoat-dong", moTa: "66 DA (289,27 ha), lấp đầy 91,54%. Còn 26,72 ha. Đa ngành, 12 DA FDI.", lat: 21.6805, lng: 104.9485 },
-        { ten: "KCN Âu Lâu", viTri: "Phường Âu Lâu, tỉnh Lào Cai", dienTich: 120, trangThai: "hoat-dong", moTa: "12 DA (69,69 ha), lấp đầy 84,15%. Còn 13,13 ha.", lat: 21.6920, lng: 104.8420 },
-        { ten: "KCN Minh Quân", viTri: "Xã Minh Quân, tỉnh Lào Cai", dienTich: 75, trangThai: "hoat-dong", moTa: "17 DA (70,97 ha), lấp đầy 94,65% — cao nhất các KCN. Còn 4,01 ha.", lat: 21.6367, lng: 104.9022 },
-        { ten: "KCN Trấn Yên", viTri: "Phường Âu Lâu, tỉnh Lào Cai", dienTich: 339, trangThai: "xay-dung", moTa: "GĐ I: 254,59 ha (QĐ 1438/TTg 20/11/2024). Đang triển khai san nền.", lat: 21.7750, lng: 104.8206 },
-        // 14 KCN chưa thành lập (QH đến 2030)
-        { ten: "KCN Bản Qua", viTri: "Xã Bản Qua, tỉnh Lào Cai", dienTich: 107, trangThai: "quy-hoach", moTa: "Giữ nguyên QH. GĐ 2025-2030.", lat: 22.5400, lng: 103.8583 },
-        { ten: "KCN Y Can", viTri: "Xã Y Can, tỉnh Lào Cai", dienTich: 350, trangThai: "quy-hoach", moTa: "Giữ nguyên QH. GĐ 2025-2030.", lat: 21.7178, lng: 104.7931 },
-        { ten: "KCN Đông An", viTri: "Xã Đông An, tỉnh Lào Cai", dienTich: 350, trangThai: "quy-hoach", moTa: "Giữ nguyên QH. GĐ 2025-2030.", lat: 21.9767, lng: 104.5603 },
-        { ten: "KCN Thịnh Hưng", viTri: "Xã Thịnh Hưng, tỉnh Lào Cai", dienTich: 104, trangThai: "quy-hoach", moTa: "Giữ nguyên QH. GĐ 2025-2030.", lat: 21.7111, lng: 104.9992 },
-        { ten: "KCN Lục Yên", viTri: "Xã Tân Lĩnh, tỉnh Lào Cai", dienTich: 221, trangThai: "quy-hoach", moTa: "Giữ nguyên QH. GĐ 2025-2030.", lat: 22.1264, lng: 104.7197 },
-        { ten: "KCN Võ Lao GĐ 1", viTri: "Xã Võ Lao, tỉnh Lào Cai", dienTich: 500, trangThai: "quy-hoach", moTa: "Điều chỉnh tăng DT từ 200 → 500 ha.", lat: 22.1931, lng: 104.1958 },
-        { ten: "KCN Cốc Mỳ-Trịnh Tường", viTri: "Xã Trịnh Tường, tỉnh Lào Cai", dienTich: 500, trangThai: "quy-hoach", moTa: "Điều chỉnh giảm DT từ 800 → 500 ha.", lat: 22.6581, lng: 103.7131 },
-        { ten: "KCN Phú Xuân", viTri: "Xã Xuân Hòa, tỉnh Lào Cai", dienTich: 300, trangThai: "quy-hoach", moTa: "Đẩy nhanh tiến độ: từ sau 2030 lên GĐ 2026-2030.", lat: 22.3028, lng: 104.5178 },
-        { ten: "KCN Bát Xát", viTri: "Xã Bát Xát, tỉnh Lào Cai", dienTich: 76, trangThai: "quy-hoach", moTa: "Bổ sung mới. Phục vụ di chuyển từ KCN Đông Phố Mới.", lat: 22.5422, lng: 103.8900 },
-        { ten: "KCN Cam Đường", viTri: "Phường Cam Đường, TP. Lào Cai", dienTich: 200, trangThai: "quy-hoach", moTa: "Bổ sung mới. GĐ 2025-2030.", lat: 22.4139, lng: 103.9936 },
-        { ten: "KCN Thống Nhất", viTri: "Xã Gia Phú, tỉnh Lào Cai", dienTich: 150, trangThai: "quy-hoach", moTa: "Bổ sung mới. Chuyển từ CCN Thống Nhất.", lat: 22.3397, lng: 104.0681 },
-        { ten: "KCN Việt Hồng 1", viTri: "Xã Việt Hồng, tỉnh Lào Cai", dienTich: 300, trangThai: "quy-hoach", moTa: "Bổ sung mới. GĐ 2025-2030.", lat: 21.5653, lng: 104.8325 },
-        { ten: "KCN Việt Hồng 2", viTri: "Xã Việt Hồng, tỉnh Lào Cai", dienTich: 200, trangThai: "quy-hoach", moTa: "Bổ sung mới. GĐ 2025-2030.", lat: 21.5680, lng: 104.8350 },
-        { ten: "KCN Phú Xuân 1", viTri: "Xã Xuân Hòa, tỉnh Lào Cai", dienTich: 200, trangThai: "quy-hoach", moTa: "Bổ sung mới. GĐ 2025-2030.", lat: 22.3050, lng: 104.5200 }
-    ];
+        var kcnData = window.KHU_CONG_NGHIEP || [];
+    if (!kcnData.length) { console.error("KHU_CONG_NGHIEP chưa được load"); return; }
 
     var kcnColors = { "hoat-dong": "#2e7d32", "xay-dung": "#f57f17", "quy-hoach": "#3949ab", "rut-qh": "#c62828" };
     var kcnLabels = { "hoat-dong": "Đang hoạt động", "xay-dung": "Đang xây dựng", "quy-hoach": "Quy hoạch", "rut-qh": "Rút khỏi QH" };
@@ -1161,26 +1140,128 @@ function initRanhGioiMap() {
     };
     customControl.addTo(window.ranhGioiMap);
 
+    // ===========================================================
+    // TÍCH HỢP 3 NGUỒN DỮ LIỆU vào bản đồ ranh giới:
+    //   - 21 KCN (KHU_CONG_NGHIEP)
+    //   - 23 CCN hiện hữu (CUM_CONG_NGHIEP)
+    //   - 31 CCN quy hoạch (CCN_CHUA_DAU_TU)
+    //   + 25 polygon chính xác từ ccn-polygons.json
+    // Nếu một KCN/CCN đã có polygon chính thức -> dùng polygon đó.
+    // Nếu chưa có -> vẽ ô vuông CAM (is_synthetic) quanh toạ độ UBND xã.
+    // ===========================================================
     fetch('ccn-polygons.json')
         .then(function(r) { return r.json(); })
-        .then(function(data) {
-            window.ranhGioiData = data;
+        .then(function(polygons) {
+            window.ranhGioiData = buildRanhGioiData(polygons);
             // Build xa options
-            var xaSet = Array.from(new Set(data.map(function(d){ return d.xa; }).filter(Boolean))).sort();
+            var xaSet = Array.from(new Set(window.ranhGioiData.map(function(d){ return d.xa; }).filter(Boolean))).sort();
             var xaSelect = document.getElementById('filter-xa');
+            while (xaSelect.options.length > 1) xaSelect.remove(1);
             xaSet.forEach(function(xa) {
                 var opt = document.createElement('option');
                 opt.value = xa; opt.textContent = xa;
                 xaSelect.appendChild(opt);
             });
-            // Bind filter change
-            ['filter-loai','filter-trangthai','filter-xa','filter-dientich'].forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el) el.addEventListener('change', applyRanhGioiFilters);
-            });
-            renderRanhGioi(data);
+            // Bind filter change (nếu chưa bind)
+            if (!window._ranhGioiFiltersBound) {
+                ['filter-loai','filter-trangthai','filter-xa','filter-dientich'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.addEventListener('change', applyRanhGioiFilters);
+                });
+                window._ranhGioiFiltersBound = true;
+            }
+            renderRanhGioi(window.ranhGioiData);
         })
-        .catch(function(e) { console.error('Lỗi tải polygon:', e); });
+        .catch(function(e) { console.error('Lỗi tải ccn-polygons.json:', e); });
+}
+
+// ===========================================================
+// Hàm tổng hợp dữ liệu bản đồ ranh giới.
+// Ghép polygon chính thức với KCN/CCN từ ccn-data.json.
+// KCN/CCN chưa có polygon -> vẽ ô vuông cam (is_synthetic=true).
+// ===========================================================
+function buildRanhGioiData(polygons) {
+    function normName(s) { return (s || '').toLowerCase().trim().replace(/\s+/g, ' '); }
+
+    var polygonByName = {};
+    polygons.forEach(function(p) { polygonByName[normName(p.name)] = p; });
+
+    // Hàm tạo ô vuông cam quanh toạ độ UBND xã. area_ha có thể thiếu -> mặc định 5 ha.
+    function makeSquare(lat, lng, areaHa) {
+        var ha = Math.max(parseFloat(areaHa) || 5, 1);
+        var sideM = Math.sqrt(ha * 10000); // cạnh (mét)
+        var halfM = sideM / 2;
+        var dLat = halfM / 111320;
+        var dLng = halfM / (111320 * Math.cos(lat * Math.PI / 180));
+        return [
+            [lat - dLat, lng - dLng],
+            [lat + dLat, lng - dLng],
+            [lat + dLat, lng + dLng],
+            [lat - dLat, lng + dLng]
+        ];
+    }
+
+    var merged = [];
+    var seen = {};
+
+    // 1. Đưa tất cả polygon chính thức vào trước (giữ nguyên dữ liệu)
+    polygons.forEach(function(p) {
+        merged.push(p);
+        seen[normName(p.name)] = true;
+    });
+
+    // 2. Với mỗi nguồn, nếu tên chưa có polygon -> tạo ô vuông cam synthetic
+    function addSynthetic(src, section, extra) {
+        if (!src || typeof src.lat !== 'number' || typeof src.lng !== 'number') return;
+        var key = normName(src.ten);
+        if (seen[key]) return; // đã có polygon, bỏ qua
+        seen[key] = true;
+        merged.push({
+            section: section,
+            name: src.ten,
+            num_points: 4,
+            area_ha: parseFloat(src.dienTich) || 0,
+            coords: makeSquare(src.lat, src.lng, src.dienTich),
+            is_approx: true,
+            is_synthetic: true,
+            trangThai: extra.trangThai || src.trangThai || 'quy-hoach',
+            giaiDoan: extra.giaiDoan || '2025-2030',
+            xa: src.xa || src.viTri || '',
+            reason: 'Chưa có toạ độ ranh giới chính xác — vẽ ô vuông minh hoạ quanh vị trí UBND xã (hoặc điểm tham chiếu gần nhất).',
+            sourceDesc: extra.sourceDesc || ''
+        });
+    }
+
+    // 2a. 21 KCN từ KHU_CONG_NGHIEP
+    (window.KHU_CONG_NGHIEP || []).forEach(function(k) {
+        addSynthetic(k, 'KCN', {
+            trangThai: k.trangThai,
+            giaiDoan: k.trangThai === 'hoat-dong' || k.trangThai === 'xay-dung' ? 'Hiện hữu' : '2025-2030',
+            sourceDesc: k.moTa || ''
+        });
+    });
+
+    // 2b. 23 CCN hiện hữu từ CUM_CONG_NGHIEP
+    (window.CUM_CONG_NGHIEP || []).forEach(function(c) {
+        addSynthetic(c, 'CCN', {
+            trangThai: c.trangThai,
+            giaiDoan: 'Hiện hữu',
+            sourceDesc: c.moTa || ''
+        });
+    });
+
+    // 2c. 31 CCN quy hoạch từ CCN_CHUA_DAU_TU
+    (window.CCN_CHUA_DAU_TU || []).forEach(function(c) {
+        // CCN QH không có field trangThai, mặc định là quy-hoach
+        var gd = /2031-2050/i.test(c.huongPhatTrien || '') ? '2031-2050' : '2025-2030';
+        addSynthetic(c, 'CCN', {
+            trangThai: 'quy-hoach',
+            giaiDoan: gd,
+            sourceDesc: c.ghiChu || c.baoCao || c.huongPhatTrien || ''
+        });
+    });
+
+    return merged;
 }
 
 function resetFilters() {
@@ -1256,26 +1337,38 @@ function renderRanhGioi(data) {
         }).addTo(window.ranhGioiMap);
         window.ranhGioiLayers.push(polygon);
 
-        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? ' ⚠️' : '');
+        var isSynthetic = item.is_synthetic === true;
+        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? (isSynthetic ? ' 🟧' : ' ⚠️') : '');
         var statusBadge = '<span style="display:inline-block; padding:2px 8px; border-radius:10px; background:' + color + '; color:#fff; font-size:0.72rem; font-weight:600;">' + (statusLabels[item.trangThai] || item.trangThai) + '</span>';
-        var approxNote = isApprox
-            ? '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
-              '<b>⚠️ Ranh giới tạm (minh họa quy mô)</b><br>' +
-              (item.reason ? 'Lý do: ' + item.reason + '<br>' : '') +
-              'Polygon chính thức đang được rà soát.' +
-              '</div>'
+        var approxNote = '';
+        if (isSynthetic) {
+            approxNote = '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
+                '<b>🟧 CHƯA CẬP NHẬT TỌA ĐỘ CHÍNH XÁC</b><br>' +
+                'Ô vuông cam chỉ minh họa vị trí gần đúng quanh UBND xã/phường, diện tích tỉ lệ với DT công bố. ' +
+                'Sẽ được thay bằng ranh giới chính xác khi có quyết định phê duyệt quy hoạch chi tiết.' +
+                '</div>';
+        } else if (isApprox) {
+            approxNote = '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
+                '<b>⚠️ Ranh giới tạm (minh họa quy mô)</b><br>' +
+                (item.reason ? 'Lý do: ' + item.reason + '<br>' : '') +
+                'Polygon chính thức đang được rà soát.' +
+                '</div>';
+        }
+        var sourceNote = item.sourceDesc
+            ? '<p style="margin:6px 0 0;padding:6px 8px;background:#f8fafc;border-radius:4px;font-size:0.82rem;color:#334155;line-height:1.4;">' + item.sourceDesc + '</p>'
             : '';
 
         polygon.bindPopup(
             '<div style="min-width:240px;max-width:320px;">' +
             '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + displayName + '</h3>' +
-            '<p style="margin:2px 0;font-size:0.85rem;">' + statusBadge + ' &nbsp; <b>' + item.giaiDoan + '</b></p>' +
+            '<p style="margin:2px 0;font-size:0.85rem;">' + statusBadge + ' &nbsp; <b>' + (item.giaiDoan || '') + '</b></p>' +
             (item.xa ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + item.xa + '</p>' : '') +
             '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + item.area_ha + ' ha' +
-            (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</p>' +
-            (!isApprox ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
+            (isSynthetic ? ' (công bố, ô vuông minh họa)' : (isApprox ? ' (công bố)' : ' (tính từ tọa độ)')) + '</p>' +
+            (!isApprox && !isSynthetic ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
+            sourceNote +
             approxNote +
-            '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">VN-2000, KT trục 104°45\'</p>' +
+            (!isSynthetic ? '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">VN-2000, KT trục 104°45\'</p>' : '') +
             '</div>'
         );
 
@@ -1292,39 +1385,19 @@ function renderRanhGioi(data) {
 // ---- CCN Quy Hoach Map (31 CCN chưa thành lập) ----
 function initCCNQHMap() {
     // Tọa độ 31 CCN - ưu tiên từ báo cáo xã, fallback về tọa độ UBND xã (Wikidata)
-    var ccnqhData = [
-        { stt:1, ten:"CCN Phú Thịnh 4", xa:"Phường Văn Phú", dt:75, gc:"Đất rừng SX 26ha. ~20 hộ ảnh hưởng. Cách IC cao tốc NB-LC ~7km. Điện 35kV có sẵn. Có ống cấp nước D300 từ hồ Thác Bà.", lat:21.7107, lng:104.9358 },
-        { stt:2, ten:"CCN Mông Sơn", xa:"Xã Bảo Ái", dt:50, gc:"GĐ 2031-2050. Xã Bảo Ái đã có báo cáo.", lat:21.6750, lng:104.9100 },
-        { stt:3, ten:"CCN Tân Nguyên", xa:"Xã Bảo Ái", dt:55, gc:"GĐ 2031-2050. Xã Bảo Ái đã có báo cáo.", lat:21.6800, lng:104.9150 },
-        { stt:4, ten:"CCN Bát Xát", xa:"Thôn 9+10, xã Bát Xát", dt:57, gc:"Địa hình bằng phẳng, ven sông Hồng. Tiếp giáp QL4D. Đất nông nghiệp, ít hộ ảnh hưởng. Hạ tầng điện, nước thuận lợi.", lat:22.5422, lng:103.8900 },
-        { stt:5, ten:"CCN Mường Khương", xa:"Xã Mường Khương", dt:30, gc:"20ha rừng phòng hộ, 7ha nương rẫy. ~30 hộ DTTS. Cách QL4D ~400m. Khái toán 113 tỷ. Thủ tục chuyển rừng PH phức tạp.", lat:22.7650, lng:104.1283 },
-        { stt:6, ten:"CCN Bản Phiệt 1", xa:"TDP Làng Chung, P. Lào Cai", dt:75, gc:"53 hộ ảnh hưởng, TĐC 3-5ha. Cách CK Kim Thành ~19km, ga ĐS ~9km. Đang lập QH phân khu Bản Phiệt.", lat:22.4600, lng:103.9500 },
-        { stt:7, ten:"CCN Bản Phiệt 2", xa:"TDP Pạc Tà+Cốc Lầy, P. Lào Cai", dt:75, gc:"60 hộ ảnh hưởng, TĐC ~80 hộ. Kết nối QL4D, QL70. Cách CK Kim Thành + ga ĐS ~13km.", lat:22.4550, lng:103.9450 },
-        { stt:8, ten:"CCN Cam Đường 1", xa:"TDP Đất Đèn+Tát, P. Cam Đường", dt:40, gc:"GĐ 1: 11,36ha. Đã có NĐT đăng ký nghiên cứu đầu tư hạ tầng. Gần trung tâm TP Lào Cai.", lat:22.4139, lng:103.9936 },
-        { stt:9, ten:"CCN Cam Đường 2", xa:"TDP Thác, P. Cam Đường", dt:12.75, gc:"Địa hình thuận lợi, gần khu vực đô thị.", lat:22.4100, lng:103.9980 },
-        { stt:10, ten:"CCN Bảo Thắng", xa:"Thôn Tân Thành, xã Bảo Thắng", dt:40, gc:"Rừng SX 13ha, đất lúa 22,5ha. ~100 hộ ảnh hưởng. Cách QL4E 6km, giáp sông Hồng. Cần nâng cấp TL161.", lat:22.3397, lng:104.0681 },
-        { stt:11, ten:"CCN Trà Trẩu", xa:"Thôn Trà Trẩu, xã Bảo Thắng", dt:35, gc:"Rừng SX 31ha. ~60 hộ (50 DTTS). Hầm chui cao tốc NB-LC tiết diện nhỏ → hạn chế xe tải lớn.", lat:22.3300, lng:104.0750 },
-        { stt:12, ten:"CCN Phố Ràng 1", xa:"Thôn 9B, xã Bảo Yên", dt:56, gc:"~35 hộ ảnh hưởng. Giáp QL70. Khái toán ~443 tỷ. Đề xuất cầu Phố Ràng 2 kết nối TL160.", lat:22.1800, lng:104.3600 },
-        { stt:13, ten:"CCN Phố Ràng 2", xa:"Thôn 9A, xã Bảo Yên", dt:75, gc:"~125 hộ ảnh hưởng (GPMB quy mô lớn). Khái toán ~587 tỷ. Rừng SX 340.877m².", lat:22.1750, lng:104.3650 },
-        { stt:14, ten:"CCN Tân An", xa:"Thôn Mai Hồng 1, xã Bảo Hà", dt:40, gc:"46 hộ ảnh hưởng (43 DTTS). Giáp TL151C và sông Hồng. Điện 35kV cách 0,65km. Cách IC16 ~14km.", lat:22.1600, lng:104.2900 },
-        { stt:15, ten:"CCN Bản Phùng", xa:"Thôn Nậm Cọ, xã Văn Bàn", dt:40, gc:"Rừng SX 31,1ha. ~20 hộ DTTS, GPMB thuận lợi. Cách QL279 ~1,5km. TL162 cắt qua CCN. Cấp nước suối tự chảy.", lat:22.0817, lng:104.2857 },
-        { stt:16, ten:"CCN Hòa Mạc", xa:"Xã Văn Bàn", dt:20, gc:"GĐ 2031-2050. Thông tin từ báo cáo xã Văn Bàn ngày 02/4/2026.", lat:22.0900, lng:104.2800 },
-        { stt:17, ten:"CCN Tân Hợp", xa:"Xã Tân Hợp", dt:75, gc:"Xã Tân Hợp đã có báo cáo. GĐ 2025-2030.", lat:21.8700, lng:104.6500 },
-        { stt:18, ten:"CCN Ngòi A", xa:"Xã Mậu A", dt:62, gc:"GĐ 2031-2050. Xã Mậu A đã có báo cáo.", lat:21.8600, lng:104.6100 },
-        { stt:19, ten:"CCN Yên Hưng", xa:"Xã Mậu A", dt:42, gc:"GĐ 2031-2050. Xã Mậu A đã có báo cáo.", lat:21.8550, lng:104.6150 },
-        { stt:20, ten:"CCN An Thịnh", xa:"Xã Mậu A", dt:30, gc:"GĐ 2025-2030. Xã Mậu A đã có báo cáo.", lat:21.8500, lng:104.6200 },
-        { stt:21, ten:"CCN Thống Nhất 2", xa:"Xã Gia Phú", dt:75, gc:"GĐ 2025-2030.", lat:22.3397, lng:104.0681 },
-        { stt:22, ten:"CCN Thống Nhất 3", xa:"Xã Gia Phú", dt:30, gc:"GĐ 2025-2030.", lat:22.3350, lng:104.0720 },
-        { stt:23, ten:"CCN Tân Lĩnh", xa:"Xã Tân Lĩnh", dt:75, gc:"GĐ 2025-2030.", lat:22.1264, lng:104.7197 },
-        { stt:24, ten:"CCN Thượng Bằng La", xa:"Xã Thượng Bằng La", dt:20, gc:"GĐ 2025-2030, mở rộng 50ha sau 2030.", lat:21.5300, lng:104.6200 },
-        { stt:25, ten:"CCN Văn Chấn", xa:"Xã Văn Chấn", dt:75, gc:"GĐ 2031-2050.", lat:21.5800, lng:104.5700 },
-        { stt:26, ten:"CCN An Bình", xa:"Xã Đông Cuông", dt:50, gc:"GĐ 2031-2050.", lat:21.8400, lng:104.5900 },
-        { stt:27, ten:"CCN Châu Quế", xa:"Xã Châu Quế", dt:75, gc:"GĐ 2031-2050.", lat:21.7600, lng:104.5500 },
-        { stt:28, ten:"CCN Yên Hợp 1", xa:"Xã Xuân Ái", dt:63, gc:"GĐ II mở rộng CCN Yên Hợp sau 2030.", lat:21.8950, lng:104.6430 },
-        { stt:29, ten:"CCN Xuân Ái (mở rộng)", xa:"Xã Xuân Ái", dt:75, gc:"Mở rộng CCN Yên Hợp GĐ II (tăng lên 75ha theo QĐ 525/2026).", lat:21.9000, lng:104.6380 },
-        { stt:30, ten:"CCN Hợp Minh", xa:"Phường Âu Lâu", dt:37.4, gc:"GĐ 2025-2030.", lat:21.6920, lng:104.8420 },
-        { stt:31, ten:"CCN Bảo Hưng 2", xa:"Phường Âu Lâu", dt:75, gc:"GĐ 2025-2030.", lat:21.6950, lng:104.8380 }
-    ];
+    // Lấy từ window.CCN_CHUA_DAU_TU (đã có lat/lng + ghiChu được merge vào ccn-data.json)
+    var ccnqhData = (window.CCN_CHUA_DAU_TU || []).map(function(c) {
+        return {
+            stt: c.stt,
+            ten: c.ten,
+            xa: c.xa,
+            dt: c.dienTich,
+            gc: c.ghiChu || c.baoCao || c.huongPhatTrien || '',
+            lat: c.lat,
+            lng: c.lng
+        };
+    }).filter(function(c) { return typeof c.lat === 'number' && typeof c.lng === 'number'; });
+    if (!ccnqhData.length) { console.error('CCN_CHUA_DAU_TU chưa được load hoặc thiếu lat/lng'); return; }
 
     window.ccnqhMap = L.map('ccnqh-map', {
         center: [22.05, 104.35],

@@ -409,7 +409,7 @@
                         </select>
                     </div>
                     <button onclick="resetFilters()" style="padding:6px 14px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600; color:#475569;">🔄 Đặt lại</button>
-                    <div style="margin-left:auto; font-weight:600; color:#1565c0; font-size:0.9rem;" id="filter-count">Hiện: 25/25</div>
+                    <div style="margin-left:auto; font-weight:600; color:#1565c0; font-size:0.9rem;" id="filter-count">Đang tải...</div>
                 </div>
             </div>
 
@@ -434,16 +434,23 @@
                         <span>Rút khỏi QH</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-dot" style="background: #ea580c;"></div>
-                        <span>⚠️ RG tạm</span>
+                        <div class="legend-dot" style="background: #ea580c; border:2px dashed #b45309;"></div>
+                        <span>⚠️ RG tạm (có polygon)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #fb923c; border:2px dashed #ea580c;"></div>
+                        <span>🟧 Ô vuông cam: chưa cập nhật tọa độ</span>
                     </div>
                 </div>
             </div>
             <div style="max-width:1200px; margin:0 auto; padding:16px;">
                 <div style="background:#fff; border-radius:8px; padding:16px; border:1px solid #ddd;">
-                    <h3 style="color:var(--primary); font-size:1.1rem; margin:0 0 8px;">🗺️ Bản đồ ranh giới chính xác (theo tọa độ VN-2000)</h3>
-                    <p style="color:#555; font-size:0.9rem; margin:0; line-height:1.6;">
-                        Bản đồ hiển thị <b>ranh giới đa giác</b> các KCN/CCN được trích xuất từ bảng tọa độ VN-2000 (kinh tuyến trục 104°45', múi chiếu 3°) trong văn bản quy hoạch. Click vào mỗi polygon để xem thông tin chi tiết.
+                    <h3 style="color:var(--primary); font-size:1.1rem; margin:0 0 8px;">🗺️ Bản đồ ranh giới tổng hợp (KCN + CCN đã TL + CCN QH)</h3>
+                    <p style="color:#555; font-size:0.9rem; margin:0 0 8px; line-height:1.6;">
+                        Bản đồ tích hợp <b>21 Khu CN</b>, <b>23 Cụm CN đã thành lập</b> và <b>31 Cụm CN quy hoạch</b>. Các KCN/CCN có ranh giới chính xác (VN-2000, KT trục 104°45', múi 3°) sẽ hiển thị polygon đa giác theo quy hoạch.
+                    </p>
+                    <p style="color:#9a3412; font-size:0.9rem; margin:0; line-height:1.6; padding:8px; background:#fff7ed; border-left:3px solid #ea580c; border-radius:4px;">
+                        <b>🟧 Ô vuông CAM</b> = KCN/CCN <b>chưa cập nhật tọa độ ranh giới chính xác</b>. Ô vuông được vẽ quanh vị trí UBND xã/phường (hoặc điểm tham chiếu gần nhất), diện tích tỉ lệ với DT công bố — chỉ mang tính minh họa vị trí. Sẽ thay bằng ranh giới chính xác khi có quyết định phê duyệt quy hoạch chi tiết.
                     </p>
                 </div>
             </div>
@@ -1278,35 +1285,4 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- App Data -->
-    <script src="data.js"></script>
-    
-    <!-- App Logic -->
-    <script src="app.js"></script>
-    <script>
-      // Xử lý token xác nhận từ email (đặt mật khẩu, xác nhận tài khoản)
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-        // Tự động mở hộp thoại khi có token trong URL (từ email)
-        const hash = window.location.hash;
-        if (hash && (
-          hash.includes('confirmation_token') ||
-          hash.includes('recovery_token') ||
-          hash.includes('invite_token') ||
-          hash.includes('access_token')
-        )) {
-          window.netlifyIdentity.open();
-        }
-      }
-    </script>
-
-</body>
-</html>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.j
