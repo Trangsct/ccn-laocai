@@ -1287,6 +1287,60 @@ function buildRanhGioiData(polygons) {
         });
     });
 
+    // ===========================================================
+    // DEDUPE / GIÃN TÂM:
+    // Các ô vuông synthetic cùng xã thường trùng UBND -> chồng nhau.
+    // Gom nhóm theo tâm (lat,lng round 2 chữ số ~1km), với nhóm có >=2
+    // item thì bố trí vòng tròn quanh tâm chung, bán kính = tổng cạnh
+    // của các ô vuông / (2π) × 1.4 (đủ tách rời + padding).
+    // ===========================================================
+    function centerOf(coords) {
+        var n = coords.length;
+        if (coords[0][0] === coords[n-1][0] && coords[0][1] === coords[n-1][1]) n--;
+        var sx = 0, sy = 0;
+        for (var i = 0; i < n; i++) { sx += coords[i][0]; sy += coords[i][1]; }
+        return [sx / n, sy / n];
+    }
+    function maxSide(coords) {
+        var lats = coords.map(function(c){return c[0];});
+        var lngs = coords.map(function(c){return c[1];});
+        return Math.max(Math.max.apply(null, lats) - Math.min.apply(null, lats),
+                        Math.max.apply(null, lngs) - Math.min.apply(null, lngs));
+    }
+    function shiftCoords(coords, dLat, dLng) {
+        return coords.map(function(c) { return [c[0] + dLat, c[1] + dLng]; });
+    }
+
+    var groups = {};
+    merged.forEach(function(m, idx) {
+        if (!m.is_synthetic) return;
+        var c = centerOf(m.coords);
+        var key = c[0].toFixed(2) + ',' + c[1].toFixed(2); // ~1km grouping
+        if (!groups[key]) groups[key] = [];
+        groups[key].push({item: m, idx: idx, cx: c[0], cy: c[1]});
+    });
+
+    Object.keys(groups).forEach(function(key) {
+        var group = groups[key];
+        if (group.length < 2) return;
+        // Tổng cạnh các ô -> bán kính đủ tách rời
+        var totalSide = 0;
+        group.forEach(function(g) { totalSide += maxSide(g.item.coords); });
+        var rad = (totalSide / (2 * Math.PI)) * 1.4;
+        if (rad < 0.005) rad = 0.005; // tối thiểu ~500m
+        // Xếp vòng tròn quanh tâm chung (lấy tâm item đầu)
+        var n = group.length;
+        var cx = group[0].cx, cy = group[0].cy;
+        group.forEach(function(g, i) {
+            var angle = (2 * Math.PI / n) * i - Math.PI / 2;
+            var dLat = rad * Math.sin(angle);
+            var dLng = rad * Math.cos(angle) / Math.cos(g.cy * Math.PI / 180);
+            var shiftLat = (cx + dLat) - g.cx;
+            var shiftLng = (cy + dLng) - g.cy;
+            g.item.coords = shiftCoords(g.item.coords, shiftLat, shiftLng);
+        });
+    });
+
     return merged;
 }
 
