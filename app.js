@@ -1341,6 +1341,61 @@ function buildRanhGioiData(polygons) {
         });
     });
 
+    // ===========================================================
+    // PAIRWISE NUDGE: lặp lại max 30 lần, đẩy các ô synthetic ra
+    // khỏi nhau (và khỏi polygon chính thức) bằng AABB overlap.
+    // Dùng sau group-dedupe để xử lý các cặp cross-group (<1km nhưng
+    // khác key toFixed(2)).
+    // ===========================================================
+    function aabb(coords) {
+        var lats = coords.map(function(c){return c[0];});
+        var lngs = coords.map(function(c){return c[1];});
+        return {
+            minLat: Math.min.apply(null, lats),
+            maxLat: Math.max.apply(null, lats),
+            minLng: Math.min.apply(null, lngs),
+            maxLng: Math.max.apply(null, lngs)
+        };
+    }
+    for (var iter = 0; iter < 30; iter++) {
+        var anyMoved = false;
+        for (var i = 0; i < merged.length; i++) {
+            for (var j = i + 1; j < merged.length; j++) {
+                var a = merged[i], b = merged[j];
+                var ba = aabb(a.coords), bb = aabb(b.coords);
+                if (ba.maxLat < bb.minLat || bb.maxLat < ba.minLat ||
+                    ba.maxLng < bb.minLng || bb.maxLng < ba.minLng) continue;
+                var overlapLat = Math.min(ba.maxLat, bb.maxLat) - Math.max(ba.minLat, bb.minLat);
+                var overlapLng = Math.min(ba.maxLng, bb.maxLng) - Math.max(ba.minLng, bb.minLng);
+                if (overlapLat <= 0 || overlapLng <= 0) continue;
+
+                var ca = centerOf(a.coords), cb = centerOf(b.coords);
+                var dirLat = ca[0] - cb[0], dirLng = ca[1] - cb[1];
+                var dist = Math.sqrt(dirLat*dirLat + dirLng*dirLng);
+                if (dist < 1e-6) { dirLat = 0.001; dirLng = 0.001; dist = Math.sqrt(2)*0.001; }
+                // Push vừa đủ tách, hướng theo trục ngắn nhất
+                var push = Math.min(overlapLat, overlapLng) * 0.55;
+                var pushLat = dirLat / dist * push;
+                var pushLng = dirLng / dist * push;
+
+                var synA = a.is_synthetic, synB = b.is_synthetic;
+                if (synA && synB) {
+                    a.coords = shiftCoords(a.coords,  pushLat/2,  pushLng/2);
+                    b.coords = shiftCoords(b.coords, -pushLat/2, -pushLng/2);
+                    anyMoved = true;
+                } else if (synA) {
+                    a.coords = shiftCoords(a.coords, pushLat, pushLng);
+                    anyMoved = true;
+                } else if (synB) {
+                    b.coords = shiftCoords(b.coords, -pushLat, -pushLng);
+                    anyMoved = true;
+                }
+                // Cả 2 đều là polygon chính thức: không dịch (không được sửa)
+            }
+        }
+        if (!anyMoved) break;
+    }
+
     return merged;
 }
 
