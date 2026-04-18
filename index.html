@@ -874,7 +874,16 @@
 
                 <!-- === DANH SÁCH TÓM TẮT === -->
                 <div id="news-list">
-                    <!-- Card tin 2 (mới nhất: 10/4/2026) -->
+                    <!-- Card tin 3 (mới nhất: 17/4/2026) -->
+                    <div class="news-card" onclick="openNews(3)" style="display:flex; gap:16px; background:#fff; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; cursor:pointer; transition:box-shadow 0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.05);" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.05)'">
+                        <div style="width:160px; height:100px; background:linear-gradient(135deg,#6d28d9,#7c3aed); border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:2rem;">📜</div>
+                        <div style="flex:1; min-width:0;">
+                            <h3 style="font-size:1rem; font-weight:700; color:#1a2332; margin:0 0 6px; line-height:1.4;">Hội nghị phổ biến Quy chế quản lý Cụm công nghiệp trên địa bàn tỉnh Lào Cai theo Quyết định 16/2026/QĐ-UBND</h3>
+                            <p style="font-size:0.85rem; color:#666; margin:0 0 6px;">📅 17/4/2026 | Sở Công Thương tỉnh Lào Cai</p>
+                            <p style="font-size:0.88rem; color:#555; margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">Sở Công Thương tổ chức hội nghị phổ biến Quy chế quản lý CCN theo Quyết định số 16/2026/QĐ-UBND ngày 25/02/2026, triển khai 08 nhóm nhiệm vụ cho UBND cấp xã toàn tỉnh...</p>
+                        </div>
+                    </div>
+                    <!-- Card tin 2 (10/4/2026) -->
                     <div class="news-card" onclick="openNews(2)" style="display:flex; gap:16px; background:#fff; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; cursor:pointer; transition:box-shadow 0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.05);" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.05)'">
                         <div style="width:160px; height:100px; background:linear-gradient(135deg,#0d47a1,#1976d2); border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:2rem;">📋</div>
                         <div style="flex:1; min-width:0;">
@@ -939,6 +948,122 @@
                         <!-- Chân bản tin -->
                         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e0e0e0; text-align:right;">
                             <p style="font-size:1.05rem; font-style:italic; color:#555; margin:0;"><b>Phòng Quản lý công nghiệp</b></p>
+                        </div>
+                    </div>
+                </article>
+                </div>
+
+                <!-- Bài 3 đầy đủ: Phổ biến Quy chế QL CCN -->
+                <div id="news-detail-3" style="display:none;">
+                    <button onclick="closeNews()" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--primary); font-weight:600; margin-bottom:16px; padding:0; font-family:inherit;">← Quay lại danh sách tin</button>
+                <article style="background:#fff; border:1px solid #ddd; border-radius:12px; overflow:hidden; margin-bottom:24px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    <div style="padding:32px 36px; font-family:'Times New Roman', Times, serif;">
+                        <h3 style="font-size:1.35rem; font-weight:700; color:#6d28d9; text-align:center; text-transform:uppercase; line-height:1.6; margin-bottom:8px;">
+                            Sở Công Thương Lào Cai tổ chức Hội nghị phổ biến Quy chế quản lý Cụm công nghiệp trên địa bàn tỉnh theo Quyết định 16/2026/QĐ-UBND
+                        </h3>
+                        <div style="text-align:center; font-size:0.95rem; color:#666; margin-bottom:24px; font-style:italic;">
+                            Ngày 17/4/2026 | Phòng Quản lý Công nghiệp, Sở Công Thương tỉnh Lào Cai
+                        </div>
+
+                        <div style="font-size:1.1rem; line-height:2; color:#222; text-align:justify;">
+
+                            <p style="text-indent:2em;">Thực hiện <b>Quyết định số 16/2026/QĐ-UBND ngày 25/02/2026</b> của Ủy ban nhân dân tỉnh Lào Cai về việc ban hành Quy chế quản lý cụm công nghiệp trên địa bàn tỉnh, Sở Công Thương đã tổ chức Hội nghị triển khai Quy chế nhằm phổ biến sâu rộng các nội dung của văn bản quan trọng này tới UBND cấp xã toàn tỉnh. Quy chế có hiệu lực thi hành sau 10 ngày kể từ ngày ký ban hành.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">I. CƠ SỞ PHÁP LÝ BAN HÀNH QUY CHẾ</h4>
+
+                            <p style="text-indent:2em;">Quy chế được xây dựng trên cơ sở nhiều văn bản pháp luật quan trọng:</p>
+                            <p style="text-indent:2em;">- <b>Luật Tổ chức Chính quyền địa phương số 72/2025/QH15</b> và Luật Ban hành văn bản quy phạm pháp luật số 64/2025 (được sửa đổi bởi Luật 87/2025);</p>
+                            <p style="text-indent:2em;">- <b>Nghị định số 32/2024/NĐ-CP</b> của Chính phủ về quản lý, phát triển cụm công nghiệp;</p>
+                            <p style="text-indent:2em;">- <b>Nghị định số 139/2025/NĐ-CP</b> về phân định thẩm quyền của Bộ Công Thương;</p>
+                            <p style="text-indent:2em;">- <b>Thông tư số 14/2024/TT-BCT</b> về chế độ báo cáo định kỳ CCN; <b>Thông tư số 37 và 38/2025/TT-BCT</b> hướng dẫn chức năng, phân cấp.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">II. PHẠM VI ĐIỀU CHỈNH VÀ ĐỐI TƯỢNG ÁP DỤNG</h4>
+
+                            <p style="text-indent:2em;"><b>Phạm vi điều chỉnh:</b> Quy chế quy định nguyên tắc, nội dung, phương thức và trách nhiệm của các cơ quan trong hoạt động quản lý, phát triển cụm công nghiệp trên địa bàn tỉnh Lào Cai (căn cứ Khoản 2 Điều 32 Nghị định 32/2024/NĐ-CP). Các nội dung không quy định trong Quy chế sẽ được thực hiện theo pháp luật hiện hành.</p>
+
+                            <p style="text-indent:2em;"><b>Đối tượng áp dụng</b> bao gồm 4 nhóm:</p>
+                            <p style="text-indent:2em;">1. Các cơ quan quản lý nhà nước (Sở, ngành; UBND cấp xã);</p>
+                            <p style="text-indent:2em;">2. Chủ đầu tư xây dựng hạ tầng kỹ thuật cụm công nghiệp;</p>
+                            <p style="text-indent:2em;">3. Tổ chức, cá nhân đầu tư sản xuất kinh doanh trong cụm công nghiệp;</p>
+                            <p style="text-indent:2em;">4. Các đơn vị có liên quan tới quản lý, phát triển CCN trên địa bàn tỉnh.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">III. NGUYÊN TẮC QUẢN LÝ VÀ PHƯƠNG THỨC PHỐI HỢP</h4>
+
+                            <p style="text-indent:2em;">Quy chế xác lập ba nguyên tắc cốt lõi: <i>Đúng chức năng</i> — thực hiện theo chức năng, nhiệm vụ của từng cơ quan, không chồng chéo, không giảm thẩm quyền; <i>Chia sẻ số liệu</i> — báo cáo điện tử, chia sẻ dữ liệu phù hợp lộ trình chuyển đổi số của tỉnh; <i>Sở Công Thương là cơ quan đầu mối</i> quản lý nhà nước đối với toàn bộ CCN trên địa bàn.</p>
+
+                            <p style="text-indent:2em;"><b>Phương thức phối hợp:</b> Cơ quan chủ trì tổ chức họp hoặc lấy ý kiến bằng văn bản, sau khi xử lý gửi Sở Công Thương 01 bản tổng hợp, thành lập đoàn giám sát liên ngành khi cần. Cơ quan phối hợp <b>phải trả lời bằng văn bản trong vòng 10 ngày làm việc</b> — không trả lời được coi là đồng ý và chịu trách nhiệm; không dự họp phải gửi ý kiến bằng văn bản trước cuộc họp.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">IV. 08 NHÓM NHIỆM VỤ CỦA UBND CẤP XÃ</h4>
+
+                            <p style="text-indent:2em;">Đây là phần quan trọng nhất, quy định rõ 08 nhóm nhiệm vụ UBND cấp xã phải thực hiện:</p>
+                            <p style="text-indent:2em;">1. <b>Xây dựng phương án phát triển CCN</b> (Điều 4);</p>
+                            <p style="text-indent:2em;">2. <b>Điều chỉnh phương án phát triển CCN</b> (Điều 5);</p>
+                            <p style="text-indent:2em;">3. <b>Thành lập, mở rộng CCN</b> (Điều 6);</p>
+                            <p style="text-indent:2em;">4. <b>Quy hoạch chi tiết 1/500</b> (Điều 8);</p>
+                            <p style="text-indent:2em;">5. <b>Thu hồi đất, GPMB và tái định cư</b> (Điều 11);</p>
+                            <p style="text-indent:2em;">6. <b>Quản lý sản xuất kinh doanh và chế độ báo cáo</b> (Điều 14);</p>
+                            <p style="text-indent:2em;">7. <b>Xử lý tranh chấp môi trường</b> (Điều 3, 28);</p>
+                            <p style="text-indent:2em;">8. <b>Thanh tra, kiểm tra định kỳ và đột xuất</b> (Điều 15).</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">V. QUY TRÌNH THÀNH LẬP, MỞ RỘNG CCN (Điều 6, 7)</h4>
+
+                            <p style="text-indent:2em;">Quy trình gồm 04 bước:</p>
+                            <p style="text-indent:2em;"><b>Bước 1 — Lập hồ sơ đề xuất:</b> UBND cấp xã chủ trì phối hợp lập hồ sơ thành lập/mở rộng CCN gửi Sở Công Thương thẩm định (Điều 8, 9, khoản 1-2 Điều 10 NĐ 32).</p>
+                            <p style="text-indent:2em;"><b>Bước 2 — Chấp thuận chủ trương đầu tư:</b> UBND cấp xã trình Sở Tài chính thẩm định, trình UBND tỉnh phê duyệt Quyết định chấp thuận chủ trương đầu tư theo Luật Đầu tư.</p>
+                            <p style="text-indent:2em;"><b>Bước 3 — Hội đồng chấm điểm chủ đầu tư:</b> Sở Công Thương tham mưu UBND tỉnh thành lập Hội đồng đánh giá (thang 100 điểm); UBND cấp xã là thành viên Hội đồng.</p>
+                            <p style="text-indent:2em;"><b>Bước 4 — Quyết định thành lập:</b> Sở Công Thương trình UBND tỉnh ban hành Quyết định thành lập, ghi rõ chủ đầu tư được giao (tối thiểu 50/100 điểm).</p>
+
+                            <p style="text-indent:2em;"><b>Lưu ý đặc biệt:</b> Các CCN hình thành trước Quyết định số 105/2009/QĐ-TTg, UBND cấp xã phải rà soát, hoàn thiện hồ sơ trước <b>ngày 31/12/2026</b>.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">VI. QUY HOẠCH CHI TIẾT XÂY DỰNG CCN (Điều 8)</h4>
+
+                            <p style="text-indent:2em;"><b>Thẩm quyền phê duyệt:</b> UBND cấp xã tiếp nhận hồ sơ, thẩm định và phê duyệt quy hoạch chi tiết tỷ lệ 1/500 theo quy trình thủ tục hành chính nội bộ cấp xã. Phòng Kinh tế / Phòng Kinh tế - Hạ tầng và Đô thị là đơn vị tham mưu.</p>
+
+                            <p style="text-indent:2em;"><b>Yêu cầu nội dung:</b> Phải phù hợp với Báo cáo đầu tư thành lập/mở rộng CCN đã được phê duyệt. Phải xác định rõ: nguồn cấp nước, cấp-thoát nước, xử lý nước thải và bảo vệ môi trường.</p>
+
+                            <p style="text-indent:2em;"><b>Căn cứ pháp lý:</b> Luật Xây dựng số 50/2014 (sửa đổi bởi Luật 62/2020); Luật Quy hoạch đô thị và nông thôn số 47/2024 (sửa đổi bởi Luật 144/2025); NĐ 145, 178/2025; TT 16, 17/2025/TT-BXD.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">VII. QUẢN LÝ HOẠT ĐỘNG SẢN XUẤT KINH DOANH VÀ CHẾ ĐỘ BÁO CÁO (Điều 14, 28)</h4>
+
+                            <p style="text-indent:2em;"><b>Nhiệm vụ quản lý trực tiếp:</b> Phòng Kinh tế / KT-HT&ĐT cấp xã là đơn vị đầu mối tham mưu quản lý nhà nước về CCN, đánh giá và báo cáo tình hình hoạt động. Đối với CCN liên xã, xã có diện tích lớn hơn làm cơ quan chủ trì, chịu trách nhiệm chính về môi trường, trật tự xây dựng, lao động, an ninh trật tự. UBND cấp xã hỗ trợ chủ đầu tư triển khai đầu tư xây dựng hạ tầng; tiếp nhận, giải quyết các thủ tục đầu tư vào CCN.</p>
+
+                            <p style="text-indent:2em;"><b>Chế độ báo cáo:</b> Căn cứ Khoản 4 Điều 23 NĐ 32/2024 và hướng dẫn của Sở Công Thương, UBND cấp xã gửi báo cáo định kỳ hoặc đột xuất đến Sở Công Thương và UBND tỉnh; cập nhật đầy đủ, kịp thời, chính xác vào Cơ sở dữ liệu CCN cấp tỉnh và CSDL CCN cả nước; tuyên truyền thông tin cho nhân dân về chủ trương, chính sách phát triển CCN.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">VIII. THANH TRA, KIỂM TRA VÀ XỬ LÝ VI PHẠM (Điều 15, 28)</h4>
+
+                            <p style="text-indent:2em;">UBND cấp xã thực hiện thanh tra, kiểm tra trên 05 lĩnh vực chính:</p>
+                            <p style="text-indent:2em;">- <b>Đất đai và Xây dựng:</b> kiểm tra sử dụng đất đúng quy hoạch, trật tự xây dựng, cấp/thu hồi Giấy phép xây dựng theo thẩm quyền;</p>
+                            <p style="text-indent:2em;">- <b>Môi trường:</b> kiểm tra hạ tầng bảo vệ môi trường trong CCN, xử lý sự cố môi trường, xả nước thải, ô nhiễm;</p>
+                            <p style="text-indent:2em;">- <b>Phòng cháy chữa cháy:</b> kiểm tra thiết kế, nghiệm thu PCCC của dự án/công trình trong CCN;</p>
+                            <p style="text-indent:2em;">- <b>Lao động và An toàn vệ sinh công nghiệp:</b> phối hợp giải quyết đình công, lãn công;</p>
+                            <p style="text-indent:2em;">- <b>An ninh trật tự:</b> chỉ đạo Công an cấp xã bảo vệ ANTT trong CCN thường xuyên và đột xuất.</p>
+
+                            <p style="text-indent:2em;"><b>Quy trình xử lý vi phạm:</b> Phát hiện vi phạm → Lập biên bản kiểm tra hiện trạng → Bàn giao cơ quan chuyên ngành chủ trì xử lý → Báo cáo kết quả về Sở Công Thương.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">IX. 06 VẤN ĐỀ UBND CẤP XÃ CẦN ĐẶC BIỆT LƯU Ý</h4>
+
+                            <p style="text-indent:2em;">1. <b>Xử lý CCN hình thành trước QĐ 105/2009:</b> Hoàn thành thủ tục thành lập hoặc đưa ra khỏi quy hoạch trước ngày 31/12/2026.</p>
+                            <p style="text-indent:2em;">2. <b>Phản hồi ý kiến trong 10 ngày làm việc:</b> Không trả lời được coi là đồng ý và chịu trách nhiệm về nội dung được đề nghị phối hợp.</p>
+                            <p style="text-indent:2em;">3. <b>CCN liên xã — phân định trách nhiệm:</b> Xã có diện tích lớn hơn là cơ quan chủ trì, chịu trách nhiệm chính về quản lý.</p>
+                            <p style="text-indent:2em;">4. <b>Cập nhật CSDL đầy đủ, kịp thời:</b> Nghĩa vụ bắt buộc theo NĐ 32/2024, cập nhật cả CSDL cấp tỉnh và CSDL cả nước.</p>
+                            <p style="text-indent:2em;">5. <b>Chuẩn bị hồ sơ đúng và đủ ngay từ đầu:</b> Thời gian bổ sung, hoàn thiện hồ sơ không tính vào thời hạn thẩm định của Sở Công Thương.</p>
+                            <p style="text-indent:2em;">6. <b>Văn bản mới ban hành áp dụng ngay:</b> Khi có văn bản quy phạm pháp luật mới thay thế văn bản viện dẫn trong Quy chế, áp dụng theo văn bản mới.</p>
+
+                            <h4 style="font-size:1.1rem; color:#6d28d9; font-weight:700; margin:24px 0 10px; text-indent:2em;">X. KẾT LUẬN VÀ YÊU CẦU TRIỂN KHAI</h4>
+
+                            <p style="text-indent:2em;">Phát biểu tại Hội nghị, đại diện Sở Công Thương đã nhấn mạnh 03 yêu cầu quan trọng mà UBND cấp xã cần tập trung thực hiện:</p>
+
+                            <p style="text-indent:2em;"><b>Một là,</b> Nghiên cứu nắm vững Quy chế: Phòng Kinh tế / KT-HT&ĐT cấp xã nghiên cứu kỹ 30 điều của Quy chế, nắm rõ thẩm quyền và nghĩa vụ của UBND cấp xã trong từng lĩnh vực.</p>
+
+                            <p style="text-indent:2em;"><b>Hai là,</b> Rà soát CCN trên địa bàn: Rà soát ngay tình trạng pháp lý, hạ tầng các CCN hiện có; lập kế hoạch xử lý, hoàn thiện hồ sơ trình Sở Công Thương <b>trước ngày 31/12/2026</b>.</p>
+
+                            <p style="text-indent:2em;"><b>Ba là,</b> Phối hợp chặt chẽ với Sở Công Thương: Chủ động phối hợp, phản hồi đúng hạn 10 ngày; cập nhật đầy đủ CSDL CCN; báo cáo kịp thời các phát sinh, vướng mắc.</p>
+
+                            <p style="text-indent:2em;">Sở Công Thương Lào Cai khẳng định sẵn sàng hỗ trợ, giải đáp mọi vướng mắc của các địa phương trong quá trình triển khai Quy chế, góp phần thực hiện thắng lợi mục tiêu phát triển công nghiệp của tỉnh trong giai đoạn 2025-2030 và tầm nhìn đến 2050./.</p>
+                        </div>
+
+                        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e0e0e0; text-align:right;">
+                            <p style="font-size:1.05rem; font-style:italic; color:#555; margin:0;"><b>Phòng Quản lý Công nghiệp - Sở Công Thương tỉnh Lào Cai</b></p>
                         </div>
                     </div>
                 </article>
