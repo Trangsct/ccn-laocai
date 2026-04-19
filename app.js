@@ -645,8 +645,31 @@ function setupNavTabs() {
                     iframe.src = iframe.getAttribute('data-src');
                 }
             }
+            // Cập nhật URL hash để F5 giữ nguyên tab
+            if (!window._skipHashUpdate) {
+                try { history.replaceState(null, '', '#' + target); } catch(e) {}
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+    });
+
+    // Đọc hash khi load trang → mở đúng tab
+    function loadFromHash() {
+        var hash = (window.location.hash || '').replace(/^#/, '');
+        if (!hash) return;
+        var btn = document.querySelector('[data-tab="' + hash + '"]');
+        if (btn) {
+            window._skipHashUpdate = true;
+            btn.click();
+            window._skipHashUpdate = false;
+        }
+    }
+    // Trigger sau khi data đã load
+    setTimeout(loadFromHash, 200);
+
+    // Hỗ trợ back/forward button
+    window.addEventListener('hashchange', function() {
+        loadFromHash();
     });
 }
 
