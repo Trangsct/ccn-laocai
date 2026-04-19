@@ -569,6 +569,7 @@ function setupNavTabs() {
         'ccnqh': document.getElementById('ccnqh-section'),
         'ccnranhgioi': document.getElementById('ccnranhgioi-section'),
         'thongke': document.getElementById('thongke-section'),
+        'ranhgioi': document.getElementById('ranhgioi-section'),
         'listqh': document.getElementById('listqh-section'),
         'listkcn': document.getElementById('listkcn-section'),
         'vanban': document.getElementById('vanban-section'),
@@ -635,6 +636,13 @@ function setupNavTabs() {
                         window.thongKeInited = true;
                     }
                 }, 150);
+            }
+            if (target === 'ranhgioi') {
+                // Lazy-load iframe lần đầu click
+                var iframe = document.getElementById('ranhgioi-iframe');
+                if (iframe && iframe.src === 'about:blank' || !iframe.src.includes('ranh-gioi-kcn-ccn')) {
+                    iframe.src = iframe.getAttribute('data-src');
+                }
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
