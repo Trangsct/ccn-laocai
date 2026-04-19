@@ -570,6 +570,7 @@ function setupNavTabs() {
         'ccnranhgioi': document.getElementById('ccnranhgioi-section'),
         'thongke': document.getElementById('thongke-section'),
         'ranhgioi': document.getElementById('ranhgioi-section'),
+        'thuhut': document.getElementById('thuhut-section'),
         'listqh': document.getElementById('listqh-section'),
         'listkcn': document.getElementById('listkcn-section'),
         'vanban': document.getElementById('vanban-section'),
