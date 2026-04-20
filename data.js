@@ -187,7 +187,7 @@ let CCN_CHUA_DAU_TU = [
     { stt: 2, ten: "CCN Tân Lĩnh", huyen: "luc-yen", xa: "Xã Tân Lĩnh", dienTich: 75, huongPhatTrien: "" },
     { stt: 3, ten: "CCN Thượng Bằng La", huyen: "van-chan", xa: "Xã Thượng Bằng La", dienTich: 20, huongPhatTrien: "Sau 2030 mở rộng lên thành 50 ha" },
     { stt: 4, ten: "CCN Bảo Thắng (Phố Lu)", huyen: "bao-thang", xa: "Xã Bảo Thắng", dienTich: 40, huongPhatTrien: "Sau 2030 mở rộng lên thành 75ha" },
-    { stt: 5, ten: "CCN Bản Phùng", huyen: "van-ban", xa: "Xã Văn Bàn", dienTich: 40, huongPhatTrien: "" },
+    { stt: 5, ten: "CCN Bản Phung", huyen: "van-ban", xa: "Xã Văn Bàn", dienTich: 40, huongPhatTrien: "" },
     { stt: 6, ten: "CCN Trà Trẩu", huyen: "bao-thang", xa: "Xã Bảo Thắng", dienTich: 35, huongPhatTrien: "Sau 2030 mở rộng lên thành 50ha" },
     { stt: 7, ten: "CCN Xuân Ái", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 35, huongPhatTrien: "Tăng 40 ha" },
     { stt: 8, ten: "CCN Tân Hợp", huyen: "van-yen", xa: "Xã Tân Hợp", dienTich: 40, huongPhatTrien: "Tăng 35 ha" },
