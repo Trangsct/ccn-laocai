@@ -678,32 +678,6 @@
     },
     {
       "stt": 21,
-      "ten": "CCN Thống Nhất 2",
-      "huyen": "bao-thang",
-      "xa": "Xã Gia Phú, tỉnh Lào Cai",
-      "dienTich": 75,
-      "huongPhatTrien": "Giai đoạn 2025-2030",
-      "coBaoCao": false,
-      "baoCao": "",
-      "lat": 22.3397,
-      "lng": 104.0681,
-      "ghiChu": "GĐ 2025-2030."
-    },
-    {
-      "stt": 22,
-      "ten": "CCN Thống Nhất 3",
-      "huyen": "bao-thang",
-      "xa": "Xã Gia Phú, tỉnh Lào Cai",
-      "dienTich": 30,
-      "huongPhatTrien": "Giai đoạn 2025-2030",
-      "coBaoCao": false,
-      "baoCao": "",
-      "lat": 22.335,
-      "lng": 104.072,
-      "ghiChu": "GĐ 2025-2030."
-    },
-    {
-      "stt": 23,
       "ten": "CCN Tân Lĩnh",
       "huyen": "luc-yen",
       "xa": "Xã Tân Lĩnh, tỉnh Lào Cai",
@@ -716,7 +690,7 @@
       "ghiChu": "GĐ 2025-2030."
     },
     {
-      "stt": 24,
+      "stt": 22,
       "ten": "CCN Thượng Bằng La",
       "huyen": "van-chan",
       "xa": "Xã Thượng Bằng La, tỉnh Lào Cai",
@@ -729,7 +703,7 @@
       "ghiChu": "GĐ 2025-2030, mở rộng 50ha sau 2030."
     },
     {
-      "stt": 25,
+      "stt": 23,
       "ten": "CCN Văn Chấn",
       "huyen": "van-chan",
       "xa": "Xã Văn Chấn, tỉnh Lào Cai",
@@ -742,7 +716,7 @@
       "ghiChu": "GĐ 2031-2050."
     },
     {
-      "stt": 26,
+      "stt": 24,
       "ten": "CCN An Bình",
       "huyen": "van-yen",
       "xa": "Xã Đông Cuông, tỉnh Lào Cai",
@@ -755,7 +729,7 @@
       "ghiChu": "GĐ 2031-2050."
     },
     {
-      "stt": 27,
+      "stt": 25,
       "ten": "CCN Châu Quế",
       "huyen": "van-yen",
       "xa": "Xã Châu Quế, tỉnh Lào Cai",
@@ -768,7 +742,7 @@
       "ghiChu": "GĐ 2031-2050."
     },
     {
-      "stt": 28,
+      "stt": 26,
       "ten": "CCN Yên Hợp 1",
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
@@ -781,7 +755,7 @@
       "ghiChu": "GĐ II mở rộng CCN Yên Hợp sau 2030."
     },
     {
-      "stt": 29,
+      "stt": 27,
       "ten": "CCN Xuân Ái (mở rộng)",
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
@@ -794,7 +768,7 @@
       "ghiChu": "Mở rộng CCN Yên Hợp GĐ II (tăng lên 75ha theo QĐ 525/2026)."
     },
     {
-      "stt": 30,
+      "stt": 28,
       "ten": "CCN Hợp Minh",
       "huyen": "khu-vuc-moi",
       "xa": "Phường Âu Lâu, tỉnh Lào Cai",
@@ -807,7 +781,7 @@
       "ghiChu": "GĐ 2025-2030."
     },
     {
-      "stt": 31,
+      "stt": 29,
       "ten": "CCN Bảo Hưng 2",
       "huyen": "khu-vuc-moi",
       "xa": "Phường Âu Lâu, tỉnh Lào Cai",
@@ -820,7 +794,7 @@
       "ghiChu": "GĐ 2025-2030."
     },
     {
-      "stt": 32,
+      "stt": 30,
       "ten": "CCN Phú Thịnh 5",
       "huyen": "khu-vuc-moi",
       "xa": "TDP Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
@@ -832,7 +806,7 @@
       "lng": 104.97016
     },
     {
-      "stt": 33,
+      "stt": 31,
       "ten": "CCN Phú Thịnh 6",
       "huyen": "khu-vuc-moi",
       "xa": "TDP Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
