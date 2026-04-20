@@ -402,7 +402,11 @@ function renderCCNCards(filteredList) {
     const grid = document.getElementById('ccn-grid');
     if (!grid) return;
 
-    const list = filteredList || CUM_CONG_NGHIEP;
+    var statusOrderCCN = {"hoat-dong": 1, "xay-dung": 2, "quy-hoach": 3, "tam-dung": 4};
+    const list = filteredList || [...CUM_CONG_NGHIEP].sort(function(a, b) {
+        return (statusOrderCCN[a.trangThai] || 99) - (statusOrderCCN[b.trangThai] || 99)
+            || (b.dienTich - a.dienTich);
+    });
 
     if (list.length === 0) {
         grid.innerHTML = `
@@ -745,6 +749,12 @@ function renderKCNCards() {
         { ten:"KCN Phú Xuân 1", viTri:"Xã Xuân Hòa, tỉnh Lào Cai", dt:200, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
         { ten:"KCN Đông Phố Mới", viTri:"Phường Lào Cai, TP. Lào Cai", dt:100, tt:"rut-qh", gc:"41 DA, lấp đầy >90%. Sẽ rút khỏi QH — di dời phục vụ đường sắt tốc độ cao LC-HN-HP → chuyển về KCN Bát Xát." }
     ];
+
+    var statusOrderKCN = {"hoat-dong":1,"xay-dung":2,"quy-hoach":3,"rut-qh":4};
+    kcnAll.sort(function(a, b) {
+        return (statusOrderKCN[a.tt] || 99) - (statusOrderKCN[b.tt] || 99)
+            || (b.dt - a.dt);
+    });
 
     var colors = {"hoat-dong":"#2e7d32","xay-dung":"#f57f17","quy-hoach":"#1565c0","rut-qh":"#c62828"};
     var labels = {"hoat-dong":"Đang hoạt động","xay-dung":"Đang xây dựng","quy-hoach":"Chưa thành lập","rut-qh":"⚠️ Rút khỏi QH"};
