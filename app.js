@@ -1553,7 +1553,8 @@ function renderRanhGioi(data) {
 function initCCNQHMap() {
     // Tọa độ 31 CCN - ưu tiên từ báo cáo xã, fallback về tọa độ UBND xã (Wikidata)
     // Lấy từ window.CCN_CHUA_DAU_TU (đã có lat/lng + ghiChu được merge vào ccn-data.json)
-    var ccnqhData = (window.CCN_CHUA_DAU_TU || []).map(function(c) {
+    var src = (typeof CCN_CHUA_DAU_TU !== 'undefined' ? CCN_CHUA_DAU_TU : (window.CCN_CHUA_DAU_TU || []));
+    var ccnqhData = src.map(function(c) {
         return {
             stt: c.stt,
             ten: c.ten,
