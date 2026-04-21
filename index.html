@@ -39,10 +39,10 @@
                 <h1 class="header-title">THÔNG TIN KHU, CỤM CÔNG NGHIỆP TỈNH LÀO CAI</h1>
             </div>
             <div class="header-stats">
-                <div class="header-stat"><div class="header-stat-number">20</div><div class="header-stat-label">KCN (QH 2030)</div></div>
-                <div class="header-stat"><div class="header-stat-number">23</div><div class="header-stat-label">CCN đã TL (904 ha)</div></div>
-                <div class="header-stat"><div class="header-stat-number">31</div><div class="header-stat-label">CCN chưa TL</div></div>
-                <div class="header-stat"><div class="header-stat-number">461+</div><div class="header-stat-label">Dự án đầu tư</div></div>
+                <div class="header-stat"><div class="header-stat-number">20</div><div class="header-stat-label">Khu công nghiệp<br>(Quy hoạch 2030)</div></div>
+                <div class="header-stat"><div class="header-stat-number">23</div><div class="header-stat-label">Cụm công nghiệp<br>đã thành lập</div></div>
+                <div class="header-stat"><div class="header-stat-number">31</div><div class="header-stat-label">Cụm công nghiệp<br>chưa thành lập</div></div>
+                <div class="header-stat"><div class="header-stat-number">461+</div><div class="header-stat-label">Dự án đã<br>đăng ký đầu tư</div></div>
             </div>
         </div>
     </header>
@@ -111,60 +111,174 @@
 
         <!-- === DASHBOARD === -->
         <section id="dashboard-section">
-            <div style="max-width:1200px; margin:0 auto; padding:24px 16px;">
-                <!-- Quick Stats Cards -->
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:28px;">
-                    <div onclick="document.querySelector('[data-tab=kcn]').click()" style="cursor:pointer; background:linear-gradient(135deg,#0d47a1,#1565c0); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(13,71,161,0.3);">
-                        <div style="font-size:2.2rem; font-weight:800;">20</div>
-                        <div style="font-size:0.95rem; opacity:0.9;">Khu công nghiệp</div>
-                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">7 đã TL + 14 chưa TL - 1 rút QH</div>
-                    </div>
-                    <div onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer; background:linear-gradient(135deg,#2e7d32,#43a047); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(46,125,50,0.3);">
-                        <div style="font-size:2.2rem; font-weight:800;">23</div>
-                        <div style="font-size:0.95rem; opacity:0.9;">CCN đã thành lập</div>
-                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">904 ha | 233 dự án | 16 đang HĐ</div>
-                    </div>
-                    <div onclick="document.querySelector('[data-tab=quyhoach]').click()" style="cursor:pointer; background:linear-gradient(135deg,#e65100,#f57c00); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(230,81,0,0.3);">
-                        <div style="font-size:2.2rem; font-weight:800;">31</div>
-                        <div style="font-size:0.95rem; opacity:0.9;">CCN chưa thành lập</div>
-                        <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">Đang thu hút đầu tư hạ tầng</div>
-                    </div>
-                    <div onclick="document.querySelector('[data-tab=vanban]').click()" style="cursor:pointer; background:linear-gradient(135deg,#4a148c,#7b1fa2); color:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(74,20,140,0.3); display:flex; flex-direction:column; justify-content:center;">
-                        <div style="font-size:1.05rem; font-weight:700; line-height:1.3;">VBQPPL lĩnh vực Khu, cụm công nghiệp</div>
-                        <div style="font-size:0.82rem; opacity:0.85; margin-top:8px;">NĐ 32/2024, Quy chế, NQ 34, KH 134, Luật ĐT 2025</div>
+            <div style="max-width:1200px; margin:0 auto; padding:0;">
+
+                <!-- HERO BANNER -->
+                <div style="position:relative; background:linear-gradient(135deg,#0d47a1 0%,#1976d2 50%,#2e7d32 100%); color:#fff; padding:56px 28px; border-radius:0 0 20px 20px; box-shadow:0 8px 24px rgba(13,71,161,0.25); overflow:hidden;">
+                    <div style="position:absolute; inset:0; background-image:radial-gradient(circle at 20% 50%,rgba(255,255,255,0.15) 0,transparent 50%),radial-gradient(circle at 80% 30%,rgba(255,255,255,0.1) 0,transparent 50%); pointer-events:none;"></div>
+                    <div style="position:relative; max-width:900px; margin:0 auto; text-align:center;">
+                        <div style="display:inline-block; background:rgba(255,255,255,0.18); color:#fff; padding:6px 18px; border-radius:20px; font-size:0.85rem; font-weight:600; letter-spacing:1px; margin-bottom:18px; backdrop-filter:blur(8px);">SỞ CÔNG THƯƠNG TỈNH LÀO CAI</div>
+                        <h1 style="font-family:'Montserrat',sans-serif; font-size:2.4rem; font-weight:800; margin:0 0 14px; line-height:1.2; text-shadow:0 2px 12px rgba(0,0,0,0.2);">Khu công nghiệp và Cụm công nghiệp<br>tỉnh Lào Cai</h1>
+                        <p style="font-size:1.08rem; line-height:1.6; opacity:0.95; max-width:760px; margin:0 auto 24px;">Cổng thông tin chính thức về hiện trạng và quy hoạch hệ thống khu công nghiệp, cụm công nghiệp trên địa bàn tỉnh Lào Cai đến năm 2030, tầm nhìn đến năm 2050.</p>
+                        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                            <button onclick="document.querySelector('[data-tab=thuhut]').click()" style="background:#fbbf24; color:#78350f; padding:14px 28px; border:none; border-radius:10px; font-weight:700; font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(251,191,36,0.4); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">💰 Cơ hội đầu tư</button>
+                            <button onclick="document.querySelector('[data-tab=kcn]').click()" style="background:rgba(255,255,255,0.15); color:#fff; padding:14px 28px; border:1.5px solid rgba(255,255,255,0.4); border-radius:10px; font-weight:600; font-size:1rem; cursor:pointer; backdrop-filter:blur(8px); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">🗺️ Xem bản đồ</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2 Cards: KCN + CCN -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px;">
-                    <div onclick="document.querySelector('[data-tab=kcn]').click()" style="cursor:pointer; background:#fff; border-radius:12px; padding:24px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:transform 0.2s;">
-                        <h3 style="color:#0d47a1; font-size:1.15rem; margin:0 0 12px;">🏭 Khu công nghiệp (KCN)</h3>
-                        <p style="color:#555; font-size:0.92rem; line-height:1.6; margin:0 0 8px;"><b>20 KCN</b> theo QH đến 2030 (5.797 ha): 07 đã thành lập (2.139 ha, 228 DA) + 14 chưa thành lập − 01 rút khỏi QH (Đông Phố Mới).</p>
-                        <p style="color:#555; font-size:0.85rem; margin:0 0 12px;">Hiện tại: 6 đang HĐ, 1 đang XD (Trấn Yên), 14 đang thu hút đầu tư</p>
-                        <span style="color:#0d47a1; font-weight:600; font-size:0.9rem;">Xem bản đồ KCN →</span>
+                <div style="padding:28px 16px;">
+
+                <!-- KEY NUMBERS - 4 stat cards -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-bottom:32px;">
+                    <div onclick="document.querySelector('[data-tab=kcn]').click()" style="cursor:pointer; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #0d47a1; transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(13,71,161,0.18)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <span style="font-size:1.6rem;">🏭</span>
+                            <span style="font-size:0.82rem; color:#64748b; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Khu công nghiệp</span>
+                        </div>
+                        <div style="font-size:2.4rem; font-weight:800; color:#0d47a1; line-height:1;">20</div>
+                        <div style="font-size:0.9rem; color:#475569; margin-top:8px; font-weight:500;">Đến năm 2030 — tổng diện tích 5.797 héc-ta</div>
+                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">7 đã thành lập · 14 chưa thành lập · 1 rút khỏi quy hoạch</div>
                     </div>
-                    <div onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer; background:#fff; border-radius:12px; padding:24px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:transform 0.2s;">
-                        <h3 style="color:#2e7d32; font-size:1.15rem; margin:0 0 12px;">📦 Cụm công nghiệp (CCN)</h3>
-                        <p style="color:#555; font-size:0.92rem; line-height:1.6; margin:0 0 8px;">23 CCN đã thành lập (904 ha), thu hút 233 dự án, tổng vốn 8.170 tỷ đồng. 31 CCN chưa thành lập đang thu hút nhà đầu tư hạ tầng.</p>
-                        <p style="color:#555; font-size:0.85rem; margin:0 0 12px;">QH đến 2030: <b>54 CCN (2.928 ha)</b> | Tầm nhìn 2050: <b>62 CCN (3.779 ha)</b></p>
-                        <span style="color:#2e7d32; font-weight:600; font-size:0.9rem;">Xem bản đồ CCN →</span>
+
+                    <div onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #2e7d32; transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(46,125,50,0.18)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <span style="font-size:1.6rem;">📦</span>
+                            <span style="font-size:0.82rem; color:#64748b; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Cụm công nghiệp đã thành lập</span>
+                        </div>
+                        <div style="font-size:2.4rem; font-weight:800; color:#2e7d32; line-height:1;">23</div>
+                        <div style="font-size:0.9rem; color:#475569; margin-top:8px; font-weight:500;">Tổng diện tích 903,78 héc-ta</div>
+                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">233 dự án · Vốn đăng ký 8.170 tỷ đồng</div>
+                    </div>
+
+                    <div onclick="document.querySelector('[data-tab=ccnqh]').click()" style="cursor:pointer; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #e65100; transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(230,81,0,0.18)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <span style="font-size:1.6rem;">📍</span>
+                            <span style="font-size:0.82rem; color:#64748b; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Cụm công nghiệp chưa thành lập</span>
+                        </div>
+                        <div style="font-size:2.4rem; font-weight:800; color:#e65100; line-height:1;">31</div>
+                        <div style="font-size:0.9rem; color:#475569; margin-top:8px; font-weight:500;">Quy hoạch đến năm 2030</div>
+                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">Đang kêu gọi nhà đầu tư hạ tầng</div>
+                    </div>
+
+                    <div onclick="document.querySelector('[data-tab=thongke]').click()" style="cursor:pointer; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #7b1fa2; transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(123,31,162,0.18)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <span style="font-size:1.6rem;">📊</span>
+                            <span style="font-size:0.82rem; color:#64748b; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Tổng số dự án đầu tư</span>
+                        </div>
+                        <div style="font-size:2.4rem; font-weight:800; color:#7b1fa2; line-height:1;">461<span style="font-size:1.2rem;">+</span></div>
+                        <div style="font-size:0.9rem; color:#475569; margin-top:8px; font-weight:500;">Đã đăng ký đầu tư</div>
+                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">228 dự án ở khu công nghiệp · 233 dự án ở cụm công nghiệp</div>
                     </div>
                 </div>
 
-                <!-- Giới thiệu tóm tắt -->
-                <div style="background:#fff; border-radius:12px; padding:24px; border:1px solid #ddd; margin-bottom:28px;">
-                    <h3 style="color:var(--primary); font-size:1.15rem; margin:0 0 12px;">📖 Giới thiệu</h3>
-                    <p style="color:#333; font-size:0.95rem; line-height:1.8; margin:0; text-align:justify;">Tỉnh Lào Cai hiện có <b>07 KCN đã thành lập</b> (2.139 ha, 228 DA) và <b>23 CCN đã thành lập</b> (904 ha, 233 DA, vốn 8.170 tỷ). Theo QH tỉnh (QĐ 525/2026), đến 2030 phát triển lên <b>20 KCN</b> (= 7 đã TL + 14 chưa TL − 1 rút QH, tổng <b>5.797 ha</b>) và <b>54 CCN</b> (tổng <b>2.928 ha</b>). Tầm nhìn 2050: <b>22 KCN (8.078 ha)</b> và <b>62 CCN (3.779 ha)</b>. Nghị quyết 34-NQ/TU xác định phát triển khu, cụm công nghiệp là đột phá chiến lược để đưa cơ cấu CN-XD chiếm 45,3% GRDP vào năm 2030.</p>
-                    <button class="nav-item" data-tab="gioithieu" style="margin-top:12px; color:var(--primary); font-weight:600; background:none; border:none; cursor:pointer; padding:0; font-size:0.9rem;">Đọc thêm →</button>
+                <!-- TWO FEATURE CARDS -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-bottom:32px;">
+                    <div onclick="document.querySelector('[data-tab=kcn]').click()" style="cursor:pointer; background:linear-gradient(135deg,#0d47a1,#1976d2); color:#fff; border-radius:16px; padding:28px; box-shadow:0 6px 20px rgba(13,71,161,0.25); position:relative; overflow:hidden; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="position:absolute; top:-30px; right:-30px; font-size:8rem; opacity:0.1;">🏭</div>
+                        <div style="position:relative;">
+                            <h3 style="font-size:1.3rem; margin:0 0 10px; font-weight:700;">Hệ thống Khu công nghiệp</h3>
+                            <p style="font-size:0.96rem; line-height:1.7; margin:0 0 14px; opacity:0.95;">Hiện có <b>7 khu công nghiệp đã thành lập</b> (2.138,89 héc-ta, 228 dự án đầu tư). Trong đó Khu công nghiệp Tằng Loỏng (1.100 héc-ta) là khu tuyển khoáng - hóa chất lớn nhất cả nước.</p>
+                            <p style="font-size:0.88rem; line-height:1.6; margin:0 0 16px; opacity:0.85;">Quy hoạch đến năm 2030: <b>20 khu công nghiệp</b> với tổng diện tích <b>5.797 héc-ta</b>. Tầm nhìn đến năm 2050: <b>22 khu công nghiệp</b>, tổng diện tích <b>8.078 héc-ta</b>.</p>
+                            <span style="display:inline-block; background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:8px; font-weight:600; font-size:0.9rem; backdrop-filter:blur(8px);">Xem bản đồ khu công nghiệp →</span>
+                        </div>
+                    </div>
+
+                    <div onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer; background:linear-gradient(135deg,#2e7d32,#43a047); color:#fff; border-radius:16px; padding:28px; box-shadow:0 6px 20px rgba(46,125,50,0.25); position:relative; overflow:hidden; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="position:absolute; top:-30px; right:-30px; font-size:8rem; opacity:0.1;">📦</div>
+                        <div style="position:relative;">
+                            <h3 style="font-size:1.3rem; margin:0 0 10px; font-weight:700;">Hệ thống Cụm công nghiệp</h3>
+                            <p style="font-size:0.96rem; line-height:1.7; margin:0 0 14px; opacity:0.95;">Hiện có <b>23 cụm công nghiệp đã thành lập</b> (903,78 héc-ta, 233 dự án, tổng vốn đăng ký 8.170 tỷ đồng). 16 cụm đã đi vào hoạt động ổn định, 7 cụm đang xây dựng hạ tầng.</p>
+                            <p style="font-size:0.88rem; line-height:1.6; margin:0 0 16px; opacity:0.85;">Quy hoạch đến năm 2030: <b>54 cụm công nghiệp</b>, tổng diện tích <b>2.928 héc-ta</b>. Tầm nhìn đến năm 2050: <b>62 cụm công nghiệp</b>, tổng diện tích <b>3.779 héc-ta</b>.</p>
+                            <span style="display:inline-block; background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:8px; font-weight:600; font-size:0.9rem; backdrop-filter:blur(8px);">Xem bản đồ cụm công nghiệp →</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Quick links -->
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-                    <button class="nav-item" data-tab="vanban" style="background:#f0f6ff; border:1px solid #c3d9f7; border-radius:10px; padding:16px; text-align:center; cursor:pointer; font-size:0.9rem; font-weight:600; color:#1565c0;">📜 Quy chế quản lý CCN</button>
-                    <button onclick="showHuongDanDauTu()" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px; text-align:center; cursor:pointer; font-size:0.9rem; font-weight:600; color:#16a34a; font-family:inherit;">📝 Hướng dẫn thủ tục đầu tư</button>
-                    <a href="https://bando.laocai.gov.vn/" target="_blank" style="background:#fef9c3; border:1px solid #fde68a; border-radius:10px; padding:16px; text-align:center; font-size:0.9rem; font-weight:600; color:#92400e; text-decoration:none; display:block;">🗺️ Bản đồ tỉnh Lào Cai</a>
-                    <a href="https://sct.laocai.gov.vn" target="_blank" style="background:#fce4ec; border:1px solid #f8bbd0; border-radius:10px; padding:16px; text-align:center; font-size:0.9rem; font-weight:600; color:#c62828; text-decoration:none; display:block;">🌐 Sở Công Thương Lào Cai</a>
+                <!-- VISION 2050 HIGHLIGHT -->
+                <div style="background:linear-gradient(135deg,#fef3c7,#fde68a); border:2px solid #fbbf24; border-radius:16px; padding:28px; margin-bottom:32px; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:-20px; right:-20px; font-size:8rem; opacity:0.12;">🎯</div>
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <span style="background:#c2410c; color:#fff; padding:4px 12px; border-radius:12px; font-size:0.78rem; font-weight:700; letter-spacing:0.5px;">ĐỊNH HƯỚNG ĐẾN NĂM 2050</span>
+                    </div>
+                    <h3 style="color:#78350f; font-size:1.4rem; margin:0 0 12px; font-weight:700;">Đưa công nghiệp - xây dựng chiếm 45,3% tổng sản phẩm trên địa bàn tỉnh vào năm 2030</h3>
+                    <p style="color:#78350f; font-size:0.98rem; line-height:1.75; margin:0; text-align:justify;">Theo Nghị quyết số 34-NQ/TU của Ban Chấp hành Đảng bộ tỉnh và Kế hoạch số 134 ngày 26 tháng 3 năm 2026 của Ủy ban nhân dân tỉnh, phát triển khu công nghiệp và cụm công nghiệp được xác định là đột phá chiến lược để tăng trưởng tổng sản phẩm trên địa bàn tỉnh bình quân từ 11% mỗi năm trở lên, đưa Lào Cai trở thành tỉnh phát triển khá trong vùng Trung du và Miền núi phía Bắc.</p>
                 </div>
+
+                <!-- INTRODUCTION CARD -->
+                <div style="background:#fff; border-radius:14px; padding:28px; border:1px solid #e2e8f0; margin-bottom:32px; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                        <span style="font-size:1.5rem;">📖</span>
+                        <h3 style="color:#1e293b; font-size:1.25rem; margin:0; font-weight:700;">Tổng quan về phát triển công nghiệp tỉnh Lào Cai</h3>
+                    </div>
+                    <p style="color:#334155; font-size:0.98rem; line-height:1.85; margin:0 0 14px; text-align:justify;">Tỉnh Lào Cai là tỉnh miền núi biên giới phía Bắc, có vị trí chiến lược là cửa ngõ giao thương quốc tế với Trung Quốc qua cửa khẩu quốc tế Lào Cai. Với tài nguyên khoáng sản phong phú (a-pa-tít, sắt, đồng, cao lanh), lợi thế về nông lâm sản và mạng lưới giao thông kết nối ngày càng hoàn thiện, tỉnh Lào Cai hội tụ đầy đủ điều kiện để phát triển hệ thống khu công nghiệp và cụm công nghiệp đa dạng.</p>
+                    <p style="color:#334155; font-size:0.98rem; line-height:1.85; margin:0 0 16px; text-align:justify;">Thực hiện Quyết định số 525/QĐ-UBND ngày 25 tháng 02 năm 2026 của Chủ tịch Ủy ban nhân dân tỉnh về phê duyệt điều chỉnh Quy hoạch tỉnh thời kỳ 2021 - 2030, tầm nhìn đến năm 2050, hệ thống khu công nghiệp và cụm công nghiệp tỉnh Lào Cai đang đứng trước giai đoạn phát triển mang tính đột phá, mở ra cơ hội lớn cho các nhà đầu tư trong và ngoài nước.</p>
+                    <button class="nav-item" data-tab="gioithieu" style="color:#0d47a1; font-weight:700; background:#eff6ff; border:1.5px solid #bfdbfe; cursor:pointer; padding:10px 18px; font-size:0.92rem; border-radius:8px;">Đọc toàn văn giới thiệu →</button>
+                </div>
+
+                <!-- QUICK EXPLORE SECTION -->
+                <div style="margin-bottom:32px;">
+                    <h3 style="color:#1e293b; font-size:1.25rem; margin:0 0 16px; font-weight:700; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:1.5rem;">🔍</span>
+                        <span>Khám phá nhanh</span>
+                    </h3>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
+                        <button class="nav-item" data-tab="thongke" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:18px; text-align:left; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; gap:6px;" onmouseover="this.style.borderColor='#0d47a1'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(13,71,161,0.1)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size:1.6rem;">📊</div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.98rem;">Thống kê biểu đồ</div>
+                            <div style="font-size:0.82rem; color:#64748b;">Dữ liệu phân tích theo huyện, ngành nghề, tỷ lệ lấp đầy</div>
+                        </button>
+                        <button class="nav-item" data-tab="vanban" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:18px; text-align:left; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; gap:6px;" onmouseover="this.style.borderColor='#7b1fa2'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(123,31,162,0.1)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size:1.6rem;">📜</div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.98rem;">Văn bản pháp quy</div>
+                            <div style="font-size:0.82rem; color:#64748b;">Nghị định 32/2024, Quy chế quản lý, Nghị quyết 34, Kế hoạch 134</div>
+                        </button>
+                        <button class="nav-item" data-tab="tintuc" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:18px; text-align:left; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; gap:6px;" onmouseover="this.style.borderColor='#16a34a'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(22,163,74,0.1)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size:1.6rem;">📰</div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.98rem;">Thông tin mới nhất</div>
+                            <div style="font-size:0.82rem; color:#64748b;">Hội nghị, cuộc họp, báo cáo của Sở Công Thương</div>
+                        </button>
+                        <button onclick="showHuongDanDauTu()" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:18px; text-align:left; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; gap:6px; font-family:inherit;" onmouseover="this.style.borderColor='#c2410c'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(194,65,12,0.1)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size:1.6rem;">📝</div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.98rem;">Hướng dẫn thủ tục đầu tư</div>
+                            <div style="font-size:0.82rem; color:#64748b;">Quy trình, hồ sơ, cơ quan tiếp nhận đối với nhà đầu tư hạ tầng cụm công nghiệp</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- INVESTOR CALL TO ACTION -->
+                <div onclick="document.querySelector('[data-tab=thuhut]').click()" style="cursor:pointer; background:linear-gradient(135deg,#fb923c,#ea580c); color:#fff; border-radius:16px; padding:32px; box-shadow:0 8px 24px rgba(234,88,12,0.3); position:relative; overflow:hidden; margin-bottom:24px; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="position:absolute; top:-40px; right:-40px; font-size:10rem; opacity:0.12;">💰</div>
+                    <div style="position:relative; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+                        <div style="flex:1; min-width:280px;">
+                            <div style="font-size:0.85rem; font-weight:700; letter-spacing:1px; opacity:0.95; margin-bottom:8px;">LÀO CAI MỞ RỘNG CÁNH CỬA HỢP TÁC</div>
+                            <h3 style="font-size:1.5rem; margin:0 0 10px; font-weight:800; line-height:1.3;">Mời gọi đầu tư hạ tầng cụm công nghiệp</h3>
+                            <p style="font-size:0.96rem; line-height:1.6; margin:0; opacity:0.95;">31 cụm công nghiệp đang được quy hoạch đến năm 2030 với nhiều chính sách ưu đãi về thuế, tiền thuê đất và hỗ trợ đầu tư hạ tầng.</p>
+                        </div>
+                        <div style="background:#fff; color:#c2410c; padding:14px 28px; border-radius:10px; font-weight:800; font-size:1rem; white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.15);">Xem chi tiết →</div>
+                    </div>
+                </div>
+
+                <!-- EXTERNAL LINKS -->
+                <div style="margin-bottom:24px;">
+                    <h3 style="color:#64748b; font-size:0.85rem; margin:0 0 12px; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Liên kết hữu ích</h3>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+                        <a href="https://bando.laocai.gov.vn/" target="_blank" rel="noopener" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px 16px; font-size:0.9rem; font-weight:600; color:#334155; text-decoration:none; display:flex; align-items:center; gap:10px; transition:all 0.2s;" onmouseover="this.style.borderColor='#0d47a1'; this.style.color='#0d47a1'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#334155'">
+                            <span style="font-size:1.3rem;">🗺️</span>
+                            <span>Bản đồ hành chính tỉnh Lào Cai</span>
+                        </a>
+                        <a href="https://sct.laocai.gov.vn" target="_blank" rel="noopener" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px 16px; font-size:0.9rem; font-weight:600; color:#334155; text-decoration:none; display:flex; align-items:center; gap:10px; transition:all 0.2s;" onmouseover="this.style.borderColor='#c62828'; this.style.color='#c62828'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#334155'">
+                            <span style="font-size:1.3rem;">🌐</span>
+                            <span>Sở Công Thương tỉnh Lào Cai</span>
+                        </a>
+                        <a href="https://laocai.gov.vn" target="_blank" rel="noopener" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px 16px; font-size:0.9rem; font-weight:600; color:#334155; text-decoration:none; display:flex; align-items:center; gap:10px; transition:all 0.2s;" onmouseover="this.style.borderColor='#16a34a'; this.style.color='#16a34a'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#334155'">
+                            <span style="font-size:1.3rem;">🏛️</span>
+                            <span>Cổng thông tin tỉnh Lào Cai</span>
+                        </a>
+                    </div>
+                </div>
+
+                </div><!-- end padding wrapper -->
             </div>
         </section>
 
