@@ -39,10 +39,10 @@
                 <h1 class="header-title">THÔNG TIN KHU, CỤM CÔNG NGHIỆP TỈNH LÀO CAI</h1>
             </div>
             <div class="header-stats">
-                <div class="header-stat"><div class="header-stat-number">20</div><div class="header-stat-label">Khu công nghiệp<br>(Quy hoạch 2030)</div></div>
-                <div class="header-stat"><div class="header-stat-number">23</div><div class="header-stat-label">Cụm công nghiệp<br>đã thành lập</div></div>
-                <div class="header-stat"><div class="header-stat-number">35</div><div class="header-stat-label">Cụm công nghiệp<br>chưa thành lập</div></div>
-                <div class="header-stat"><div class="header-stat-number">461+</div><div class="header-stat-label">Dự án đã<br>đăng ký đầu tư</div></div>
+                <div class="header-stat" onclick="document.querySelector('[data-tab=kcn]').click()" title="Xem bản đồ Khu công nghiệp"><div class="header-stat-number">20</div><div class="header-stat-label">Khu công nghiệp<br>(Quy hoạch 2030)</div></div>
+                <div class="header-stat" onclick="document.querySelector('[data-tab=map]').click()" title="Xem bản đồ Cụm công nghiệp đã thành lập"><div class="header-stat-number">23</div><div class="header-stat-label">Cụm công nghiệp<br>đã thành lập</div></div>
+                <div class="header-stat" onclick="document.querySelector('[data-tab=ccnqh]').click()" title="Xem bản đồ Cụm công nghiệp quy hoạch"><div class="header-stat-number">35</div><div class="header-stat-label">Cụm công nghiệp<br>chưa thành lập</div></div>
+                <div class="header-stat" onclick="document.querySelector('[data-tab=thongke]').click()" title="Xem thống kê chi tiết"><div class="header-stat-number">461+</div><div class="header-stat-label">Dự án đã<br>đăng ký đầu tư</div></div>
             </div>
         </div>
     </header>
@@ -322,6 +322,11 @@
 
                     <p style="text-indent:2em;"><b>Đánh giá:</b> Quỹ đất trống trong các Khu công nghiệp đã thành lập còn rất ít (tổng cộng dưới 50 héc-ta). Khu công nghiệp Đông Phố Mới sắp phải di dời. Một số Khu công nghiệp chưa hoàn thiện hạ tầng xử lý nước thải tập trung.</p>
 
+                    <div style="text-align:center; margin:18px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                        <button onclick="document.querySelector('[data-tab=kcn]').click()" style="background:#0d47a1; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">🗺️ Xem bản đồ Khu công nghiệp</button>
+                        <button onclick="document.querySelector('[data-tab=listkcn]').click()" style="background:#fff; color:#0d47a1; border:1.5px solid #0d47a1; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📋 Danh sách Khu công nghiệp</button>
+                    </div>
+
                     <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">III. HIỆN TRẠNG CỤM CÔNG NGHIỆP</h3>
 
                     <p style="text-indent:2em;">Đến đầu năm 2026, trên địa bàn tỉnh có <b>23 Cụm công nghiệp</b> đã được thành lập với tổng diện tích <b>903,78 héc-ta</b>. Phân loại theo chủ đầu tư: 15 cụm do Ủy ban nhân dân cấp xã quản lý (448,46 héc-ta); 01 cụm do Ban Quản lý dự án Đầu tư xây dựng khu vực Trấn Yên (Cụm công nghiệp Yên Hợp giai đoạn I, 12 héc-ta); 07 cụm do doanh nghiệp làm chủ đầu tư (Phú Thịnh 1, Phú Thịnh 2, Phú Thịnh 3, Minh Quân, Y Can, Thống Nhất I, Bảo Minh).</p>
@@ -331,6 +336,11 @@
                     <p style="text-indent:2em;">Các Cụm công nghiệp có tỷ lệ lấp đầy cao: Cụm công nghiệp Đầm Hồng (100%), Cụm công nghiệp Bắc Duyên Hải (100%, có 104 cơ sở), Cụm công nghiệp Đông Phố Mới (100%), Cụm công nghiệp Sơn Mãn (100%), Cụm công nghiệp Âu Lâu (90,64%).</p>
 
                     <p style="text-indent:2em;"><b>Hạn chế:</b> Chưa có Cụm công nghiệp nào có hệ thống xử lý nước thải tập trung. Nhiều Cụm công nghiệp mới thành lập đang giải phóng mặt bằng, chưa có mặt bằng sạch. Năng lực quản lý Cụm công nghiệp ở cấp xã còn hạn chế.</p>
+
+                    <div style="text-align:center; margin:18px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                        <button onclick="document.querySelector('[data-tab=map]').click()" style="background:#2e7d32; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">🗺️ Xem bản đồ Cụm công nghiệp đã thành lập</button>
+                        <button onclick="document.querySelector('[data-tab=list]').click()" style="background:#fff; color:#2e7d32; border:1.5px solid #2e7d32; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📋 Danh sách Cụm công nghiệp đã thành lập</button>
+                    </div>
 
                     <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">IV. QUY HOẠCH ĐẾN NĂM 2030, TẦM NHÌN ĐẾN NĂM 2050</h3>
 
@@ -357,6 +367,12 @@
 
                     <p style="text-indent:2em;">Tầm nhìn đến năm 2050: <b>62 Cụm công nghiệp</b> với tổng diện tích khoảng <b>3.779 héc-ta</b>.</p>
 
+                    <div style="text-align:center; margin:18px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                        <button onclick="document.querySelector('[data-tab=ccnqh]').click()" style="background:#e65100; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">🗺️ Bản đồ 35 Cụm công nghiệp quy hoạch</button>
+                        <button onclick="document.querySelector('[data-tab=listqh]').click()" style="background:#fff; color:#e65100; border:1.5px solid #e65100; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📋 Danh sách Cụm công nghiệp chưa thành lập</button>
+                        <button onclick="document.querySelector('[data-tab=thuhut]').click()" style="background:#fff; color:#c2410c; border:1.5px solid #c2410c; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">💰 Cơ hội đầu tư</button>
+                    </div>
+
                     <h3 style="font-size:1.2rem; color:var(--primary); font-weight:700; margin:28px 0 12px; text-indent:2em;">V. ĐÁNH GIÁ TỔNG QUÁT VÀ TRIỂN VỌNG</h3>
 
                     <p style="text-indent:2em;">Tổng hợp đến đầu năm 2026: <b>07 Khu công nghiệp</b> (2.138,89 héc-ta) và <b>23 Cụm công nghiệp</b> (903,78 héc-ta) đã thành lập, tổng diện tích trên <b>3.042 héc-ta</b>. Thu hút trên <b>460 dự án</b> với tổng vốn đăng ký hàng chục nghìn tỷ đồng, tạo việc làm cho hàng nghìn lao động.</p>
@@ -364,6 +380,12 @@
                     <p style="text-indent:2em;">Với quy hoạch mở rộng lên <b>20 Khu công nghiệp</b> (5.797 héc-ta) và <b>54 Cụm công nghiệp</b> (2.928 héc-ta) vào năm 2030, tổng quỹ đất công nghiệp tăng gần 3 lần so với hiện trạng. Tầm nhìn đến năm 2050: <b>22 Khu công nghiệp</b> (8.078 héc-ta) và <b>62 Cụm công nghiệp</b> (3.779 héc-ta). Đây là dư địa rất lớn cho phát triển công nghiệp, thực hiện mục tiêu Nghị quyết số 34-NQ/TU đưa cơ cấu Công nghiệp - Xây dựng chiếm <b>45,3% tổng sản phẩm trên địa bàn tỉnh</b>, tăng trưởng tổng sản phẩm trên địa bàn tỉnh bình quân từ 11% mỗi năm trở lên.</p>
 
                     <p style="text-indent:2em;">Mỗi Khu công nghiệp, Cụm công nghiệp được lấp đầy không chỉ mang ý nghĩa về thành tích kinh tế mà còn tạo hàng trăm, hàng nghìn việc làm cho người dân địa phương, đóng góp nguồn thu ngân sách để tái đầu tư cho hạ tầng xã hội, góp phần đưa tỉnh Lào Cai trở thành tỉnh phát triển khá trong vùng Trung du và Miền núi phía Bắc.</p>
+
+                    <div style="text-align:center; margin:24px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                        <button onclick="document.querySelector('[data-tab=thongke]').click()" style="background:#7b1fa2; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📊 Xem thống kê chi tiết</button>
+                        <button onclick="document.querySelector('[data-tab=vanban]').click()" style="background:#fff; color:#7b1fa2; border:1.5px solid #7b1fa2; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📜 Văn bản pháp quy</button>
+                        <button onclick="document.querySelector('[data-tab=tintuc]').click()" style="background:#fff; color:#16a34a; border:1.5px solid #16a34a; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📰 Thông tin mới nhất</button>
+                    </div>
 
                     <div style="margin-top:28px; padding-top:16px; border-top:1px solid #ddd; font-size:0.95rem; font-style:italic; color:#666;">
                         <p>Nguồn: Báo cáo tình hình phát triển Khu công nghiệp, Cụm công nghiệp tỉnh Lào Cai (Sở Công Thương, tháng 4 năm 2026); Quyết định số 525/QĐ-UBND ngày 25 tháng 02 năm 2026; Nghị quyết số 34-NQ/TU của Ban Chấp hành Đảng bộ tỉnh; Kế hoạch số 134 ngày 26 tháng 3 năm 2026 của Ủy ban nhân dân tỉnh.</p>
@@ -929,15 +951,15 @@
                         <h3 style="margin:0; font-size:1.05rem; color:#0d47a1; font-weight:700;">Khu công nghiệp kêu gọi đầu tư</h3>
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
-                        <div style="background:linear-gradient(135deg,#0d47a1,#1565c0); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(13,71,161,0.25);">
+                        <div onclick="document.querySelector('[data-tab=kcn]').click()" title="Xem bản đồ 14 Khu công nghiệp" style="cursor:pointer; background:linear-gradient(135deg,#0d47a1,#1565c0); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(13,71,161,0.25); transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 18px rgba(13,71,161,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(13,71,161,0.25)'">
                             <div style="font-size:2.4rem; font-weight:800; line-height:1;">14</div>
                             <div style="font-size:0.92rem; opacity:0.95; margin-top:6px;">Dự án Khu công nghiệp</div>
-                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">cần thu hút nhà đầu tư hạ tầng</div>
+                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">🗺️ Bấm để xem trên bản đồ</div>
                         </div>
-                        <div style="background:linear-gradient(135deg,#1565c0,#1976d2); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(21,101,192,0.25);">
+                        <div onclick="document.querySelector('[data-tab=listkcn]').click()" title="Xem danh sách chi tiết Khu công nghiệp" style="cursor:pointer; background:linear-gradient(135deg,#1565c0,#1976d2); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(21,101,192,0.25); transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 18px rgba(21,101,192,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(21,101,192,0.25)'">
                             <div style="font-size:2.4rem; font-weight:800; line-height:1;">3.558</div>
                             <div style="font-size:0.92rem; opacity:0.95; margin-top:6px;">Diện tích quy hoạch (héc-ta)</div>
-                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">Bình quân 254 héc-ta mỗi dự án</div>
+                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">📋 Bấm để xem danh sách Khu công nghiệp</div>
                         </div>
                     </div>
                 </div>
@@ -949,15 +971,15 @@
                         <h3 style="margin:0; font-size:1.05rem; color:#2e7d32; font-weight:700;">Cụm công nghiệp kêu gọi đầu tư</h3>
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
-                        <div style="background:linear-gradient(135deg,#2e7d32,#388e3c); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(46,125,50,0.25);">
+                        <div onclick="document.querySelector('[data-tab=ccnqh]').click()" title="Xem bản đồ 35 Cụm công nghiệp quy hoạch" style="cursor:pointer; background:linear-gradient(135deg,#2e7d32,#388e3c); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(46,125,50,0.25); transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 18px rgba(46,125,50,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(46,125,50,0.25)'">
                             <div style="font-size:2.4rem; font-weight:800; line-height:1;">35</div>
                             <div style="font-size:0.92rem; opacity:0.95; margin-top:6px;">Dự án Cụm công nghiệp</div>
-                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">cần thu hút nhà đầu tư hạ tầng</div>
+                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">🗺️ Bấm để xem trên bản đồ</div>
                         </div>
-                        <div style="background:linear-gradient(135deg,#388e3c,#43a047); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(56,142,60,0.25);">
+                        <div onclick="document.querySelector('[data-tab=listqh]').click()" title="Xem danh sách chi tiết Cụm công nghiệp chưa thành lập" style="cursor:pointer; background:linear-gradient(135deg,#388e3c,#43a047); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(56,142,60,0.25); transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 18px rgba(56,142,60,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(56,142,60,0.25)'">
                             <div style="font-size:2.4rem; font-weight:800; line-height:1;">1.914</div>
                             <div style="font-size:0.92rem; opacity:0.95; margin-top:6px;">Diện tích quy hoạch (héc-ta)</div>
-                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">Bình quân 55 héc-ta mỗi dự án</div>
+                            <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">📋 Bấm để xem danh sách Cụm công nghiệp</div>
                         </div>
                     </div>
                 </div>

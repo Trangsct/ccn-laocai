@@ -333,40 +333,40 @@ function renderStats() {
     if (!statsContent) return;
 
     statsContent.innerHTML = `
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=list]').click()" style="cursor:pointer;" title="Xem danh sách Cụm công nghiệp">
             <div class="stat-icon">🏭</div>
             <div class="stat-number" data-target="${THONG_KE.tongCCN}">0</div>
-            <div class="stat-label">Tổng CCN theo QH</div>
+            <div class="stat-label">Tổng Cụm công nghiệp theo Quy hoạch</div>
         </div>
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer;" title="Xem bản đồ Cụm công nghiệp đã thành lập (đang hoạt động)">
             <div class="stat-icon">🟢</div>
             <div class="stat-number" data-target="${THONG_KE.dangHoatDong}">0</div>
-            <div class="stat-label">CCN đang hoạt động</div>
+            <div class="stat-label">Cụm công nghiệp đang hoạt động</div>
         </div>
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer;" title="Xem bản đồ Cụm công nghiệp đang xây dựng">
             <div class="stat-icon">🟡</div>
             <div class="stat-number" data-target="${THONG_KE.dangXayDung}">0</div>
-            <div class="stat-label">CCN đang xây dựng</div>
+            <div class="stat-label">Cụm công nghiệp đang xây dựng</div>
         </div>
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=ccnqh]').click()" style="cursor:pointer;" title="Xem bản đồ Cụm công nghiệp chưa thành lập (quy hoạch đến 2030)">
             <div class="stat-icon">🔵</div>
             <div class="stat-number" data-target="${THONG_KE.choDauTu}">0</div>
-            <div class="stat-label">CCN chưa thành lập</div>
+            <div class="stat-label">Cụm công nghiệp chưa thành lập</div>
         </div>
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=list]').click()" style="cursor:pointer;" title="Xem danh sách Cụm công nghiệp đã thành lập">
             <div class="stat-icon">📐</div>
             <div class="stat-number" data-target="${THONG_KE.dienTichHienHuu}">0</div>
-            <div class="stat-label">Diện tích Cụm công nghiệp đã thành lập (ha)</div>
+            <div class="stat-label">Diện tích Cụm công nghiệp đã thành lập (héc-ta)</div>
         </div>
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=listqh]').click()" style="cursor:pointer;" title="Xem danh sách Cụm công nghiệp chưa thành lập">
             <div class="stat-icon">🟦</div>
             <div class="stat-number" data-target="${THONG_KE.dienTichQuyHoach}">0</div>
-            <div class="stat-label">Diện tích Cụm công nghiệp chưa thành lập (ha)</div>
+            <div class="stat-label">Diện tích Cụm công nghiệp chưa thành lập (héc-ta)</div>
         </div>
-        <div class="stat-card animate-in">
+        <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=thuhut]').click()" style="cursor:pointer;" title="Xem cơ hội đầu tư">
             <div class="stat-icon">🏢</div>
             <div class="stat-number" data-target="${THONG_KE.tongDoanhNghiep}">0</div>
-            <div class="stat-label">Doanh nghiệp trong CCN</div>
+            <div class="stat-label">Doanh nghiệp trong Cụm công nghiệp</div>
         </div>
     `;
 
