@@ -290,7 +290,7 @@ function initCharts() {
         charts.area = new Chart(areaCtx, {
             type: 'bar',
             data: {
-                labels: ['23 CCN đã thành lập', '31 CCN chưa thành lập'],
+                labels: [(window.CUM_CONG_NGHIEP || CUM_CONG_NGHIEP).length + ' Cụm công nghiệp đã thành lập', (window.CCN_CHUA_DAU_TU || CCN_CHUA_DAU_TU).length + ' Cụm công nghiệp chưa thành lập'],
                 datasets: [{
                     label: 'Diện tích (ha)',
                     data: [THONG_KE.dienTichHienHuu, THONG_KE.dienTichQuyHoach],
@@ -356,12 +356,12 @@ function renderStats() {
         <div class="stat-card animate-in">
             <div class="stat-icon">📐</div>
             <div class="stat-number" data-target="${THONG_KE.dienTichHienHuu}">0</div>
-            <div class="stat-label">DT 23 CCN đã TL (ha)</div>
+            <div class="stat-label">Diện tích Cụm công nghiệp đã thành lập (ha)</div>
         </div>
         <div class="stat-card animate-in">
             <div class="stat-icon">🟦</div>
             <div class="stat-number" data-target="${THONG_KE.dienTichQuyHoach}">0</div>
-            <div class="stat-label">DT 31 CCN chưa TL (ha)</div>
+            <div class="stat-label">Diện tích Cụm công nghiệp chưa thành lập (ha)</div>
         </div>
         <div class="stat-card animate-in">
             <div class="stat-icon">🏢</div>
@@ -1576,6 +1576,9 @@ function initCCNQHMap() {
         };
     }).filter(function(c) { return typeof c.lat === 'number' && typeof c.lng === 'number'; });
     if (!ccnqhData.length) { console.error('CCN_CHUA_DAU_TU chưa được load hoặc thiếu lat/lng'); return; }
+
+    var legendEl = document.getElementById('ccnqh-legend-count');
+    if (legendEl) legendEl.textContent = ccnqhData.length;
 
     window.ccnqhMap = L.map('ccnqh-map', {
         center: [22.05, 104.35],
