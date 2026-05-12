@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Ranh giới lập quy hoạch Cụm công nghiệp Cam Đường 2 - 20 mốc</name>
+    <description><![CDATA[Tạo từ bảng thống kê tọa độ góc ranh trên bản đồ QH-02: Bản đồ ranh giới phạm vi lập quy hoạch chi tiết. Hệ tọa độ nguồn VN-2000, kinh tuyến trục 104°45’, múi chiếu 3°. Chuyển đổi sang WGS84 để mở trên Google Earth. Diện tích tính kiểm tra theo tọa độ phẳng: 13.874243 ha; diện tích geodesic WGS84: 13.875240 ha.]]></description>
+    <Style id="boundaryStyle">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>330000ff</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <Style id="pointStyle">
+      <IconStyle>
+        <scale>0.75</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0.7</scale>
+      </LabelStyle>
+    </Style>
+    <Placemark>
+      <name>Ranh giới lập quy hoạch CCN Cam Đường 2</name>
+      <styleUrl>#boundaryStyle</styleUrl>
+      <description><![CDATA[
+        <b>Nguồn:</b> Bản đồ QH-02 - Bản đồ ranh giới phạm vi lập quy hoạch chi tiết.<br/>
+        <b>Hệ tọa độ nguồn:</b> VN-2000 / TM-3 104°45', múi chiếu 3°.<br/>
+        <b>Số mốc:</b> 20 mốc M01-M20.<br/>
+        <b>Diện tích kiểm tra theo tọa độ phẳng:</b> 13.874243 ha (138742.435 m²).<br/>
+        <b>Diện tích geodesic WGS84:</b> 13.875240 ha.
+      ]]></description>
+      <Polygon>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              104.020543278,22.401987824,0
+              104.020872221,22.403395046,0
+              104.021643308,22.404393730,0
+              104.021766575,22.404321334,0
+              104.021847932,22.404102014,0
+              104.021750087,22.403983259,0
+              104.021199399,22.403420877,0
+              104.023156832,22.402996078,0
+              104.024850833,22.403665735,0
+              104.026267314,22.403710130,0
+              104.026508586,22.403614597,0
+              104.026691012,22.402813140,0
+              104.026584689,22.402667411,0
+              104.026083113,22.402685711,0
+              104.025841862,22.402781253,0
+              104.025286533,22.403224071,0
+              104.024698343,22.401709256,0
+              104.023147208,22.399926907,0
+              104.022585795,22.400367431,0
+              104.021312518,22.400998784,0
+              104.020543278,22.401987824,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    
+    <Placemark>
+      <name>M01</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M01</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424699.371 m; Y/Northing = 2478355.220 m<br/>WGS84: Kinh độ = 104.020543278; Vĩ độ = 22.401987824]]></description>
+      <Point>
+        <coordinates>104.020543278,22.401987824,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M02</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M02</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424733.996 m; Y/Northing = 2478510.878 m<br/>WGS84: Kinh độ = 104.020872221; Vĩ độ = 22.403395046]]></description>
+      <Point>
+        <coordinates>104.020872221,22.403395046,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M03</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M03</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424813.925 m; Y/Northing = 2478621.078 m<br/>WGS84: Kinh độ = 104.021643308; Vĩ độ = 22.404393730]]></description>
+      <Point>
+        <coordinates>104.021643308,22.404393730,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M04</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M04</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424826.578 m; Y/Northing = 2478613.000 m<br/>WGS84: Kinh độ = 104.021766575; Vĩ độ = 22.404321334]]></description>
+      <Point>
+        <coordinates>104.021766575,22.404321334,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M05</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M05</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424834.837 m; Y/Northing = 2478588.674 m<br/>WGS84: Kinh độ = 104.021847932; Vĩ độ = 22.404102014]]></description>
+      <Point>
+        <coordinates>104.021847932,22.404102014,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M06</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M06</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424824.699 m; Y/Northing = 2478575.573 m<br/>WGS84: Kinh độ = 104.021750087; Vĩ độ = 22.403983259]]></description>
+      <Point>
+        <coordinates>104.021750087,22.403983259,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M07</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M07</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424767.697 m; Y/Northing = 2478513.575 m<br/>WGS84: Kinh độ = 104.021199399; Vĩ độ = 22.403420877]]></description>
+      <Point>
+        <coordinates>104.021199399,22.403420877,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M08</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M08</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424969.012 m; Y/Northing = 2478465.561 m<br/>WGS84: Kinh độ = 104.023156832; Vĩ độ = 22.402996078]]></description>
+      <Point>
+        <coordinates>104.023156832,22.402996078,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M09</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M09</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425143.789 m; Y/Northing = 2478538.870 m<br/>WGS84: Kinh độ = 104.024850833; Vĩ độ = 22.403665735]]></description>
+      <Point>
+        <coordinates>104.024850833,22.403665735,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M10</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M10</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425289.657 m; Y/Northing = 2478543.083 m<br/>WGS84: Kinh độ = 104.026267314; Vĩ độ = 22.403710130]]></description>
+      <Point>
+        <coordinates>104.026267314,22.403710130,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M11</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M11</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425314.448 m; Y/Northing = 2478532.385 m<br/>WGS84: Kinh độ = 104.026508586; Vĩ độ = 22.403614597]]></description>
+      <Point>
+        <coordinates>104.026508586,22.403614597,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M12</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M12</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425332.804 m; Y/Northing = 2478443.549 m<br/>WGS84: Kinh độ = 104.026691012; Vĩ độ = 22.402813140]]></description>
+      <Point>
+        <coordinates>104.026691012,22.402813140,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M13</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M13</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425321.779 m; Y/Northing = 2478427.465 m<br/>WGS84: Kinh độ = 104.026584689; Vĩ độ = 22.402667411]]></description>
+      <Point>
+        <coordinates>104.026584689,22.402667411,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M14</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M14</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425270.145 m; Y/Northing = 2478429.740 m<br/>WGS84: Kinh độ = 104.026083113; Vĩ độ = 22.402685711]]></description>
+      <Point>
+        <coordinates>104.026083113,22.402685711,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M15</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M15</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425245.356 m; Y/Northing = 2478440.439 m<br/>WGS84: Kinh độ = 104.025841862; Vĩ độ = 22.402781253]]></description>
+      <Point>
+        <coordinates>104.025841862,22.402781253,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M16</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M16</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425188.414 m; Y/Northing = 2478489.748 m<br/>WGS84: Kinh độ = 104.025286533; Vĩ độ = 22.403224071]]></description>
+      <Point>
+        <coordinates>104.025286533,22.403224071,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M17</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M17</b><br/>VN-2000 / TM-3 104°45': X/Easting = 425127.043 m; Y/Northing = 2478322.304 m<br/>WGS84: Kinh độ = 104.024698343; Vĩ độ = 22.401709256]]></description>
+      <Point>
+        <coordinates>104.024698343,22.401709256,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M18</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M18</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424966.378 m; Y/Northing = 2478125.715 m<br/>WGS84: Kinh độ = 104.023147208; Vĩ độ = 22.399926907]]></description>
+      <Point>
+        <coordinates>104.023147208,22.399926907,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M19</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M19</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424908.808 m; Y/Northing = 2478174.774 m<br/>WGS84: Kinh độ = 104.022585795; Vĩ độ = 22.400367431]]></description>
+      <Point>
+        <coordinates>104.022585795,22.400367431,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>M20</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <description><![CDATA[<b>M20</b><br/>VN-2000 / TM-3 104°45': X/Easting = 424778.044 m; Y/Northing = 2478245.319 m<br/>WGS84: Kinh độ = 104.021312518; Vĩ độ = 22.400998784]]></description>
+      <Point>
+        <coordinates>104.021312518,22.400998784,0</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
