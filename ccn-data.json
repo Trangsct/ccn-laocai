@@ -460,12 +460,12 @@
       "ten": "CCN Bát Xát",
       "huyen": "bat-xat",
       "xa": "Thôn 9 + Thôn 10, xã Bát Xát, tỉnh Lào Cai",
-      "dienTich": 57,
+      "dienTich": 54.09,
       "huongPhatTrien": "Giai đoạn 2025-2030 (điều chỉnh tăng lên 57ha theo QĐ 525/2026)",
       "coBaoCao": true,
       "baoCao": "Vị trí: Thôn 9 + Thôn 10, xã Bát Xát. Diện tích QH: 57ha (thực tế ~55ha). Địa hình tương đối bằng phẳng, ven sông Hồng. Tiếp giáp QL4D. Đất đai chủ yếu là đất nông nghiệp, ít hộ bị ảnh hưởng. Hạ tầng kỹ thuật (điện, nước) khá thuận lợi. Báo cáo ngày 02/4/2026 của UBND xã Bát Xát.",
-      "lat": 22.516156,
-      "lng": 103.886896,
+      "lat": 22.5516709,
+      "lng": 103.8889238,
       "ghiChu": "Địa hình bằng phẳng, ven sông Hồng. Tiếp giáp QL4D. Đất nông nghiệp, ít hộ ảnh hưởng. Hạ tầng điện, nước thuận lợi."
     },
     {
@@ -816,6 +816,19 @@
       "baoCao": "Diện tích 75ha: 45ha rừng SX, 8ha lúa, 1ha đất ở, 7,5ha công ích, 13,5ha NN khác. Ảnh hưởng 9 hộ dân (9 hộ cần TĐC tại TĐC KCN Phía Nam và TĐC Phú Thịnh). Không có rừng tự nhiên. Cách IC cao tốc NB-LC ~5km, QL70 ~3,5km, QL32C ~3km, QL2D ~3,5km. Thuộc lưu vực Ngòi Sen → sông Hồng. Điện 35kV có sẵn, kế hoạch TBA 110/35/22kV. Có ống cấp nước D300 từ hồ Thác Bà. Tọa độ VN-2000 (KT 104°45'): (2397157.39, 522636.48), (2397430.67, 523168.44), (2396553.26, 523987.02), (2396162.23, 523564.19).",
       "lat": 21.668089,
       "lng": 104.975518
+    },
+    {
+      "stt": 32,
+      "ten": "CCN Quang Kim số 1",
+      "huyen": "bat-xat",
+      "xa": "Thôn Làng Hang, xã Bát Xát, tỉnh Lào Cai",
+      "dienTich": 57.29,
+      "huongPhatTrien": "Đa ngành nghề, ưu tiên nhà máy may, chế biến dược liệu, đóng gói hàng xuất nhập khẩu (gần cửa khẩu).",
+      "coBaoCao": true,
+      "baoCao": "Khu vực thôn Làng Hang, đã có 19,2 ha đất GPMB dự án SX1, SX2; còn lại 33,5 ha khoáng sản và 2,3 ha rừng sản xuất. Hạ tầng giao thông trên tuyến đường tỉnh 156 (Kim Thành – Ngòi Phát), kết nối trực tiếp cửa khẩu Kim Thành và Bản Vược.",
+      "lat": 22.5381093,
+      "lng": 103.9059822,
+      "ghiChu": "Bổ sung quy hoạch theo Quyết định 1958/QĐ-TTg ngày 10/9/2025 và Quyết định 525/QĐ-UBND ngày 25/02/2026."
     }
   ],
   "KHU_CONG_NGHIEP": [

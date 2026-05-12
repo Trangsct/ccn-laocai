@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>Ranh giới CCN Bát Xát</name>
+  <description><![CDATA[
+    <b>Cụm công nghiệp Bát Xát</b><br/>
+    Xã Bát Xát, tỉnh Lào Cai<br/>
+    Diện tích: 54.0871 ha (540,871.40 m²)<br/>
+    Hệ tọa độ gốc: VN-2000, múi chiếu 3°, kinh tuyến trục 104°45'<br/>
+    Chuyển đổi sang WGS-84 theo QĐ 05/2007/QĐ-BTNMT<br/>
+    Nguồn: Phụ lục kèm Báo cáo số 168/BC-UBND ngày 02/4/2026 của UBND xã Bát Xát
+  ]]></description>
+
+  <Style id="ranh-giới">
+    <LineStyle>
+      <color>ff0000ff</color>
+      <width>3</width>
+    </LineStyle>
+    <PolyStyle>
+      <color>4d0000ff</color>
+      <fill>1</fill>
+      <outline>1</outline>
+    </PolyStyle>
+  </Style>
+
+  <Style id="điểm-mốc">
+    <IconStyle>
+      <color>ff00ffff</color>
+      <scale>0.8</scale>
+      <Icon><href>http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png</href></Icon>
+    </IconStyle>
+    <LabelStyle><scale>0.8</scale></LabelStyle>
+  </Style>
+
+  <Placemark>
+    <name>Ranh giới CCN Bát Xát</name>
+    <styleUrl>#ranh-giới</styleUrl>
+    <Polygon>
+      <tessellate>1</tessellate>
+      <outerBoundaryIs>
+        <LinearRing>
+          <coordinates>
+          103.8852923,22.5565518,0
+          103.8823077,22.5545104,0
+          103.8822958,22.5543588,0
+          103.8865936,22.5500754,0
+          103.8898161,22.5475614,0
+          103.8899738,22.5475434,0
+          103.8915039,22.5478262,0
+          103.8936936,22.5475234,0
+          103.8943501,22.5476912,0
+          103.8946964,22.5479655,0
+          103.8957025,22.5494903,0
+          103.8937121,22.5504222,0
+          103.8891123,22.5531359,0
+          103.8878178,22.5532779,0
+          103.8867346,22.5539803,0
+          103.8861409,22.5551336,0
+          103.8855934,22.5564762,0
+          103.8852923,22.5565518,0
+          </coordinates>
+        </LinearRing>
+      </outerBoundaryIs>
+    </Polygon>
+  </Placemark>
+
+    <Placemark>
+      <name>Điểm 1</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8852923,22.5565518,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 2</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8823077,22.5545104,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 3</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8822958,22.5543588,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 4</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8865936,22.5500754,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 5</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8898161,22.5475614,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 6</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8899738,22.5475434,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 7</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8915039,22.5478262,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 8</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8936936,22.5475234,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 9</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8943501,22.5476912,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 10</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8946964,22.5479655,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 11</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8957025,22.5494903,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 12</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8937121,22.5504222,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 13</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8891123,22.5531359,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 14</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8878178,22.5532779,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 15</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8867346,22.5539803,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 16</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8861409,22.5551336,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 17</name>
+      <styleUrl>#điểm-mốc</styleUrl>
+      <Point><coordinates>103.8855934,22.5564762,0</coordinates></Point>
+    </Placemark>
+</Document>
+</kml>

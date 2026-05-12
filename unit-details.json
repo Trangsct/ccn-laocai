@@ -9,14 +9,243 @@
         "dienTich": 1100,
         "anhDaiDien": "unit-files/kcn-tang-loong/cover.jpg",
         "gioiThieu": "<p>Đoạn HTML giới thiệu...</p>",
-        "polygon": [[22.333, 104.125], [22.334, 104.126]],
+        "polygon": [
+          [
+            22.333,
+            104.125
+          ],
+          [
+            22.334,
+            104.126
+          ]
+        ],
         "centerLat": 22.333,
         "centerLng": 104.125,
         "kml": "unit-files/kcn-tang-loong/ranh-gioi.kml",
         "vanBan": [
-          {"ten": "Quyết định thành lập số 1234/QĐ-UBND", "ngay": "01/01/2008", "file": "unit-files/kcn-tang-loong/qd-thanh-lap.pdf"}
+          {
+            "ten": "Quyết định thành lập số 1234/QĐ-UBND",
+            "ngay": "01/01/2008",
+            "file": "unit-files/kcn-tang-loong/qd-thanh-lap.pdf"
+          }
         ]
       }
     }
+  },
+  "ccn-bat-xat": {
+    "ten": "CCN Bát Xát",
+    "type": "Cụm công nghiệp quy hoạch",
+    "viTriMoTa": "Thôn 9 và thôn 10, xã Bát Xát, tỉnh Lào Cai",
+    "dienTich": 54.09,
+    "gioiThieu": "<p><b>Cụm công nghiệp Bát Xát</b> được quy hoạch tại khu vực thôn 9, thôn 10 xã Bát Xát, với tổng diện tích khoảng <b>54,09 héc-ta</b>. Cụm công nghiệp đã được bổ sung vào quy hoạch chung Khu kinh tế cửa khẩu theo Quyết định số 1958/QĐ-TTg ngày 10/9/2025 của Thủ tướng Chính phủ và Quyết định số 525/QĐ-UBND ngày 25/02/2026 của Ủy ban nhân dân tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021 - 2030, tầm nhìn đến năm 2050.</p><p><b>Định hướng ngành nghề:</b> đa ngành nghề, ưu tiên di chuyển các cơ sở sản xuất tiểu thủ công nghiệp nhỏ lẻ (chế biến gỗ bóc, xưởng mộc, gò hàn...) đang hoạt động phân tán trong khu dân cư, nhằm không ảnh hưởng đến đời sống của người dân.</p><p><b>Hiện trạng đất:</b> đất khoáng sản khoảng 10 héc-ta (khai trường 26 đã đóng cửa mỏ, chưa đánh giá lại trữ lượng); đất rừng sản xuất khoảng 41 héc-ta; mặt nước 0,5 héc-ta; đất ở 0,3 héc-ta; đất cây hàng năm 1 héc-ta; đất khác (đường giao thông, thủy lợi, khe suối) 2,2 héc-ta. Có khoảng 8 - 10 hộ dân có công trình nhà ở nằm trong diện tích quy hoạch cần bố trí tái định cư.</p><p><b>Hạ tầng kết nối:</b> nằm trên tuyến đường tỉnh 156 (Kim Thành – Ngòi Phát) đã được nâng cấp với nền đường rộng 45m, kết nối trực tiếp từ cửa khẩu Kim Thành đến cửa khẩu Bản Vược, rất thuận lợi cho giao thương hàng hóa. Đường điện 35KV chạy qua khu vực; có tuyến ống nước sạch của nhà máy nước Bản Qua đi qua. Khu vực có địa hình cao, độ dốc lớn, gần sông Hồng nên thoát nước thuận lợi, nguy cơ ngập úng thấp.</p><p><b>Khó khăn:</b> diện tích đất rừng sản xuất chiếm đa số liên quan trực tiếp đến sinh kế của người dân. Một phần diện tích nằm trong khu vực quy hoạch khoáng sản tuy đã khai thác xong nhưng chưa đánh giá lại trữ lượng. Địa hình phức tạp, chênh cao và độ dốc lớn dẫn đến suất đầu tư dự án cao hơn mức trung bình.</p>",
+    "polygon": [
+      [
+        22.5565518,
+        103.8852923
+      ],
+      [
+        22.5545104,
+        103.8823077
+      ],
+      [
+        22.5543588,
+        103.8822958
+      ],
+      [
+        22.5500754,
+        103.8865936
+      ],
+      [
+        22.5475614,
+        103.8898161
+      ],
+      [
+        22.5475434,
+        103.8899738
+      ],
+      [
+        22.5478262,
+        103.8915039
+      ],
+      [
+        22.5475234,
+        103.8936936
+      ],
+      [
+        22.5476912,
+        103.8943501
+      ],
+      [
+        22.5479655,
+        103.8946964
+      ],
+      [
+        22.5494903,
+        103.8957025
+      ],
+      [
+        22.5504222,
+        103.8937121
+      ],
+      [
+        22.5531359,
+        103.8891123
+      ],
+      [
+        22.5532779,
+        103.8878178
+      ],
+      [
+        22.5539803,
+        103.8867346
+      ],
+      [
+        22.5551336,
+        103.8861409
+      ],
+      [
+        22.5564762,
+        103.8855934
+      ],
+      [
+        22.5565518,
+        103.8852923
+      ]
+    ],
+    "centerLat": 22.5516709,
+    "centerLng": 103.8889238,
+    "kml": "unit-files/ccn-bat-xat/ranh-gioi.kml",
+    "vanBan": [
+      {
+        "ten": "Báo cáo số 168/BC-UBND của UBND xã Bát Xát về tình hình triển khai quy hoạch các Cụm công nghiệp",
+        "ngay": "02/4/2026",
+        "file": "unit-files/ccn-bat-xat/bao-cao-xa-bat-xat.pdf"
+      },
+      {
+        "ten": "Sơ đồ ranh giới Cụm công nghiệp Bát Xát",
+        "ngay": "31/3/2026",
+        "file": "unit-files/ccn-bat-xat/so-do-ranh-gioi.pdf"
+      }
+    ]
+  },
+  "ccn-quang-kim-so-1": {
+    "ten": "CCN Quang Kim số 1",
+    "type": "Cụm công nghiệp quy hoạch",
+    "viTriMoTa": "Thôn Làng Hang, xã Bát Xát, tỉnh Lào Cai",
+    "dienTich": 57.29,
+    "gioiThieu": "<p><b>Cụm công nghiệp Quang Kim số 1</b> được quy hoạch tại khu vực thôn Làng Hang, xã Bát Xát, với tổng diện tích khoảng <b>57,29 héc-ta</b> (theo tọa độ thực tế). Cụm công nghiệp đã được bổ sung vào quy hoạch chung Khu kinh tế cửa khẩu theo Quyết định số 1958/QĐ-TTg ngày 10/9/2025 của Thủ tướng Chính phủ và Quyết định số 525/QĐ-UBND ngày 25/02/2026 của Ủy ban nhân dân tỉnh Lào Cai.</p><p><b>Định hướng ngành nghề:</b> đa ngành nghề nhằm tận dụng tốt nguồn nhân lực địa phương; sản phẩm có tính cạnh tranh, có khả năng xuất khẩu cao để khai thác lợi thế vị trí gần cửa khẩu (nhà máy may, nhà máy chế biến dược liệu, đóng gói hàng xuất nhập khẩu...).</p><p><b>Hiện trạng đất:</b> tổng 55 héc-ta, trong đó <b>đất đã thu hồi giải phóng mặt bằng (dự án SX1, SX2)</b> khoảng 19,2 héc-ta — đây là điểm thuận lợi rất lớn; đất khoáng sản 33,5 héc-ta (khu vực khai trường 25); đất rừng sản xuất 2,3 héc-ta. Hiện trong khu vực không có hộ dân sinh sống do đã đền bù khi thực hiện dự án SX1, SX2.</p><p><b>Hạ tầng kết nối:</b> nằm trên tuyến đường tỉnh 156 (Kim Thành – Ngòi Phát), kết nối trực tiếp từ cửa khẩu Kim Thành đến cửa khẩu Bản Vược. Có đường điện 35KV và tuyến nước sạch Bản Qua đi qua. Thoát nước thuận lợi, nguy cơ ngập úng thấp.</p><p><b>Lợi thế nổi bật:</b> đã có sẵn 19,2 héc-ta đất sạch, sẵn sàng bàn giao cho nhà đầu tư hạ tầng — rút ngắn đáng kể thời gian giải phóng mặt bằng so với các cụm công nghiệp khác.</p>",
+    "polygon": [
+      [
+        22.5428763,
+        103.9076514
+      ],
+      [
+        22.5428897,
+        103.907613
+      ],
+      [
+        22.5408249,
+        103.9028852
+      ],
+      [
+        22.5407462,
+        103.902854
+      ],
+      [
+        22.5402084,
+        103.9025607
+      ],
+      [
+        22.5397035,
+        103.9012676
+      ],
+      [
+        22.5389468,
+        103.9019553
+      ],
+      [
+        22.5380981,
+        103.9025713
+      ],
+      [
+        22.5364886,
+        103.9034462
+      ],
+      [
+        22.5359299,
+        103.9036718
+      ],
+      [
+        22.5353391,
+        103.9037625
+      ],
+      [
+        22.5332869,
+        103.903836
+      ],
+      [
+        22.5328993,
+        103.9039317
+      ],
+      [
+        22.5338398,
+        103.905952
+      ],
+      [
+        22.534113,
+        103.9065347
+      ],
+      [
+        22.5351839,
+        103.9088189
+      ],
+      [
+        22.5362874,
+        103.9106927
+      ],
+      [
+        22.5363692,
+        103.910712
+      ],
+      [
+        22.5379095,
+        103.9096442
+      ],
+      [
+        22.5382362,
+        103.9094605
+      ],
+      [
+        22.5386837,
+        103.9092728
+      ],
+      [
+        22.5413107,
+        103.9084715
+      ],
+      [
+        22.5415765,
+        103.908355
+      ],
+      [
+        22.5428763,
+        103.9076514
+      ]
+    ],
+    "centerLat": 22.5381093,
+    "centerLng": 103.9059822,
+    "kml": "unit-files/ccn-quang-kim-so-1/ranh-gioi.kml",
+    "vanBan": [
+      {
+        "ten": "Báo cáo số 168/BC-UBND của UBND xã Bát Xát về tình hình triển khai quy hoạch các Cụm công nghiệp",
+        "ngay": "02/4/2026",
+        "file": "unit-files/ccn-quang-kim-so-1/bao-cao-xa-bat-xat.pdf"
+      },
+      {
+        "ten": "Sơ đồ ranh giới Cụm công nghiệp Quang Kim số 1",
+        "ngay": "31/3/2026",
+        "file": "unit-files/ccn-quang-kim-so-1/so-do-ranh-gioi.pdf"
+      }
+    ]
   }
 }
