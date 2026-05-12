@@ -247,5 +247,145 @@
         "file": "unit-files/ccn-quang-kim-so-1/so-do-ranh-gioi.pdf"
       }
     ]
+  },
+  "ccn-thong-nhat-1": {
+    "ten": "CCN Thống Nhất 1",
+    "type": "Cụm công nghiệp đã thành lập",
+    "viTriMoTa": "Xã Gia Phú, tỉnh Lào Cai",
+    "dienTich": 75,
+    "trangThai": "xay-dung",
+    "namThanhLap": 2025,
+    "gioiThieu": "<p><b>Cụm công nghiệp Thống Nhất 1</b> được Ủy ban nhân dân tỉnh Lào Cai thành lập theo <b>Quyết định số 298/QĐ-UBND</b> ngày 20 tháng 02 năm 2025, với tổng diện tích quy hoạch <b>75 héc-ta</b>, đặt tại xã Gia Phú, tỉnh Lào Cai. Đây là một trong những Cụm công nghiệp do doanh nghiệp làm chủ đầu tư hạ tầng kỹ thuật trên địa bàn tỉnh.</p><p><b>Chủ đầu tư hạ tầng:</b> Công ty Cổ phần Đầu tư và Phát triển Công nghiệp Lào Cai. Cụm công nghiệp đã được Ủy ban nhân dân tỉnh chấp thuận chủ trương đầu tư hạ tầng kỹ thuật theo <b>Quyết định số 630/QĐ-UBND</b> ngày 21 tháng 3 năm 2025.</p><p><b>Ngành nghề thu hút đầu tư:</b> Cụm công nghiệp đa ngành, thu hút các dự án sản xuất công nghiệp phù hợp với định hướng quy hoạch của tỉnh, ưu tiên các ngành công nghệ cao, công nghiệp hỗ trợ, chế biến chế tạo và các ngành công nghiệp ít gây ô nhiễm môi trường.</p><p><b>Tình trạng triển khai:</b> Hiện đang trong giai đoạn thực hiện giải phóng mặt bằng. Theo Quyết định số 525/QĐ-UBND ngày 25 tháng 02 năm 2026 của Ủy ban nhân dân tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021 - 2030, tầm nhìn đến năm 2050, Cụm công nghiệp Thống Nhất được nâng cấp thành <b>Khu công nghiệp Thống Nhất</b> với diện tích 150 héc-ta.</p><p><b>Vị trí thuận lợi:</b> Cụm công nghiệp Thống Nhất 1 nằm trên địa bàn xã Gia Phú, thuận tiện kết nối với các tuyến giao thông trọng yếu của tỉnh, đặc biệt là tuyến đường cao tốc Nội Bài - Lào Cai và tuyến đường sắt Hà Nội - Lào Cai - Hải Phòng đang được quy hoạch xây dựng.</p>",
+    "polygon": [
+      [
+        22.3846058,
+        104.0380085
+      ],
+      [
+        22.38618,
+        104.0379885
+      ],
+      [
+        22.3864902,
+        104.0386482
+      ],
+      [
+        22.3864679,
+        104.0394918
+      ],
+      [
+        22.386489,
+        104.0395573
+      ],
+      [
+        22.3866426,
+        104.0400331
+      ],
+      [
+        22.3871284,
+        104.0407391
+      ],
+      [
+        22.3874807,
+        104.0410207
+      ],
+      [
+        22.3883831,
+        104.0413229
+      ],
+      [
+        22.3873483,
+        104.0427849
+      ],
+      [
+        22.3867253,
+        104.0439874
+      ],
+      [
+        22.3859127,
+        104.0462662
+      ],
+      [
+        22.3857986,
+        104.0479455
+      ],
+      [
+        22.3863743,
+        104.050712
+      ],
+      [
+        22.3864753,
+        104.0510492
+      ],
+      [
+        22.3867466,
+        104.0517338
+      ],
+      [
+        22.3826894,
+        104.0539733
+      ],
+      [
+        22.3800661,
+        104.0512343
+      ],
+      [
+        22.3793569,
+        104.0505114
+      ],
+      [
+        22.3800977,
+        104.0494944
+      ],
+      [
+        22.3809961,
+        104.0481312
+      ],
+      [
+        22.381298,
+        104.0476227
+      ],
+      [
+        22.3819007,
+        104.0464433
+      ],
+      [
+        22.3823817,
+        104.045347
+      ],
+      [
+        22.3824851,
+        104.0450856
+      ],
+      [
+        22.3831676,
+        104.0430059
+      ],
+      [
+        22.3839557,
+        104.0402676
+      ],
+      [
+        22.3846058,
+        104.0380085
+      ]
+    ],
+    "centerLat": 22.3845803,
+    "centerLng": 104.0446577,
+    "kml": "unit-files/ccn-thong-nhat-1/ranh-gioi.kml",
+    "vanBan": [
+      {
+        "ten": "Quyết định số 298/QĐ-UBND của Ủy ban nhân dân tỉnh Lào Cai về thành lập Cụm công nghiệp Thống Nhất 1",
+        "ngay": "20/02/2025",
+        "file": "unit-files/ccn-thong-nhat-1/qd-298-thanh-lap.pdf"
+      },
+      {
+        "ten": "Quyết định số 630/QĐ-UBND của Ủy ban nhân dân tỉnh Lào Cai về chấp thuận chủ trương đầu tư hạ tầng kỹ thuật Cụm công nghiệp Thống Nhất 1",
+        "ngay": "21/3/2025",
+        "file": "unit-files/ccn-thong-nhat-1/qd-630-chu-truong-dau-tu.pdf"
+      }
+    ],
+    "video": "https://archive.org/details/ccn-thong-nhat-1-2026",
+    "videoCaption": "Video giới thiệu Cụm công nghiệp Thống Nhất 1 (Nguồn: Internet Archive)"
   }
 }

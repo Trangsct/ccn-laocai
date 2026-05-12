@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Ranh giới CCN Thống Nhất</name>
+	<description>Tạo từ file &apos;Bảng tọa độ ranh giới cụm công nghiệp Thống Nhất.docx&apos;. Nguồn tọa độ: VN-2000 / TM-3 104-45 (EPSG:9208), chuyển sang WGS84 để hiển thị trên Google Earth.</description>
+	<atom:link rel="app" href="https://www.google.com/earth/about/versions/#earth-pro" title="Google Earth Pro 7.3.6.10441"></atom:link>
+	<Style id="pointStyle">
+		<IconStyle>
+			<scale>0.8</scale>
+		</IconStyle>
+		<LabelStyle>
+			<scale>0.9</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="polygonStyle">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>6600ff00</color>
+		</PolyStyle>
+	</Style>
+	<Placemark>
+		<name>Ranh giới CCN Thống Nhất</name>
+		<description>Tạo từ file &apos;Bảng tọa độ ranh giới cụm công nghiệp Thống Nhất.docx&apos;. Nguồn tọa độ: VN-2000 / TM-3 104-45 (EPSG:9208), chuyển sang WGS84 để hiển thị trên Google Earth.</description>
+		<styleUrl>#polygonStyle</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						104.03800849,22.38460584,0 104.03798854,22.38618003,0 104.03864819,22.38649017,0 104.03949181,22.38646787,0 104.03955735,22.38648902,0 104.04003309,22.38664256,0 104.04073915,22.38712836,0 104.04102074,22.38748072,0 104.04132294,22.38838306,0 104.04278486,22.38734828,0 104.04398743,22.38672525,0 104.04626616,22.38591272,0 104.04794549,22.38579856,0 104.05071202,22.38637434,0 104.05104917,22.38647532,0 104.05173381,22.38674659,0 104.05397328,22.3826894,0 104.05123432,22.3800661,0 104.05051141,22.37935693,0 104.0494944,22.38009768,0 104.04813117,22.38099614,0 104.04762266,22.381298,0 104.04644327,22.38190075,0 104.04534702,22.38238167,0 104.04508557,22.38248511,0 104.04300585,22.38316763,0 104.04026756,22.38395569,0 104.03800849,22.38460584,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 01</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.03800849,22.38460584,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 02</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.03798854,22.38618003,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 03</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.03864819,22.38649017,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 04</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.03949181,22.38646787,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 05</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.03955735,22.38648902,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 06</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04003309,22.38664256,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 07</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04073915,22.38712836,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 08</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04102074,22.38748072,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 09</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04132294,22.38838306,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 10</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04278486,22.38734828,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 11</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04398743,22.38672525,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 12</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04626616,22.38591272,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 13</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04794549,22.38579856,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 14</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.05071202,22.38637434,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 15</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.05104917,22.38647532,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 16</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.05173381,22.38674659,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 17</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.05397328,22.3826894,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 18</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.05123432,22.3800661,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 19</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.05051141,22.37935693,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 20</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.0494944,22.38009768,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 21</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04813117,22.38099614,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 22</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04762266,22.381298,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 23</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04644327,22.38190075,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 24</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04534702,22.38238167,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 25</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04508557,22.38248511,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 26</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04300585,22.38316763,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Mốc 27</name>
+		<styleUrl>#pointStyle</styleUrl>
+		<Point>
+			<coordinates>104.04026756,22.38395569,0</coordinates>
+		</Point>
+	</Placemark>
+</Document>
+</kml>

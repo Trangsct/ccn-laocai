@@ -2020,6 +2020,7 @@ function renderUnitDetail(slug, details, srcMatch) {
 
     // Có dữ liệu chi tiết không?
     var hasDetails = details && (details.gioiThieu || details.polygon || details.kml ||
+                                 details.video || details.anhDaiDien ||
                                  (details.vanBan && details.vanBan.length));
 
     // Ảnh đại diện
@@ -2029,6 +2030,25 @@ function renderUnitDetail(slug, details, srcMatch) {
         coverWrap.style.display = '';
     } else {
         coverWrap.style.display = 'none';
+    }
+
+    // Video (hỗ trợ archive.org, YouTube, Vimeo qua URL embed)
+    var videoWrap = document.getElementById('unit-video-wrap');
+    var videoIframe = document.getElementById('unit-video-iframe');
+    if (details && details.video) {
+        var src = details.video;
+        // Tự động chuyển URL archive.org/details/... → embed
+        var arcMatch = src.match(/archive\.org\/details\/([^\/\?#]+)/);
+        if (arcMatch) src = 'https://archive.org/embed/' + arcMatch[1];
+        // YouTube watch?v=... → embed
+        var ytMatch = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?#]+)/);
+        if (ytMatch) src = 'https://www.youtube.com/embed/' + ytMatch[1];
+        videoIframe.src = src;
+        document.getElementById('unit-video-caption').textContent = details.videoCaption || '';
+        videoWrap.style.display = '';
+    } else {
+        videoIframe.src = 'about:blank'; // dừng phát khi chuyển sang đơn vị khác
+        videoWrap.style.display = 'none';
     }
 
     // Giới thiệu
