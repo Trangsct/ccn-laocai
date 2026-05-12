@@ -221,6 +221,8 @@ function addMarkers(ccnList) {
 // ---- Create popup content ----
 function createPopupContent(ccn) {
     const status = TRANG_THAI[ccn.trangThai];
+    const slugC = slugify(ccn.ten);
+    const safeC = ccn.ten.replace(/'/g, "\\'");
     return `
         <div class="popup-content">
             <div class="popup-header status-${ccn.trangThai}">
@@ -232,8 +234,8 @@ function createPopupContent(ccn) {
                 <div class="popup-info">🏢 Doanh nghiệp: <strong>${ccn.soDoanhNghiep}</strong></div>
                 <div class="popup-info">📊 Tỷ lệ lấp đầy: <strong>${ccn.tyLeLapDay}%</strong></div>
                 <div class="popup-info">🔖 Trạng thái: <strong>${status.icon} ${status.ten}</strong></div>
-                <button class="popup-detail-btn" onclick="openDetailModal(${ccn.id})">
-                    📋 Chi tiết
+                <button class="popup-detail-btn" onclick="openUnitDetail('${slugC}', '${safeC}')">
+                    📖 Xem trang chi tiết
                 </button>
                 <a class="popup-detail-btn" style="background:#34495e; color:white; text-decoration:none; margin-top:5px; display:inline-block; font-size:0.75rem; text-align:center;" href="https://www.google.com/maps/dir/?api=1&destination=${ccn.lat},${ccn.lng}" target="_blank">
                     🚗 Chỉ đường
@@ -422,8 +424,10 @@ function renderCCNCards(filteredList) {
         const status = TRANG_THAI[ccn.trangThai];
         const progressClass = ccn.tyLeLapDay >= 70 ? 'high' : ccn.tyLeLapDay >= 40 ? 'medium' : 'low';
 
+        const slugCcn = slugify(ccn.ten);
+        const safeNameCcn = ccn.ten.replace(/'/g, "\\'");
         return `
-            <div class="ccn-card animate-in" onclick="openDetailModal(${ccn.id})">
+            <div class="ccn-card animate-in" style="cursor:pointer;" title="Bấm để xem trang chi tiết" onclick="openUnitDetail('${slugCcn}', '${safeNameCcn}')">
                 <div class="ccn-card-header status-${ccn.trangThai}">
                     <div class="ccn-card-name">${ccn.ten}</div>
                     <div class="ccn-card-badge">${status.icon} ${status.ten}</div>
@@ -457,6 +461,7 @@ function renderCCNCards(filteredList) {
                         <div class="progress-bar">
                             <div class="progress-fill ${progressClass}" style="width: 0%" data-width="${ccn.tyLeLapDay}%"></div>
                         </div>
+                        <div style="text-align:right; margin-top:8px; color:#0d47a1; font-weight:600; font-size:0.85rem;">📖 Xem chi tiết →</div>
                     </div>
                 </div>
             </div>
@@ -490,10 +495,12 @@ function renderQuyHoachTable() {
             baoCaoBadge = `<span style="background:#fee2e2;color:#dc2626;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #fca5a5;white-space:nowrap;font-weight:600;">🔴 Chưa có báo cáo</span>`;
             baoCaoTooltip = '';
         }
+        const slugQH = slugify(ccn.ten);
+        const safeQH = ccn.ten.replace(/'/g, "\\'");
         return `
-        <tr style="${ccn.coBaoCao === false ? 'background:#fff5f5;' : ''}">
+        <tr style="cursor:pointer; ${ccn.coBaoCao === false ? 'background:#fff5f5;' : ''}" onclick="openUnitDetail('${slugQH}', '${safeQH}')" title="Bấm để xem trang chi tiết">
             <td style="text-align:center;">${idx + 1}</td>
-            <td><strong>${ccn.ten}</strong></td>
+            <td><strong style="color:#1565c0;">${ccn.ten} →</strong></td>
             <td>${ccn.xa}</td>
             <td style="text-align:right;">${ccn.dienTich} ha</td>
             <td style="font-size:0.85rem;">${ccn.huongPhatTrien || '-'}${baoCaoTooltip}</td>
