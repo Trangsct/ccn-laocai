@@ -387,5 +387,121 @@
     ],
     "video": "https://archive.org/details/ccn-thong-nhat-1-2026",
     "videoCaption": "Video giới thiệu Cụm công nghiệp Thống Nhất 1 (Nguồn: Internet Archive)"
+  },
+  "ccn-cam-duong-1": {
+    "ten": "CCN Cam Đường 1",
+    "type": "Cụm công nghiệp quy hoạch",
+    "viTriMoTa": "Tổ dân phố Đất Đèn và tổ dân phố Tát, phường Cam Đường, thành phố Lào Cai",
+    "dienTich": 40,
+    "gioiThieu": "<p><b>Cụm công nghiệp Cam Đường 1</b> được quy hoạch tại tổ dân phố Đất Đèn và tổ dân phố Tát, phường Cam Đường, thành phố Lào Cai, với tổng diện tích quy hoạch <b>40 héc-ta</b> (diện tích phẳng tính theo tọa độ 23 mốc giới đạt khoảng 45,86 héc-ta). Cụm công nghiệp đã được phê duyệt trong Quy hoạch tỉnh Lào Cai thời kỳ 2021 - 2030, tầm nhìn đến năm 2050 theo Quyết định số 525/QĐ-UBND ngày 25 tháng 02 năm 2026 của Ủy ban nhân dân tỉnh.</p><p><b>Định hướng ngành nghề:</b> sản xuất chế biến gỗ, nội thất, cơ khí, xử lý tái chế rác thải (nhựa, sắt thép), đóng gói sang chiết phân bón, kho bãi.</p><p><b>Triển khai theo giai đoạn:</b></p><ul style=\"margin:0 0 12px 24px; padding:0;\"><li><b>Giai đoạn 1 — diện tích 11,36 héc-ta (đã có nhà đầu tư nghiên cứu):</b> tại tổ dân phố Đất Đèn, gồm 2,75 héc-ta đất rừng sản xuất và 8,61 héc-ta đất ở đô thị. Có khoảng 30 hộ dân ảnh hưởng, trong đó có 20 hộ đã xây nhà kiên cố từ 1 đến 3 tầng.</li><li><b>Phần còn lại (28,64 héc-ta):</b> tiếp tục triển khai sau khi giai đoạn 1 đi vào hoạt động.</li></ul><p><b>Hiện trạng đất (toàn bộ 40 héc-ta):</b> đất rừng sản xuất 2,75 héc-ta; đất ở đô thị 8,61 héc-ta; đất nông nghiệp 9,04 héc-ta; đất trồng cây lâu năm 6,2 héc-ta; đất ao, suối 2 héc-ta; đất ở nông thôn 8,5 héc-ta; phần còn lại là đất hạ tầng kỹ thuật. Có 50 hộ dân ảnh hưởng cần bố trí tái định cư.</p><p><b>Hạ tầng kết nối:</b></p><ul style=\"margin:0 0 12px 24px; padding:0;\"><li><b>Giao thông:</b> cách Quốc lộ 4E khoảng 1,5 km; cách nút giao IC18 đường cao tốc Nội Bài - Lào Cai khoảng 2,5 km. Đường hiện trạng là đường bê tông, mặt đường rộng 6 mét.</li><li><b>Cấp điện:</b> có đường dây 22 kV ngay tại vị trí lập quy hoạch, cần lắp thêm trạm biến áp chuyên dùng.</li><li><b>Cấp nước:</b> nguồn nước cấp từ mạng lưới của Chi nhánh cấp nước số 1 thành phố Lào Cai - Công ty Cổ phần cấp nước tỉnh Lào Cai, trữ lượng đảm bảo cho sản xuất công nghiệp.</li><li><b>Thoát nước:</b> địa hình tự nhiên có độ dốc thuận lợi, cần quy hoạch hệ thống gom nước thải riêng biệt.</li><li><b>Tái định cư:</b> dự kiến 30 hộ cần tái định cư. Quỹ đất bố trí tại Khu tái định cư phục vụ di chuyển Trường Đại học Phan Xi Păng (tổ 4, 5 Xuân Tăng), có khoảng 100 lô đất, hiện Ban Quản lý dự án Đầu tư xây dựng khu vực Cam Đường - Hợp Thành đang triển khai thi công hạ tầng.</li></ul><p><b>Thuận lợi:</b> đã có khoảng 5 héc-ta đất sạch (đã thu hồi); phần lớn còn lại là đất rừng sản xuất, đất nông nghiệp, đất trồng cây lâu năm; gần nguồn điện 22 kV; đã có hệ thống đường nước sinh hoạt xung quanh; đã có khu vực bố trí tái định cư.</p><p><b>Khó khăn:</b> có khoảng 50 hộ dân đã xây dựng nhà kiên cố từ 1 đến 3 tầng, quá trình giải phóng mặt bằng cần nguồn kinh phí lớn. Đây là yếu tố khiến một số nhà đầu tư đã đến khảo sát nhưng chưa quyết định đầu tư.</p>",
+    "polygon": [
+      [
+        22.4128308,
+        104.0097986
+      ],
+      [
+        22.41254,
+        104.0112181
+      ],
+      [
+        22.4133724,
+        104.0121776
+      ],
+      [
+        22.4157195,
+        104.0101345
+      ],
+      [
+        22.4164407,
+        104.0088069
+      ],
+      [
+        22.4164329,
+        104.0073109
+      ],
+      [
+        22.41833,
+        104.0052357
+      ],
+      [
+        22.4189657,
+        104.005963
+      ],
+      [
+        22.4206571,
+        104.0042092
+      ],
+      [
+        22.4232141,
+        104.0020149
+      ],
+      [
+        22.4261837,
+        103.9999602
+      ],
+      [
+        22.423447,
+        103.9971811
+      ],
+      [
+        22.4214578,
+        103.9941658
+      ],
+      [
+        22.418581,
+        103.9969656
+      ],
+      [
+        22.4160673,
+        103.998925
+      ],
+      [
+        22.4165874,
+        103.9995213
+      ],
+      [
+        22.4207942,
+        103.997583
+      ],
+      [
+        22.4229951,
+        103.9982961
+      ],
+      [
+        22.4241091,
+        104.000455
+      ],
+      [
+        22.4205674,
+        104.0040893
+      ],
+      [
+        22.4193757,
+        104.0027205
+      ],
+      [
+        22.4161033,
+        104.0062596
+      ],
+      [
+        22.4128308,
+        104.0097986
+      ]
+    ],
+    "centerLat": 22.4185914,
+    "centerLng": 104.0035996,
+    "kml": "unit-files/ccn-cam-duong-1/ranh-gioi.kml",
+    "vanBan": [
+      {
+        "ten": "Báo cáo của Ủy ban nhân dân phường Cam Đường về tình hình triển khai quy hoạch các Cụm công nghiệp trên địa bàn",
+        "ngay": "30/3/2026",
+        "file": "unit-files/ccn-cam-duong-1/bao-cao-phuong.docx"
+      },
+      {
+        "ten": "Sơ đồ vị trí khép góc ranh giới Cụm công nghiệp Cam Đường 1 (40 héc-ta) tại tổ dân phố Đất Đèn",
+        "ngay": "30/3/2026",
+        "file": "unit-files/ccn-cam-duong-1/so-do-ranh-gioi-40ha.pdf"
+      }
+    ]
   }
 }

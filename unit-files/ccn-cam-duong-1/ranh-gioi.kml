@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>CCN Cam Đường 1 - ranh giới khép góc</name>
+    <description><![CDATA[
+      Nguồn: PDF "Vị trí khép góc ranh giới 40ha (CCN Cam Đường 1) Đất Đèn". <br/>
+      Hệ tọa độ gốc: VN-2000, kinh tuyến trục 104°45', múi chiếu 3°. <br/>
+      Quy ước sử dụng khi chuyển đổi: X trong bảng là tọa độ Đông/Easting; Y trong bảng là tọa độ Bắc/Northing. <br/>
+      Diện tích phẳng tính theo mốc M01-M22: 458,600.83 m² (45.8601 ha).
+    ]]></description>
+
+    <Style id="polyStyle">
+      <LineStyle><color>ff0000ff</color><width>3</width></LineStyle>
+      <PolyStyle><color>330000ff</color><fill>1</fill><outline>1</outline></PolyStyle>
+    </Style>
+    <Style id="lineStyle">
+      <LineStyle><color>ff0000ff</color><width>3</width></LineStyle>
+    </Style>
+    <Style id="pointStyle">
+      <IconStyle><scale>0.75</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon></IconStyle>
+      <LabelStyle><scale>0.75</scale></LabelStyle>
+    </Style>
+    <Style id="aLineStyle">
+      <LineStyle><color>ffff00ff</color><width>3</width></LineStyle>
+    </Style>
+    <Style id="aPointStyle">
+      <IconStyle><scale>0.75</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon></IconStyle>
+      <LabelStyle><scale>0.75</scale></LabelStyle>
+    </Style>
+
+    <Folder>
+      <name>Ranh giới cụm công nghiệp Cam Đường 1</name>
+      <Placemark>
+        <name>Ranh giới CCN Cam Đường 1 (M01-M22)</name>
+        <styleUrl>#polyStyle</styleUrl>
+        <ExtendedData>
+          <Data name="He_toa_do_goc"><value>VN-2000, KT 104°45', múi chiếu 3°</value></Data>
+          <Data name="Dien_tich_phang_m2"><value>458600.83</value></Data>
+          <Data name="Dien_tich_phang_ha"><value>45.8601</value></Data>
+        </ExtendedData>
+        <Polygon>
+          <tessellate>1</tessellate>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+              104.009798567,22.412830769,0
+              104.011218131,22.412540047,0
+              104.012177567,22.413372359,0
+              104.010134470,22.415719526,0
+              104.008806931,22.416440688,0
+              104.007310902,22.416432873,0
+              104.005235706,22.418329973,0
+              104.005963022,22.418965651,0
+              104.004209184,22.420657127,0
+              104.002014870,22.423214052,0
+              103.999960225,22.426183736,0
+              103.997181122,22.423447049,0
+              103.994165814,22.421457805,0
+              103.996965608,22.418581000,0
+              103.998925047,22.416067344,0
+              103.999521326,22.416587432,0
+              103.997583021,22.420794222,0
+              103.998296087,22.422995062,0
+              104.000455044,22.424109130,0
+              104.004089304,22.420567409,0
+              104.002720464,22.419375716,0
+              104.006259572,22.416103284,0
+              104.009798567,22.412830769,0
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+      <Placemark>
+        <name>Đường ranh giới CCN Cam Đường 1 (M01-M22)</name>
+        <styleUrl>#lineStyle</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+              104.009798567,22.412830769,0
+              104.011218131,22.412540047,0
+              104.012177567,22.413372359,0
+              104.010134470,22.415719526,0
+              104.008806931,22.416440688,0
+              104.007310902,22.416432873,0
+              104.005235706,22.418329973,0
+              104.005963022,22.418965651,0
+              104.004209184,22.420657127,0
+              104.002014870,22.423214052,0
+              103.999960225,22.426183736,0
+              103.997181122,22.423447049,0
+              103.994165814,22.421457805,0
+              103.996965608,22.418581000,0
+              103.998925047,22.416067344,0
+              103.999521326,22.416587432,0
+              103.997583021,22.420794222,0
+              103.998296087,22.422995062,0
+              104.000455044,22.424109130,0
+              104.004089304,22.420567409,0
+              104.002720464,22.419375716,0
+              104.006259572,22.416103284,0
+              104.009798567,22.412830769,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+    </Folder>
+
+    <Folder>
+      <name>Mốc ranh giới M01-M22</name>
+      
+      <Placemark>
+        <name>M01</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M01</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423599.7151</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479561.5256</value></Data>
+          <Data name="WGS84_Longitude"><value>104.009798567</value></Data>
+          <Data name="WGS84_Latitude"><value>22.412830769</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.009798567,22.412830769,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M02</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M02</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423745.7093</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479528.6145</value></Data>
+          <Data name="WGS84_Longitude"><value>104.011218131</value></Data>
+          <Data name="WGS84_Latitude"><value>22.412540047</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.011218131,22.412540047,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M03</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M03</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423844.9416</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479620.2917</value></Data>
+          <Data name="WGS84_Longitude"><value>104.012177567</value></Data>
+          <Data name="WGS84_Latitude"><value>22.413372359</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.012177567,22.413372359,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M04</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M04</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423635.8735</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479881.2299</value></Data>
+          <Data name="WGS84_Longitude"><value>104.010134470</value></Data>
+          <Data name="WGS84_Latitude"><value>22.415719526</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.010134470,22.415719526,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M05</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M05</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423499.5922</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479961.7585</value></Data>
+          <Data name="WGS84_Longitude"><value>104.008806931</value></Data>
+          <Data name="WGS84_Latitude"><value>22.416440688</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.008806931,22.416440688,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M06</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M06</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423345.5669</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479961.6537</value></Data>
+          <Data name="WGS84_Longitude"><value>104.007310902</value></Data>
+          <Data name="WGS84_Latitude"><value>22.416432873</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.007310902,22.416432873,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M07</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M07</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423132.9600</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480172.7792</value></Data>
+          <Data name="WGS84_Longitude"><value>104.005235706</value></Data>
+          <Data name="WGS84_Latitude"><value>22.418329973</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.005235706,22.418329973,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M08</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M08</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423208.1872</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480242.7973</value></Data>
+          <Data name="WGS84_Longitude"><value>104.005963022</value></Data>
+          <Data name="WGS84_Latitude"><value>22.418965651</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.005963022,22.418965651,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M09</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M09</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423028.5569</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480430.9916</value></Data>
+          <Data name="WGS84_Longitude"><value>104.004209184</value></Data>
+          <Data name="WGS84_Latitude"><value>22.420657127</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.004209184,22.420657127,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M10</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M10</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422804.0617</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480715.2461</value></Data>
+          <Data name="WGS84_Longitude"><value>104.002014870</value></Data>
+          <Data name="WGS84_Latitude"><value>22.423214052</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.002014870,22.423214052,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M11</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M11</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422594.1816</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2481045.1376</value></Data>
+          <Data name="WGS84_Longitude"><value>103.999960225</value></Data>
+          <Data name="WGS84_Latitude"><value>22.426183736</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.999960225,22.426183736,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M12</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M12</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422306.5642</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480743.5324</value></Data>
+          <Data name="WGS84_Longitude"><value>103.997181122</value></Data>
+          <Data name="WGS84_Latitude"><value>22.423447049</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.997181122,22.423447049,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M13</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M13</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>421995.0348</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480524.8200</value></Data>
+          <Data name="WGS84_Longitude"><value>103.994165814</value></Data>
+          <Data name="WGS84_Latitude"><value>22.421457805</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.994165814,22.421457805,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M14</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M14</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422281.6761</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480204.8203</value></Data>
+          <Data name="WGS84_Longitude"><value>103.996965608</value></Data>
+          <Data name="WGS84_Latitude"><value>22.418581000</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.996965608,22.418581000,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M15</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M15</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422482.0124</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479925.4705</value></Data>
+          <Data name="WGS84_Longitude"><value>103.998925047</value></Data>
+          <Data name="WGS84_Latitude"><value>22.416067344</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.998925047,22.416067344,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M16</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M16</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422543.6893</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479982.7536</value></Data>
+          <Data name="WGS84_Longitude"><value>103.999521326</value></Data>
+          <Data name="WGS84_Latitude"><value>22.416587432</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.999521326,22.416587432,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M17</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M17</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422346.4675</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480449.5744</value></Data>
+          <Data name="WGS84_Longitude"><value>103.997583021</value></Data>
+          <Data name="WGS84_Latitude"><value>22.420794222</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.997583021,22.420794222,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M18</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M18</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422421.0975</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480692.9084</value></Data>
+          <Data name="WGS84_Longitude"><value>103.998296087</value></Data>
+          <Data name="WGS84_Latitude"><value>22.422995062</value></Data>
+        </ExtendedData>
+        <Point><coordinates>103.998296087,22.422995062,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M19</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M19</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422643.9748</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480815.1597</value></Data>
+          <Data name="WGS84_Longitude"><value>104.000455044</value></Data>
+          <Data name="WGS84_Latitude"><value>22.424109130</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.000455044,22.424109130,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M20</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M20</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423016.1659</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480421.1183</value></Data>
+          <Data name="WGS84_Longitude"><value>104.004089304</value></Data>
+          <Data name="WGS84_Latitude"><value>22.420567409</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.004089304,22.420567409,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M21</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M21</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422874.5869</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480289.8614</value></Data>
+          <Data name="WGS84_Longitude"><value>104.002720464</value></Data>
+          <Data name="WGS84_Latitude"><value>22.419375716</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.002720464,22.419375716,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>M22</name>
+        <styleUrl>#pointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>M22</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423237.1483</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479925.6935</value></Data>
+          <Data name="WGS84_Longitude"><value>104.006259572</value></Data>
+          <Data name="WGS84_Latitude"><value>22.416103284</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.006259572,22.416103284,0</coordinates></Point>
+      </Placemark>
+    </Folder>
+
+    <Folder>
+      <name>Ranh giới dự trữ khoáng sản quốc gia trùng phạm vi CCN</name>
+      <Placemark>
+        <name>Đoạn A01-A03</name>
+        <styleUrl>#aLineStyle</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+              104.010184717,22.412751632,0
+              104.005522220,22.418068004,0
+              104.003704239,22.420235968,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+      
+      <Placemark>
+        <name>A01</name>
+        <styleUrl>#aPointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>A01</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423639.4284</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2479552.5669</value></Data>
+          <Data name="WGS84_Longitude"><value>104.010184717</value></Data>
+          <Data name="WGS84_Latitude"><value>22.412751632</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.010184717,22.412751632,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>A02</name>
+        <styleUrl>#aPointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>A02</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>423162.3134</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480143.6248</value></Data>
+          <Data name="WGS84_Longitude"><value>104.005522220</value></Data>
+          <Data name="WGS84_Latitude"><value>22.418068004</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.005522220,22.418068004,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>A03</name>
+        <styleUrl>#aPointStyle</styleUrl>
+        <ExtendedData>
+          <Data name="So_hieu"><value>A03</value></Data>
+          <Data name="VN2000_X_Easting_m"><value>422976.3410</value></Data>
+          <Data name="VN2000_Y_Northing_m"><value>2480384.6145</value></Data>
+          <Data name="WGS84_Longitude"><value>104.003704239</value></Data>
+          <Data name="WGS84_Latitude"><value>22.420235968</value></Data>
+        </ExtendedData>
+        <Point><coordinates>104.003704239,22.420235968,0</coordinates></Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>
