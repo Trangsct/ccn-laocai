@@ -781,10 +781,13 @@ function renderKCNCards() {
         "rut-qh":"linear-gradient(135deg,#c62828,#e53935)"
     };
 
+    var total = kcnAll.length;
     grid.innerHTML = kcnAll.map(function(kcn, idx) {
         var color = colors[kcn.tt];
         var bg = gradients[kcn.tt];
-        return '<div class="ccn-card" style="border-left:4px solid ' + color + ';">' +
+        var slug = slugify(kcn.ten);
+        var safeName = kcn.ten.replace(/'/g, "\\'");
+        return '<div class="ccn-card" onclick="openUnitDetail(\'' + slug + '\', \'' + safeName + '\')" style="border-left:4px solid ' + color + '; cursor:pointer;" title="Bấm để xem trang chi tiết">' +
             '<div class="ccn-card-header" style="background:' + bg + ';">' +
                 '<h3 class="ccn-card-title">' + kcn.ten + '</h3>' +
                 '<span class="ccn-card-status" style="background:rgba(255,255,255,0.2);color:#fff;">' + labels[kcn.tt] + '</span>' +
@@ -793,7 +796,7 @@ function renderKCNCards() {
                 '<div class="ccn-card-info"><span class="info-icon">📍</span><span class="info-label">Vị trí:</span><span>' + kcn.viTri + '</span></div>' +
                 '<div class="ccn-card-info"><span class="info-icon">📐</span><span class="info-label">Diện tích:</span><span>' + kcn.dt + ' ha</span></div>' +
                 '<div class="ccn-card-info" style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;"><span class="info-icon">📝</span><span style="font-size:0.85rem;color:#555;">' + kcn.gc + '</span></div>' +
-                '<div class="ccn-card-progress"><span>' + (idx+1) + '/21</span></div>' +
+                '<div class="ccn-card-progress" style="display:flex; justify-content:space-between; align-items:center;"><span>' + (idx+1) + '/' + total + '</span><span style="color:' + color + '; font-weight:600; font-size:0.85rem;">📖 Xem chi tiết →</span></div>' +
             '</div>' +
         '</div>';
     }).join('');
@@ -804,8 +807,11 @@ function renderCCNQHCards() {
     var grid = document.getElementById('ccnqh-grid');
     if (!grid) return;
     if (grid.querySelectorAll('.ccn-card').length > 0) return;
+    var total = CCN_CHUA_DAU_TU.length;
     grid.innerHTML = CCN_CHUA_DAU_TU.map(function(ccn) {
-        return '<div class="ccn-card" style="border-left:4px solid #1565c0;">' +
+        var slug = slugify(ccn.ten);
+        var safeName = ccn.ten.replace(/'/g, "\\'");
+        return '<div class="ccn-card" onclick="openUnitDetail(\'' + slug + '\', \'' + safeName + '\')" style="border-left:4px solid #1565c0; cursor:pointer;" title="Bấm để xem trang chi tiết">' +
             '<div class="ccn-card-header" style="background:linear-gradient(135deg,#1565c0,#1976d2);">' +
                 '<h3 class="ccn-card-title">' + ccn.ten + '</h3>' +
                 '<span class="ccn-card-status" style="background:rgba(255,255,255,0.2);color:#fff;">Chưa thành lập</span>' +
@@ -815,21 +821,23 @@ function renderCCNQHCards() {
                 '<div class="ccn-card-info"><span class="info-icon">📐</span><span class="info-label">Diện tích:</span><span>' + ccn.dienTich + ' ha</span></div>' +
                 '<div class="ccn-card-info"><span class="info-icon">📋</span><span class="info-label">Hướng PT:</span><span>' + ccn.huongPhatTrien + '</span></div>' +
                 (ccn.baoCao ? '<div class="ccn-card-info" style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;"><span class="info-icon">📝</span><span style="font-size:0.85rem;color:#555;">' + ccn.baoCao + '</span></div>' : '') +
-                '<div class="ccn-card-progress"><span>STT: ' + ccn.stt + '/31</span></div>' +
+                '<div class="ccn-card-progress" style="display:flex; justify-content:space-between; align-items:center;"><span>STT: ' + ccn.stt + '/' + total + '</span><span style="color:#1565c0; font-weight:600; font-size:0.85rem;">📖 Xem chi tiết →</span></div>' +
             '</div>' +
         '</div>';
     }).join('');
 }
 
-// ---- CCN QH Table (31 CCN) ----
+// ---- CCN QH Table (clickable rows → trang chi tiết) ----
 function renderCCNQHTable() {
     var tableBody = document.getElementById('ccnqh-table-body');
     if (!tableBody) return;
     if (tableBody.querySelectorAll('tr').length > 0) return;
     tableBody.innerHTML = CCN_CHUA_DAU_TU.map(function(ccn, idx) {
-        return '<tr style="' + (idx % 2 === 1 ? 'background:#f8f9fa;' : '') + '">' +
+        var slug = slugify(ccn.ten);
+        var safeName = ccn.ten.replace(/'/g, "\\'");
+        return '<tr style="cursor:pointer; ' + (idx % 2 === 1 ? 'background:#f8f9fa;' : '') + '" onclick="openUnitDetail(\'' + slug + '\', \'' + safeName + '\')" title="Bấm để xem trang chi tiết">' +
             '<td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">' + ccn.stt + '</td>' +
-            '<td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;">' + ccn.ten + '</td>' +
+            '<td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;color:#1565c0;">' + ccn.ten + ' →</td>' +
             '<td style="padding:10px;border-bottom:1px solid #eee;">' + ccn.xa + '</td>' +
             '<td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">' + ccn.dienTich + '</td>' +
             '<td style="padding:10px;border-bottom:1px solid #eee;">' + ccn.huongPhatTrien +
