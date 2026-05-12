@@ -1,0 +1,56 @@
+{
+  "name": "Khu, Cụm công nghiệp tỉnh Lào Cai",
+  "short_name": "KCN Lào Cai",
+  "description": "Cổng thông tin chính thức về Khu công nghiệp và Cụm công nghiệp tỉnh Lào Cai - Sở Công Thương",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d47a1",
+  "theme_color": "#0d47a1",
+  "lang": "vi",
+  "categories": ["government", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Bản đồ Khu công nghiệp",
+      "short_name": "Khu công nghiệp",
+      "description": "Xem bản đồ 20 Khu công nghiệp tỉnh Lào Cai",
+      "url": "/#kcn",
+      "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Bản đồ Cụm công nghiệp",
+      "short_name": "Cụm công nghiệp",
+      "description": "Xem bản đồ Cụm công nghiệp đã thành lập",
+      "url": "/#map",
+      "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cơ hội đầu tư",
+      "short_name": "Đầu tư",
+      "description": "14 Khu công nghiệp và 35 Cụm công nghiệp kêu gọi đầu tư",
+      "url": "/#thuhut",
+      "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
