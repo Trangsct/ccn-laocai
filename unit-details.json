@@ -1,0 +1,22 @@
+{
+  "_schema": {
+    "description": "Thông tin chi tiết của từng Khu công nghiệp / Cụm công nghiệp. Key là slug (tự sinh từ tên).",
+    "example": {
+      "kcn-tang-loong": {
+        "ten": "Khu công nghiệp Tằng Loỏng",
+        "type": "KCN",
+        "viTriMoTa": "Xã Gia Phú, tỉnh Lào Cai",
+        "dienTich": 1100,
+        "anhDaiDien": "unit-files/kcn-tang-loong/cover.jpg",
+        "gioiThieu": "<p>Đoạn HTML giới thiệu...</p>",
+        "polygon": [[22.333, 104.125], [22.334, 104.126]],
+        "centerLat": 22.333,
+        "centerLng": 104.125,
+        "kml": "unit-files/kcn-tang-loong/ranh-gioi.kml",
+        "vanBan": [
+          {"ten": "Quyết định thành lập số 1234/QĐ-UBND", "ngay": "01/01/2008", "file": "unit-files/kcn-tang-loong/qd-thanh-lap.pdf"}
+        ]
+      }
+    }
+  }
+}

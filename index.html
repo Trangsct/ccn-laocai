@@ -120,6 +120,75 @@
     <!-- ============ MAIN CONTENT ============ -->
     <main class="main-container">
 
+        <!-- === CHI TIẾT ĐƠN VỊ (KHU/CỤM CÔNG NGHIỆP) === -->
+        <section id="unit-detail-section" style="display:none;">
+            <div style="max-width:1100px; margin:0 auto; padding:16px;">
+
+                <!-- Nút quay lại -->
+                <button id="unit-back-btn" style="background:none; border:none; color:#0d47a1; font-size:0.95rem; font-weight:600; cursor:pointer; padding:8px 0; display:flex; align-items:center; gap:6px; font-family:inherit;">
+                    ← Quay lại
+                </button>
+
+                <!-- Header -->
+                <div id="unit-header" style="margin-top:8px; padding:24px; background:linear-gradient(135deg,#0d47a1,#1976d2); color:#fff; border-radius:14px; box-shadow:0 4px 14px rgba(13,71,161,0.2);">
+                    <div id="unit-type-badge" style="display:inline-block; background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:14px; font-size:0.78rem; font-weight:700; letter-spacing:0.5px; margin-bottom:10px;"></div>
+                    <h1 id="unit-name" style="font-size:1.8rem; font-weight:800; margin:0 0 12px; line-height:1.25;"></h1>
+                    <div id="unit-meta" style="display:flex; flex-wrap:wrap; gap:18px 28px; font-size:0.95rem;"></div>
+                </div>
+
+                <!-- Hình ảnh đại diện (nếu có) -->
+                <div id="unit-cover-wrap" style="margin-top:18px; display:none;">
+                    <img id="unit-cover-img" alt="" style="width:100%; max-height:380px; object-fit:cover; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                </div>
+
+                <!-- Giới thiệu -->
+                <div id="unit-intro-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
+                    <h2 style="font-size:1.2rem; color:#1e293b; margin:0 0 14px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:1.4rem;">📖</span>
+                        <span>Giới thiệu</span>
+                    </h2>
+                    <div id="unit-intro" style="font-size:1rem; line-height:1.85; color:#334155; text-align:justify;"></div>
+                </div>
+
+                <!-- Bản đồ vị trí + KML -->
+                <div id="unit-map-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
+                    <h2 style="font-size:1.2rem; color:#1e293b; margin:0 0 14px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:1.4rem;">🗺️</span>
+                        <span>Vị trí ranh giới</span>
+                    </h2>
+                    <div id="unit-map" style="height:420px; border-radius:8px; overflow:hidden; border:1px solid #cbd5e1;"></div>
+                    <div id="unit-kml-actions" style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                        <!-- Nút tải KML sẽ chèn động -->
+                    </div>
+                    <div style="margin-top:10px; font-size:0.85rem; color:#64748b; line-height:1.5;">
+                        💡 File KML là chuẩn vị trí địa lý quốc tế. Anh chị có thể tải về để mở trên <b>Google Earth</b>, <b>QGIS</b>, hoặc các phần mềm bản đồ chuyên dụng khác.
+                    </div>
+                </div>
+
+                <!-- Văn bản pháp lý -->
+                <div id="unit-docs-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
+                    <h2 style="font-size:1.2rem; color:#1e293b; margin:0 0 14px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:1.4rem;">📜</span>
+                        <span>Văn bản pháp lý</span>
+                    </h2>
+                    <div id="unit-docs-list" style="display:flex; flex-direction:column; gap:10px;">
+                        <!-- Danh sách văn bản sẽ chèn động -->
+                    </div>
+                </div>
+
+                <!-- Khi chưa có dữ liệu chi tiết -->
+                <div id="unit-empty" style="margin-top:20px; background:#fef9c3; border:1.5px solid #fde68a; border-radius:12px; padding:24px; text-align:center; display:none;">
+                    <div style="font-size:2.5rem; margin-bottom:10px;">🚧</div>
+                    <h3 style="color:#92400e; margin:0 0 8px; font-size:1.15rem;">Thông tin chi tiết đang được cập nhật</h3>
+                    <p style="color:#78350f; margin:0; font-size:0.95rem; line-height:1.6;">
+                        Đơn vị này hiện chưa có nội dung giới thiệu chi tiết, file KML và văn bản pháp lý.<br>
+                        Sở Công Thương đang tiếp tục bổ sung. Xin cảm ơn quý anh chị đã quan tâm.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
         <!-- === DASHBOARD === -->
         <section id="dashboard-section">
             <div style="max-width:1200px; margin:0 auto; padding:0;">

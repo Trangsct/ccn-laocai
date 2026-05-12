@@ -579,7 +579,8 @@ function setupNavTabs() {
         'listkcn': document.getElementById('listkcn-section'),
         'vanban': document.getElementById('vanban-section'),
         'tintuc': document.getElementById('tintuc-section'),
-        'kcn': document.getElementById('kcn-section')
+        'kcn': document.getElementById('kcn-section'),
+        'unit-detail': document.getElementById('unit-detail-section')
     };
 
     tabs.forEach(tab => {
@@ -661,6 +662,19 @@ function setupNavTabs() {
     function loadFromHash() {
         var hash = (window.location.hash || '').replace(/^#/, '');
         if (!hash) return;
+        // Route đặc biệt: #unit/<slug> → mở tab chi tiết đơn vị
+        if (hash.indexOf('unit/') === 0) {
+            var slug = hash.slice(5);
+            window._skipHashUpdate = true;
+            // Đợi UNIT_DETAILS load xong
+            if (window.UNIT_DETAILS === null) {
+                setTimeout(function () { loadFromHash(); }, 200);
+            } else {
+                openUnitDetail(slug);
+            }
+            window._skipHashUpdate = false;
+            return;
+        }
         var btn = document.querySelector('[data-tab="' + hash + '"]');
         if (btn) {
             window._skipHashUpdate = true;
@@ -706,6 +720,7 @@ function initKCNMap() {
             iconAnchor: [14, 14]
         });
 
+        var kcnSlug = slugify(kcn.ten);
         L.marker([kcn.lat, kcn.lng], { icon: icon })
             .addTo(window.kcnMap)
             .bindPopup(
@@ -715,6 +730,7 @@ function initKCNMap() {
                 '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + kcn.dienTich + ' ha</p>' +
                 '<p style="margin:2px 0;font-size:0.85rem;"><b>Trạng thái:</b> ' + kcnLabels[kcn.trangThai] + '</p>' +
                 '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;">' + kcn.moTa + '</p>' +
+                '<button onclick="openUnitDetail(\'' + kcnSlug + '\', \'' + kcn.ten.replace(/'/g, "\\'") + '\')" style="margin-top:10px; width:100%; background:' + color + '; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
                 '</div>'
             );
     });
@@ -1603,14 +1619,16 @@ function initCCNQHMap() {
 
         var ghiChu = ccn.gc ? '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:6px;">' + ccn.gc + '</p>' : '';
 
+        var ccnSlug = slugify(ccn.ten);
         L.marker([ccn.lat, ccn.lng], { icon: icon })
             .addTo(window.ccnqhMap)
             .bindPopup(
                 '<div style="min-width:240px;max-width:320px;">' +
                 '<h3 style="margin:0 0 6px;font-size:1rem;color:#1565c0;">' + ccn.stt + '. ' + ccn.ten + '</h3>' +
                 '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + ccn.xa + '</p>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích QH:</b> ' + ccn.dt + ' ha</p>' +
+                '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích quy hoạch:</b> ' + ccn.dt + ' ha</p>' +
                 ghiChu +
+                '<button onclick="openUnitDetail(\'' + ccnSlug + '\', \'' + ccn.ten.replace(/'/g, "\\'") + '\')" style="margin-top:10px; width:100%; background:#1565c0; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
                 '</div>'
             );
     });
@@ -1722,11 +1740,14 @@ function openDetailModal(ccnId) {
                     </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="modal-btn-locate" onclick="locateOnMap(${ccn.id})" style="flex: 1;">
+            <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap:wrap;">
+                <button class="modal-btn-locate" onclick="closeModal(); openUnitDetail(slugify('${ccn.ten.replace(/'/g, "\\'")}'), '${ccn.ten.replace(/'/g, "\\'")}');" style="flex:1; min-width:160px; background:#0d47a1; color:#fff;">
+                    📖 Xem trang chi tiết
+                </button>
+                <button class="modal-btn-locate" onclick="locateOnMap(${ccn.id})" style="flex: 1; min-width:140px;">
                     🗺️ Xem trên bản đồ
                 </button>
-                <a class="modal-btn-locate" style="flex: 1; background: #34495e; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center;" href="https://www.google.com/maps/dir/?api=1&destination=${ccn.lat},${ccn.lng}" target="_blank">
+                <a class="modal-btn-locate" style="flex: 1; min-width:160px; background: #34495e; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center;" href="https://www.google.com/maps/dir/?api=1&destination=${ccn.lat},${ccn.lng}" target="_blank">
                     🚗 Chỉ đường Google Maps
                 </a>
             </div>
@@ -1851,3 +1872,278 @@ function locateUser() {
         );
     }
 }
+
+// ============================================================
+// CHI TIẾT ĐƠN VỊ (Khu/Cụm công nghiệp) — tab dùng chung
+// ============================================================
+
+window.UNIT_DETAILS = null;
+window._lastTabBeforeUnit = 'dashboard';
+
+// Chuẩn hóa chuỗi tiếng Việt thành slug ASCII
+function slugify(s) {
+    if (!s) return '';
+    return s.toString()
+        .toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+}
+
+// Lấy slug của một đơn vị (KCN hoặc CCN) từ object data
+function getUnitSlug(u) {
+    if (!u || !u.ten) return '';
+    return slugify(u.ten);
+}
+
+// Load file unit-details.json (gọi 1 lần khi khởi động)
+function loadUnitDetails() {
+    return fetch('/unit-details.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            window.UNIT_DETAILS = data || {};
+            console.log('[Unit] Loaded ' + (Object.keys(data).length - 1) + ' unit detail entries');
+            return data;
+        })
+        .catch(function (err) {
+            console.warn('[Unit] Không tải được unit-details.json:', err);
+            window.UNIT_DETAILS = {};
+            return {};
+        });
+}
+
+// Tìm thông tin gốc của đơn vị từ tất cả 3 nguồn data
+function findUnitByName(name) {
+    if (!name) return null;
+    var nameNorm = slugify(name);
+    // 1. KHU_CONG_NGHIEP (trong app.js renderKCNCards hardcoded list — không có window)
+    // 2. CUM_CONG_NGHIEP đã thành lập
+    if (typeof CUM_CONG_NGHIEP !== 'undefined') {
+        for (var i = 0; i < CUM_CONG_NGHIEP.length; i++) {
+            if (slugify(CUM_CONG_NGHIEP[i].ten) === nameNorm) {
+                return { src: 'CCN_TL', data: CUM_CONG_NGHIEP[i] };
+            }
+        }
+    }
+    // 3. CCN_CHUA_DAU_TU
+    if (typeof CCN_CHUA_DAU_TU !== 'undefined') {
+        for (var j = 0; j < CCN_CHUA_DAU_TU.length; j++) {
+            if (slugify(CCN_CHUA_DAU_TU[j].ten) === nameNorm) {
+                return { src: 'CCN_QH', data: CCN_CHUA_DAU_TU[j] };
+            }
+        }
+    }
+    return null;
+}
+
+// Mở tab chi tiết đơn vị theo slug
+function openUnitDetail(slug, optionalName) {
+    if (!slug && optionalName) slug = slugify(optionalName);
+    if (!slug) return;
+
+    // Nhớ tab trước đó để khi bấm "Quay lại" về đúng chỗ
+    if (currentView && currentView !== 'unit-detail') {
+        window._lastTabBeforeUnit = currentView;
+    }
+
+    // Hiển thị section
+    var section = document.getElementById('unit-detail-section');
+    if (!section) return;
+    Object.values({
+        d: document.getElementById('dashboard-section'),
+        m: document.getElementById('map-section'),
+        // các section khác — JS ẩn hết
+    });
+    // Ẩn tất cả section khác
+    document.querySelectorAll('main.main-container > section').forEach(function (s) {
+        s.style.display = (s.id === 'unit-detail-section') ? '' : 'none';
+    });
+    currentView = 'unit-detail';
+
+    // Cập nhật URL hash
+    if (!window._skipHashUpdate) {
+        try { history.replaceState(null, '', '#unit/' + slug); } catch (e) {}
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Lấy chi tiết
+    var details = (window.UNIT_DETAILS || {})[slug];
+    var srcMatch = null;
+    if (optionalName) srcMatch = findUnitByName(optionalName);
+    if (!srcMatch && details && details.ten) srcMatch = findUnitByName(details.ten);
+
+    renderUnitDetail(slug, details, srcMatch);
+}
+
+// Render nội dung tab chi tiết
+function renderUnitDetail(slug, details, srcMatch) {
+    // Default fields nếu không có details
+    var ten = (details && details.ten) || (srcMatch && srcMatch.data.ten) || slug;
+    var type = (details && details.type)
+        || (srcMatch && srcMatch.src === 'CCN_TL' ? 'Cụm công nghiệp đã thành lập' :
+            srcMatch && srcMatch.src === 'CCN_QH' ? 'Cụm công nghiệp quy hoạch' :
+            ten.toLowerCase().indexOf('khu công nghiệp') === 0 ? 'Khu công nghiệp' : 'Cụm công nghiệp');
+    var viTri = (details && details.viTriMoTa) || (srcMatch && (srcMatch.data.xa || srcMatch.data.viTri)) || '';
+    var dienTich = (details && details.dienTich) || (srcMatch && (srcMatch.data.dienTich || srcMatch.data.dt)) || null;
+    var namTL = (details && details.namThanhLap) || (srcMatch && srcMatch.data.namThanhLap) || null;
+    var trangThai = (details && details.trangThai) || (srcMatch && srcMatch.data.trangThai) || '';
+
+    document.getElementById('unit-type-badge').textContent = type.toUpperCase();
+    document.getElementById('unit-name').textContent = ten;
+
+    // Meta dòng
+    var metaHtml = '';
+    if (viTri) metaHtml += '<div><b>📍 Vị trí:</b> ' + escapeHtml(viTri) + '</div>';
+    if (dienTich) metaHtml += '<div><b>📐 Diện tích:</b> ' + dienTich + ' héc-ta</div>';
+    if (namTL) metaHtml += '<div><b>📅 Năm thành lập:</b> ' + namTL + '</div>';
+    if (trangThai) {
+        var ttLabel = {
+            'hoat-dong': '🟢 Đang hoạt động',
+            'xay-dung': '🟡 Đang xây dựng',
+            'quy-hoach': '🔵 Quy hoạch',
+            'tam-dung': '🔴 Tạm dừng'
+        }[trangThai] || trangThai;
+        metaHtml += '<div><b>📊 Trạng thái:</b> ' + ttLabel + '</div>';
+    }
+    document.getElementById('unit-meta').innerHTML = metaHtml;
+
+    // Có dữ liệu chi tiết không?
+    var hasDetails = details && (details.gioiThieu || details.polygon || details.kml ||
+                                 (details.vanBan && details.vanBan.length));
+
+    // Ảnh đại diện
+    var coverWrap = document.getElementById('unit-cover-wrap');
+    if (details && details.anhDaiDien) {
+        document.getElementById('unit-cover-img').src = details.anhDaiDien;
+        coverWrap.style.display = '';
+    } else {
+        coverWrap.style.display = 'none';
+    }
+
+    // Giới thiệu
+    var introWrap = document.getElementById('unit-intro-wrap');
+    if (details && details.gioiThieu) {
+        document.getElementById('unit-intro').innerHTML = details.gioiThieu;
+        introWrap.style.display = '';
+    } else {
+        introWrap.style.display = 'none';
+    }
+
+    // Bản đồ + KML
+    var mapWrap = document.getElementById('unit-map-wrap');
+    if (details && (details.polygon || details.centerLat)) {
+        mapWrap.style.display = '';
+        setTimeout(function () { renderUnitMap(details, srcMatch); }, 80);
+
+        // Nút tải KML
+        var actions = document.getElementById('unit-kml-actions');
+        actions.innerHTML = '';
+        if (details.kml) {
+            actions.innerHTML =
+                '<a href="' + details.kml + '" download style="background:#0d47a1; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:0.9rem; display:inline-flex; align-items:center; gap:6px;">⬇️ Tải file KML</a>' +
+                '<a href="https://earth.google.com/web/" target="_blank" rel="noopener" style="background:#fff; color:#0d47a1; border:1.5px solid #0d47a1; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:0.9rem;">🌍 Mở Google Earth Web</a>';
+        }
+    } else {
+        mapWrap.style.display = 'none';
+    }
+
+    // Văn bản pháp lý
+    var docsWrap = document.getElementById('unit-docs-wrap');
+    if (details && details.vanBan && details.vanBan.length) {
+        var list = document.getElementById('unit-docs-list');
+        list.innerHTML = details.vanBan.map(function (vb) {
+            return '<div style="display:flex; align-items:center; gap:14px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">' +
+                '<div style="font-size:1.8rem;">📄</div>' +
+                '<div style="flex:1; min-width:0;">' +
+                    '<div style="font-weight:600; color:#1e293b; font-size:0.96rem;">' + escapeHtml(vb.ten || 'Văn bản') + '</div>' +
+                    (vb.ngay ? '<div style="font-size:0.82rem; color:#64748b; margin-top:2px;">Ngày ' + escapeHtml(vb.ngay) + '</div>' : '') +
+                '</div>' +
+                '<a href="' + vb.file + '" target="_blank" rel="noopener" style="background:#fff; color:#0d47a1; border:1px solid #0d47a1; padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:600;">Xem</a>' +
+                '<a href="' + vb.file + '" download style="background:#0d47a1; color:#fff; padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:600;">Tải về</a>' +
+            '</div>';
+        }).join('');
+        docsWrap.style.display = '';
+    } else {
+        docsWrap.style.display = 'none';
+    }
+
+    // Trạng thái "chưa có dữ liệu"
+    document.getElementById('unit-empty').style.display = hasDetails ? 'none' : '';
+}
+
+// Render bản đồ Leaflet cho đơn vị
+function renderUnitMap(details, srcMatch) {
+    var mapEl = document.getElementById('unit-map');
+    if (!mapEl) return;
+
+    // Reset map nếu đã tồn tại
+    if (window.unitMap) {
+        try { window.unitMap.remove(); } catch (e) {}
+        window.unitMap = null;
+    }
+
+    var center = null;
+    var zoom = 14;
+    if (details.centerLat && details.centerLng) {
+        center = [details.centerLat, details.centerLng];
+    } else if (details.polygon && details.polygon.length) {
+        // Tính trung tâm polygon
+        var sumLat = 0, sumLng = 0;
+        details.polygon.forEach(function (p) { sumLat += p[0]; sumLng += p[1]; });
+        center = [sumLat / details.polygon.length, sumLng / details.polygon.length];
+    } else if (srcMatch && srcMatch.data.lat && srcMatch.data.lng) {
+        center = [srcMatch.data.lat, srcMatch.data.lng];
+    } else {
+        center = [22.0, 104.3]; // Lào Cai fallback
+    }
+
+    window.unitMap = L.map('unit-map').setView(center, zoom);
+
+    // Layer
+    var streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap, © CARTO'
+    });
+    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Esri'
+    });
+    streets.addTo(window.unitMap);
+    L.control.layers({ 'Bản đồ thường': streets, 'Vệ tinh': satellite }, null, { position: 'topright' }).addTo(window.unitMap);
+
+    // Vẽ polygon
+    if (details.polygon && details.polygon.length >= 3) {
+        var poly = L.polygon(details.polygon, {
+            color: '#0d47a1', weight: 2.5, opacity: 0.9,
+            fillColor: '#1976d2', fillOpacity: 0.25
+        }).addTo(window.unitMap);
+        window.unitMap.fitBounds(poly.getBounds(), { padding: [30, 30] });
+    } else {
+        L.marker(center).addTo(window.unitMap);
+    }
+}
+
+// Quay lại tab trước đó
+function closeUnitDetail() {
+    var prev = window._lastTabBeforeUnit || 'dashboard';
+    var btn = document.querySelector('[data-tab="' + prev + '"]');
+    if (btn) btn.click();
+}
+
+// Escape HTML
+function escapeHtml(s) {
+    if (s === null || s === undefined) return '';
+    return s.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// Khởi tạo nút Quay lại
+document.addEventListener('DOMContentLoaded', function () {
+    var backBtn = document.getElementById('unit-back-btn');
+    if (backBtn) backBtn.addEventListener('click', closeUnitDetail);
+    loadUnitDetails();
+});
