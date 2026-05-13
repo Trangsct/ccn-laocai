@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Cụm công nghiệp Phú Thịnh 4</name>
+    <description><![CDATA[
+      <b>Tên:</b> Cụm công nghiệp Phú Thịnh 4<br/>
+      <b>Vị trí:</b> Phường Văn Phú (Tổ dân phố Đăng Thọ, Vạn Xuân) và xã Yên Bình<br/>
+      <b>Diện tích quy hoạch:</b> 75 ha (trong đó thuộc phường Văn Phú khoảng 28 ha)<br/>
+      <b>Ngành nghề dự kiến:</b> Chế biến nông, lâm, thủy sản; may mặc và công nghiệp phụ trợ; vật liệu xây dựng; cơ khí chế tạo, công nghiệp hỗ trợ, điện tử.<br/>
+      <b>Nguồn:</b> Báo cáo số 181/BC-UBND ngày 28/4/2026 của UBND phường Văn Phú<br/>
+      <b>Căn cứ quy hoạch tỉnh:</b> QĐ số 525/QĐ-UBND ngày 25/02/2026
+    ]]></description>
+
+    <Style id="vungStyle">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7f0000ff</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+
+    <Style id="diemStyle">
+      <IconStyle>
+        <color>ff0000ff</color>
+        <scale>1.0</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0.8</scale>
+      </LabelStyle>
+    </Style>
+
+    <Placemark>
+      <name>Ranh giới Cụm công nghiệp Phú Thịnh 4</name>
+      <description><![CDATA[
+        Diện tích quy hoạch: 75 ha (trong đó thuộc phường Văn Phú khoảng 28 ha)<br/>
+        Vị trí: Phường Văn Phú (Tổ dân phố Đăng Thọ, Vạn Xuân) và xã Yên Bình
+      ]]></description>
+      <styleUrl>#vungStyle</styleUrl>
+      <Polygon>
+        <tessellate>1</tessellate>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+          104.97397019,21.71041206,0
+          104.97899507,21.70538767,0
+          104.98576826,21.71193893,0
+          104.98047612,21.71671271,0
+          104.97397019,21.71041206,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    <Placemark>
+      <name>Điểm 1</name>
+      <description><![CDATA[
+        <b>Tọa độ VN-2000 (KTT 104°45'):</b><br/>
+        X = 2401511.47 m<br/>
+        Y = 523172.03 m<br/>
+        <b>Tọa độ WGS-84:</b><br/>
+        Vĩ độ: 21.71041206°<br/>
+        Kinh độ: 104.97397019°
+      ]]></description>
+      <styleUrl>#diemStyle</styleUrl>
+      <Point>
+        <coordinates>104.97397019,21.71041206,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 2</name>
+      <description><![CDATA[
+        <b>Tọa độ VN-2000 (KTT 104°45'):</b><br/>
+        X = 2400955.95 m<br/>
+        Y = 523692.73 m<br/>
+        <b>Tọa độ WGS-84:</b><br/>
+        Vĩ độ: 21.70538767°<br/>
+        Kinh độ: 104.97899507°
+      ]]></description>
+      <styleUrl>#diemStyle</styleUrl>
+      <Point>
+        <coordinates>104.97899507,21.70538767,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 3</name>
+      <description><![CDATA[
+        <b>Tọa độ VN-2000 (KTT 104°45'):</b><br/>
+        X = 2401682.33 m<br/>
+        Y = 524392.41 m<br/>
+        <b>Tọa độ WGS-84:</b><br/>
+        Vĩ độ: 21.71193893°<br/>
+        Kinh độ: 104.98576826°
+      ]]></description>
+      <styleUrl>#diemStyle</styleUrl>
+      <Point>
+        <coordinates>104.98576826,21.71193893,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 4</name>
+      <description><![CDATA[
+        <b>Tọa độ VN-2000 (KTT 104°45'):</b><br/>
+        X = 2402210.04 m<br/>
+        Y = 523844.10 m<br/>
+        <b>Tọa độ WGS-84:</b><br/>
+        Vĩ độ: 21.71671271°<br/>
+        Kinh độ: 104.98047612°
+      ]]></description>
+      <styleUrl>#diemStyle</styleUrl>
+      <Point>
+        <coordinates>104.98047612,21.71671271,0</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
