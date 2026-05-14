@@ -234,6 +234,14 @@ a:hover {
     letter-spacing: 0.5px;
 }
 
+/* ---- Leaflet popup: ưu tiên hiển thị TRÊN main-nav sticky (z-index:900) ---- */
+.leaflet-popup-pane {
+    z-index: 950 !important;
+}
+.leaflet-popup {
+    z-index: 951 !important;
+}
+
 /* ---- Filter Bar ---- */
 .filter-bar {
     position: sticky;

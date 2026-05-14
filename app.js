@@ -8,6 +8,17 @@ let markerLayer;
 let currentView = 'map';
 let charts = {};
 
+// Cấu hình mặc định Leaflet popup: tự né thanh nav sticky phía trên
+// (header-stats + main-nav cao tổng ~280px desktop, ~140px mobile khi đã cuộn)
+if (typeof L !== 'undefined' && L.Popup) {
+    L.Popup.mergeOptions({
+        autoPan: true,
+        autoPanPaddingTopLeft: L.point(20, 140),
+        autoPanPaddingBottomRight: L.point(20, 80),
+        keepInView: true
+    });
+}
+
 // ---- News toggle ----
 function openNews(id) {
     document.getElementById('news-list').style.display = 'none';
