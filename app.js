@@ -9,15 +9,33 @@ let currentView = 'map';
 let charts = {};
 
 // Cấu hình mặc định Leaflet popup: tự né thanh nav sticky phía trên
-// (header-stats + main-nav cao tổng ~280px desktop, ~140px mobile khi đã cuộn)
+// Padding top được tính ĐỘNG từ chiều cao thật của #header + #main-nav
+// (desktop ~320px khi chưa cuộn, mobile ~140px) — bằng cách này popup không bị header che.
 if (typeof L !== 'undefined' && L.Popup) {
     L.Popup.mergeOptions({
         autoPan: true,
-        autoPanPaddingTopLeft: L.point(20, 140),
+        autoPanPaddingTopLeft: L.point(20, 320), // fallback an toàn cho desktop chưa cuộn
         autoPanPaddingBottomRight: L.point(20, 80),
         keepInView: true
     });
 }
+
+// Tự đo chiều cao header + nav khi DOM sẵn sàng và mỗi lần viewport thay đổi
+function updatePopupAutoPanPadding() {
+    if (typeof L === 'undefined' || !L.Popup) return;
+    var header = document.getElementById('header');
+    var nav = document.getElementById('main-nav');
+    var topPad = ((header && header.offsetHeight) || 0) + ((nav && nav.offsetHeight) || 0) + 20;
+    L.Popup.mergeOptions({
+        autoPanPaddingTopLeft: L.point(20, topPad)
+    });
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updatePopupAutoPanPadding);
+} else {
+    updatePopupAutoPanPadding();
+}
+window.addEventListener('resize', updatePopupAutoPanPadding);
 
 // ---- News toggle ----
 function openNews(id) {
