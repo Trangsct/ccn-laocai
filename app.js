@@ -752,7 +752,7 @@ function initKCNMap() {
     if (!kcnData.length) { console.error("KHU_CONG_NGHIEP chưa được load"); return; }
 
     var kcnColors = { "hoat-dong": "#2e7d32", "xay-dung": "#f57f17", "quy-hoach": "#3949ab", "rut-qh": "#c62828" };
-    var kcnLabels = { "hoat-dong": "Đang hoạt động", "xay-dung": "Đang xây dựng", "quy-hoach": "Quy hoạch", "rut-qh": "Rút khỏi QH" };
+    var kcnLabels = { "hoat-dong": "Đang hoạt động", "xay-dung": "Đang xây dựng", "quy-hoach": "Quy hoạch", "rut-qh": "Rút khỏi Quy hoạch" };
 
     window.kcnMap = L.map('kcn-map', {
         center: [22.15, 104.15],
@@ -828,7 +828,7 @@ function renderKCNCards() {
     });
 
     var colors = {"hoat-dong":"#2e7d32","xay-dung":"#f57f17","quy-hoach":"#1565c0","rut-qh":"#c62828"};
-    var labels = {"hoat-dong":"Đang hoạt động","xay-dung":"Đang xây dựng","quy-hoach":"Chưa thành lập","rut-qh":"⚠️ Rút khỏi QH"};
+    var labels = {"hoat-dong":"Đang hoạt động","xay-dung":"Đang xây dựng","quy-hoach":"Chưa thành lập","rut-qh":"⚠️ Rút khỏi Quy hoạch"};
     var gradients = {
         "hoat-dong":"linear-gradient(135deg,#2e7d32,#43a047)",
         "xay-dung":"linear-gradient(135deg,#f57f17,#ff8f00)",
@@ -954,8 +954,8 @@ function renderThongKeCharts() {
             datasets: [
                 {label:'Đang hoạt động', data:[kcnHienHD, ccnHienHD], backgroundColor:'#2e7d32'},
                 {label:'Đang xây dựng', data:[kcnHienXD, ccnHienXD], backgroundColor:'#f57f17'},
-                {label:'Quy hoạch (chưa TL)', data:[kcnQHCount, ccnQHCount], backgroundColor:'#1565c0'},
-                {label:'Rút khỏi QH', data:[kcnRut, 0], backgroundColor:'#c62828'}
+                {label:'Quy hoạch (chưa thành lập)', data:[kcnQHCount, ccnQHCount], backgroundColor:'#1565c0'},
+                {label:'Rút khỏi Quy hoạch', data:[kcnRut, 0], backgroundColor:'#c62828'}
             ]
         },
         options: {
@@ -1158,7 +1158,7 @@ function renderThongKeCharts() {
             datasets: [
                 {label:'KCN (số)', data:[7, 20, 22], borderColor:'#c62828', backgroundColor:'rgba(198,40,40,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
                 {label:'CCN (số)', data:[23, 54, 62], borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
-                {label:'Tổng DT (1000 ha)', data:[3.04, 8.73, 11.86], borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,0.15)', tension:0.3, fill:true, yAxisID:'y1', borderDash:[6,4], borderWidth:3, pointRadius:6}
+                {label:'Tổng diện tích (1000 ha)', data:[3.04, 8.73, 11.86], borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,0.15)', tension:0.3, fill:true, yAxisID:'y1', borderDash:[6,4], borderWidth:3, pointRadius:6}
             ]
         },
         options: {
@@ -1570,8 +1570,8 @@ function renderRanhGioi(data) {
     var statusLabels = {
         'hoat-dong': 'Đang hoạt động',
         'xay-dung': 'Đang xây dựng',
-        'quy-hoach': 'Quy hoạch (chưa TL)',
-        'rut-qh': 'Rút khỏi QH'
+        'quy-hoach': 'Quy hoạch (chưa thành lập)',
+        'rut-qh': 'Rút khỏi Quy hoạch'
     };
 
     data.forEach(function(item) {
