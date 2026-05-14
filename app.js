@@ -47,15 +47,34 @@ function closeSidebar() {
     document.body.style.overflow = '';
 }
 
-// Remove PDF iframes on mobile to prevent auto-download
+// PDF iframes: dùng data-pdf-src để tránh trình duyệt tự tải về khi parse HTML
+//  - Desktop: copy data-pdf-src → src để render PDF inline
+//  - Mobile: thay iframe bằng placeholder có nút "Mở file PDF" (target=_blank, không tự tải)
 (function() {
-    if (window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.pdf-iframe').forEach(function(iframe) {
-                iframe.removeAttribute('src');
-                iframe.style.display = 'none';
-            });
+    var isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+    function processPdfIframes() {
+        document.querySelectorAll('iframe[data-pdf-src]').forEach(function(iframe) {
+            var src = iframe.getAttribute('data-pdf-src');
+            if (!src) return;
+            if (isMobile) {
+                var placeholder = document.createElement('div');
+                placeholder.style.cssText = 'background:#fef3c7; border:1.5px solid #fbbf24; border-radius:10px; padding:24px 16px; text-align:center; margin:10px 0;';
+                placeholder.innerHTML =
+                    '<div style="font-size:2.5rem; margin-bottom:8px;">📄</div>' +
+                    '<p style="color:#78350f; margin:0 0 14px; font-size:0.95rem; line-height:1.5;">Trên điện thoại không hiển thị trực tiếp file PDF.<br>Anh chị bấm nút bên dưới để xem hoặc tải về.</p>' +
+                    '<a href="' + src + '" target="_blank" rel="noopener" style="display:inline-block; background:#0d47a1; color:#fff; padding:12px 22px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.95rem;">📖 Mở file PDF</a>';
+                iframe.parentNode.replaceChild(placeholder, iframe);
+            } else {
+                iframe.setAttribute('src', src);
+            }
         });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', processPdfIframes);
+    } else {
+        processPdfIframes();
     }
 })();
 
