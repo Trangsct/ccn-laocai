@@ -779,9 +779,22 @@ function initKCNMap() {
         zoomControl: false
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Base layers: giao thông (mặc định), vệ tinh, địa hình
+    var kcnStreet = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(window.kcnMap);
+    var kcnSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri'
+    });
+    var kcnTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenTopoMap'
+    });
+
+    L.control.layers({
+        "🗺️ Bản đồ giao thông": kcnStreet,
+        "🛰️ Ảnh vệ tinh": kcnSatellite,
+        "⛰️ Địa hình": kcnTopo
+    }, null, { position: 'topright' }).addTo(window.kcnMap);
 
     L.control.zoom({ position: 'topleft' }).addTo(window.kcnMap);
 
@@ -1684,9 +1697,22 @@ function initCCNQHMap() {
         zoomControl: false
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Base layers: giao thông (mặc định), vệ tinh, địa hình
+    var ccnqhStreet = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(window.ccnqhMap);
+    var ccnqhSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri'
+    });
+    var ccnqhTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenTopoMap'
+    });
+
+    L.control.layers({
+        "🗺️ Bản đồ giao thông": ccnqhStreet,
+        "🛰️ Ảnh vệ tinh": ccnqhSatellite,
+        "⛰️ Địa hình": ccnqhTopo
+    }, null, { position: 'topright' }).addTo(window.ccnqhMap);
 
     L.control.zoom({ position: 'topleft' }).addTo(window.ccnqhMap);
 
