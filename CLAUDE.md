@@ -93,30 +93,29 @@ Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng ti
 
 ## Việc dài hạn
 
-### A. Tăng độ chính xác tọa độ KCN/CCN trên bản đồ
+### A. Độ chính xác tọa độ KCN/CCN — workflow KML chuẩn
 
-**Hiện trạng**: tọa độ `lat`/`lng` trong `ccn-data.json` (cho `CUM_CONG_NGHIEP`, `CCN_CHUA_DAU_TU`, `KHU_CONG_NGHIEP`) được nhập thủ công, có thể lệch — chỉ marker điểm, chưa có polygon ranh giới chuẩn cho nhiều CCN.
+**Hiện trạng (sau commit đầu tiên về polygon)**: 4 CCN có polygon CHUẨN từ KML pháp lý (Thống Nhất 1, Bát Xát, Cam Đường 1, Cam Đường 2). Còn lại 19 KCN + 19 CCN đã thành lập + 32 CCN quy hoạch ở dạng polygon ước lượng hoặc marker điểm.
 
-**Mục tiêu**: mỗi KCN/CCN có (1) tọa độ trung tâm chính xác, (2) ranh giới polygon đúng theo quyết định thành lập.
+**Workflow chuẩn của Sở** (đã thiết lập từ CCN Thống Nhất 1):
+1. Cán bộ nhận "Bảng tọa độ ranh giới CCN.docx" từ QĐ thành lập (hệ **VN-2000 / TM-3** — kinh tuyến trục 104°45' cho phía Tây tỉnh, 105°00' cho phía Đông).
+2. Mở Google Earth Pro → tạo placemark từng mốc + Polygon → File > Save Place As → KML.
+3. Đặt vào `unit-files/ccn-<slug>/ranh-gioi.kml` (đây là chuẩn vàng).
+4. Đặt thêm `ranh-gioi.kmz` (Google Earth tự tạo) + bản scan QĐ (`qd-XXX.pdf`) cùng folder để truy vết.
+5. Chạy `python .claude/sync-polygons-from-kml.py` để tự ghi polygon vào `ccn-polygons.json` với `is_approx: false` + field `source` trỏ về KML.
+6. Bump SW version → commit → push.
 
-**Nguồn dữ liệu CẦN bổ sung** (đề xuất user cung cấp):
+**Script `.claude/sync-polygons-from-kml.py`**:
+- Đọc tất cả `unit-files/*/ranh-gioi.kml` theo MAPPING slug→name (định nghĩa trong script).
+- Convert KML lng,lat → JSON [lat, lng] (Leaflet dùng [lat, lng]).
+- Hỗ trợ `--dry-run` để xem diff trước khi ghi.
+- Khi thêm CCN mới có KML, chỉ cần thêm 1 dòng vào `MAPPING` ở đầu script.
 
-1. **Tọa độ pháp lý từ quyết định thành lập từng CCN** — thường là bản đồ kèm theo QĐ với danh sách mốc giới (point N1, N2, …) có tọa độ VN-2000 hoặc WGS-84. Hiện đã có vài CCN trong `unit-files/ccn-*/` (vd. `ccn-bat-xat`, `ccn-phu-thinh-4`). Cần bổ sung phần còn lại.
-2. **File KML / SHP / GeoJSON** của Sở Tài nguyên & Môi trường (nếu có) — ranh giới quy hoạch sử dụng đất.
-3. **Bản đồ quy hoạch chính thức** (`ban-do-khu-cum-cn-2025.pdf` đã có 8MB trong repo) — có thể trích xuất tọa độ nếu PDF là layer vector.
-4. **Cổng dữ liệu mở tỉnh Lào Cai** — `bando.laocai.gov.vn` (đã có link trong layer control); kiểm tra xem có WMS / WFS endpoint để overlay trực tiếp không.
-5. **Cross-check Google Earth / Google Maps**: dùng để verify hợp lý cho từng CCN đã có (đối chiếu địa danh, đường, sông).
-
-**Cách triển khai khi có dữ liệu**:
-- Cập nhật `lat`/`lng` cho từng CCN trong `ccn-data.json` (qua CMS).
-- Polygon ranh giới: bổ sung vào `ccn-polygons.json` (đã có cấu trúc sẵn, format GeoJSON-like). Mỗi CCN polygon là 1 array `[[lat,lng], …]`.
-- KCN polygon: hiện chưa có file riêng. Cân nhắc tạo `kcn-polygons.json` cùng cấu trúc.
-
-**Câu hỏi cần trả lời từ user khi triển khai**:
-- Anh đã có file QĐ thành lập + bản đồ kèm theo cho cả 23 CCN hiện hữu chưa? Bao nhiêu CCN còn thiếu?
-- Tọa độ trong QĐ là hệ VN-2000 hay WGS-84? (Nếu VN-2000 phải chuyển hệ trước khi đưa lên Leaflet, vì Leaflet dùng WGS-84/EPSG:4326).
-- Có file KML / SHP / GeoJSON gốc nào không? Nếu có, chuyển GeoJSON là nhanh nhất.
-- 35 CCN chưa thành lập đã có bản đồ chỉ giới nghiên cứu chưa, hay mới chỉ có địa danh xã/phường? Nếu chỉ có địa danh, tọa độ tạm thời sẽ là tâm xã.
+**Nguồn dữ liệu để mở rộng**:
+1. QĐ thành lập + bản đồ kèm theo cho 19 CCN đã thành lập còn lại + 32 CCN QH.
+2. KCN: hiện chưa có folder nào trong `unit-files/`. Cần tạo `unit-files/kcn-<slug>/ranh-gioi.kml` theo cùng workflow.
+3. Cổng `bando.laocai.gov.vn` (link đã có trong map) — kiểm tra WMS/WFS endpoint để overlay trực tiếp (xa hơn).
+4. Cross-check Google Earth cho các CCN đang hoạt động (dễ thấy nhà xưởng trên ảnh vệ tinh) — tạo KML "tạm OK" với note `is_approx: true` nếu chưa có QĐ chính thức.
 
 ### B. Refactor monolith (low priority)
 Khi muốn maintainability lâu dài: tách `app.js` thành các module nhỏ (map.js, render.js, modal.js, charts.js…). Cần build step. Hiện không cần.
