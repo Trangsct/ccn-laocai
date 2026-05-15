@@ -226,6 +226,25 @@ function initMap() {
         weight: 1,
         dashArray: '8, 8'
     }).addTo(map);
+
+    // Khi mở popup: cuộn page xuống để khu vực bản đồ chiếm hết viewport,
+    // tránh popup dài bị che bởi header / clip ngoài viewport (laptop, mobile landscape).
+    map.on('popupopen', function(e) {
+        var mapSection = document.getElementById('map-section');
+        if (!mapSection) return;
+        var rect = mapSection.getBoundingClientRect();
+        // Chỉ cuộn khi header đang chiếm chỗ trên bản đồ (top map còn lớn)
+        if (rect.top > 5) {
+            window.scrollTo({ top: window.scrollY + rect.top - 4, behavior: 'smooth' });
+            // Sau khi cuộn xong, báo Leaflet biết kích thước map mới và re-pan popup
+            setTimeout(function() {
+                map.invalidateSize();
+                if (e.popup && e.popup._source && typeof e.popup._source.getLatLng === 'function') {
+                    map.panTo(e.popup._source.getLatLng(), { animate: true, duration: 0.3 });
+                }
+            }, 450);
+        }
+    });
 }
 
 // ---- Create custom marker icon ----

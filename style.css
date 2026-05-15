@@ -241,6 +241,12 @@ a:hover {
 .leaflet-popup {
     z-index: 951 !important;
 }
+/* Popup CCN khá dài (tên + 5 dòng info + 2 nút) — giới hạn chiều cao
+   và cho cuộn bên trong, tránh bị cắt khi viewport thấp (laptop/mobile landscape) */
+.leaflet-popup-content {
+    max-height: 60vh;
+    overflow-y: auto;
+}
 
 /* ---- Filter Bar ---- */
 .filter-bar {
