@@ -2084,7 +2084,15 @@ function loadUnitDetails() {
 function findUnitByName(name) {
     if (!name) return null;
     var nameNorm = slugify(name);
-    // 1. KHU_CONG_NGHIEP (trong app.js renderKCNCards hardcoded list — không có window)
+    // 1. KHU_CONG_NGHIEP (từ ccn-data.json qua window) — phải tra TRƯỚC vì
+    //    có 1 số KCN trùng tên xã/phường với CCN (vd. "KCN/CCN Đông Phố Mới")
+    if (window.KHU_CONG_NGHIEP && window.KHU_CONG_NGHIEP.length) {
+        for (var k = 0; k < window.KHU_CONG_NGHIEP.length; k++) {
+            if (slugify(window.KHU_CONG_NGHIEP[k].ten) === nameNorm) {
+                return { src: 'KCN', data: window.KHU_CONG_NGHIEP[k] };
+            }
+        }
+    }
     // 2. CUM_CONG_NGHIEP đã thành lập
     if (typeof CUM_CONG_NGHIEP !== 'undefined') {
         for (var i = 0; i < CUM_CONG_NGHIEP.length; i++) {
@@ -2140,17 +2148,18 @@ function openUnitDetail(slug, optionalName) {
     if (optionalName) srcMatch = findUnitByName(optionalName);
     if (!srcMatch && details && details.ten) srcMatch = findUnitByName(details.ten);
 
-    renderUnitDetail(slug, details, srcMatch);
+    renderUnitDetail(slug, details, srcMatch, optionalName);
 }
 
 // Render nội dung tab chi tiết
-function renderUnitDetail(slug, details, srcMatch) {
-    // Default fields nếu không có details
-    var ten = (details && details.ten) || (srcMatch && srcMatch.data.ten) || slug;
+function renderUnitDetail(slug, details, srcMatch, optionalName) {
+    // Default fields nếu không có details — ưu tiên tên đẹp từ optionalName trước khi rơi xuống slug
+    var ten = (details && details.ten) || (srcMatch && srcMatch.data.ten) || optionalName || slug;
     var type = (details && details.type)
         || (srcMatch && srcMatch.src === 'CCN_TL' ? 'Cụm công nghiệp đã thành lập' :
             srcMatch && srcMatch.src === 'CCN_QH' ? 'Cụm công nghiệp quy hoạch' :
-            ten.toLowerCase().indexOf('khu công nghiệp') === 0 ? 'Khu công nghiệp' : 'Cụm công nghiệp');
+            srcMatch && srcMatch.src === 'KCN' ? 'Khu công nghiệp' :
+            ten.toLowerCase().indexOf('khu công nghiệp') === 0 || ten.toLowerCase().indexOf('kcn') === 0 ? 'Khu công nghiệp' : 'Cụm công nghiệp');
     var viTri = (details && details.viTriMoTa) || (srcMatch && (srcMatch.data.xa || srcMatch.data.viTri)) || '';
     var dienTich = (details && details.dienTich) || (srcMatch && (srcMatch.data.dienTich || srcMatch.data.dt)) || null;
     var namTL = (details && details.namThanhLap) || (srcMatch && srcMatch.data.namThanhLap) || null;
