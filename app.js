@@ -227,13 +227,21 @@ function initMap() {
         dashArray: '8, 8'
     }).addTo(map);
 
-    // Khi mở popup: cuộn page xuống để khu vực bản đồ chiếm hết viewport,
-    // tránh popup dài bị che bởi header / clip ngoài viewport (laptop, mobile landscape).
+    // Khi mở popup: (1) cuộn page xuống để map full viewport, (2) gắn click handler
+    // cho nút "Xem trang chi tiết" qua data-attribute (thay onclick inline có rủi ro XSS).
     map.on('popupopen', function(e) {
+        // (2) Click handler cho nút data-action="open-detail" trong popup
+        var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
+        if (btn) {
+            btn.onclick = function() {
+                openUnitDetail(btn.dataset.slug, btn.dataset.ten);
+            };
+        }
+
+        // (1) Cuộn page xuống nếu header còn chiếm chỗ
         var mapSection = document.getElementById('map-section');
         if (!mapSection) return;
         var rect = mapSection.getBoundingClientRect();
-        // Chỉ cuộn khi header đang chiếm chỗ trên bản đồ (top map còn lớn)
         if (rect.top > 5) {
             window.scrollTo({ top: window.scrollY + rect.top - 4, behavior: 'smooth' });
             // Sau khi cuộn xong, báo Leaflet biết kích thước map mới và re-pan popup
@@ -289,19 +297,18 @@ function addMarkers(ccnList) {
 function createPopupContent(ccn) {
     const status = TRANG_THAI[ccn.trangThai];
     const slugC = slugify(ccn.ten);
-    const safeC = ccn.ten.replace(/'/g, "\\'");
     return `
         <div class="popup-content">
             <div class="popup-header status-${ccn.trangThai}">
-                🏭 ${ccn.ten}
+                🏭 ${escapeHtml(ccn.ten)}
             </div>
             <div class="popup-body">
-                <div class="popup-info">📍 <strong>${ccn.xa}</strong></div>
+                <div class="popup-info">📍 <strong>${escapeHtml(ccn.xa)}</strong></div>
                 <div class="popup-info">📐 Diện tích: <strong>${ccn.dienTich} ha</strong></div>
                 <div class="popup-info">🏢 Doanh nghiệp: <strong>${ccn.soDoanhNghiep}</strong></div>
                 <div class="popup-info">📊 Tỷ lệ lấp đầy: <strong>${ccn.tyLeLapDay}%</strong></div>
-                <div class="popup-info">🔖 Trạng thái: <strong>${status.icon} ${status.ten}</strong></div>
-                <button class="popup-detail-btn" onclick="openUnitDetail('${slugC}', '${safeC}')">
+                <div class="popup-info">🔖 Trạng thái: <strong>${status.icon} ${escapeHtml(status.ten)}</strong></div>
+                <button class="popup-detail-btn" data-action="open-detail" data-slug="${escapeHtml(slugC)}" data-ten="${escapeHtml(ccn.ten)}">
                     📖 Xem trang chi tiết
                 </button>
                 <a class="popup-detail-btn" style="background:#34495e; color:white; text-decoration:none; margin-top:5px; display:inline-block; font-size:0.75rem; text-align:center;" href="https://www.google.com/maps/dir/?api=1&destination=${ccn.lat},${ccn.lng}" target="_blank">
@@ -490,20 +497,18 @@ function renderCCNCards(filteredList) {
     grid.innerHTML = list.map(ccn => {
         const status = TRANG_THAI[ccn.trangThai];
         const progressClass = ccn.tyLeLapDay >= 70 ? 'high' : ccn.tyLeLapDay >= 40 ? 'medium' : 'low';
-
         const slugCcn = slugify(ccn.ten);
-        const safeNameCcn = ccn.ten.replace(/'/g, "\\'");
         return `
-            <div class="ccn-card animate-in" style="cursor:pointer;" title="Bấm để xem trang chi tiết" onclick="openUnitDetail('${slugCcn}', '${safeNameCcn}')">
+            <div class="ccn-card animate-in" style="cursor:pointer;" title="Bấm để xem trang chi tiết" data-slug="${escapeHtml(slugCcn)}" data-ten="${escapeHtml(ccn.ten)}">
                 <div class="ccn-card-header status-${ccn.trangThai}">
-                    <div class="ccn-card-name">${ccn.ten}</div>
-                    <div class="ccn-card-badge">${status.icon} ${status.ten}</div>
+                    <div class="ccn-card-name">${escapeHtml(ccn.ten)}</div>
+                    <div class="ccn-card-badge">${status.icon} ${escapeHtml(status.ten)}</div>
                 </div>
                 <div class="ccn-card-body">
                     <div class="ccn-card-info">
                         <span class="info-icon">📍</span>
                         <span class="info-label">Vị trí:</span>
-                        <span class="info-value">${ccn.xa}</span>
+                        <span class="info-value">${escapeHtml(ccn.xa)}</span>
                     </div>
                     <div class="ccn-card-info">
                         <span class="info-icon">📐</span>
@@ -518,7 +523,7 @@ function renderCCNCards(filteredList) {
                     <div class="ccn-card-info">
                         <span class="info-icon">🔧</span>
                         <span class="info-label">Ngành nghề:</span>
-                        <span class="info-value">${ccn.nganhNghe}</span>
+                        <span class="info-value">${escapeHtml(ccn.nganhNghe)}</span>
                     </div>
                     <div class="ccn-card-progress">
                         <div class="progress-label">
@@ -534,6 +539,12 @@ function renderCCNCards(filteredList) {
             </div>
         `;
     }).join('');
+
+    // Event delegation — onclick = function chỉ giữ 1 handler, không bị nhân đôi khi render lại
+    grid.onclick = function(e) {
+        const card = e.target.closest('.ccn-card[data-slug]');
+        if (card) openUnitDetail(card.dataset.slug, card.dataset.ten);
+    };
 
     // Animate progress bars
     setTimeout(() => {
@@ -554,26 +565,30 @@ function renderQuyHoachTable() {
         let baoCaoBadge, baoCaoTooltip = '';
         if (ccn.coBaoCao === true) {
             baoCaoBadge = `<span style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #86efac;white-space:nowrap;">✅ Đã có BC</span>`;
-            baoCaoTooltip = ccn.baoCao ? `<div style="font-size:0.78rem;color:#475569;margin-top:4px;font-style:italic;">${ccn.baoCao}</div>` : '';
+            baoCaoTooltip = ccn.baoCao ? `<div style="font-size:0.78rem;color:#475569;margin-top:4px;font-style:italic;">${escapeHtml(ccn.baoCao)}</div>` : '';
         } else if (ccn.coBaoCao === 'rar') {
             baoCaoBadge = `<span style="background:#fef9c3;color:#b45309;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #fde047;white-space:nowrap;">📦 File .rar</span>`;
-            baoCaoTooltip = `<div style="font-size:0.78rem;color:#92400e;margin-top:4px;font-style:italic;">${ccn.baoCao}</div>`;
+            baoCaoTooltip = `<div style="font-size:0.78rem;color:#92400e;margin-top:4px;font-style:italic;">${escapeHtml(ccn.baoCao)}</div>`;
         } else {
             baoCaoBadge = `<span style="background:#fee2e2;color:#dc2626;padding:3px 8px;border-radius:4px;font-size:0.78rem;border:1px solid #fca5a5;white-space:nowrap;font-weight:600;">🔴 Chưa có báo cáo</span>`;
             baoCaoTooltip = '';
         }
         const slugQH = slugify(ccn.ten);
-        const safeQH = ccn.ten.replace(/'/g, "\\'");
         return `
-        <tr style="cursor:pointer; ${ccn.coBaoCao === false ? 'background:#fff5f5;' : ''}" onclick="openUnitDetail('${slugQH}', '${safeQH}')" title="Bấm để xem trang chi tiết">
+        <tr style="cursor:pointer; ${ccn.coBaoCao === false ? 'background:#fff5f5;' : ''}" data-slug="${escapeHtml(slugQH)}" data-ten="${escapeHtml(ccn.ten)}" title="Bấm để xem trang chi tiết">
             <td style="text-align:center;">${idx + 1}</td>
-            <td><strong style="color:#1565c0;">${ccn.ten} →</strong></td>
-            <td>${ccn.xa}</td>
+            <td><strong style="color:#1565c0;">${escapeHtml(ccn.ten)} →</strong></td>
+            <td>${escapeHtml(ccn.xa)}</td>
             <td style="text-align:right;">${ccn.dienTich} ha</td>
-            <td style="font-size:0.85rem;">${ccn.huongPhatTrien || '-'}${baoCaoTooltip}</td>
+            <td style="font-size:0.85rem;">${escapeHtml(ccn.huongPhatTrien || '-')}${baoCaoTooltip}</td>
             <td style="text-align:center;">${baoCaoBadge}</td>
         </tr>`;
     }).join('');
+
+    tableBody.onclick = function(e) {
+        const row = e.target.closest('tr[data-slug]');
+        if (row) openUnitDetail(row.dataset.slug, row.dataset.ten);
+    };
 }
 
 // ---- Render Documents Table ----
@@ -812,14 +827,24 @@ function initKCNMap() {
             .addTo(window.kcnMap)
             .bindPopup(
                 '<div style="min-width:220px;">' +
-                '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + kcn.ten + '</h3>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + kcn.viTri + '</p>' +
+                '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + escapeHtml(kcn.ten) + '</h3>' +
+                '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + escapeHtml(kcn.viTri) + '</p>' +
                 '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + kcn.dienTich + ' ha</p>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Trạng thái:</b> ' + kcnLabels[kcn.trangThai] + '</p>' +
-                '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;">' + kcn.moTa + '</p>' +
-                '<button onclick="openUnitDetail(\'' + kcnSlug + '\', \'' + kcn.ten.replace(/'/g, "\\'") + '\')" style="margin-top:10px; width:100%; background:' + color + '; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
+                '<p style="margin:2px 0;font-size:0.85rem;"><b>Trạng thái:</b> ' + escapeHtml(kcnLabels[kcn.trangThai]) + '</p>' +
+                '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;">' + escapeHtml(kcn.moTa) + '</p>' +
+                '<button data-action="open-detail" data-slug="' + escapeHtml(kcnSlug) + '" data-ten="' + escapeHtml(kcn.ten) + '" style="margin-top:10px; width:100%; background:' + color + '; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
                 '</div>'
             );
+    });
+
+    // Event delegation cho nút "Xem trang chi tiết" trong popup map KCN
+    window.kcnMap.on('popupopen', function(e) {
+        var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
+        if (btn) {
+            btn.onclick = function() {
+                openUnitDetail(btn.dataset.slug, btn.dataset.ten);
+            };
+        }
     });
 }
 
@@ -873,20 +898,24 @@ function renderKCNCards() {
         var color = colors[kcn.tt];
         var bg = gradients[kcn.tt];
         var slug = slugify(kcn.ten);
-        var safeName = kcn.ten.replace(/'/g, "\\'");
-        return '<div class="ccn-card" onclick="openUnitDetail(\'' + slug + '\', \'' + safeName + '\')" style="border-left:4px solid ' + color + '; cursor:pointer;" title="Bấm để xem trang chi tiết">' +
+        return '<div class="ccn-card" data-slug="' + escapeHtml(slug) + '" data-ten="' + escapeHtml(kcn.ten) + '" style="border-left:4px solid ' + color + '; cursor:pointer;" title="Bấm để xem trang chi tiết">' +
             '<div class="ccn-card-header" style="background:' + bg + ';">' +
-                '<h3 class="ccn-card-title">' + kcn.ten + '</h3>' +
+                '<h3 class="ccn-card-title">' + escapeHtml(kcn.ten) + '</h3>' +
                 '<span class="ccn-card-status" style="background:rgba(255,255,255,0.2);color:#fff;">' + labels[kcn.tt] + '</span>' +
             '</div>' +
             '<div class="ccn-card-body">' +
-                '<div class="ccn-card-info"><span class="info-icon">📍</span><span class="info-label">Vị trí:</span><span>' + kcn.viTri + '</span></div>' +
+                '<div class="ccn-card-info"><span class="info-icon">📍</span><span class="info-label">Vị trí:</span><span>' + escapeHtml(kcn.viTri) + '</span></div>' +
                 '<div class="ccn-card-info"><span class="info-icon">📐</span><span class="info-label">Diện tích:</span><span>' + kcn.dt + ' ha</span></div>' +
-                '<div class="ccn-card-info" style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;"><span class="info-icon">📝</span><span style="font-size:0.85rem;color:#555;">' + kcn.gc + '</span></div>' +
+                '<div class="ccn-card-info" style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;"><span class="info-icon">📝</span><span style="font-size:0.85rem;color:#555;">' + escapeHtml(kcn.gc) + '</span></div>' +
                 '<div class="ccn-card-progress" style="display:flex; justify-content:space-between; align-items:center;"><span>' + (idx+1) + '/' + total + '</span><span style="color:' + color + '; font-weight:600; font-size:0.85rem;">📖 Xem chi tiết →</span></div>' +
             '</div>' +
         '</div>';
     }).join('');
+
+    grid.onclick = function(e) {
+        var card = e.target.closest('.ccn-card[data-slug]');
+        if (card) openUnitDetail(card.dataset.slug, card.dataset.ten);
+    };
 }
 
 // ---- CCN QH Cards (31 CCN chưa TL - dạng card) ----
@@ -897,21 +926,25 @@ function renderCCNQHCards() {
     var total = CCN_CHUA_DAU_TU.length;
     grid.innerHTML = CCN_CHUA_DAU_TU.map(function(ccn) {
         var slug = slugify(ccn.ten);
-        var safeName = ccn.ten.replace(/'/g, "\\'");
-        return '<div class="ccn-card" onclick="openUnitDetail(\'' + slug + '\', \'' + safeName + '\')" style="border-left:4px solid #1565c0; cursor:pointer;" title="Bấm để xem trang chi tiết">' +
+        return '<div class="ccn-card" data-slug="' + escapeHtml(slug) + '" data-ten="' + escapeHtml(ccn.ten) + '" style="border-left:4px solid #1565c0; cursor:pointer;" title="Bấm để xem trang chi tiết">' +
             '<div class="ccn-card-header" style="background:linear-gradient(135deg,#1565c0,#1976d2);">' +
-                '<h3 class="ccn-card-title">' + ccn.ten + '</h3>' +
+                '<h3 class="ccn-card-title">' + escapeHtml(ccn.ten) + '</h3>' +
                 '<span class="ccn-card-status" style="background:rgba(255,255,255,0.2);color:#fff;">Chưa thành lập</span>' +
             '</div>' +
             '<div class="ccn-card-body">' +
-                '<div class="ccn-card-info"><span class="info-icon">📍</span><span class="info-label">Vị trí:</span><span>' + ccn.xa + '</span></div>' +
+                '<div class="ccn-card-info"><span class="info-icon">📍</span><span class="info-label">Vị trí:</span><span>' + escapeHtml(ccn.xa) + '</span></div>' +
                 '<div class="ccn-card-info"><span class="info-icon">📐</span><span class="info-label">Diện tích:</span><span>' + ccn.dienTich + ' ha</span></div>' +
-                '<div class="ccn-card-info"><span class="info-icon">📋</span><span class="info-label">Hướng PT:</span><span>' + ccn.huongPhatTrien + '</span></div>' +
-                (ccn.baoCao ? '<div class="ccn-card-info" style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;"><span class="info-icon">📝</span><span style="font-size:0.85rem;color:#555;">' + ccn.baoCao + '</span></div>' : '') +
+                '<div class="ccn-card-info"><span class="info-icon">📋</span><span class="info-label">Hướng PT:</span><span>' + escapeHtml(ccn.huongPhatTrien) + '</span></div>' +
+                (ccn.baoCao ? '<div class="ccn-card-info" style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;"><span class="info-icon">📝</span><span style="font-size:0.85rem;color:#555;">' + escapeHtml(ccn.baoCao) + '</span></div>' : '') +
                 '<div class="ccn-card-progress" style="display:flex; justify-content:space-between; align-items:center;"><span>STT: ' + ccn.stt + '/' + total + '</span><span style="color:#1565c0; font-weight:600; font-size:0.85rem;">📖 Xem chi tiết →</span></div>' +
             '</div>' +
         '</div>';
     }).join('');
+
+    grid.onclick = function(e) {
+        var card = e.target.closest('.ccn-card[data-slug]');
+        if (card) openUnitDetail(card.dataset.slug, card.dataset.ten);
+    };
 }
 
 // ---- CCN QH Table (clickable rows → trang chi tiết) ----
@@ -921,17 +954,21 @@ function renderCCNQHTable() {
     if (tableBody.querySelectorAll('tr').length > 0) return;
     tableBody.innerHTML = CCN_CHUA_DAU_TU.map(function(ccn, idx) {
         var slug = slugify(ccn.ten);
-        var safeName = ccn.ten.replace(/'/g, "\\'");
-        return '<tr style="cursor:pointer; ' + (idx % 2 === 1 ? 'background:#f8f9fa;' : '') + '" onclick="openUnitDetail(\'' + slug + '\', \'' + safeName + '\')" title="Bấm để xem trang chi tiết">' +
+        return '<tr style="cursor:pointer; ' + (idx % 2 === 1 ? 'background:#f8f9fa;' : '') + '" data-slug="' + escapeHtml(slug) + '" data-ten="' + escapeHtml(ccn.ten) + '" title="Bấm để xem trang chi tiết">' +
             '<td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">' + ccn.stt + '</td>' +
-            '<td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;color:#1565c0;">' + ccn.ten + ' →</td>' +
-            '<td style="padding:10px;border-bottom:1px solid #eee;">' + ccn.xa + '</td>' +
+            '<td style="padding:10px;border-bottom:1px solid #eee;font-weight:600;color:#1565c0;">' + escapeHtml(ccn.ten) + ' →</td>' +
+            '<td style="padding:10px;border-bottom:1px solid #eee;">' + escapeHtml(ccn.xa) + '</td>' +
             '<td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">' + ccn.dienTich + '</td>' +
-            '<td style="padding:10px;border-bottom:1px solid #eee;">' + ccn.huongPhatTrien +
-                (ccn.baoCao ? '<div style="margin-top:4px;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:4px;">' + ccn.baoCao + '</div>' : '') +
+            '<td style="padding:10px;border-bottom:1px solid #eee;">' + escapeHtml(ccn.huongPhatTrien) +
+                (ccn.baoCao ? '<div style="margin-top:4px;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:4px;">' + escapeHtml(ccn.baoCao) + '</div>' : '') +
             '</td>' +
             '</tr>';
     }).join('');
+
+    tableBody.onclick = function(e) {
+        var row = e.target.closest('tr[data-slug]');
+        if (row) openUnitDetail(row.dataset.slug, row.dataset.ten);
+    };
 }
 
 // ---- Thong Ke - Biểu đồ trực quan ----
@@ -1725,20 +1762,30 @@ function initCCNQHMap() {
             iconAnchor: [13, 13]
         });
 
-        var ghiChu = ccn.gc ? '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:6px;">' + ccn.gc + '</p>' : '';
+        var ghiChu = ccn.gc ? '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:6px;">' + escapeHtml(ccn.gc) + '</p>' : '';
 
         var ccnSlug = slugify(ccn.ten);
         L.marker([ccn.lat, ccn.lng], { icon: icon })
             .addTo(window.ccnqhMap)
             .bindPopup(
                 '<div style="min-width:240px;max-width:320px;">' +
-                '<h3 style="margin:0 0 6px;font-size:1rem;color:#1565c0;">' + ccn.stt + '. ' + ccn.ten + '</h3>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + ccn.xa + '</p>' +
+                '<h3 style="margin:0 0 6px;font-size:1rem;color:#1565c0;">' + ccn.stt + '. ' + escapeHtml(ccn.ten) + '</h3>' +
+                '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + escapeHtml(ccn.xa) + '</p>' +
                 '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích quy hoạch:</b> ' + ccn.dt + ' ha</p>' +
                 ghiChu +
-                '<button onclick="openUnitDetail(\'' + ccnSlug + '\', \'' + ccn.ten.replace(/'/g, "\\'") + '\')" style="margin-top:10px; width:100%; background:#1565c0; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
+                '<button data-action="open-detail" data-slug="' + escapeHtml(ccnSlug) + '" data-ten="' + escapeHtml(ccn.ten) + '" style="margin-top:10px; width:100%; background:#1565c0; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
                 '</div>'
             );
+    });
+
+    // Event delegation cho nút "Xem trang chi tiết" trong popup map CCN QH
+    window.ccnqhMap.on('popupopen', function(e) {
+        var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
+        if (btn) {
+            btn.onclick = function() {
+                openUnitDetail(btn.dataset.slug, btn.dataset.ten);
+            };
+        }
     });
 }
 
@@ -1793,20 +1840,19 @@ function openDetailModal(ccnId) {
     const overlay = document.getElementById('modal-overlay');
     const modal = document.getElementById('modal-content');
 
+    var mailtoSubject = encodeURIComponent('Yêu cầu hồ sơ pháp lý ' + ccn.ten);
     modal.innerHTML = `
         <div class="modal-header status-${ccn.trangThai}">
             <button class="modal-close" onclick="closeModal()">&times;</button>
-            <div class="modal-title">🏭 ${ccn.ten}</div>
-            <div class="modal-status">${status.icon} ${status.ten}</div>
+            <div class="modal-title">🏭 <span data-field="ten-header"></span></div>
+            <div class="modal-status">${status.icon} ${escapeHtml(status.ten)}</div>
         </div>
         <div class="modal-body">
-            <div class="modal-description">
-                ${ccn.moTa}
-            </div>
+            <div class="modal-description" data-field="moTa"></div>
             <div class="modal-info-grid">
                 <div class="modal-info-item">
                     <div class="modal-info-label">📍 Vị trí</div>
-                    <div class="modal-info-value">${ccn.xa}</div>
+                    <div class="modal-info-value">${escapeHtml(ccn.xa)}</div>
                 </div>
                 <div class="modal-info-item">
                     <div class="modal-info-label">📐 Diện tích</div>
@@ -1831,25 +1877,25 @@ function openDetailModal(ccnId) {
                 </div>
                 <div class="modal-info-item full-width">
                     <div class="modal-info-label">🔧 Ngành nghề</div>
-                    <div class="modal-info-value">${ccn.nganhNghe}</div>
+                    <div class="modal-info-value">${escapeHtml(ccn.nganhNghe)}</div>
                 </div>
                 <div class="modal-info-item full-width">
                     <div class="modal-info-label">🏗️ Hạ tầng</div>
-                    <div class="modal-info-value">${ccn.haTang}</div>
+                    <div class="modal-info-value">${escapeHtml(ccn.haTang)}</div>
                 </div>
                 <div class="modal-info-item full-width">
                     <div class="modal-info-label">📜 Quyết định</div>
-                    <div class="modal-info-value">${ccn.quyetDinh}</div>
+                    <div class="modal-info-value">${escapeHtml(ccn.quyetDinh)}</div>
                 </div>
                 <div class="modal-info-item full-width mt-3">
                     <div class="modal-info-label">📂 Tài liệu đính kèm</div>
                     <div class="modal-info-value" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                        <a href="mailto:sct@laocai.gov.vn?subject=Yêu cầu hồ sơ ${ccn.ten}" style="padding:8px 12px; background:#f1f5f9; border-radius:6px; text-decoration:none; display:flex; align-items:center; color:#1e293b; border:1px solid #e2e8f0; transition:all 0.2s; font-weight:500;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">📧 Yêu cầu hồ sơ pháp lý ${ccn.ten} qua Email</a>
+                        <a href="mailto:sct@laocai.gov.vn?subject=${mailtoSubject}" style="padding:8px 12px; background:#f1f5f9; border-radius:6px; text-decoration:none; display:flex; align-items:center; color:#1e293b; border:1px solid #e2e8f0; transition:all 0.2s; font-weight:500;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">📧 Yêu cầu hồ sơ pháp lý <span data-field="ten-email"></span> qua Email</a>
                     </div>
                 </div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap:wrap;">
-                <button class="modal-btn-locate" onclick="closeModal(); openUnitDetail(slugify('${ccn.ten.replace(/'/g, "\\'")}'), '${ccn.ten.replace(/'/g, "\\'")}');" style="flex:1; min-width:160px; background:#0d47a1; color:#fff;">
+                <button class="modal-btn-locate" data-action="open-detail" style="flex:1; min-width:160px; background:#0d47a1; color:#fff;">
                     📖 Xem trang chi tiết
                 </button>
                 <button class="modal-btn-locate" onclick="locateOnMap(${ccn.id})" style="flex: 1; min-width:140px;">
@@ -1861,6 +1907,17 @@ function openDetailModal(ccnId) {
             </div>
         </div>
     `;
+
+    // Demo textContent — 2 trường rủi ro cao nhất (header + mô tả) set qua textContent thay vì innerHTML
+    modal.querySelector('[data-field="ten-header"]').textContent = ccn.ten;
+    modal.querySelector('[data-field="moTa"]').textContent = ccn.moTa;
+    modal.querySelector('[data-field="ten-email"]').textContent = ccn.ten;
+
+    // Nút "Xem trang chi tiết" — gắn handler thay cho onclick inline có escape thủ công
+    modal.querySelector('[data-action="open-detail"]').addEventListener('click', function() {
+        closeModal();
+        openUnitDetail(slugify(ccn.ten), ccn.ten);
+    });
 
     overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
@@ -2171,7 +2228,7 @@ function renderUnitDetail(slug, details, srcMatch) {
         actions.innerHTML = '';
         if (details.kml) {
             actions.innerHTML =
-                '<a href="' + details.kml + '" download style="background:#0d47a1; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:0.9rem; display:inline-flex; align-items:center; gap:6px;">⬇️ Tải file KML</a>' +
+                '<a href="' + escapeHtml(details.kml) + '" download style="background:#0d47a1; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:0.9rem; display:inline-flex; align-items:center; gap:6px;">⬇️ Tải file KML</a>' +
                 '<a href="https://earth.google.com/web/" target="_blank" rel="noopener" style="background:#fff; color:#0d47a1; border:1.5px solid #0d47a1; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:0.9rem;">🌍 Mở Google Earth Web</a>';
         }
     } else {
@@ -2189,8 +2246,8 @@ function renderUnitDetail(slug, details, srcMatch) {
                     '<div style="font-weight:600; color:#1e293b; font-size:0.96rem;">' + escapeHtml(vb.ten || 'Văn bản') + '</div>' +
                     (vb.ngay ? '<div style="font-size:0.82rem; color:#64748b; margin-top:2px;">Ngày ' + escapeHtml(vb.ngay) + '</div>' : '') +
                 '</div>' +
-                '<a href="' + vb.file + '" target="_blank" rel="noopener" style="background:#fff; color:#0d47a1; border:1px solid #0d47a1; padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:600;">Xem</a>' +
-                '<a href="' + vb.file + '" download style="background:#0d47a1; color:#fff; padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:600;">Tải về</a>' +
+                '<a href="' + escapeHtml(vb.file) + '" target="_blank" rel="noopener" style="background:#fff; color:#0d47a1; border:1px solid #0d47a1; padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:600;">Xem</a>' +
+                '<a href="' + escapeHtml(vb.file) + '" download style="background:#0d47a1; color:#fff; padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none; font-weight:600;">Tải về</a>' +
             '</div>';
         }).join('');
         docsWrap.style.display = '';
@@ -2266,7 +2323,8 @@ function escapeHtml(s) {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 // Khởi tạo nút Quay lại
