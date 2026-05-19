@@ -1,3 +1,19 @@
-# Local Netlify folder
+﻿# Local Netlify folder
 .netlify
 backup_2026-*/
+
+# Vercel
+.vercel/
+!.vercel/README.txt
+
+# Local dev tools / scripts cá nhân
+.claude/
+PUSH-LEN-GITHUB.bat
+*.bat
+*.rar
+*.zip
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.vercel
