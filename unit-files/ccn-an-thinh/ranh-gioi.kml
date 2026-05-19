@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Ranh giới CCN An Thịnh</name>
+    <description><![CDATA[
+Cụm công nghiệp An Thịnh<br/>
+Địa điểm: xã An Thịnh, tỉnh Lào Cai (huyện Văn Yên, Yên Bái cũ)<br/>
+Diện tích: 30 ha<br/>
+Hệ tọa độ gốc: VN2000, kinh tuyến trục 104°45', múi 3°<br/>
+Chuyển sang WGS84 theo QĐ 05/2007/QĐ-BTNMT
+    ]]></description>
+    <Style id="polyStyle">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d0000ff</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <Style id="pointStyle">
+      <IconStyle>
+        <color>ff00ffff</color>
+        <scale>1.1</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0.9</scale>
+      </LabelStyle>
+    </Style>
+    <LookAt>
+      <longitude>104.64482823</longitude>
+      <latitude>21.90154278</latitude>
+      <altitude>0</altitude>
+      <range>1500</range>
+      <tilt>0</tilt>
+      <heading>0</heading>
+    </LookAt>
+    <Placemark>
+      <name>Ranh giới CCN An Thịnh (30 ha)</name>
+      <styleUrl>#polyStyle</styleUrl>
+      <Polygon>
+        <extrude>0</extrude>
+        <altitudeMode>clampToGround</altitudeMode>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              104.64572734,21.90497859,0
+              104.64637942,21.90426087,0
+              104.64833413,21.90274462,0
+              104.64700450,21.90058713,0
+              104.64310578,21.89744332,0
+              104.64137927,21.89914102,0
+              104.64186720,21.90164392,0
+              104.64572734,21.90497859,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Folder>
+      <name>Mốc tọa độ (7 điểm)</name>
+    <Placemark>
+      <name>Điểm 1</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64572734,21.90497859,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 2</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64637942,21.90426087,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 3</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64833413,21.90274462,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 4</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64700450,21.90058713,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 5</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64310578,21.89744332,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 6</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64137927,21.89914102,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Điểm 7</name>
+      <styleUrl>#pointStyle</styleUrl>
+      <Point>
+        <coordinates>104.64186720,21.90164392,0</coordinates>
+      </Point>
+    </Placemark>
+    </Folder>
+  </Document>
+</kml>
