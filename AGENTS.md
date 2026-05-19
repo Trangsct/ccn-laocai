@@ -34,14 +34,28 @@ QLCN, Lãnh đạo UBND tỉnh. Deploy tại deploy-teal-ten-71.vercel.app.
 - Tham chiếu Nghị định 32/2024/NĐ-CP cho CCN, Nghị định 35/2022/NĐ-CP cho KCN.
 
 ## Trang chi tiết KCN/CCN (`unit-details.json` + `unit-files/<slug>/`)
-- CHỈ upload 2 loại văn bản: **Quyết định chủ trương đầu tư** và
-  **Quyết định thành lập** Cụm/Khu công nghiệp.
-- KHÔNG upload: báo cáo đề xuất đầu tư của doanh nghiệp, báo cáo của
-  xã/phường, tờ trình Sở Công Thương, ý kiến các sở ngành, sơ đồ chi tiết,
-  bảng phân tích pháp lý. Trừ khi người dùng yêu cầu cụ thể từng tài liệu.
-- Nội dung giới thiệu (HTML) chỉ trích thông tin đã được phê duyệt chính
-  thức trong 2 loại QĐ trên + dữ liệu công khai (vị trí, diện tích, ngành
-  nghề theo QH tỉnh).
-- KHÔNG nêu tên doanh nghiệp/chủ đầu tư nếu CCN chưa có QĐ thành lập
+Upload và nội dung chia theo 3 mức trạng thái pháp lý:
+
+### Mức A — CCN/KCN đã có Quyết định thành lập chính thức
+- Upload: **QĐ chủ trương đầu tư** + **QĐ thành lập**.
+- Nội dung: **đầy đủ thông tin** trong 2 QĐ — gồm tên doanh nghiệp chủ
+  đầu tư, mã số doanh nghiệp, địa chỉ, tổng mức đầu tư, vốn cụ thể, hiện
+  trạng đất, cơ cấu sử dụng đất, ngành nghề, tiến độ, thời gian dự án.
+
+### Mức B — CCN/KCN đang trình thành lập (mới có chủ trương đầu tư)
+- Upload: **chỉ QĐ chủ trương đầu tư**.
+- Nội dung: chỉ vị trí, diện tích, ngành nghề định hướng, tình trạng
+  pháp lý. **KHÔNG nêu tên doanh nghiệp đề xuất, không nêu số vốn cụ thể**
   (doanh nghiệp trong báo cáo đề xuất CHƯA phải chủ đầu tư chính thức).
-- KHÔNG nêu số liệu vốn cụ thể từng dự án.
+
+### Mức C — CCN/KCN chưa có chủ trương (mới trong QH tỉnh)
+- Upload: không có file pháp lý nào (chỉ KML/sơ đồ nếu có).
+- Nội dung: chỉ thông tin quy hoạch chung (vị trí, diện tích, ngành nghề
+  định hướng).
+
+### Nguyên tắc chung
+- KHÔNG upload: báo cáo đề xuất của doanh nghiệp, tờ trình Sở Công Thương,
+  ý kiến sở ngành, sơ đồ chi tiết, bảng phân tích pháp lý — trừ khi
+  người dùng yêu cầu cụ thể.
+- Số/ngày văn bản: lấy chính xác từ PDF gốc, không tự suy đoán. Nếu PDF
+  mẫu để trống số → ghi "Quyết định ngày DD/MM/YYYY" không có số.
