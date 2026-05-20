@@ -1265,5 +1265,167 @@
     "gioiThieu": "<p><b>Khu công nghiệp Phú Xuân 1</b> tại xã Gia Phú, tỉnh Lào Cai. Quy mô <b>200 ha</b>. Đã được giao danh mục lập quy hoạch tại <b>Quyết định số 1250/QĐ-UBND ngày 14/4/2026</b> của UBND tỉnh.</p><p><b>Định hướng:</b> nghiên cứu cùng với KCN Phú Xuân (300 ha) tại xã Gia Phú, theo đề xuất của Công ty cổ phần Công nghiệp Linh Linh và chỉ đạo của Thường trực Tỉnh uỷ (Công văn 573-CV/TU ngày 12/5/2026). Sở Công Thương, Sở Xây dựng và UBND xã Gia Phú đang phối hợp đánh giá quy mô, ranh giới, ngành nghề thu hút đầu tư trong khuôn khổ điều chỉnh Quy hoạch tỉnh tại QĐ 525/QĐ-UBND ngày 25/2/2026.</p>",
     "centerLat": 22.305,
     "centerLng": 104.52
+  },
+  "ccn-au-lau": {
+    "ten": "CCN Âu Lâu",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Phường Âu Lâu, tỉnh Lào Cai (Yên Bái cũ)",
+    "dienTich": 50,
+    "gioiThieu": "<p><b>Cụm công nghiệp Âu Lâu</b> tại phường Âu Lâu, tỉnh Lào Cai. Quy mô <b>50 ha</b> (đất công nghiệp 31,2 ha). Do UBND phường Âu Lâu làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 1656/QĐ-UBND ngày 30/10/2009; phê duyệt đầu tư hạ tầng tại Quyết định số 1662/QĐ-UBND cùng ngày 30/10/2009 của UBND tỉnh Yên Bái cũ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>86,8%</b> với 10 dự án (4 đang hoạt động, 6 đang triển khai). Tổng vốn đăng ký <b>593,94 tỷ đồng</b>; vốn hạ tầng đã đầu tư 132,82 tỷ đồng.</p><p><b>Các dự án tiêu biểu:</b> Nhà máy chế biến tinh dầu quế Minh Nghĩa (3,87 ha, 52 tỷ); Xí nghiệp may Chiến Thắng (4,185 ha, 42 tỷ); Nhà máy gỗ Hoàng Bách; Nhà máy MMA của Công ty LTT (đã hoạt động, bị hoả hoạn 30/7/2025 đang khôi phục); Nhà máy bao bì nhựa VS Chemicals; Nhà máy ván ép Hồng Nguyên; Nhà máy thực phẩm Cường Thuỷ; Nhà máy gỗ JUNMA Yên Bái; Nhà máy nhựa LTT (5,4 ha, 263,8 tỷ).</p><p><b>Khó khăn:</b> chưa hoàn thiện đồng bộ hạ tầng kỹ thuật, đặc biệt <b>chưa có hệ thống xử lý nước thải tập trung</b>. Đề nghị UBND tỉnh phân bổ ngân sách hằng năm cho phường Âu Lâu để hoàn thiện đường giao thông nội bộ, điện, nước và xây dựng XLNT tập trung.</p>",
+    "centerLat": 21.733,
+    "centerLng": 104.888
+  },
+  "ccn-thinh-hung": {
+    "ten": "CCN Thịnh Hưng",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Yên Bình (thôn Đình Lâm & Ao Khoai), tỉnh Lào Cai (Yên Bái cũ)",
+    "dienTich": 53.05,
+    "gioiThieu": "<p><b>Cụm công nghiệp Thịnh Hưng</b> tại xã Yên Bình, tỉnh Lào Cai. Quy mô <b>53,05 ha</b> (đất công nghiệp 37,14 ha). Do UBND xã Yên Bình làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 106/QĐ-UBND ngày 5/2/2009; phê duyệt đầu tư hạ tầng tại Quyết định số 1232/QĐ-UBND ngày 24/8/2009 của UBND tỉnh Yên Bái cũ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>87,75%</b> với 5 dự án (3 đang hoạt động, 2 đang triển khai). Vốn hạ tầng đã đầu tư 15,25 tỷ (ngân sách 7,3 tỷ + doanh nghiệp 7,95 tỷ).</p><p><b>Các dự án tiêu biểu:</b> Nhà máy may xuất khẩu <b>DAESEUNG GLOBAL</b> (FDI Hàn Quốc, 3 ha, 9 triệu USD); Nhà máy gạch Việt Trung (4 ha); Nhà máy ván dán Hoàng Gia Yên Bái (20,3 ha); Nhà máy đồ chơi trẻ em xuất khẩu Gold Dragon.</p><p><b>Khó khăn:</b> một số tuyến giao thông đã xuống cấp. Đề nghị UBND tỉnh ưu tiên ngân sách cho xã Yên Bình để cải tạo đường giao thông.</p>",
+    "centerLat": 21.758,
+    "centerLng": 104.891
+  },
+  "ccn-phu-thinh-1": {
+    "ten": "CCN Phú Thịnh 1",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Phường Văn Phú, tỉnh Lào Cai (Yên Bái cũ)",
+    "dienTich": 75,
+    "gioiThieu": "<p><b>Cụm công nghiệp Phú Thịnh 1</b> tại phường Văn Phú và xã Yên Bình, tỉnh Lào Cai. Quy mô <b>75 ha</b> (đất công nghiệp 52,5 ha). <b>Chủ đầu tư hạ tầng:</b> Liên danh Công ty CP Tập đoàn Đông Đô và Công ty CP Đầu tư Xây dựng số 9 Bắc Giang. Quyết định thành lập số 1689/QĐ-UBND ngày 28/9/2022; chủ trương đầu tư số 2656/QĐ-UBND ngày 31/12/2023 (điều chỉnh QĐ 886/QĐ-UBND ngày 24/8/2025); quy hoạch chi tiết số 592/QĐ-UBND ngày 21/4/2023 của UBND tỉnh Yên Bái cũ.</p><p><b>Tiến độ GPMB (T5/2026):</b> đã kiểm kê 75/76 hộ dân; đã chi trả tiền bồi thường, hỗ trợ và tái định cư cho 18/76 hộ với tổng số tiền <b>10.006.866.385 đồng</b>; đang tiếp tục GPMB phần diện tích chồng lấn với Công ty Chè Văn Hưng và Trung tâm Phát triển quỹ đất. HT chia 3 giai đoạn theo phương án điều chỉnh dự án.</p><p><b>Khó khăn:</b> dự án đường trục chính CCN Phú Thịnh (Ban QLDA đầu tư xây dựng số 1 tỉnh làm chủ đầu tư) triển khai chậm; GPMB chưa hoàn thành do chồng lấn diện tích. Yêu cầu UBND phường Văn Phú và xã Yên Bình hoàn thành GPMB toàn bộ 75 ha trước 30/6/2026.</p>",
+    "centerLat": 21.69309,
+    "centerLng": 104.96714
+  },
+  "ccn-phu-thinh-3": {
+    "ten": "CCN Phú Thịnh 3",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Phường Văn Phú & Xã Yên Bình, tỉnh Lào Cai (Yên Bái cũ)",
+    "dienTich": 75,
+    "gioiThieu": "<p><b>Cụm công nghiệp Phú Thịnh 3</b> tại phường Văn Phú và xã Yên Bình, tỉnh Lào Cai. Quy mô <b>75 ha</b> (đất công nghiệp 52,5 ha). <b>Chủ đầu tư hạ tầng:</b> Công ty Cổ phần công nghiệp EUP. Quyết định thành lập số 2220/QĐ-UBND ngày 27/11/2023; chủ trương đầu tư số 2031/QĐ-UBND ngày 6/11/2023; quy hoạch chi tiết số 839/QĐ-UBND ngày 27/6/2024 của UBND tỉnh Yên Bái cũ.</p><p><b>Tiến độ GPMB (T5/2026):</b> đã kiểm đếm xong khoảng 5 ha; đang tiếp tục GPMB phần diện tích chồng lấn. HT chia 3 giai đoạn (25+30+20 ha): GĐ1 hoàn thành Q2/2026, GĐ2 Q3/2026, GĐ3 đưa vào hoạt động Q4/2026.</p><p><b>Khó khăn:</b> tương tự CCN Phú Thịnh 1 – đường trục chính chậm, GPMB chồng lấn. Yêu cầu hoàn thành GPMB toàn bộ 75 ha trong Quý I/2026.</p>",
+    "centerLat": 21.68488,
+    "centerLng": 104.97393
+  },
+  "ccn-son-thinh": {
+    "ten": "CCN Sơn Thịnh",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Sơn Thịnh, tỉnh Lào Cai",
+    "dienTich": 58.76,
+    "gioiThieu": "<p><b>Cụm công nghiệp Sơn Thịnh</b> tại xã Văn Chấn, tỉnh Lào Cai. Quy mô <b>58,76 ha</b> (đất công nghiệp 41,13 ha). Do UBND xã Văn Chấn làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 735/QĐ-UBND ngày 26/5/2009 (đã sửa đổi lần 2); đầu tư hạ tầng tại Quyết định số 183/QĐ-UBND ngày 17/2/2009, điều chỉnh QĐ 426/QĐ-UBND ngày 26/4/2012 lên 43 ha với tổng mức 38,943 tỷ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>37,88%</b> với 4 dự án (2 đang hoạt động, 2 đang triển khai). Tổng vốn đăng ký ~1.684 tỷ đồng; vốn hạ tầng đã đầu tư 15,52 tỷ.</p><p><b>Các dự án tiêu biểu:</b> Nhà máy chè CTC Đại Hoa (1,85 ha, 39,8 tỷ); Nhà máy nghiền thạch anh Thạch Sơn (1,52 ha, 119,7 tỷ); <b>Nhà máy đa kim loại màu Yên Bái</b> (10,65 ha, 1.499,8 tỷ — đang dừng do thiếu vốn); Nhà máy tuyển chì-kẽm Thịnh Đạt (1,56 ha).</p><p><b>Khó khăn:</b> hạ tầng chưa đồng bộ, GPMB còn chậm. Hai dự án nhà máy đa kim loại màu và nghiền thạch anh đang dừng do nhà đầu tư thiếu vốn. Đề nghị UBND tỉnh ưu tiên ngân sách cho xã Văn Chấn.</p>",
+    "centerLat": 21.583,
+    "centerLng": 104.532
+  },
+  "ccn-yen-the": {
+    "ten": "CCN Yên Thế",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Yên Thế, tỉnh Lào Cai",
+    "dienTich": 39.97,
+    "gioiThieu": "<p><b>Cụm công nghiệp Yên Thế</b> tại xã Lục Yên, tỉnh Lào Cai. Quy mô <b>39,97 ha</b> (đất công nghiệp 27,98 ha). Do UBND xã Lục Yên làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 346/QĐ-UBND ngày 27/9/2006 của UBND tỉnh Yên Bái cũ — đầu tư hạ tầng theo QĐ 1736/QĐ-UBND ngày 31/10/2008.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>40,24%</b> với 3 dự án đang hoạt động. Tổng vốn đăng ký ~300 tỷ; vốn hạ tầng đã đầu tư 17,5 tỷ (mới đầu tư đường vành đai).</p><p><b>Các dự án tiêu biểu (đặc trưng đá tự nhiên Lục Yên):</b> <b>Nhà máy đá cẩm thạch R.K Việt Nam</b> (FDI Ấn Độ, 5,95 ha, 220 tỷ, công suất 2 triệu m² đá ốp lát/năm); <b>Nhà máy đá tự nhiên RAMOJI</b> (FDI Ấn Độ – Việt Nam, 3,76 ha, 80 tỷ); <b>Nhà máy chế biến đá xẻ An Hoà Việt Nam</b> (FDI Trung Quốc, 1,55 ha).</p><p><b>Khó khăn:</b> hạ tầng chưa đồng bộ, mặt bằng sạch hạn chế. Đề nghị UBND tỉnh ưu tiên ngân sách cho xã Lục Yên.</p>",
+    "centerLat": 22.102,
+    "centerLng": 104.721
+  },
+  "ccn-bao-dap": {
+    "ten": "CCN Báo Đáp",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Báo Đáp, tỉnh Lào Cai",
+    "dienTich": 20,
+    "gioiThieu": "<p><b>Cụm công nghiệp Báo Đáp</b> tại xã Trấn Yên, tỉnh Lào Cai. Quy mô <b>20 ha</b> (đất công nghiệp 14 ha). Do UBND xã Trấn Yên làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 1583/QĐ-UBND ngày 10/10/2008 (điều chỉnh: QĐ 1476/QĐ-UBND ngày 26/8/2022 và QĐ 2555/QĐ-UBND ngày 20/7/2023); phê duyệt đầu tư hạ tầng tại Quyết định số 758/QĐ-UBND ngày 1/6/2009 của UBND tỉnh Yên Bái cũ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>23,3%</b> với 4 dự án (2 đang hoạt động, 2 đang triển khai). Vốn hạ tầng đã đầu tư chỉ <b>462 triệu đồng</b> (chỉ đầu tư đường trục chính). Tổng mức đầu tư trên 50 tỷ đồng từ doanh nghiệp.</p><p><b>Các dự án tiêu biểu:</b> Cơ sở sơ chế quế vỏ Bắc Sơn (0,98 ha, từ 2002); Nhà máy ván ghép thanh Đăng Khoa (0,586 ha + mở rộng 1,026 ha + 30 tỷ — đang xây dựng cơ bản); Cơ sở lọc cao lanh ATECH (0,67 ha, 13,6 tỷ — đang xây dựng cơ bản).</p><p><b>Định hướng:</b> đề xuất chủ trương đầu tư mới <b>105 tỷ</b> (NS tỉnh) giai đoạn 2026-2030 cho san MB, đường GT, cấp/thoát nước, điện, XLNT tập trung. Quy hoạch mở rộng từ 14→20→60ha (QĐ 1086/QĐ-TTg ngày 18/9/2023 và QĐ 525/QĐ-UBND ngày 25/2/2026). Sắp có Cty TNHH thương mại DLF Vina (Nhà máy chế biến gỗ Dương Lê) — đang thẩm định chủ trương đầu tư.</p>",
+    "centerLat": 21.812,
+    "centerLng": 104.832
+  },
+  "ccn-hung-khanh": {
+    "ten": "CCN Hưng Khánh",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Hưng Khánh, tỉnh Lào Cai",
+    "dienTich": 20,
+    "gioiThieu": "<p><b>Cụm công nghiệp Hưng Khánh</b> tại xã Hưng Khánh, tỉnh Lào Cai. Quy mô <b>20 ha</b> (đất công nghiệp 14 ha). Do UBND xã Hưng Khánh làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 1584/QĐ-UBND ngày 10/10/2008 của UBND tỉnh Yên Bái cũ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>49,3%</b> với 3 dự án (1 đang hoạt động, 2 đang triển khai). Vốn hạ tầng đã đầu tư 1,61 tỷ (mới có đường trục chính ~400m).</p><p><b>Các dự án tiêu biểu:</b> Nhà máy ván ép Greeneco Việt Nam (1,18 ha, 97,9 tỷ — hoạt động từ 7/2025); Nhà máy chế biến lâm sản Hưng Thành (2,88 ha, 25,5 tỷ); <b>Nhà máy chế biến măng Yamazaki Việt Nam</b> (FDI liên doanh Nhật Bản, 2,84 ha, 30 tỷ).</p><p><b>Khó khăn:</b> đường vào cụm kết nối từ QL37 nhỏ, hẹp, xe ra vào khó khăn; hạ tầng chưa đồng bộ; GPMB chậm. Đề xuất chủ trương đầu tư mới 128 tỷ (NS tỉnh) giai đoạn 2026-2030: GPMB 14 ha + san MB + đường GT + thoát nước + đường điện 35kV (Tờ trình 68/TTr-UBND ngày 12/5/2026).</p>",
+    "centerLat": 21.791,
+    "centerLng": 104.821
+  },
+  "ccn-minh-quan": {
+    "ten": "CCN Minh Quân",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Phường Âu Lâu, tỉnh Lào Cai",
+    "dienTich": 75,
+    "gioiThieu": "<p><b>Cụm công nghiệp Minh Quân</b> tại phường Âu Lâu, tỉnh Lào Cai. Quy mô <b>75 ha</b> (đất công nghiệp 53,5 ha). <b>Chủ đầu tư hạ tầng:</b> Công ty TNHH MTV Hạ tầng Công nghiệp Bảo Hưng. Quyết định thành lập số 2364/QĐ-UBND ngày 18/10/2019; quy hoạch chi tiết số 240/QĐ-UBND ngày 14/2/2020 của UBND tỉnh Yên Bái cũ.</p><p><b>Tiến độ GPMB (T5/2026):</b> đã hoàn thành đo đạc bản đồ thu hồi trên toàn bộ 75 ha; bản đồ thu hồi đất giai đoạn 1 (9,5 ha); đã kiểm đếm chi phí đền bù, GPMB trên 4,3 ha. <b>Tỷ lệ lấp đầy: 0%</b> – chưa thu hút dự án thứ cấp.</p><p><b>Khó khăn:</b> chủ đầu tư hạ tầng chưa thực sự tích cực trong công tác GPMB; chưa thu hút dự án thứ cấp. Đang trình điều chỉnh địa điểm và tiến độ (Tờ trình 100/TTr-UBND ngày 31/3/2026 của UBND phường Âu Lâu). Yêu cầu chủ đầu tư phối hợp UBND phường Âu Lâu hoàn thành GPMB trước tháng 7/2026.</p><p><b>Lưu ý:</b> đây là CCN, không phải KCN Minh Quân (112 ha do Ban Quản lý các Khu công nghiệp quản lý).</p>",
+    "centerLat": 21.734,
+    "centerLng": 104.889
+  },
+  "ccn-tay-cau-mau-a": {
+    "ten": "CCN Tây Cầu Mậu A",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Mậu A, tỉnh Lào Cai",
+    "dienTich": 35,
+    "gioiThieu": "<p><b>Cụm công nghiệp Tây Cầu Mậu A</b> tại xã Mậu A, tỉnh Lào Cai. Quy mô <b>35 ha</b> (đất công nghiệp 24,5 ha). Do UBND xã Mậu A làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 1992/QĐ-UBND ngày 18/12/2009 của UBND tỉnh Yên Bái cũ.</p><p><b>⚠️ TÌNH TRẠNG ĐẶC BIỆT:</b> CCN đã có <b>chủ trương đưa ra khỏi quy hoạch</b> – các doanh nghiệp không thể triển khai dự án mới. Tỷ lệ lấp đầy 45,55% với 3 dự án (1 đang hoạt động, 2 không triển khai do cụm rút quy hoạch).</p><p><b>Các dự án:</b> Nhà máy giấy đế Yên Bái (1,2 ha — đang hoạt động); Nhà máy gạch Tuynel Hoàng Đạo (không triển khai); Nhà máy bê tông Đồng Tiến (4,1 ha, 35 tỷ — không triển khai). Vốn hạ tầng đã đầu tư 6,75 tỷ do doanh nghiệp tự bỏ ra.</p><p><b>Phương hướng:</b> UBND xã Mậu A xây dựng Đề án di dời các cơ sở sản xuất, hoàn thành trước năm 2030.</p>",
+    "centerLat": 21.902,
+    "centerLng": 104.654
+  },
+  "ccn-dong-an": {
+    "ten": "CCN Đông An",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Đông Cuông, tỉnh Lào Cai",
+    "dienTich": 34,
+    "gioiThieu": "<p><b>Cụm công nghiệp Đông An</b> tại xã Đông Cuông, tỉnh Lào Cai. Quy mô <b>34 ha</b> (đất công nghiệp 23,04 ha). Do UBND xã Đông Cuông làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 1934/QĐ-UBND ngày 18/11/2010 (điều chỉnh: QĐ 482/QĐ-UBND ngày 23/3/2021) của UBND tỉnh Yên Bái cũ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>48,35%</b> với 1 dự án đang hoạt động duy nhất chiếm 11,14 ha:</p><p><b>Dự án tiêu biểu:</b> <b>Nhà máy gia công thuốc bảo vệ thực vật và sản xuất phân bón BMC Yên Bái</b> (11,14 ha, 230,2 tỷ đồng, theo QĐ 1170/QĐ-UBND ngày 15/6/2021).</p><p><b>Khó khăn:</b> hạ tầng chưa đầu tư đồng bộ, chưa có mặt bằng sạch. Vốn hạ tầng đã đầu tư 12,9 tỷ do doanh nghiệp tự đầu tư. Cụm đã có Quy hoạch chi tiết năm 2010 nhưng <b>chưa có Quyết định thành lập theo quy định</b>. UBND cấp xã phải trình thành lập cụm trước ngày 31/12/2026 theo Điều 36, 37 Nghị định 32/2024/NĐ-CP.</p><p><b>Định hướng:</b> đang đề xuất điều chỉnh thêm ngành viên nén sinh khối, cơ khí nhỏ, vật liệu mới (Báo cáo 207 ngày 12/10/2025 của UBND xã Đông Cuông).</p>",
+    "centerLat": 21.921,
+    "centerLng": 104.661
+  },
+  "ccn-yen-hop": {
+    "ten": "CCN Yên Hợp",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Xuân Ái, tỉnh Lào Cai",
+    "dienTich": 12,
+    "gioiThieu": "<p><b>Cụm công nghiệp Yên Hợp (Giai đoạn I)</b> tại xã Xuân Ái, tỉnh Lào Cai. Diện tích <b>12 ha</b> – đây là cụm <b>duy nhất</b> trên địa bàn tỉnh do <b>Ban Quản lý dự án đầu tư xây dựng khu vực Trấn Yên tỉnh Lào Cai</b> làm chủ đầu tư. Pháp lý: QĐ thành lập số 2201/QĐ-UBND ngày 6/11/2024; chủ trương đầu tư số 1364/QĐ-UBND ngày 1/7/2024; quy hoạch chi tiết số 826/QĐ-UBND ngày 17/3/2025 của UBND huyện Văn Yên (cũ). Tổng mức đầu tư <b>50 tỷ đồng</b> (vốn NSNN, chủ yếu phục vụ GPMB).</p><p><b>Hiện trạng (T5/2026):</b> đã GPMB 4,7 ha (1 dự án đang thi công); 7,3 ha còn lại đang đền bù GPMB (1 dự án có chủ trương đầu tư, chờ mặt bằng). 2 dự án thứ cấp đăng ký với tổng diện tích 9,464 ha — tỷ lệ lấp đầy <b>78,87%</b>: (1) <b>Nhà máy chế biến gia vị</b> của Công ty TNHH Hương Gia Vị Sơn Hà (4,769 ha, 286 tỷ đồng, công suất quế sáo 1.875 tấn/năm + quế mảnh 992 tấn/năm + quế ABC 4.454 tấn/năm — đã khởi công lễ ngày 11/7/2025); (2) <b>Nhà máy chế biến tinh dầu quế</b> của Công ty CP sản xuất và xuất khẩu Phúc Long (4,6954 ha — đang GPMB).</p><p><b>Khó khăn:</b> chưa xây dựng hệ thống thoát nước nội bộ – sau khi san gạt mặt bằng, một số hộ dân xung quanh bị ngập úng cây trồng, gây bức xúc và ngăn cản thi công. UBND xã Xuân Ái đề nghị mở rộng cụm nhưng đang vướng quy định về chuyển phần diện tích đã đầu tư bằng NSNN sang chủ đầu tư tư nhân. Sở Công Thương đã đề xuất Sở Tài chính điều chỉnh Quy hoạch tỉnh, bổ sung <b>CCN Yên Hợp 1 với diện tích 63 ha</b>.</p>",
+    "centerLat": 21.895,
+    "centerLng": 104.643
+  },
+  "ccn-bac-van-yen": {
+    "ten": "CCN Bắc Văn Yên",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Đông Cuông, tỉnh Lào Cai",
+    "dienTich": 55,
+    "gioiThieu": "<p><b>Cụm công nghiệp Bắc Văn Yên</b> tại xã Đông Cuông, tỉnh Lào Cai. Quy mô <b>55 ha</b> (đất công nghiệp 38,5 ha). Do UBND xã Đông Cuông làm chủ đầu tư. Quy hoạch chi tiết tại Quyết định số 667/QĐ-UBND ngày 21/4/2017 của UBND tỉnh Yên Bái cũ.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>78,1%</b> (88,05% theo Excel T11.2025) với 6 dự án (4 đang hoạt động, 2 đang triển khai). Tổng vốn đăng ký ~<b>3.115 tỷ đồng</b>; vốn hạ tầng đã đầu tư 83,8 tỷ (NS 36 tỷ + doanh nghiệp 47,8 tỷ).</p><p><b>Các dự án tiêu biểu (vùng nguyên liệu sắn – quế Văn Yên):</b> Nhà máy sắn Văn Yên số 1 (15 ha, bột sắn biến tính 10.000 tấn/năm, 74,3 tỷ); Nhà máy chế biến bã sắn (0,17 ha); Nhà máy giấy đế HaPaco Yên Sơn (1 ha, giấy đế XK 2.500 tấn/năm); Nhà máy tinh dầu quế Đạt Thành (3,96 ha, 50 tỷ); <b>Nhà máy điện sinh khối Yên Bái 1</b> của Công ty CP EREX (FDI Nhật Bản, 10,76 ha, 2.971 tỷ, công suất 50 MW); <b>Nhà máy nhiên liệu sinh khối EREX Sakura Yên Bái</b> (3 ha, viên nén nhiên liệu sinh khối 150.000 tấn/năm).</p><p><b>Khó khăn:</b> hạ tầng chưa đồng bộ, đặc biệt thiếu hệ thống XLNT tập trung. Dự án điện sinh khối đang vướng GPMB 700m² lô CN06 và CN08; Cty EREX Sakura chưa được giao đất do GPMB chưa xong.</p>",
+    "centerLat": 21.925,
+    "centerLng": 104.669
+  },
+  "ccn-bac-duyen-hai": {
+    "ten": "CCN Bắc Duyên Hải",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Phường Duyên Hải, thành phố Lào Cai",
+    "dienTich": 19.5,
+    "gioiThieu": "<p><b>Cụm công nghiệp Bắc Duyên Hải</b> tại phường Lào Cai, tỉnh Lào Cai. Quy mô <b>19,5 ha</b> (đất công nghiệp 8,8 ha). Do UBND phường Lào Cai làm chủ đầu tư. Quyết định thành lập số 1023/QĐ-UBND ngày 11/5/2012 của UBND tỉnh Lào Cai (chuyển từ CCN sang KCN một phần lớn theo VB 834/TTg-KTN ngày 19/5/2016).</p><p><b>Lưu ý:</b> đây là <b>CCN do UBND phường Lào Cai quản lý</b>, khác với <b>KCN Bắc Duyên Hải 85 ha</b> do Ban Quản lý Khu kinh tế quản lý — hai đơn vị có cùng tên nhưng quy mô và mô hình quản lý khác nhau.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>100%</b> với <b>104 cơ sở sản xuất</b> đang hoạt động. Ngành nghề: sửa chữa ô tô, gia công cơ khí, mộc dân dụng, chế biến lâm sản.</p><p><b>⚠️ TÌNH TRẠNG ĐẶC BIỆT:</b> Sau năm 2030 sẽ rút khỏi quy hoạch (cùng với KCN Bắc Duyên Hải). UBND phường Lào Cai cần sớm xây dựng Đề án di dời các cơ sở sản xuất, hoàn thành trước năm 2030.</p>",
+    "centerLat": 22.51,
+    "centerLng": 103.966
+  },
+  "ccn-dong-pho-moi": {
+    "ten": "CCN Đông Phố Mới",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Phường Phố Mới, thành phố Lào Cai",
+    "dienTich": 3.5,
+    "gioiThieu": "<p><b>Cụm công nghiệp Đông Phố Mới</b> tại phường Lào Cai, tỉnh Lào Cai. Quy mô <b>3,5 ha</b> (đất công nghiệp 1,845 ha). Do UBND phường Lào Cai làm chủ đầu tư. Quyết định thành lập số 2968/QĐ-UBND ngày 9/9/2016 của UBND tỉnh Lào Cai.</p><p><b>Lưu ý:</b> đây là <b>CCN do UBND phường Lào Cai quản lý</b>, khác với <b>KCN Đông Phố Mới 100 ha</b> do Ban Quản lý Khu kinh tế quản lý — hai đơn vị có cùng tên nhưng quy mô và mô hình quản lý khác nhau. Cả hai đều thuộc diện rút khỏi quy hoạch để phục vụ tuyến đường sắt cao tốc.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>100%</b> với 16 cơ sở sản xuất đang hoạt động. Ngành nghề: sản xuất gỗ, gia công cơ khí, mộc dân dụng.</p><p><b>⚠️ Rút khỏi quy hoạch:</b> nằm trong quy hoạch tuyến đường sắt tốc độ cao Lào Cai – Hà Nội – Hải Phòng. UBND phường Lào Cai đã xây dựng xong Đề án di dời các cơ sở sản xuất đến <b>khu sản xuất công nghiệp tập trung Thống Nhất</b>.</p>",
+    "centerLat": 22.478,
+    "centerLng": 103.981
+  },
+  "ccn-son-man": {
+    "ten": "CCN Sơn Mãn",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Thôn Sơn Mãn, xã Vạn Hòa, thành phố Lào Cai",
+    "dienTich": 7.5,
+    "gioiThieu": "<p><b>Cụm công nghiệp Sơn Mãn</b> tại phường Lào Cai (xã Vạn Hoà cũ), tỉnh Lào Cai. Quy mô <b>7,5 ha</b> (đất công nghiệp 4,2 ha). Do UBND phường Lào Cai làm chủ đầu tư. Quyết định thành lập số 2967/QĐ-UBND ngày 9/9/2016 của UBND tỉnh Lào Cai.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>98,4%</b> với 43 cơ sở (33 đã hoạt động, 10 đã có chủ trương đầu tư nhưng dừng triển khai do dự án đường sắt cao tốc). Ngành nghề: sửa chữa ô tô, mộc dân dụng, lâm sản, gia công cơ khí, nông sản thực phẩm.</p><p><b>⚠️ Rút khỏi quy hoạch:</b> nằm trong quy hoạch tuyến đường sắt tốc độ cao Lào Cai – Hà Nội – Hải Phòng. UBND phường Lào Cai đang triển khai Đề án di dời các cơ sở sản xuất đến <b>khu sản xuất công nghiệp tập trung Thống Nhất</b>.</p>",
+    "centerLat": 22.455,
+    "centerLng": 103.985
+  },
+  "ccn-pho-rang": {
+    "ten": "CCN Phố Ràng",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Thị trấn Phố Ràng, tỉnh Lào Cai",
+    "dienTich": 31.01,
+    "gioiThieu": "<p><b>Cụm tiểu thủ công nghiệp Phố Ràng</b> tại xã Bảo Yên, tỉnh Lào Cai. Quy mô <b>31,01 ha</b> (đất công nghiệp 20,27 ha). Do UBND xã Bảo Yên làm chủ đầu tư. Quyết định thành lập số 2972/QĐ-UBND ngày 9/9/2016; chủ trương đầu tư số 2960/QĐ-UBND ngày 12/11/2007; quy hoạch chi tiết và đầu tư hạ tầng tại QĐ 2190/QĐ-UBND ngày 22/7/2009 và QĐ 3107/QĐ-UBND ngày 30/10/2012 (điều chỉnh dự án) của UBND tỉnh Lào Cai (cũ).</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>30,6%</b> (32,62% theo BC UBND xã 12/2025) với 4 dự án (3 đang hoạt động, 1 đang triển khai). Doanh thu 2025 của các cơ sở đạt 52,8 tỷ đồng; nộp NSNN 1,269 tỷ; 20 lao động. Vốn hạ tầng đã đầu tư 7,1 tỷ.</p><p><b>Các dự án tiêu biểu:</b> Nhà máy chế biến chè xuất khẩu Đại Hưng (1 ha, công suất 960 tấn chè khô/năm); <b>Nhà máy chiết xuất tinh dầu quế Phố Ràng – Triều Dương</b> (6 ha, công suất 120 tấn tinh dầu/năm + 210 tấn Benzaldehyde tự nhiên 99%/năm); Xưởng sản xuất viên nén mùn cưa Đình Sơn (6 ha — đang xây dựng); HTX Thuận Tiến (tinh bột sắn); HTX Tân Tiến Đạt (gạch bê tông).</p><p><b>Khó khăn:</b> hạ tầng chưa hoàn thiện; chưa có XLNT tập trung. Dự án chế biến sâu tinh dầu quế đã đầu tư xong nhưng <b>chưa được cơ quan có thẩm quyền về xây dựng thẩm định thiết kế</b> (dự án thuộc công trình cấp I, nhóm C). Đề nghị UBND tỉnh ưu tiên ngân sách cho xã Bảo Yên đầu tư hoàn thiện hạ tầng và GPMB.</p>",
+    "centerLat": 22.18,
+    "centerLng": 104.37
+  },
+  "ccn-khanh-yen-thuong": {
+    "ten": "CCN Khánh Yên Thượng",
+    "type": "Cụm công nghiệp",
+    "viTriMoTa": "Xã Khánh Yên Thượng, tỉnh Lào Cai",
+    "dienTich": 5.17,
+    "gioiThieu": "<p><b>Cụm công nghiệp Khánh Yên Thượng</b> tại xã Văn Bàn, tỉnh Lào Cai. Quy mô <b>5,17 ha</b> (đất công nghiệp 3 ha) – quy mô nhỏ nhất trong các CCN đã thành lập. Do UBND xã Văn Bàn làm chủ đầu tư. Quyết định thành lập số 2971/QĐ-UBND ngày 9/9/2016; quy hoạch chi tiết số 4063/QĐ-UBND ngày 10/11/2015; chủ trương đầu tư số 248/QĐ-UBND ngày 9/2/2009 của UBND tỉnh Lào Cai.</p><p><b>Hiện trạng (T5/2026):</b> tỷ lệ lấp đầy <b>35%</b> với 1 dự án đang hoạt động. Vốn hạ tầng đã đầu tư 10,01 tỷ.</p><p><b>Dự án tiêu biểu:</b> HTX Mường Thát sản xuất gạch ba banh (1,05 ha, 11 tỷ đồng, công suất 1,2 triệu viên/năm).</p><p><b>Định hướng:</b> đề nghị UBND tỉnh ưu tiên ngân sách cho xã Văn Bàn; <b>mở rộng thêm 12 ha</b> theo quy hoạch điều chỉnh.</p>",
+    "centerLat": 22.095,
+    "centerLng": 104.15
   }
 }
