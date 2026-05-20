@@ -2,7 +2,7 @@
 // Chiến lược: Network-first cho HTML/JSON (luôn lấy bản mới nhất),
 // Cache-first cho tài nguyên tĩnh (CSS, JS, ảnh, font, PDF).
 
-const CACHE_VERSION = 'ccn-laocai-v10';
+const CACHE_VERSION = 'ccn-laocai-v11';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -25,14 +25,23 @@ self.addEventListener('install', function (event) {
   );
 });
 
-// Kích hoạt — xóa cache phiên bản cũ
+// Kích hoạt — xóa cache phiên bản cũ và thông báo cho các tab đang mở để tải lại
 self.addEventListener('activate', function (event) {
   event.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(keys.map(function (k) {
         if (k !== CACHE_VERSION) return caches.delete(k);
       }));
-    }).then(function () { return self.clients.claim(); })
+    }).then(function () {
+      return self.clients.claim();
+    }).then(function () {
+      // Thông báo các tab đang mở để tự reload (chỉ khi đã có client cũ)
+      return self.clients.matchAll({ type: 'window' }).then(function (clients) {
+        clients.forEach(function (client) {
+          try { client.postMessage({ type: 'sw-updated', version: CACHE_VERSION }); } catch (e) {}
+        });
+      });
+    })
   );
 });
 
