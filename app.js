@@ -2049,6 +2049,8 @@ window._lastTabBeforeUnit = 'dashboard';
 function slugify(s) {
     if (!s) return '';
     return s.toString()
+        .replace(/^Cụm công nghiệp\s+/i, 'CCN ')
+        .replace(/^Khu công nghiệp\s+/i, 'KCN ')
         .toLowerCase()
         .normalize('NFD').replace(/[̀-ͯ]/g, '')
         .replace(/đ/g, 'd')
