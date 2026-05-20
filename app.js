@@ -2336,9 +2336,41 @@ function escapeHtml(s) {
         .replace(/'/g, '&#39;');
 }
 
+function initVisitorCounter() {
+    var el = document.getElementById('visitor-count');
+    if (!el) return;
+    var KEY_COUNT = 'visitor_count';
+    var KEY_LAST = 'visitor_last_visit';
+    var stored = localStorage.getItem(KEY_COUNT);
+    var count;
+    if (stored === null) {
+        count = 2000 + 10 + Math.floor(Math.random() * 41);
+    } else {
+        count = parseInt(stored, 10);
+        if (isNaN(count)) count = 2000;
+        count += 1;
+        var lastVisit = parseInt(localStorage.getItem(KEY_LAST), 10);
+        if (!isNaN(lastVisit)) {
+            var intervals = Math.floor((Date.now() - lastVisit) / (10 * 60 * 1000));
+            if (intervals > 0) {
+                var simulated = 0;
+                for (var i = 0; i < intervals; i++) {
+                    simulated += 1 + Math.floor(Math.random() * 3);
+                }
+                if (simulated > 150) simulated = 150;
+                count += simulated;
+            }
+        }
+    }
+    localStorage.setItem(KEY_COUNT, String(count));
+    localStorage.setItem(KEY_LAST, String(Date.now()));
+    el.textContent = count.toLocaleString('vi-VN');
+}
+
 // Khởi tạo nút Quay lại
 document.addEventListener('DOMContentLoaded', function () {
     var backBtn = document.getElementById('unit-back-btn');
     if (backBtn) backBtn.addEventListener('click', closeUnitDetail);
     loadUnitDetails();
+    initVisitorCounter();
 });
