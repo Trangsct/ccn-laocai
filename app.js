@@ -2176,10 +2176,25 @@ function openUnitDetail(slug, optionalName) {
     renderUnitDetail(slug, details, srcMatch, optionalName);
 }
 
+// Fallback: chuyển slug như "ccn-khanh-yen-thuong" thành tên hiển thị
+// "Cụm công nghiệp Khánh Yên Thượng" — best-effort khi dữ liệu chưa load
+function prettifySlug(slug) {
+    if (!slug) return '';
+    var prefix = '';
+    var rest = slug;
+    if (rest.indexOf('ccn-') === 0) { prefix = 'Cụm công nghiệp '; rest = rest.slice(4); }
+    else if (rest.indexOf('kcn-') === 0) { prefix = 'Khu công nghiệp '; rest = rest.slice(4); }
+    // capitalize từng từ
+    rest = rest.split('-').map(function (w) {
+        return w ? w[0].toUpperCase() + w.slice(1) : w;
+    }).join(' ');
+    return (prefix + rest).trim();
+}
+
 // Render nội dung tab chi tiết
 function renderUnitDetail(slug, details, srcMatch, optionalName) {
     // Default fields nếu không có details — ưu tiên tên đẹp từ optionalName trước khi rơi xuống slug
-    var ten = (details && details.ten) || (srcMatch && srcMatch.data.ten) || optionalName || slug;
+    var ten = (details && details.ten) || (srcMatch && srcMatch.data.ten) || optionalName || prettifySlug(slug) || slug;
     var type = (details && details.type)
         || (srcMatch && srcMatch.src === 'CCN_TL' ? 'Cụm công nghiệp đã thành lập' :
             srcMatch && srcMatch.src === 'CCN_QH' ? 'Cụm công nghiệp quy hoạch' :
