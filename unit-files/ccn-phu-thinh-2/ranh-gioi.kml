@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Cụm công nghiệp Phú Thịnh 2</name>
+    <Placemark>
+      <name>Cụm công nghiệp Phú Thịnh 2</name>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+          104.97462970,21.68959690,0
+          104.96654960,21.69772750,0
+          104.97087530,21.70148220,0
+          104.97895540,21.69335140,0
+          104.97462970,21.68959690,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>

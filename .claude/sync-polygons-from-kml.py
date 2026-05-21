@@ -22,14 +22,20 @@ sys.stdout.reconfigure(encoding='utf-8')
 # Mapping slug folder unit-files/ → name trong ccn-polygons.json
 # Bổ sung khi có CCN/KCN mới có KML chuẩn
 MAPPING = {
+    'ccn-an-thinh':       'CCN An Thịnh',
     'ccn-thong-nhat-1':   'CCN Thống Nhất 1',
     'ccn-bat-xat':        'CCN Bát Xát',
     'ccn-cam-duong-1':    'CCN Cam Đường 1',
     'ccn-cam-duong-2':    'CCN Cam Đường 2',
     'ccn-quang-kim-so-1': 'CCN Quang Kim 1',
+    'ccn-phu-thinh-1':    'CCN Phú Thịnh 1',
+    'ccn-phu-thinh-2':    'CCN Phú Thịnh 2',
+    'ccn-phu-thinh-3':    'CCN Phú Thịnh 3',
     'ccn-phu-thinh-4':    'CCN Phú Thịnh 4',
     'ccn-phu-thinh-5':    'CCN Phú Thịnh 5',
     'ccn-phu-thinh-6':    'CCN Phú Thịnh 6',
+    'kcn-viet-hong-1':    'KCN Việt Hồng 1',
+    'kcn-viet-hong-2':    'KCN Việt Hồng 2',
 }
 
 

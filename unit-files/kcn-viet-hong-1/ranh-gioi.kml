@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Khu công nghiệp Việt Hồng 1</name>
+    <Placemark>
+      <name>Khu công nghiệp Việt Hồng 1</name>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+          104.85959670,21.63383130,0
+          104.86748560,21.63500520,0
+          104.87737030,21.61698000,0
+          104.87322660,21.61397330,0
+          104.85778260,21.61844690,0
+          104.85959670,21.63383130,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>
