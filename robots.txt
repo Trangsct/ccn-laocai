@@ -1,0 +1,38 @@
+# Robots policy — Cổng thông tin Khu, Cụm công nghiệp tỉnh Lào Cai
+# Sở Công Thương tỉnh Lào Cai
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.vercel/
+Disallow: /.netlify/
+
+# Cho phép Google index file dữ liệu để các search bot hiểu cấu trúc
+Allow: /ccn-data.json
+Allow: /unit-details.json
+Allow: /ccn-polygons.json
+Allow: /map-layers.json
+Allow: /manifest.json
+
+# Cho phép crawl các văn bản pháp luật PDF
+Allow: /*.pdf$
+
+# Sitemap
+Sitemap: https://deploy-teal-ten-71.vercel.app/sitemap.xml
+
+# Tốc độ thu thập (chỉ áp dụng với crawler không phải Google)
+Crawl-delay: 5
+
+# Block các bot không cần thiết
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
