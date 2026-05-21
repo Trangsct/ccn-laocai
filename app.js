@@ -1643,9 +1643,19 @@ function renderRanhGioi(data) {
         'rut-qh': 'Rút khỏi Quy hoạch'
     };
 
+    // Helper: tính tâm polygon (bỏ điểm khép kín nếu có)
+    function polyCentroid(coords) {
+        var n = coords.length;
+        if (n >= 2 && coords[0][0] === coords[n-1][0] && coords[0][1] === coords[n-1][1]) n--;
+        var sx = 0, sy = 0;
+        for (var i = 0; i < n; i++) { sx += coords[i][0]; sy += coords[i][1]; }
+        return [sx / n, sy / n];
+    }
+
     data.forEach(function(item) {
         var isKCN = item.section === 'KCN';
         var isApprox = item.is_approx === true;
+        var isSynthetic = item.is_synthetic === true;
         var color = statusColors[item.trangThai] || '#1565c0';
         var fillColor = statusFillColors[item.trangThai] || '#42a5f5';
         if (isApprox) {
@@ -1653,53 +1663,66 @@ function renderRanhGioi(data) {
             fillColor = '#fb923c';
         }
 
-        var polygon = L.polygon(item.coords, {
-            color: color,
-            weight: 2,
-            fillColor: fillColor,
-            fillOpacity: 0.4,
-            dashArray: isApprox ? '6, 6' : null
-        }).addTo(window.ranhGioiMap);
-        window.ranhGioiLayers.push(polygon);
-
-        var isSynthetic = item.is_synthetic === true;
-        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? (isSynthetic ? ' 🟧' : ' ⚠️') : '');
+        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? ' 📍' : '');
         var statusBadge = '<span style="display:inline-block; padding:2px 8px; border-radius:10px; background:' + color + '; color:#fff; font-size:0.72rem; font-weight:600;">' + (statusLabels[item.trangThai] || item.trangThai) + '</span>';
+
+        // ---- Polygon chưa chuẩn (is_approx=true bao gồm cả ô vuông synthetic và polygon ước lượng) -> hiển thị bằng chấm tròn ----
+        var layer;
+        if (isApprox) {
+            var center = polyCentroid(item.coords);
+            // Bán kính dấu chấm theo diện tích công bố: sqrt(area)/2 + 6, giới hạn 7-16 px
+            var radius = Math.min(16, Math.max(7, Math.round(Math.sqrt(parseFloat(item.area_ha) || 1) / 2 + 6)));
+            layer = L.circleMarker(center, {
+                radius: radius,
+                color: color,
+                weight: 2,
+                fillColor: fillColor,
+                fillOpacity: 0.85,
+                opacity: 1
+            }).addTo(window.ranhGioiMap);
+            bounds.push(center);
+        } else {
+            // Polygon chính xác (is_approx=false) -> giữ nguyên hình polygon
+            layer = L.polygon(item.coords, {
+                color: color,
+                weight: 2,
+                fillColor: fillColor,
+                fillOpacity: 0.4,
+                dashArray: null
+            }).addTo(window.ranhGioiMap);
+            item.coords.forEach(function(c) { bounds.push(c); });
+        }
+        window.ranhGioiLayers.push(layer);
+
         var approxNote = '';
-        if (isSynthetic) {
+        if (isApprox) {
             approxNote = '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
-                '<b>🟧 CHƯA CẬP NHẬT TỌA ĐỘ CHÍNH XÁC</b><br>' +
-                'Ô vuông cam chỉ minh họa vị trí gần đúng quanh UBND xã/phường, diện tích tỉ lệ với DT công bố. ' +
-                'Sẽ được thay bằng ranh giới chính xác khi có quyết định phê duyệt quy hoạch chi tiết.' +
-                '</div>';
-        } else if (isApprox) {
-            approxNote = '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
-                '<b>⚠️ Ranh giới tạm (minh họa quy mô)</b><br>' +
-                (item.reason ? 'Lý do: ' + item.reason + '<br>' : '') +
-                'Polygon chính thức đang được rà soát.' +
+                '<b>📍 CHƯA CẬP NHẬT TỌA ĐỘ RANH GIỚI CHÍNH XÁC</b><br>' +
+                'Dấu chấm chỉ vị trí gần đúng (theo tọa độ trung tâm xã/phường hoặc điểm tham chiếu). ' +
+                (isSynthetic
+                    ? 'Sẽ được thay bằng ranh giới chính xác khi có quyết định phê duyệt quy hoạch chi tiết.'
+                    : (item.reason ? 'Lý do: ' + item.reason : 'Ranh giới chính thức đang được rà soát.')) +
                 '</div>';
         }
         var sourceNote = item.sourceDesc
             ? '<p style="margin:6px 0 0;padding:6px 8px;background:#f8fafc;border-radius:4px;font-size:0.82rem;color:#334155;line-height:1.4;">' + item.sourceDesc + '</p>'
             : '';
 
-        polygon.bindPopup(
+        layer.bindPopup(
             '<div style="min-width:240px;max-width:320px;">' +
             '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + displayName + '</h3>' +
             '<p style="margin:2px 0;font-size:0.85rem;">' + statusBadge + ' &nbsp; <b>' + (item.giaiDoan || '') + '</b></p>' +
             (item.xa ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + item.xa + '</p>' : '') +
             '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + item.area_ha + ' ha' +
-            (isSynthetic ? ' (công bố, ô vuông minh họa)' : (isApprox ? ' (công bố)' : ' (tính từ tọa độ)')) + '</p>' +
-            (!isApprox && !isSynthetic ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
+            (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</p>' +
+            (!isApprox ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
             sourceNote +
             approxNote +
-            (!isSynthetic ? '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">VN-2000, KT trục 104°45\'</p>' : '') +
+            (!isApprox ? '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">VN-2000, KT trục 104°45\'</p>' : '') +
             '</div>'
         );
 
-        polygon.bindTooltip(displayName, { permanent: false, direction: 'center', className: 'polygon-label' });
-
-        item.coords.forEach(function(c) { bounds.push(c); });
+        layer.bindTooltip(displayName, { permanent: false, direction: isApprox ? 'top' : 'center', offset: isApprox ? [0, -8] : [0, 0], className: 'polygon-label' });
     });
 
     if (bounds.length > 0) {
