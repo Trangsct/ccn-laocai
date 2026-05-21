@@ -110,6 +110,13 @@
     <link rel="stylesheet" href="style.css">
     <!-- Netlify Identity -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- ============ Vercel Web Analytics (free tier 2.500 events/tháng) ============ -->
+    <!-- Tự động ghi nhận pageview. Cho SPA hash routing, app.js sẽ gọi va('event') thủ công khi đổi tab/unit. -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
