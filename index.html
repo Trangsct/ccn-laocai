@@ -111,12 +111,26 @@
     <!-- Netlify Identity -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- ============ Vercel Web Analytics (free tier 2.500 events/tháng) ============ -->
-    <!-- Tự động ghi nhận pageview. Cho SPA hash routing, app.js sẽ gọi va('event') thủ công khi đổi tab/unit. -->
+    <!-- ============ Google Analytics 4 (gtag.js) ============ -->
+    <!-- Property: Khu, Cụm công nghiệp Lào Cai - Sở Công Thương. Miễn phí, không giới hạn events. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T8TNNDYD3"></script>
     <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4T8TNNDYD3', {
+        anonymize_ip: true,
+        send_page_view: true
+      });
+      // SPA: hash route trên main app -> gửi page_view thủ công khi đổi tab/unit
+      window.addEventListener('hashchange', function () {
+        gtag('event', 'page_view', {
+          page_path: location.pathname + location.hash,
+          page_location: location.href,
+          page_title: document.title
+        });
+      });
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
