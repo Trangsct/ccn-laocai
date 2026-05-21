@@ -2418,33 +2418,10 @@ function initChatbot() {
     var input = document.getElementById('chatbot-input');
     var sendBtn = document.getElementById('chatbot-send');
     var clearBtn = document.getElementById('chatbot-clear');
-    var modelSelect = document.getElementById('chatbot-model');
-    var footerEl = document.querySelector('.chatbot-footer');
     if (!toggle || !panel || !msgsEl || !form || !input) return;
 
     var STORAGE_KEY = 'chatbot_history_v1';
 
-    function updateFooter() {
-        if (!footerEl) return;
-        var selected = modelSelect ? modelSelect.value : 'gemini';
-        if (selected === 'claude') {
-            footerEl.innerHTML = 'Trợ lý AI dùng Anthropic Claude · có thể có sai sót';
-        } else {
-            footerEl.innerHTML = 'Trợ lý AI dùng Google Gemini · có thể có sai sót';
-        }
-    }
-
-    if (modelSelect) {
-        var savedModel = localStorage.getItem('chatbot_selected_model');
-        if (savedModel && (savedModel === 'gemini' || savedModel === 'claude')) {
-            modelSelect.value = savedModel;
-        }
-        updateFooter();
-        modelSelect.addEventListener('change', function() {
-            localStorage.setItem('chatbot_selected_model', modelSelect.value);
-            updateFooter();
-        });
-    }
     var SUGGESTIONS = [
         'Tỉnh Lào Cai có bao nhiêu Khu công nghiệp?',
         'Cụm công nghiệp nào đang lấp đầy 100%?',
@@ -2546,14 +2523,10 @@ function initChatbot() {
         sendBtn.disabled = true;
         var typing = addMessage('bot', 'Đang suy nghĩ…', { typing: true });
 
-        var selectedModel = modelSelect ? modelSelect.value : 'gemini';
         fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                messages: history.slice(-20),
-                model: selectedModel
-            })
+            body: JSON.stringify({ messages: history.slice(-20) })
         })
             .then(function (r) {
                 return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; });
@@ -2566,7 +2539,14 @@ function initChatbot() {
                     return;
                 }
                 var reply = (res.data && res.data.reply) || 'Không có phản hồi.';
-                addMessage('bot', reply);
+                var msgEl = addMessage('bot', reply);
+                // Nếu request bị fallback sang model dự phòng -> hiển thị badge nhỏ
+                if (msgEl && res.data && res.data.fallback) {
+                    var badge = document.createElement('div');
+                    badge.className = 'chatbot-msg-meta';
+                    badge.innerHTML = '↪ Trả lời bởi <b>Gemini Flash</b> (Flash Lite tạm quá tải)';
+                    msgEl.appendChild(badge);
+                }
                 history.push({ role: 'model', text: reply });
                 persistHistory();
             })

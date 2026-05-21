@@ -1,19 +1,24 @@
-// Vercel Edge Function — proxy gọi Google Gemini API
+// Vercel Edge Function — proxy gọi Google Gemini API (chỉ dùng free tier)
 // Bảo vệ GEMINI_API_KEY ở phía server, không lộ key trên client.
 //
 // Endpoint: POST /api/chat
 // Body: { messages: [{role: 'user'|'model', text: string}, ...] }
-// Response: { reply: string }
+// Response: { reply: string, usedModel: 'flash-lite'|'flash', fallback?: true }
 //
-// Setup: thêm env var GEMINI_API_KEY vào Vercel project trước khi deploy.
-// (Dashboard → Settings → Environment Variables, hoặc `vercel env add GEMINI_API_KEY production`)
+// Free-tier strategy:
+// - Primary: gemini-2.5-flash-lite (1000 RPD free, rate quota cao nhất)
+// - Fallback: gemini-2.5-flash (250 RPD free, quota tách biệt, lưu cho khi primary 429/503)
+// Cả 2 đều thuộc free tier — không phát sinh chi phí.
 
 import { CHATBOT_CONTEXT } from './chatbot-context.js';
 
 export const config = { runtime: 'edge' };
 
-const MODEL = 'gemini-2.5-flash-lite';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const PRIMARY_MODEL = 'gemini-2.5-flash-lite';
+const FALLBACK_MODEL = 'gemini-2.5-flash';
+
+// HTTP status cần fallback sang model thứ 2 (upstream rate limit / overload)
+const FALLBACK_STATUSES = new Set([429, 500, 502, 503, 504]);
 
 const SYSTEM_INSTRUCTION = `Bạn là **Trợ lý thông tin Khu công nghiệp và Cụm công nghiệp tỉnh Lào Cai**, do Sở Công Thương tỉnh Lào Cai phát triển.
 
@@ -32,11 +37,49 @@ CƠ SỞ DỮ LIỆU:
 ${CHATBOT_CONTEXT}`;
 
 
+async function callGemini(model, truncated, apiKey) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const contents = truncated.map(m => ({
+    role: m.role === 'user' ? 'user' : 'model',
+    parts: [{ text: String(m.text || '').slice(0, 4000) }],
+  }));
+  const payload = {
+    contents,
+    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+    generationConfig: { temperature: 0.4, topP: 0.9, maxOutputTokens: 1024 },
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
+    ],
+  };
+  try {
+    const upstream = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!upstream.ok) {
+      const errText = await upstream.text();
+      return { ok: false, status: upstream.status, error: `Gemini ${model} lỗi ${upstream.status}`, detail: errText.slice(0, 500) };
+    }
+    const data = await upstream.json();
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!reply) {
+      return { ok: false, status: 502, error: `Gemini ${model} trả về rỗng` };
+    }
+    return { ok: true, status: 200, reply };
+  } catch (e) {
+    return { ok: false, status: 0, error: `Lỗi kết nối Gemini ${model}`, detail: String(e).slice(0, 300) };
+  }
+}
+
+
 export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
+      status: 405, headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -63,136 +106,36 @@ export default async function handler(req) {
       status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
-
-  // Giới hạn 20 lượt gần nhất để tránh request quá lớn
   const truncated = messages.slice(-20);
 
-  // Xử lý khi chọn trợ lý Claude
-  if (body.model === 'claude') {
-    const anthropicKey = process.env.ANTHROPIC_API_KEY;
-    if (!anthropicKey) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Chưa cấu hình ANTHROPIC_API_KEY trên máy chủ Vercel. Vui lòng truy cập Vercel Dashboard -> Settings -> Environment Variables để cấu hình khóa này.' 
-        }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Convert sang Anthropic messages format: vai trò xen kẽ user/assistant, bắt đầu bằng user
-    const rawAnthropic = truncated.map(m => ({
-      role: m.role === 'user' ? 'user' : 'assistant',
-      content: String(m.text || '').slice(0, 4000),
-    }));
-
-    // Đảm bảo các tin nhắn có vai trò xen kẽ nhau và bắt đầu bằng user
-    const filteredMessages = [];
-    let lastRole = null;
-    for (const m of rawAnthropic) {
-      if (m.role !== lastRole) {
-        filteredMessages.push(m);
-        lastRole = m.role;
-      }
-    }
-    while (filteredMessages.length > 0 && filteredMessages[0].role !== 'user') {
-      filteredMessages.shift();
-    }
-
-    if (filteredMessages.length === 0) {
-      return new Response(JSON.stringify({ error: 'Không tìm thấy cuộc trò chuyện hợp lệ cho Claude' }), {
-        status: 400, headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    try {
-      const upstream = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': anthropicKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'claude-3-5-haiku-20241022',
-          max_tokens: 1024,
-          system: SYSTEM_INSTRUCTION,
-          messages: filteredMessages,
-          temperature: 0.4,
-        }),
-      });
-
-      if (!upstream.ok) {
-        const errText = await upstream.text();
-        return new Response(
-          JSON.stringify({ error: `Claude API lỗi ${upstream.status}`, detail: errText.slice(0, 500) }),
-          { status: upstream.status, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const data = await upstream.json();
-      const reply = data?.content?.[0]?.text || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
-
-      return new Response(JSON.stringify({ reply }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } catch (e) {
-      return new Response(
-        JSON.stringify({ error: 'Lỗi kết nối Claude API', detail: String(e).slice(0, 300) }),
-        { status: 502, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+  // Thử primary trước
+  const primary = await callGemini(PRIMARY_MODEL, truncated, apiKey);
+  if (primary.ok) {
+    return new Response(JSON.stringify({ reply: primary.reply, usedModel: 'flash-lite' }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  // Mặc định sử dụng Gemini
-  // Convert sang Gemini "contents" format
-  const contents = truncated.map(m => ({
-    role: m.role === 'user' ? 'user' : 'model',
-    parts: [{ text: String(m.text || '').slice(0, 4000) }],
-  }));
-
-  const payload = {
-    contents,
-    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-    generationConfig: {
-      temperature: 0.4,
-      topP: 0.9,
-      maxOutputTokens: 1024,
-    },
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
-    ],
-  };
-
-  try {
-    const upstream = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!upstream.ok) {
-      const errText = await upstream.text();
+  // Fallback sang model thứ 2 nếu primary gặp rate limit / upstream error
+  const shouldFallback = FALLBACK_STATUSES.has(primary.status) || primary.status === 0;
+  if (shouldFallback) {
+    const fb = await callGemini(FALLBACK_MODEL, truncated, apiKey);
+    if (fb.ok) {
       return new Response(
-        JSON.stringify({ error: `Gemini API lỗi ${upstream.status}`, detail: errText.slice(0, 500) }),
-        { status: upstream.status, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ reply: fb.reply, usedModel: 'flash', fallback: true, fallbackReason: `${PRIMARY_MODEL} lỗi ${primary.status}` }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
-    const data = await upstream.json();
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
-
-    return new Response(JSON.stringify({ reply }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (e) {
+    // Cả 2 đều fail — trả lỗi primary kèm thông tin fallback
     return new Response(
-      JSON.stringify({ error: 'Lỗi kết nối Gemini API', detail: String(e).slice(0, 300) }),
-      { status: 502, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: primary.error, detail: primary.detail, fallbackTried: true, fallbackError: fb.error }),
+      { status: primary.status || 502, headers: { 'Content-Type': 'application/json' } }
     );
   }
+
+  // Lỗi non-fallback của primary (vd 400/401/403)
+  return new Response(
+    JSON.stringify({ error: primary.error, detail: primary.detail }),
+    { status: primary.status || 502, headers: { 'Content-Type': 'application/json' } }
+  );
 }
