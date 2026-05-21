@@ -1807,6 +1807,36 @@ a:hover {
     opacity: 0.85;
     margin-top: 2px;
 }
+.chatbot-model-select-wrapper {
+    display: flex;
+    align-items: center;
+}
+.chatbot-model-select {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+.chatbot-model-select:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+.chatbot-model-select:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+.chatbot-model-select option {
+    background: #16213e;
+    color: #fff;
+    font-weight: 500;
+}
 .chatbot-clear {
     background: rgba(255, 255, 255, 0.12);
     border: none;

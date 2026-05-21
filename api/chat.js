@@ -67,6 +67,84 @@ export default async function handler(req) {
   // Giới hạn 20 lượt gần nhất để tránh request quá lớn
   const truncated = messages.slice(-20);
 
+  // Xử lý khi chọn trợ lý Claude
+  if (body.model === 'claude') {
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    if (!anthropicKey) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Chưa cấu hình ANTHROPIC_API_KEY trên máy chủ Vercel. Vui lòng truy cập Vercel Dashboard -> Settings -> Environment Variables để cấu hình khóa này.' 
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Convert sang Anthropic messages format: vai trò xen kẽ user/assistant, bắt đầu bằng user
+    const rawAnthropic = truncated.map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: String(m.text || '').slice(0, 4000),
+    }));
+
+    // Đảm bảo các tin nhắn có vai trò xen kẽ nhau và bắt đầu bằng user
+    const filteredMessages = [];
+    let lastRole = null;
+    for (const m of rawAnthropic) {
+      if (m.role !== lastRole) {
+        filteredMessages.push(m);
+        lastRole = m.role;
+      }
+    }
+    while (filteredMessages.length > 0 && filteredMessages[0].role !== 'user') {
+      filteredMessages.shift();
+    }
+
+    if (filteredMessages.length === 0) {
+      return new Response(JSON.stringify({ error: 'Không tìm thấy cuộc trò chuyện hợp lệ cho Claude' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    try {
+      const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': anthropicKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-3-5-haiku-20241022',
+          max_tokens: 1024,
+          system: SYSTEM_INSTRUCTION,
+          messages: filteredMessages,
+          temperature: 0.4,
+        }),
+      });
+
+      if (!upstream.ok) {
+        const errText = await upstream.text();
+        return new Response(
+          JSON.stringify({ error: `Claude API lỗi ${upstream.status}`, detail: errText.slice(0, 500) }),
+          { status: upstream.status, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const data = await upstream.json();
+      const reply = data?.content?.[0]?.text || 'Xin lỗi, tôi chưa thể trả lời câu hỏi này.';
+
+      return new Response(JSON.stringify({ reply }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ error: 'Lỗi kết nối Claude API', detail: String(e).slice(0, 300) }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+  }
+
+  // Mặc định sử dụng Gemini
   // Convert sang Gemini "contents" format
   const contents = truncated.map(m => ({
     role: m.role === 'user' ? 'user' : 'model',

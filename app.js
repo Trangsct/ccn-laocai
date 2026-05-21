@@ -2418,9 +2418,33 @@ function initChatbot() {
     var input = document.getElementById('chatbot-input');
     var sendBtn = document.getElementById('chatbot-send');
     var clearBtn = document.getElementById('chatbot-clear');
+    var modelSelect = document.getElementById('chatbot-model');
+    var footerEl = document.querySelector('.chatbot-footer');
     if (!toggle || !panel || !msgsEl || !form || !input) return;
 
     var STORAGE_KEY = 'chatbot_history_v1';
+
+    function updateFooter() {
+        if (!footerEl) return;
+        var selected = modelSelect ? modelSelect.value : 'gemini';
+        if (selected === 'claude') {
+            footerEl.innerHTML = 'Trợ lý AI dùng Anthropic Claude · có thể có sai sót';
+        } else {
+            footerEl.innerHTML = 'Trợ lý AI dùng Google Gemini · có thể có sai sót';
+        }
+    }
+
+    if (modelSelect) {
+        var savedModel = localStorage.getItem('chatbot_selected_model');
+        if (savedModel && (savedModel === 'gemini' || savedModel === 'claude')) {
+            modelSelect.value = savedModel;
+        }
+        updateFooter();
+        modelSelect.addEventListener('change', function() {
+            localStorage.setItem('chatbot_selected_model', modelSelect.value);
+            updateFooter();
+        });
+    }
     var SUGGESTIONS = [
         'Tỉnh Lào Cai có bao nhiêu Khu công nghiệp?',
         'Cụm công nghiệp nào đang lấp đầy 100%?',
@@ -2522,10 +2546,14 @@ function initChatbot() {
         sendBtn.disabled = true;
         var typing = addMessage('bot', 'Đang suy nghĩ…', { typing: true });
 
+        var selectedModel = modelSelect ? modelSelect.value : 'gemini';
         fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages: history.slice(-20) })
+            body: JSON.stringify({
+                messages: history.slice(-20),
+                model: selectedModel
+            })
         })
             .then(function (r) {
                 return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; });
