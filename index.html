@@ -1333,8 +1333,8 @@
                     <div style="background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="showHuongDanDauTu()">
                         <div style="font-size:2.2rem;">📝</div>
                         <div style="flex:1;">
-                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:#e65100;">Hướng dẫn thủ tục đầu tư Cụm công nghiệp</h4>
-                            <p style="margin:0; font-size:0.88rem; color:#666;">Quy trình 4 bước thành lập Cụm công nghiệp theo Luật Đầu tư 2025</p>
+                            <h4 style="margin:0 0 4px; font-size:1.05rem; color:#e65100;">Hướng dẫn chuẩn bị hồ sơ làm chủ đầu tư hạ tầng Cụm công nghiệp</h4>
+                            <p style="margin:0; font-size:0.88rem; color:#666;">Khung pháp lý, quy trình 4 bước, 5 nhóm hồ sơ, thang điểm 100 — kèm tải bản .docx</p>
                         </div>
                         <span style="color:#e65100; font-weight:600;">Xem →</span>
                     </div>
@@ -1939,68 +1939,342 @@
 
     <!-- ============ INVESTMENT GUIDE MODAL ============ -->
     <div class="modal-overlay" id="modal-guide-overlay">
-        <div class="modal" id="modal-guide-content" style="max-width: 900px;">
+        <div class="modal" id="modal-guide-content" style="max-width: 1100px;">
             <div class="modal-header status-hoat-dong" style="background-color: var(--primary-color);">
                 <button class="modal-close" onclick="closeGuideModal()">&times;</button>
-                <div class="modal-title" style="color: white;">📚 Hướng dẫn Thủ tục Thành lập Cụm Công Nghiệp</div>
+                <div class="modal-title" style="color: white;">📚 Hướng dẫn chuẩn bị hồ sơ làm chủ đầu tư hạ tầng kỹ thuật Cụm công nghiệp</div>
             </div>
-            <div class="modal-body" style="background:#f8fafc;">
-                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">I. Căn cứ pháp lý</h3>
-                <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--text-muted); line-height: 1.6;">
-                    <li>Luật Đầu tư năm 2025 (có hiệu lực từ 01/01/2026) — <b>Cụm công nghiệp không thuộc đối tượng phải cấp Quyết định chủ trương đầu tư.</b></li>
-                    <li>Nghị định số 32/2024/NĐ-CP ngày 15/3/2024 của Chính phủ về quản lý, phát triển cụm công nghiệp.</li>
-                    <li>Quyết định Quy chế quản lý cụm công nghiệp trên địa bàn tỉnh Lào Cai (2026).</li>
-                    <li>Thông tư số 14/2024/TT-BCT của Bộ Công Thương.</li>
-                </ul>
+            <div class="modal-body guide-body" style="background:#f8fafc; padding-top: 16px;">
 
-                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">II. Điều kiện thành lập</h3>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <div style="flex: 1; background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <strong>1. Có trong danh mục Quy hoạch</strong><br>
-                        <span style="font-size: 0.9rem; color: #64748b;">Đã có tên trong Danh mục tích hợp Quy hoạch tỉnh và phù hợp QH sử dụng đất.</span>
+                <!-- Meta + Tải về -->
+                <div class="guide-meta">
+                    <div class="guide-meta-text">
+                        <p style="margin:0 0 4px; font-weight:600; color:#0f3460;">Sở Công Thương tỉnh Lào Cai</p>
+                        <p style="margin:0; font-size:0.86rem; color:#475569;">Áp dụng đối với các doanh nghiệp, hợp tác xã, tổ chức có nguyện vọng làm chủ đầu tư xây dựng hạ tầng kỹ thuật cụm công nghiệp.</p>
                     </div>
-                    <div style="flex: 1; background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #27ae60; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <strong>2. Năng lực làm Chủ đầu tư</strong><br>
-                        <span style="font-size: 0.9rem; color: #64748b;">Doanh nghiệp/HTX có đủ tiêu cách pháp nhân và năng lực tài chính.</span>
-                    </div>
-                    <div style="flex: 1; background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <strong>3. Điều kiện tỷ lệ lấp đầy</strong><br>
-                        <span style="font-size: 0.9rem; color: #64748b;">Tỷ lệ lấp đầy trung bình các CCN trên địa bàn trên 50% HOẶC tổng quỹ đất chưa thuê ≤ 100 ha.</span>
-                    </div>
+                    <a href="huong-dan-chu-dau-tu-ccn.docx" class="guide-download" download>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Tải bản gốc (.docx)
+                    </a>
                 </div>
 
-                <h3 style="margin-bottom: 10px; color: var(--text-color); font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">III. Quy trình thành lập CCN (theo Luật Đầu tư 2025)</h3>
-                <div style="background:#fffbe6; border:1px solid #f5c518; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:0.92rem; color:#856404;">
-                    <b>Lưu ý:</b> Theo Luật Đầu tư 2025, dự án đầu tư xây dựng hạ tầng kỹ thuật cụm công nghiệp <b>không thuộc diện phải cấp Quyết định chủ trương đầu tư</b>. Nhà đầu tư thực hiện thủ tục thành lập CCN theo Nghị định 32/2024/NĐ-CP.
-                </div>
-                <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B1</div>
-                            <div style="flex: 1;">Chủ đầu tư nộp văn bản đề nghị làm CĐT hạ tầng kỹ thuật CCN đến <b>UBND xã/phường</b>.</div>
+                <!-- Mục lục -->
+                <nav class="guide-toc" aria-label="Mục lục">
+                    <strong>Mục lục:</strong>
+                    <a href="#guide-A">A. Khung pháp lý</a>
+                    <a href="#guide-B">B. Quy trình 4 bước</a>
+                    <a href="#guide-C">C. Danh mục hồ sơ</a>
+                    <a href="#guide-D">D. Tiêu chí đánh giá</a>
+                    <a href="#guide-E">E. Sai sót thường gặp</a>
+                    <a href="#guide-F">F. Thủ tục tiếp theo</a>
+                    <a href="#guide-G">G. Đầu mối liên hệ</a>
+                </nav>
+
+                <!-- ===== A. KHUNG PHÁP LÝ ===== -->
+                <section id="guide-A">
+                    <h2 class="guide-h2">A. Khung pháp lý áp dụng</h2>
+
+                    <h3 class="guide-h3">1. Luật</h3>
+                    <ul class="guide-list">
+                        <li><b>Luật Đầu tư</b> số 61/2020/QH14 và Luật sửa đổi, bổ sung Luật Đầu tư, Luật Đầu tư công năm 2025. <i>Lưu ý: Điều 24 Luật Đầu tư 2025 — dự án đầu tư xây dựng hạ tầng kỹ thuật cụm công nghiệp <b>không thuộc trường hợp phải chấp thuận chủ trương đầu tư</b>.</i></li>
+                        <li><b>Luật Đất đai</b> số 31/2024/QH15 ngày 18/01/2024 và Luật sửa đổi, bổ sung năm 2024 (Điều 122 về ký quỹ, năng lực tài chính, không vi phạm pháp luật đất đai).</li>
+                        <li><b>Luật Kinh doanh bất động sản</b> số 29/2023/QH15 ngày 28/11/2023 (điểm c khoản 2 Điều 9 — tỷ lệ vốn chủ sở hữu tối thiểu).</li>
+                        <li><b>Luật Xây dựng</b> số 50/2014/QH13 và Luật sửa đổi, bổ sung số 62/2020/QH14.</li>
+                        <li><b>Luật Bảo vệ môi trường</b> số 72/2020/QH14 và Luật số 146/2025/QH15 sửa đổi, bổ sung một số điều của các luật về nông nghiệp và môi trường.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">2. Nghị định, Thông tư</h3>
+                    <ul class="guide-list">
+                        <li><b>Nghị định số 32/2024/NĐ-CP</b> ngày 15/3/2024 của Chính phủ về quản lý, phát triển cụm công nghiệp — <i>văn bản chủ đạo</i>.</li>
+                        <li><b>Nghị định số 139/2025/NĐ-CP</b> ngày 12/6/2025 quy định về phân định thẩm quyền của chính quyền địa phương 02 cấp trong lĩnh vực quản lý nhà nước của Bộ Công Thương (giai đoạn chuyển tiếp từ 01/7/2025 đến hết 28/02/2027).</li>
+                        <li><b>Nghị định số 96/2024/NĐ-CP</b> ngày 24/7/2024 hướng dẫn Luật Kinh doanh bất động sản.</li>
+                        <li><b>Nghị định số 102/2024/NĐ-CP, 88/2024/NĐ-CP, 71/2024/NĐ-CP</b> hướng dẫn Luật Đất đai 2024.</li>
+                        <li><b>Nghị định số 175/2024/NĐ-CP</b> ngày 30/12/2024 hướng dẫn Luật Xây dựng (thay thế Nghị định số 15/2021/NĐ-CP).</li>
+                        <li><b>Nghị định số 08/2022/NĐ-CP, 05/2025/NĐ-CP</b> hướng dẫn Luật Bảo vệ môi trường.</li>
+                        <li><b>Thông tư số 14/2024/TT-BCT</b> ngày 15/8/2024 quy định chế độ báo cáo, mẫu văn bản và cơ sở dữ liệu cụm công nghiệp.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">3. Quy chuẩn, tiêu chuẩn kỹ thuật và suất vốn đầu tư</h3>
+                    <ul class="guide-list">
+                        <li><b>QCVN 01:2021/BXD</b> — Quy chuẩn kỹ thuật quốc gia về quy hoạch xây dựng.</li>
+                        <li><b>QCVN 07:2023/BXD</b> — Hệ thống công trình hạ tầng kỹ thuật.</li>
+                        <li><b>QCVN 06:2022/BXD</b> và các tiêu chuẩn an toàn cháy, môi trường (<b>QCVN 40:2011/BTNMT</b> nước thải công nghiệp, <b>QCVN 14:2008/BTNMT</b> nước thải sinh hoạt).</li>
+                        <li><b>Quyết định số 425/QĐ-BXD</b> ngày 30/3/2026 của Bộ Xây dựng công bố Suất vốn đầu tư xây dựng công trình năm 2025: <b>~7,611 tỷ đồng/ha</b> (chưa gồm chi phí bồi thường, giải phóng mặt bằng) — thay thế Quyết định số 409/QĐ-BXD ngày 11/4/2025.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">4. Văn bản nội bộ tỉnh Lào Cai</h3>
+                    <ul class="guide-list">
+                        <li><b>Nghị quyết số 34-NQ/TU</b> ngày 27/12/2025 của Ban Thường vụ Tỉnh ủy Lào Cai về phát triển khu công nghiệp, cụm công nghiệp.</li>
+                        <li><b>Kế hoạch số 134/KH-UBND</b> ngày 26/3/2026 của UBND tỉnh triển khai Nghị quyết số 34-NQ/TU năm 2026.</li>
+                        <li><b>Quyết định số 525/QĐ-UBND</b> ngày 25/02/2026 phê duyệt điều chỉnh Quy hoạch tỉnh Lào Cai thời kỳ 2021-2030 (kèm Phụ lục danh mục các cụm công nghiệp).</li>
+                        <li><b>Quyết định số 16/2026/QĐ-UBND</b> ngày 25/02/2026 ban hành Quy chế quản lý cụm công nghiệp trên địa bàn tỉnh Lào Cai (<i>Quy chế CCN tỉnh</i>).</li>
+                    </ul>
+                </section>
+
+                <!-- ===== B. QUY TRÌNH 4 BƯỚC ===== -->
+                <section id="guide-B">
+                    <h2 class="guide-h2">B. Quy trình thành lập Cụm công nghiệp (4 bước)</h2>
+                    <p>Theo Điều 10 Nghị định số 32/2024/NĐ-CP, Nghị định số 139/2025/NĐ-CP và Quy chế CCN tỉnh, quy trình thành lập, mở rộng cụm công nghiệp gồm 04 bước:</p>
+
+                    <div class="guide-steps">
+                        <div class="guide-step">
+                            <div class="guide-step-num">B1</div>
+                            <div>
+                                <div class="guide-step-title">Thông báo tiếp nhận hồ sơ</div>
+                                <div class="guide-step-text">Ủy ban nhân dân xã/phường thông báo công khai trên các phương tiện thông tin đại chúng địa phương; niêm yết tại trụ sở và nhà văn hóa thôn/tổ dân phố trong <b>15 ngày</b>.</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B2</div>
-                            <div style="flex: 1;">UBND xã/phường & CĐT lập <b>02 bộ hồ sơ thành lập CCN</b> gửi tới <b>Sở Công Thương</b> thẩm định.</div>
+                        <div class="guide-step">
+                            <div class="guide-step-num">B2</div>
+                            <div>
+                                <div class="guide-step-title">Nộp hồ sơ đề nghị thành lập</div>
+                                <div class="guide-step-text">Nhà đầu tư lập <b>08 bộ hồ sơ</b> theo khoản 1 Điều 9 Nghị định số 32/2024/NĐ-CP, nộp tại Bộ phận Tiếp nhận và trả kết quả của UBND cấp xã. Trong <b>05 ngày làm việc</b>, UBND cấp xã gửi Tờ trình + 07 bộ hồ sơ tới Sở Công Thương.</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B3</div>
-                            <div style="flex: 1;">Sở Công Thương chủ trì thẩm định hồ sơ (lấy ý kiến các sở, ngành liên quan — 25 ngày làm việc).</div>
+                        <div class="guide-step">
+                            <div class="guide-step-num">B3</div>
+                            <div>
+                                <div class="guide-step-title">Thẩm định hồ sơ</div>
+                                <div class="guide-step-text">Sở Công Thương chủ trì thẩm định trong <b>15 ngày làm việc</b>: lấy ý kiến các sở, ngành liên quan (10 ngày), thẩm định Báo cáo đầu tư và năng lực nhà đầu tư, tham mưu UBND tỉnh thành lập <b>Hội đồng đánh giá lựa chọn chủ đầu tư</b> theo thang điểm 100.</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ebf5ff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #2563eb;">B4</div>
-                            <div style="flex: 1;">Sở Công Thương trình <b>UBND Tỉnh</b> ban hành Quyết định thành lập CCN (7 ngày làm việc).</div>
+                        <div class="guide-step">
+                            <div class="guide-step-num">B4</div>
+                            <div>
+                                <div class="guide-step-title">Quyết định thành lập, giao chủ đầu tư</div>
+                                <div class="guide-step-text">Trong <b>07 ngày làm việc</b> sau khi nhận đủ hồ sơ kèm Báo cáo thẩm định, UBND tỉnh ban hành Quyết định thành lập cụm công nghiệp đồng thời giao chủ đầu tư. Quyết định gửi 01 bản về Bộ Công Thương cập nhật cơ sở dữ liệu cả nước.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div style="text-align: right;">
+                    <h3 class="guide-h3">Tóm tắt thời hạn xử lý</h3>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>Bước</th><th>Cơ quan thực hiện</th><th>Thời hạn</th></tr></thead>
+                            <tbody>
+                                <tr><td>1</td><td>UBND cấp xã thông báo tiếp nhận hồ sơ</td><td>15 ngày</td></tr>
+                                <tr><td>2</td><td>UBND cấp xã xem xét, gửi Sở Công Thương</td><td>05 ngày làm việc</td></tr>
+                                <tr><td>3</td><td>Sở Công Thương thẩm định (gồm 10 ngày lấy ý kiến sở, ngành)</td><td>15 ngày làm việc</td></tr>
+                                <tr><td>4</td><td>UBND tỉnh ban hành Quyết định thành lập</td><td>07 ngày làm việc</td></tr>
+                                <tr class="guide-table-total"><td colspan="2"><b>Tổng thời gian Bước 2 → Bước 4</b></td><td><b>~27 ngày làm việc (~5,5 tuần)</b></td></tr>
+                            </tbody>
+                        </table>
+                        <p class="guide-note"><i>Thời gian bổ sung, hoàn thiện hồ sơ của nhà đầu tư không tính vào thời hạn trên.</i></p>
+                    </div>
+                </section>
+
+                <!-- ===== C. DANH MỤC HỒ SƠ ===== -->
+                <section id="guide-C">
+                    <h2 class="guide-h2">C. Danh mục hồ sơ đề nghị</h2>
+                    <p>Căn cứ khoản 1 và khoản 2 Điều 9 Nghị định số 32/2024/NĐ-CP, hồ sơ gồm <b>5 nhóm tài liệu</b>:</p>
+
+                    <h3 class="guide-h3">Nhóm 1 — Tư cách pháp lý của chủ đầu tư</h3>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>#</th><th>Nội dung</th><th>Hình thức</th></tr></thead>
+                            <tbody>
+                                <tr><td>1.1</td><td>Giấy chứng nhận đăng ký doanh nghiệp (bản mới nhất, có ngành nghề đầu tư - kinh doanh hạ tầng cụm công nghiệp)</td><td>Bản sao chứng thực / scan chất lượng cao</td></tr>
+                                <tr><td>1.2</td><td>Điều lệ Công ty (bản hợp nhất mới nhất, đủ chữ ký thành viên/cổ đông)</td><td>Bản sao có đóng dấu</td></tr>
+                                <tr><td>1.3</td><td>Quyết định bổ nhiệm/cử người đại diện theo pháp luật kiêm Giám đốc</td><td>Bản sao có đóng dấu</td></tr>
+                                <tr><td>1.4</td><td>Biên bản họp HĐTV/ĐHĐCĐ thông qua chủ trương đầu tư CCN + Nghị quyết ủy quyền ký kết</td><td>Bản gốc</td></tr>
+                                <tr><td>1.5</td><td>Căn cước công dân của người đại diện theo pháp luật</td><td>Bản sao chứng thực</td></tr>
+                                <tr><td>1.6</td><td>Giấy ủy quyền (trường hợp cử cán bộ khác làm việc với Sở Công Thương)</td><td>Bản gốc</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="guide-h3">Nhóm 2 — Năng lực tài chính</h3>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>#</th><th>Nội dung</th><th>Hình thức</th></tr></thead>
+                            <tbody>
+                                <tr><td>2.1</td><td>Báo cáo tài chính 02 năm gần nhất đã được kiểm toán</td><td>Bản gốc có dấu kiểm toán</td></tr>
+                                <tr><td>2.2</td><td>Báo cáo kiểm toán riêng khoản mục vốn chủ sở hữu (thay thế 2.1 khi cần)</td><td>Bản gốc</td></tr>
+                                <tr><td>2.3</td><td>Giấy xác nhận số dư tài khoản tại ngân hàng thương mại (trong 30 ngày trước thời điểm nộp)</td><td>Bản gốc</td></tr>
+                                <tr><td>2.4</td><td>Thư cam kết cấp tín dụng hoặc Hợp đồng nguyên tắc tín dụng (nếu có vốn vay)</td><td>Bản gốc</td></tr>
+                                <tr><td>2.5</td><td>Phương án cân đối và huy động vốn (cơ cấu vốn, nguồn, tiến độ giải ngân)</td><td>Bản tự lập, có dấu Công ty</td></tr>
+                                <tr><td>2.6</td><td>Văn bản cam kết của công ty mẹ/cổ đông lớn (trường hợp doanh nghiệp mới thành lập)</td><td>Bản gốc</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="guide-callout">
+                        <b>📌 Lưu ý đặc biệt về vốn chủ sở hữu tối thiểu (CCN từ 20 ha trở lên):</b>
+                        <p>Theo điểm c khoản 2 Điều 9 Luật Kinh doanh bất động sản và điểm c khoản 1 Điều 5 Nghị định 96/2024/NĐ-CP, <b>vốn chủ sở hữu ≥ 15% tổng vốn đầu tư</b>. Khái toán theo suất vốn 7,6 tỷ/ha (QĐ 425/QĐ-BXD):</p>
+                        <ul class="guide-list">
+                            <li>CCN <b>20 ha</b> → tổng mức đầu tư ~150-200 tỷ → vốn chủ sở hữu tối thiểu ~22-30 tỷ đồng</li>
+                            <li>CCN <b>50 ha</b> → tổng mức đầu tư ~380-450 tỷ → vốn chủ sở hữu tối thiểu ~57-67 tỷ đồng</li>
+                            <li>CCN <b>75 ha</b> → tổng mức đầu tư ~570-650 tỷ → vốn chủ sở hữu tối thiểu ~85-97 tỷ đồng</li>
+                        </ul>
+                        <p>Trường hợp vốn điều lệ chưa đáp ứng, đề nghị tăng vốn điều lệ và đăng ký thay đổi <b>trước khi nộp hồ sơ thành lập</b>.</p>
+                    </div>
+
+                    <h3 class="guide-h3">Nhóm 3 — Năng lực, kinh nghiệm (chiếm 30/100 điểm)</h3>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>#</th><th>Nội dung</th><th>Hình thức</th></tr></thead>
+                            <tbody>
+                                <tr><td>3.1</td><td>Danh mục các dự án đã/đang thực hiện: (i) hạ tầng kỹ thuật CCN/KCN; (ii) hạ tầng khu đô thị, khu dân cư; (iii) công trình dân dụng, công nghiệp loại 1-4</td><td>Bản tự lập, có dấu Công ty</td></tr>
+                                <tr><td>3.2</td><td>Hợp đồng, biên bản nghiệm thu, quyết toán các dự án tiêu biểu</td><td>Bản sao có đóng dấu</td></tr>
+                                <tr><td>3.3</td><td>Danh sách nhân sự chủ chốt (Ban Giám đốc, kỹ sư quản lý dự án, kỹ sư hạ tầng, chuyên gia môi trường)</td><td>Bản tự lập</td></tr>
+                                <tr><td>3.4</td><td>Bằng cấp, chứng chỉ hành nghề của nhân sự chủ chốt</td><td>Bản sao chứng thực</td></tr>
+                                <tr><td>3.5</td><td>Chứng nhận ISO 9001, ISO 14001 hoặc tương đương (nếu có)</td><td>Bản sao</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="guide-h3">Nhóm 4 — Khu đất dự kiến và hiện trạng</h3>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>#</th><th>Nội dung</th><th>Hình thức</th></tr></thead>
+                            <tbody>
+                                <tr><td>4.1</td><td>Bản vẽ ranh giới, vị trí khu đất theo nền bản đồ địa hình/ảnh vệ tinh + tọa độ các đỉnh theo VN-2000 (kinh tuyến trục Lào Cai)</td><td>Bản vẽ A3 có dấu + file số (.dwg, .kml, .kmz)</td></tr>
+                                <tr><td>4.2</td><td>Bảng tọa độ chi tiết các đỉnh ranh giới theo VN-2000</td><td>Excel/Word</td></tr>
+                                <tr><td>4.3</td><td>Văn bản thống nhất chủ trương, vị trí, ranh giới dự kiến của UBND cấp xã</td><td>Bản chính có dấu</td></tr>
+                                <tr><td>4.4</td><td>Sơ họa hiện trạng sử dụng đất (đất rừng SX, đất nông nghiệp, đất chưa sử dụng, đất ở, giao thông, thủy lợi…)</td><td>Bản tự lập trên nền bản đồ địa chính</td></tr>
+                                <tr><td>4.5</td><td>Danh sách chủ sử dụng đất hiện tại (hộ gia đình, cá nhân, tổ chức) + diện tích từng chủ thể</td><td>Bản tự lập</td></tr>
+                                <tr><td>4.6</td><td>Ảnh chụp hiện trạng (15-20 ảnh nhiều góc, kèm tọa độ)</td><td>File ảnh số</td></tr>
+                                <tr><td>4.7</td><td>Thông tin hiện trạng rừng (nếu có): loại rừng, chủ rừng, trữ lượng → thực hiện thủ tục chuyển mục đích sử dụng rừng</td><td>Văn bản</td></tr>
+                                <tr><td>4.8</td><td>Văn bản thoả thuận sơ bộ về điểm đấu nối hạ tầng kỹ thuật (cấp điện, cấp nước, viễn thông, thoát nước, giao thông)</td><td>Bản sao</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="guide-h3">Nhóm 5 — Báo cáo đầu tư thành lập Cụm công nghiệp (9 phần)</h3>
+                    <p>Báo cáo đầu tư do nhà đầu tư (hoặc đơn vị tư vấn) lập theo mẫu Phụ lục Thông tư số 14/2024/TT-BCT:</p>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>Phần</th><th>Nội dung</th><th>Liên hệ chấm điểm</th></tr></thead>
+                            <tbody>
+                                <tr><td>I</td><td>Căn cứ pháp lý, sự cần thiết đầu tư</td><td>Cơ bản</td></tr>
+                                <tr><td>II</td><td>Sự phù hợp, điều kiện thành lập; nhu cầu lao động; tình hình KCN trên địa bàn</td><td>Điều 8 NĐ 32/2024</td></tr>
+                                <tr><td>III</td><td>Hiện trạng sử dụng đất, định hướng ngành nghề liên kết; cơ cấu sử dụng đất; khả năng đấu nối hạ tầng</td><td>Quy hoạch</td></tr>
+                                <tr><td>IV</td><td>Mục tiêu, diện tích, địa điểm, phương án đầu tư hạ tầng; giải phóng mặt bằng; tiến độ; kế hoạch thu hút đầu tư</td><td><b>Phương án hạ tầng (15 điểm)</b></td></tr>
+                                <tr><td>V</td><td>Năng lực, tư cách pháp nhân, tổng mức đầu tư, cơ cấu vốn</td><td><b>Năng lực-kinh nghiệm (30 đ) + Tài chính (40 đ)</b></td></tr>
+                                <tr><td>VI</td><td>Chi phí duy tu, vận hành hạ tầng; phương thức quản lý sau khi hoạt động</td><td>Phương án quản lý</td></tr>
+                                <tr><td>VII</td><td>Đánh giá sơ bộ tác động môi trường; tác động đến đất nông nghiệp</td><td><b>Môi trường (15 điểm)</b></td></tr>
+                                <tr><td>VIII</td><td>Hiệu quả kinh tế - xã hội của cụm công nghiệp; giải pháp tổ chức thực hiện</td><td>Hiệu quả KT-XH</td></tr>
+                                <tr><td>IX</td><td>Kết luận, đề xuất, kiến nghị</td><td>Tổng kết</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="guide-note"><i>Báo cáo trình bày trên khổ A4, Times New Roman cỡ 13; có Mục lục, Danh mục bảng, Danh mục hình vẽ; bản vẽ thu gọn đính kèm; đóng quyển; có chữ ký + đóng dấu của người đại diện theo pháp luật.</i></p>
+                </section>
+
+                <!-- ===== D. TIÊU CHÍ ĐÁNH GIÁ ===== -->
+                <section id="guide-D">
+                    <h2 class="guide-h2">D. Tiêu chí đánh giá lựa chọn chủ đầu tư (thang điểm 100)</h2>
+                    <p>Theo Điều 13 Nghị định số 32/2024/NĐ-CP, Hội đồng đánh giá chấm theo thang 100 điểm chia thành 04 nhóm tiêu chí. <b>Nhà đầu tư đạt ≥ 50 điểm</b> và có số điểm cao nhất sẽ được UBND tỉnh xem xét lựa chọn.</p>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>Nhóm</th><th>Tiêu chí</th><th>Điểm tối đa</th></tr></thead>
+                            <tbody>
+                                <tr><td>1</td><td>Phương án đầu tư xây dựng hệ thống hạ tầng kỹ thuật</td><td>15</td></tr>
+                                <tr><td>2</td><td>Phương án bảo vệ môi trường, ứng phó biến đổi khí hậu</td><td>15</td></tr>
+                                <tr><td>3</td><td><b>Năng lực, kinh nghiệm của nhà đầu tư</b></td><td><b>30</b></td></tr>
+                                <tr><td>4</td><td><b>Phương án tài chính (vốn chủ sở hữu, vốn vay, tổng mức đầu tư)</b></td><td><b>40</b></td></tr>
+                                <tr class="guide-table-total"><td colspan="2"><b>Tổng</b></td><td><b>100</b></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="guide-note">Trường hợp chỉ có 01 nhà đầu tư đăng ký, Hội đồng vẫn tổ chức chấm điểm để xác nhận đạt mức tối thiểu 50/100 trước khi UBND tỉnh quyết định giao làm chủ đầu tư.</p>
+                </section>
+
+                <!-- ===== E. SAI SÓT THƯỜNG GẶP ===== -->
+                <section id="guide-E">
+                    <h2 class="guide-h2">E. Các sai sót thường gặp và hướng khắc phục</h2>
+
+                    <h3 class="guide-h3">1. Về tư cách pháp lý</h3>
+                    <ul class="guide-list">
+                        <li>Vốn điều lệ thấp so với quy mô CCN → <b>tăng vốn điều lệ trước khi nộp hồ sơ</b>.</li>
+                        <li>Giấy chứng nhận đăng ký doanh nghiệp chưa có ngành nghề đầu tư - kinh doanh hạ tầng CCN → <b>bổ sung ngành nghề trước khi nộp</b>.</li>
+                        <li>Người đại diện ký văn bản nhưng chưa có Nghị quyết/Biên bản HĐTV/ĐHĐCĐ thông qua chủ trương đầu tư.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">2. Về năng lực tài chính</h3>
+                    <ul class="guide-list">
+                        <li>Chỉ có Thư cam kết tín dụng (chưa phải Hợp đồng tín dụng đã ký), nội dung chung chung → <b>làm việc với ngân hàng để có cam kết với số tiền và thời hạn rõ ràng</b>.</li>
+                        <li>Số dư tài khoản chỉ tại thời điểm chứng minh, sau đó rút ra → <b>cam kết duy trì số dư hoặc phong tỏa một phần phục vụ dự án</b>.</li>
+                        <li>Không tách biệt vốn chủ sở hữu cho dự án CCN với vốn chung của doanh nghiệp.</li>
+                        <li>Doanh nghiệp mới thành lập, không có Báo cáo tài chính 02 năm đã kiểm toán → <b>bổ sung Báo cáo kiểm toán riêng khoản mục vốn chủ sở hữu</b> kèm cam kết của công ty mẹ/cổ đông lớn.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">3. Về năng lực, kinh nghiệm</h3>
+                    <ul class="guide-list">
+                        <li>Thiếu hồ sơ chứng minh kinh nghiệm các dự án loại 1-4 (thiếu hợp đồng, biên bản nghiệm thu).</li>
+                        <li>Thiếu hồ sơ đội ngũ cán bộ quản lý, kỹ thuật, chuyên gia môi trường.</li>
+                        <li>Doanh nghiệp mới thành lập, không có công trình tham chiếu → <b>thuê hoặc ký hợp đồng với đơn vị tư vấn/nhà thầu có kinh nghiệm</b>.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">4. Về quy hoạch, đất đai và môi trường</h3>
+                    <ul class="guide-list">
+                        <li>Phạm vi, ranh giới đề xuất không phù hợp với Phụ lục danh mục CCN của Quy hoạch tỉnh (sai vị trí, vượt diện tích).</li>
+                        <li>Chồng lấn với các dự án khoáng sản, năng lượng, lâm nghiệp → <b>rà soát kỹ với UBND cấp xã, Sở Nông nghiệp và Môi trường trước khi đề xuất</b>.</li>
+                        <li>Phương án xử lý nước thải tập trung chỉ chung chung → <b>lập phương án sơ bộ với công nghệ cụ thể (AAO, MBR, SBR), công suất tính toán theo tỷ lệ lấp đầy, đảm bảo cột A hoặc B QCVN 40:2011/BTNMT</b>.</li>
+                        <li>Chưa đảm bảo khoảng cách an toàn với khu dân cư <b>(≥ 500 m theo QCVN 01:2021/BXD)</b>.</li>
+                    </ul>
+
+                    <h3 class="guide-h3">5. Lưu ý đặc thù</h3>
+                    <ul class="guide-list">
+                        <li><b>Nhà đầu tư FDI:</b> Doanh nghiệp có vốn đầu tư nước ngoài thành lập theo Luật Doanh nghiệp Việt Nam vẫn đủ điều kiện làm chủ đầu tư hạ tầng CCN. Cần phối hợp với Sở Tài chính và Công an tỉnh về Giấy chứng nhận đăng ký đầu tư + thẩm tra an ninh, đặc biệt với CCN gần biên giới.</li>
+                        <li><b>Mở rộng CCN:</b> Tổng diện tích sau mở rộng ≤ 75 ha; CCN gốc phải đạt tỷ lệ lấp đầy ≥ 60% và đã hoàn thành các hạng mục hạ tầng kỹ thuật dùng chung thiết yếu.</li>
+                        <li><b>CCN hình thành trước Quyết định số 105/2009/QĐ-TTg:</b> Áp dụng quy định chuyển tiếp tại Điều 35, 36, 37 Nghị định số 32/2024/NĐ-CP; thời hạn hoàn thành xử lý là <b>ngày 31/12/2026</b>.</li>
+                    </ul>
+                </section>
+
+                <!-- ===== F. THỦ TỤC TIẾP THEO ===== -->
+                <section id="guide-F">
+                    <h2 class="guide-h2">F. Các thủ tục tiếp theo sau khi có Quyết định thành lập</h2>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>STT</th><th>Thủ tục</th><th>Cơ quan thẩm quyền</th><th>Văn bản pháp luật chính</th></tr></thead>
+                            <tbody>
+                                <tr><td>1</td><td>Lập, thẩm định, phê duyệt Quy hoạch chi tiết xây dựng tỷ lệ 1/500</td><td>UBND cấp xã</td><td>Luật Xây dựng; NĐ 175/2024/NĐ-CP; TT 17/2025/TT-BXD</td></tr>
+                                <tr><td>2</td><td>Lập, thẩm định Báo cáo nghiên cứu khả thi; Thiết kế cơ sở; Thiết kế xây dựng</td><td>Sở Xây dựng; chủ đầu tư phê duyệt thiết kế triển khai</td><td>Luật Xây dựng; NĐ 175/2024/NĐ-CP</td></tr>
+                                <tr><td>3</td><td>Đánh giá tác động môi trường (ĐTM) hoặc Giấy phép môi trường</td><td>UBND tỉnh (Sở Nông nghiệp và Môi trường); Bộ NN&amp;MT cho dự án TW</td><td>Luật BVMT; NĐ 08/2022/NĐ-CP; NĐ 05/2025/NĐ-CP</td></tr>
+                                <tr><td>4</td><td>Chuyển mục đích sử dụng đất, sử dụng rừng; thu hồi đất; bồi thường, giải phóng mặt bằng, tái định cư</td><td>UBND cấp xã chủ trì GPMB; UBND tỉnh quyết định thu hồi/giao/cho thuê đất</td><td>Luật Đất đai 2024; NĐ 102/2024/NĐ-CP; NĐ 88/2024/NĐ-CP</td></tr>
+                                <tr><td>5</td><td>Giao đất, cho thuê đất; ký Hợp đồng thuê đất; cấp Giấy chứng nhận QSDĐ</td><td>UBND tỉnh (Sở Nông nghiệp và Môi trường)</td><td>Luật Đất đai 2024; NĐ 102/2024/NĐ-CP</td></tr>
+                                <tr><td>6</td><td>Thẩm duyệt Thiết kế về phòng cháy chữa cháy</td><td>Sở Xây dựng (theo NĐ 105/2025 và 106/2025/NĐ-CP)</td><td>Luật PCCC số 55/2024/QH15; NĐ 105/2025/NĐ-CP</td></tr>
+                                <tr><td>7</td><td>Thông báo khởi công xây dựng; bảo đảm điều kiện khởi công</td><td>UBND cấp xã (theo NĐ 139/2025/NĐ-CP)</td><td>Luật Xây dựng; NĐ 175/2024/NĐ-CP</td></tr>
+                                <tr><td>8</td><td>Triển khai thi công; nghiệm thu, bàn giao đưa vào sử dụng</td><td>Chủ đầu tư thực hiện; Sở Xây dựng kiểm tra nghiệm thu</td><td>Luật Xây dựng; NĐ 175/2024/NĐ-CP</td></tr>
+                                <tr><td>9</td><td>Cho doanh nghiệp thứ cấp thuê đất, thuê lại đất có hạ tầng; thu hút đầu tư</td><td>Chủ đầu tư thực hiện theo phương thức kinh doanh hạ tầng CCN</td><td>NĐ 32/2024/NĐ-CP; Luật Kinh doanh BĐS 2023</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ===== G. ĐẦU MỐI LIÊN HỆ ===== -->
+                <section id="guide-G">
+                    <h2 class="guide-h2">G. Đầu mối liên hệ, hướng dẫn</h2>
+                    <div class="guide-table-wrap">
+                        <table class="guide-table">
+                            <thead><tr><th>Nội dung công việc</th><th>Đầu mối</th><th>Vai trò</th></tr></thead>
+                            <tbody>
+                                <tr><td>Hướng dẫn thủ tục chung, tiếp nhận hồ sơ thành lập CCN, làm việc với Hội đồng đánh giá</td><td><b>Phòng Quản lý Công nghiệp - Sở Công Thương tỉnh Lào Cai</b></td><td>Cơ quan thường trực thẩm định</td></tr>
+                                <tr><td>Thông báo tiếp nhận hồ sơ; xác nhận quỹ đất, ranh giới; tổ chức GPMB</td><td>UBND cấp xã nơi có CCN</td><td>Đầu mối tiếp nhận hồ sơ</td></tr>
+                                <tr><td>Ý kiến về phương án tài chính; cấp GCN đăng ký đầu tư cho FDI</td><td>Sở Tài chính tỉnh Lào Cai</td><td>Phối hợp</td></tr>
+                                <tr><td>Ý kiến về quy hoạch xây dựng, hạ tầng kỹ thuật, đấu nối hạ tầng; thẩm định BCNCKT; phê duyệt thiết kế triển khai</td><td>Sở Xây dựng tỉnh Lào Cai</td><td>Phối hợp</td></tr>
+                                <tr><td>Ý kiến về quy hoạch sử dụng đất; ĐTM; khoáng sản; chuyển mục đích sử dụng đất, rừng; thẩm định ĐTM và Giấy phép môi trường</td><td>Sở Nông nghiệp và Môi trường tỉnh Lào Cai</td><td>Phối hợp</td></tr>
+                                <tr><td>Ý kiến đối với CCN có định hướng công nghệ cao, đổi mới sáng tạo</td><td>Sở Khoa học và Công nghệ tỉnh Lào Cai</td><td>Phối hợp</td></tr>
+                                <tr><td>Thẩm tra lý lịch nhà đầu tư; ý kiến về an ninh, trật tự (đặc biệt CCN có FDI hoặc gần biên giới)</td><td>Công an tỉnh Lào Cai</td><td>Phối hợp</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="guide-callout">
+                        <b>📞 Liên hệ trực tiếp:</b>
+                        <p>Sở Công Thương tỉnh Lào Cai trân trọng mời Quý Nhà đầu tư trao đổi, làm việc trực tiếp tại trụ sở Sở để được hướng dẫn cụ thể đối với từng dự án CCN. Mọi vướng mắc trong quá trình áp dụng đề nghị phản ánh về <b>Phòng Quản lý Công nghiệp - Sở Công Thương</b>.</p>
+                        <p style="margin:6px 0 0;">📍 Số 165 đường Lý Thường Kiệt, phường Yên Bái, tỉnh Lào Cai &nbsp; · &nbsp; ☎ 02163.857.863 &nbsp; · &nbsp; 📧 contact-sct@laocai.gov.vn</p>
+                    </div>
+                </section>
+
+                <div style="text-align: right; padding-top: 8px;">
+                    <a href="huong-dan-chu-dau-tu-ccn.docx" download class="guide-download" style="margin-right: 10px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Tải bản gốc (.docx)
+                    </a>
                     <button class="modal-btn-locate" onclick="closeGuideModal()" style="width: auto; padding: 10px 30px;">
                         Đóng
                     </button>
-                    <a href="mailto:sct@laocai.gov.vn?subject=Yêu cầu mẫu văn bản thành lập CCN" style="display: inline-block; background: #34495e; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; margin-left: 10px; font-weight: 500;">
-                        📧 Yêu cầu mẫu văn bản qua Email
-                    </a>
                 </div>
             </div>
         </div>
