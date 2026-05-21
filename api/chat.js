@@ -12,7 +12,7 @@ import { CHATBOT_CONTEXT } from './chatbot-context.js';
 
 export const config = { runtime: 'edge' };
 
-const MODEL = 'gemini-2.0-flash';
+const MODEL = 'gemini-2.5-flash-lite';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 const SYSTEM_INSTRUCTION = `Bạn là **Trợ lý thông tin Khu công nghiệp và Cụm công nghiệp tỉnh Lào Cai**, do Sở Công Thương tỉnh Lào Cai phát triển.
