@@ -2392,10 +2392,189 @@ function initVisitorCounter() {
     el.textContent = count.toLocaleString('vi-VN');
 }
 
+// ===========================================================
+// AI CHATBOT — gọi /api/chat (Vercel Edge Function proxy Gemini)
+// ===========================================================
+function initChatbot() {
+    var toggle = document.getElementById('chatbot-toggle');
+    var panel = document.getElementById('chatbot-panel');
+    var msgsEl = document.getElementById('chatbot-messages');
+    var form = document.getElementById('chatbot-form');
+    var input = document.getElementById('chatbot-input');
+    var sendBtn = document.getElementById('chatbot-send');
+    var clearBtn = document.getElementById('chatbot-clear');
+    if (!toggle || !panel || !msgsEl || !form || !input) return;
+
+    var STORAGE_KEY = 'chatbot_history_v1';
+    var SUGGESTIONS = [
+        'Tỉnh Lào Cai có bao nhiêu Khu công nghiệp?',
+        'Cụm công nghiệp nào đang lấp đầy 100%?',
+        'Khu công nghiệp Tằng Loỏng có ngành nghề gì?',
+        'Cụm Phú Thịnh 1 do ai làm chủ đầu tư?'
+    ];
+
+    var history = [];
+    try {
+        var saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) history = JSON.parse(saved) || [];
+    } catch (e) {}
+
+    var isOpen = false;
+    var isSending = false;
+
+    function escapeHTML(s) {
+        return String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function renderBotMarkdown(text) {
+        // Tóm tắt nhẹ: \n\n -> <br><br>, **bold**, *italic* (đơn giản, không cài full markdown)
+        var s = escapeHTML(text);
+        s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+        s = s.replace(/\n/g, '<br>');
+        return s;
+    }
+
+    function addMessage(role, text, opts) {
+        opts = opts || {};
+        var div = document.createElement('div');
+        div.className = 'chatbot-msg is-' + (role === 'user' ? 'user' : 'bot');
+        if (opts.typing) div.classList.add('is-typing');
+        if (opts.error) div.classList.add('is-error');
+        div.innerHTML = role === 'user' ? escapeHTML(text) : renderBotMarkdown(text);
+        msgsEl.appendChild(div);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+        return div;
+    }
+
+    function renderSuggestions() {
+        var wrap = document.createElement('div');
+        wrap.className = 'chatbot-suggestions';
+        SUGGESTIONS.forEach(function (q) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'chatbot-suggestion';
+            btn.textContent = q;
+            btn.addEventListener('click', function () {
+                input.value = q;
+                sendMessage();
+            });
+            wrap.appendChild(btn);
+        });
+        msgsEl.appendChild(wrap);
+    }
+
+    function renderHistory() {
+        msgsEl.innerHTML = '';
+        if (history.length === 0) {
+            addMessage('bot', 'Xin chào! Tôi là **Trợ lý thông tin Khu, Cụm công nghiệp tỉnh Lào Cai**. Bạn cần biết gì về 21 Khu công nghiệp, 23 Cụm công nghiệp đã thành lập hoặc các Cụm công nghiệp quy hoạch trên địa bàn tỉnh?');
+            renderSuggestions();
+        } else {
+            history.forEach(function (m) { addMessage(m.role === 'user' ? 'user' : 'bot', m.text); });
+        }
+    }
+
+    function persistHistory() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-40))); } catch (e) {}
+    }
+
+    function setOpen(open) {
+        isOpen = open;
+        panel.classList.toggle('is-open', open);
+        toggle.classList.toggle('is-open', open);
+        panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+        toggle.setAttribute('aria-label', open ? 'Đóng Trợ lý AI' : 'Mở Trợ lý AI');
+        if (open) {
+            // Render lần đầu hoặc khi mở lại
+            if (msgsEl.children.length === 0) renderHistory();
+            setTimeout(function () { input.focus(); }, 250);
+        }
+    }
+
+    function sendMessage() {
+        if (isSending) return;
+        var text = (input.value || '').trim();
+        if (!text) return;
+        input.value = '';
+        input.style.height = 'auto';
+
+        addMessage('user', text);
+        history.push({ role: 'user', text: text });
+        persistHistory();
+
+        isSending = true;
+        sendBtn.disabled = true;
+        var typing = addMessage('bot', 'Đang suy nghĩ…', { typing: true });
+
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: history.slice(-20) })
+        })
+            .then(function (r) {
+                return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; });
+            })
+            .then(function (res) {
+                typing.remove();
+                if (!res.ok) {
+                    var err = (res.data && (res.data.error || res.data.detail)) || ('Lỗi máy chủ ' + res.status);
+                    addMessage('bot', '⚠ ' + err, { error: true });
+                    return;
+                }
+                var reply = (res.data && res.data.reply) || 'Không có phản hồi.';
+                addMessage('bot', reply);
+                history.push({ role: 'model', text: reply });
+                persistHistory();
+            })
+            .catch(function (e) {
+                typing.remove();
+                addMessage('bot', '⚠ Không thể kết nối tới Trợ lý AI: ' + e.message, { error: true });
+            })
+            .finally(function () {
+                isSending = false;
+                sendBtn.disabled = false;
+                input.focus();
+            });
+    }
+
+    toggle.addEventListener('click', function () { setOpen(!isOpen); });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        sendMessage();
+    });
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Auto-grow textarea
+    input.addEventListener('input', function () {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+            if (history.length === 0) return;
+            if (confirm('Xóa toàn bộ cuộc trò chuyện?')) {
+                history = [];
+                persistHistory();
+                renderHistory();
+            }
+        });
+    }
+}
+
 // Khởi tạo nút Quay lại
 document.addEventListener('DOMContentLoaded', function () {
     var backBtn = document.getElementById('unit-back-btn');
     if (backBtn) backBtn.addEventListener('click', closeUnitDetail);
     loadUnitDetails();
     initVisitorCounter();
+    initChatbot();
 });

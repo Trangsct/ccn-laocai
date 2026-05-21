@@ -2,7 +2,7 @@
 // Chiến lược: Network-first cho HTML/JSON (luôn lấy bản mới nhất),
 // Cache-first cho tài nguyên tĩnh (CSS, JS, ảnh, font, PDF).
 
-const CACHE_VERSION = 'ccn-laocai-v12';
+const CACHE_VERSION = 'ccn-laocai-v13';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -54,6 +54,9 @@ self.addEventListener('fetch', function (event) {
 
   // Bỏ qua các domain bên ngoài (Leaflet tile, fonts, CDN)
   if (url.origin !== self.location.origin) return;
+
+  // Bỏ qua endpoint API (Vercel Edge Function) — không cache, không can thiệp
+  if (url.pathname.startsWith('/api/')) return;
 
   const isHTML = req.mode === 'navigate' || req.destination === 'document';
   const isJSON = url.pathname.endsWith('.json');
