@@ -1114,97 +1114,124 @@ a:hover {
 }
 
 /* ============================================================
-   Leaflet Popup — Kiến trúc 3 tầng (header / body / footer)
-   - Header: tiêu đề + chỗ chừa cho nút X (40px), KHÔNG scroll
-   - Body: nội dung dài (vị trí, diện tích, mô tả...), CÓ scroll khi tràn
-   - Footer: các nút action LUÔN cố định ở đáy, không bị cắt
-   - max-height 70vh để popup không bao giờ tràn viewport
+   Info Card — Component thay thế Leaflet popup
+   Desktop: floating card góc dưới-trái map
+   Mobile (<=767px): bottom-sheet trượt lên từ đáy màn hình
    ============================================================ */
-
-.leaflet-popup-content-wrapper {
-    padding: 0 !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10) !important;
-}
-
-.leaflet-popup-content {
-    margin: 0 !important;
-    width: 340px !important;
-    max-width: 90vw !important;
-}
-
-/* ===== 3-tier container ===== */
-.ccn-popup {
+.info-card {
+    position: fixed;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10);
     display: flex;
     flex-direction: column;
-    max-height: 70vh;
+    overflow: hidden;
     font-family: 'Roboto', sans-serif;
     color: #1a2332;
 }
 
-.ccn-popup__header {
-    padding: 14px 44px 12px 16px;   /* right 44px chừa chỗ nút X */
+/* Desktop ≥ 768px: floating bottom-left card */
+@media (min-width: 768px) {
+    .info-card {
+        bottom: 24px;
+        left: 24px;
+        width: 380px;
+        max-height: 70vh;
+        border-radius: 12px;
+        animation: info-card-slide-left 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes info-card-slide-left {
+        from { transform: translateY(16px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+}
+
+/* Mobile ≤ 767px: bottom-sheet trượt lên */
+@media (max-width: 767px) {
+    .info-card {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 80vh;
+        border-radius: 16px 16px 0 0;
+        animation: info-card-slide-bottom 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes info-card-slide-bottom {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+    }
+}
+
+/* ===== Header ===== */
+.info-card__header {
+    padding: 18px 56px 14px 18px;     /* right 56px chừa nút X 36px + margin */
     border-bottom: 1px solid #e5e7eb;
     flex-shrink: 0;
-    background: #fff;
+    position: relative;
 }
-.ccn-popup__header h3 {
-    font-size: 17px;
+.info-card__header h3 {
+    font-size: 18px;
     font-weight: 700;
     margin: 0;
+    color: #16a34a;
     line-height: 1.3;
-    color: #0d47a1;
     word-wrap: break-word;
 }
-.ccn-popup__header h3.is-hoat-dong { color: #1B5E20; }
-.ccn-popup__header h3.is-xay-dung  { color: #E65100; }
-.ccn-popup__header h3.is-quy-hoach { color: #0D47A1; }
-.ccn-popup__header h3.is-rut-qh    { color: #B71C1C; }
-.ccn-popup__header h3.is-tam-dung  { color: #B71C1C; }
 
-.ccn-popup__body {
-    padding: 14px 16px;
+.info-card__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.info-card__close:hover {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+.info-card__close:active {
+    transform: scale(0.95);
+}
+
+/* ===== Body (scroll khi tràn) ===== */
+.info-card__body {
+    padding: 16px 18px;
     overflow-y: auto;
     flex: 1 1 auto;
     min-height: 0;
     font-size: 15px;
-    line-height: 1.5;
-    color: #1a2332;
-    /* Scrollbar mỏng */
+    line-height: 1.6;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 transparent;
 }
-.ccn-popup__body::-webkit-scrollbar { width: 6px; }
-.ccn-popup__body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-.ccn-popup__body::-webkit-scrollbar-track { background: transparent; }
+.info-card__body::-webkit-scrollbar { width: 6px; }
+.info-card__body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.info-card__body::-webkit-scrollbar-track { background: transparent; }
 
-.ccn-popup__body .row {
-    margin: 6px 0;
-    font-size: 15px;
-    line-height: 1.5;
+.info-card__body p {
+    margin: 0 0 10px;
     word-wrap: break-word;
 }
-.ccn-popup__body .row .label {
-    display: inline;
-    font-size: 14px;
-    font-weight: 600;
+.info-card__body p:last-child { margin-bottom: 0; }
+.info-card__body strong {
     color: #475569;
+    font-weight: 600;
     margin-right: 4px;
 }
-.ccn-popup__body .row .value {
-    color: #0f172a;
-    font-weight: 500;
-}
-.ccn-popup__body .desc {
-    margin: 10px 0 0;
-    padding-top: 10px;
-    border-top: 1px solid #e5e7eb;
-    font-size: 14px;
-    color: #555;
-    line-height: 1.5;
-}
-.ccn-popup__body .source {
+.info-card__body .source {
     background: #f8fafc;
     border-left: 3px solid #0d47a1;
     padding: 8px 10px;
@@ -1214,7 +1241,7 @@ a:hover {
     line-height: 1.4;
     border-radius: 4px;
 }
-.ccn-popup__body .warning {
+.info-card__body .warning {
     background: #fff7ed;
     border-left: 3px solid #ea580c;
     padding: 8px 10px;
@@ -1224,270 +1251,69 @@ a:hover {
     line-height: 1.4;
     border-radius: 4px;
 }
-.ccn-popup__body .note {
+.info-card__body .note {
     font-size: 13px;
     color: #64748b;
     font-style: italic;
     margin: 8px 0 0;
 }
 
-.ccn-popup__footer {
-    padding: 12px 16px 14px;
+/* ===== Footer (luôn cố định ở đáy) ===== */
+.info-card__footer {
+    padding: 14px 18px 18px;
     border-top: 1px solid #e5e7eb;
     background: #f9fafb;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     flex-shrink: 0;
 }
-.ccn-popup__footer .btn-primary,
-.ccn-popup__footer .btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 44px;
+.info-card__footer .btn-primary,
+.info-card__footer .btn-secondary {
+    min-height: 48px;
     padding: 12px 16px;
     font-size: 15px;
     font-weight: 600;
     font-family: inherit;
     border-radius: 8px;
-    width: 100%;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    box-sizing: border-box;
-    line-height: 1.2;
     border: 1.5px solid transparent;
-    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.08s ease;
-}
-.ccn-popup__footer .btn-primary {
-    background: #16a34a;
-    color: #fff;
-    border-color: #16a34a;
-}
-.ccn-popup__footer .btn-primary:hover {
-    background: #15803d;
-    border-color: #15803d;
-    color: #fff;
-}
-.ccn-popup__footer .btn-primary:active {
-    transform: scale(0.98);
-}
-.ccn-popup__footer .btn-secondary {
-    background: #fff;
-    color: #16a34a;
-    border-color: #16a34a;
-}
-.ccn-popup__footer .btn-secondary:hover {
-    background: #f0fdf4;
-    color: #15803d;
-    border-color: #15803d;
-}
-.ccn-popup__footer .btn-secondary:active {
-    transform: scale(0.98);
-}
-
-@media (max-width: 480px) {
-    .ccn-popup { max-height: 75vh; }
-    .ccn-popup__header { padding: 12px 40px 10px 14px; }
-    .ccn-popup__header h3 { font-size: 16px; }
-    .ccn-popup__body { padding: 12px 14px; font-size: 14px; }
-    .ccn-popup__footer { padding: 10px 14px 12px; }
-}
-
-/* Nút đóng X — tap target ≥ 32×32px, góc trên phải, không đè title */
-.leaflet-popup-close-button {
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 22px !important;
-    font-weight: 700 !important;
-    line-height: 24px !important;
-    text-align: center !important;
-    top: 6px !important;
-    right: 6px !important;
-    padding: 4px !important;
-    color: #64748b !important;
-    border-radius: 50% !important;
-    transition: background 0.15s ease, color 0.15s ease;
-    z-index: 2;
-}
-.leaflet-popup-close-button:hover {
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
-    text-decoration: none !important;
-}
-
-/* ===== Wrapper ===== */
-.uxpop-body {
-    padding: 16px;
-    font-family: 'Roboto', sans-serif;
-    color: #1a2332;
-}
-
-/* ===== Header gradient (giữ pattern cũ cho main map) ===== */
-.popup-content { font-family: 'Roboto', sans-serif; }
-
-.popup-header {
-    padding: 14px 44px 14px 16px; /* right 44px = chừa chỗ nút X */
-    color: #fff;
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 1.3;
-}
-.popup-header.status-hoat-dong { background: linear-gradient(135deg, #1B5E20, #4CAF50); }
-.popup-header.status-xay-dung { background: linear-gradient(135deg, #E65100, #FF9800); }
-.popup-header.status-quy-hoach { background: linear-gradient(135deg, #0D47A1, #42A5F5); }
-.popup-header.status-tam-dung { background: linear-gradient(135deg, #B71C1C, #EF5350); }
-
-.popup-body { padding: 14px 16px; }
-
-.popup-info {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 5px 0;
-    font-size: 15px;
-    line-height: 1.5;
-    color: #1a2332;
-}
-.popup-info strong { color: #0f172a; font-weight: 600; }
-
-/* ===== Tiêu đề popup (cho KCN/CCN QH/Ranh giới) ===== */
-.uxpop-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: #0d47a1;
-    margin: 0 0 12px;
-    padding-right: 36px;   /* chừa chỗ nút X */
-    line-height: 1.3;
-}
-.uxpop-title.is-hoat-dong { color: #1B5E20; }
-.uxpop-title.is-xay-dung  { color: #E65100; }
-.uxpop-title.is-quy-hoach { color: #0D47A1; }
-.uxpop-title.is-rut-qh    { color: #B71C1C; }
-
-.uxpop-row {
-    font-size: 15px;
-    line-height: 1.5;
-    margin: 6px 0;
-    color: #1a2332;
-    word-wrap: break-word;
-}
-.uxpop-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #475569;
-    margin-right: 4px;
-}
-.uxpop-value { color: #0f172a; font-weight: 500; }
-
-.uxpop-desc {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.5;
-    margin: 10px 0 0;
-    padding-top: 10px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.uxpop-source {
-    background: #f8fafc;
-    border-left: 3px solid #0d47a1;
-    padding: 8px 10px;
-    margin: 10px 0;
-    font-size: 14px;
-    color: #334155;
-    line-height: 1.4;
-    border-radius: 4px;
-}
-
-.uxpop-warning {
-    background: #fff7ed;
-    border-left: 3px solid #ea580c;
-    padding: 8px 10px;
-    margin: 10px 0;
-    font-size: 13px;
-    color: #7c2d12;
-    line-height: 1.4;
-    border-radius: 4px;
-}
-
-.uxpop-note {
-    font-size: 13px;
-    color: #64748b;
-    font-style: italic;
-    margin: 8px 0 0;
-}
-
-/* ===== Actions container ===== */
-.uxpop-actions,
-.popup-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 14px;
-}
-
-/* ===== Buttons ===== */
-.uxpop-btn,
-.popup-detail-btn {
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 100%;
-    min-height: 44px;
-    padding: 12px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    font-family: inherit;
-    border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    box-sizing: border-box;
-    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.08s ease;
-    border: 2px solid transparent;
     line-height: 1.2;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.08s ease;
 }
-
-.uxpop-btn-primary,
-.popup-detail-btn {
+.info-card__footer .btn-primary {
     background: #16a34a;
     color: #fff;
     border-color: #16a34a;
 }
-.uxpop-btn-primary:hover,
-.popup-detail-btn:hover {
+.info-card__footer .btn-primary:hover {
     background: #15803d;
     border-color: #15803d;
     color: #fff;
 }
-.uxpop-btn-primary:active,
-.popup-detail-btn:active {
+.info-card__footer .btn-primary:active {
     transform: scale(0.98);
 }
-
-.uxpop-btn-secondary {
+.info-card__footer .btn-secondary {
     background: #fff;
     color: #16a34a;
     border-color: #16a34a;
 }
-.uxpop-btn-secondary:hover {
+.info-card__footer .btn-secondary:hover {
     background: #f0fdf4;
     color: #15803d;
     border-color: #15803d;
 }
-.uxpop-btn-secondary:active {
+.info-card__footer .btn-secondary:active {
     transform: scale(0.98);
-}
-
-/* ===== Reserve close-button space in title for popup main map ===== */
-@media (max-width: 480px) {
-    .uxpop-body { padding: 14px; }
-    .popup-header { padding: 12px 44px 12px 14px; font-size: 16px; }
-    .popup-body { padding: 12px 14px; }
 }
 
 /* ---- Custom Marker ---- */
