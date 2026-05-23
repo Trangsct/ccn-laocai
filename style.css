@@ -1117,70 +1117,224 @@ a:hover {
     display: none;
 }
 
-/* ---- Custom Leaflet Popup ---- */
+/* ============================================================
+   Custom Leaflet Popup — UX Enhanced (.uxpop)
+   Đáp ứng yêu cầu UX cho bản đồ #kcn, #ccnqh, #ccnranhgioi và bản đồ CCN chung:
+   - Tap target lớn (≥44px nút, ≥32px nút đóng)
+   - Typography rõ (title 17px/700, label 14px/600, content 15px)
+   - Nút full-width xếp dọc, primary xanh lá, secondary trắng-viền-xanh
+   - Mobile responsive (90vw)
+   ============================================================ */
+
 .leaflet-popup-content-wrapper {
-    border-radius: var(--radius-md) !important;
-    box-shadow: var(--shadow-lg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10) !important;
     padding: 0 !important;
     overflow: hidden;
 }
 
 .leaflet-popup-content {
     margin: 0 !important;
-    width: 280px !important;
+    width: 320px !important;
 }
 
-.popup-content {
-    font-family: 'Roboto', sans-serif;
+@media (max-width: 480px) {
+    .leaflet-popup-content {
+        width: min(90vw, 360px) !important;
+    }
 }
+
+/* Nút đóng X — tap target ≥ 32×32px, góc trên phải, không đè title */
+.leaflet-popup-close-button {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 30px !important;
+    text-align: center !important;
+    top: 8px !important;
+    right: 8px !important;
+    color: #64748b !important;
+    border-radius: 50% !important;
+    transition: background 0.15s ease, color 0.15s ease;
+    padding: 0 !important;
+}
+.leaflet-popup-close-button:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    text-decoration: none !important;
+}
+
+/* ===== Wrapper ===== */
+.uxpop-body {
+    padding: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: #1a2332;
+}
+
+/* ===== Header gradient (giữ pattern cũ cho main map) ===== */
+.popup-content { font-family: 'Roboto', sans-serif; }
 
 .popup-header {
-    padding: 12px 16px;
-    color: var(--text-white);
+    padding: 14px 44px 14px 16px; /* right 44px = chừa chỗ nút X */
+    color: #fff;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 17px;
+    line-height: 1.3;
 }
-
 .popup-header.status-hoat-dong { background: linear-gradient(135deg, #1B5E20, #4CAF50); }
 .popup-header.status-xay-dung { background: linear-gradient(135deg, #E65100, #FF9800); }
 .popup-header.status-quy-hoach { background: linear-gradient(135deg, #0D47A1, #42A5F5); }
 .popup-header.status-tam-dung { background: linear-gradient(135deg, #B71C1C, #EF5350); }
 
-.popup-body {
-    padding: 12px 16px;
-}
+.popup-body { padding: 14px 16px; }
 
 .popup-info {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 0;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1a2332;
 }
+.popup-info strong { color: #0f172a; font-weight: 600; }
 
-.popup-info strong {
-    color: var(--text-primary);
+/* ===== Tiêu đề popup (cho KCN/CCN QH/Ranh giới) ===== */
+.uxpop-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0d47a1;
+    margin: 0 0 12px;
+    padding-right: 36px;   /* chừa chỗ nút X */
+    line-height: 1.3;
 }
+.uxpop-title.is-hoat-dong { color: #1B5E20; }
+.uxpop-title.is-xay-dung  { color: #E65100; }
+.uxpop-title.is-quy-hoach { color: #0D47A1; }
+.uxpop-title.is-rut-qh    { color: #B71C1C; }
 
-.popup-detail-btn {
-    display: block;
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    background: var(--primary);
-    color: var(--text-white);
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 0.85rem;
+.uxpop-row {
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 6px 0;
+    color: #1a2332;
+    word-wrap: break-word;
+}
+.uxpop-label {
+    font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    transition: var(--transition);
+    color: #475569;
+    margin-right: 4px;
+}
+.uxpop-value { color: #0f172a; font-weight: 500; }
+
+.uxpop-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin: 10px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
 }
 
+.uxpop-source {
+    background: #f8fafc;
+    border-left: 3px solid #0d47a1;
+    padding: 8px 10px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.4;
+    border-radius: 4px;
+}
+
+.uxpop-warning {
+    background: #fff7ed;
+    border-left: 3px solid #ea580c;
+    padding: 8px 10px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #7c2d12;
+    line-height: 1.4;
+    border-radius: 4px;
+}
+
+.uxpop-note {
+    font-size: 13px;
+    color: #64748b;
+    font-style: italic;
+    margin: 8px 0 0;
+}
+
+/* ===== Actions container ===== */
+.uxpop-actions,
+.popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+/* ===== Buttons ===== */
+.uxpop-btn,
+.popup-detail-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.08s ease;
+    border: 2px solid transparent;
+    line-height: 1.2;
+}
+
+.uxpop-btn-primary,
+.popup-detail-btn {
+    background: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
+}
+.uxpop-btn-primary:hover,
 .popup-detail-btn:hover {
-    background: var(--primary-dark);
+    background: #15803d;
+    border-color: #15803d;
+    color: #fff;
+}
+.uxpop-btn-primary:active,
+.popup-detail-btn:active {
+    transform: scale(0.98);
+}
+
+.uxpop-btn-secondary {
+    background: #fff;
+    color: #16a34a;
+    border-color: #16a34a;
+}
+.uxpop-btn-secondary:hover {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #15803d;
+}
+.uxpop-btn-secondary:active {
+    transform: scale(0.98);
+}
+
+/* ===== Reserve close-button space in title for popup main map ===== */
+@media (max-width: 480px) {
+    .uxpop-body { padding: 14px; }
+    .popup-header { padding: 12px 44px 12px 14px; font-size: 16px; }
+    .popup-body { padding: 12px 14px; }
 }
 
 /* ---- Custom Marker ---- */

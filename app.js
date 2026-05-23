@@ -280,8 +280,10 @@ function addMarkers(ccnList) {
 
         const popupContent = createPopupContent(ccn);
         marker.bindPopup(popupContent, {
-            maxWidth: 300,
-            closeButton: true
+            minWidth: 320,
+            maxWidth: 360,
+            closeButton: true,
+            autoPanPadding: [20, 60]
         });
 
         marker.on('click', () => {
@@ -293,7 +295,7 @@ function addMarkers(ccnList) {
     });
 }
 
-// ---- Create popup content ----
+// ---- Create popup content (Bản đồ Cụm công nghiệp đã thành lập) ----
 function createPopupContent(ccn) {
     const status = TRANG_THAI[ccn.trangThai];
     const slugC = slugify(ccn.ten);
@@ -308,12 +310,14 @@ function createPopupContent(ccn) {
                 <div class="popup-info">🏢 Doanh nghiệp: <strong>${ccn.soDoanhNghiep}</strong></div>
                 <div class="popup-info">📊 Tỷ lệ lấp đầy: <strong>${ccn.tyLeLapDay}%</strong></div>
                 <div class="popup-info">🔖 Trạng thái: <strong>${status.icon} ${escapeHtml(status.ten)}</strong></div>
-                <button class="popup-detail-btn" data-action="open-detail" data-slug="${escapeHtml(slugC)}" data-ten="${escapeHtml(ccn.ten)}">
-                    📖 Xem trang chi tiết
-                </button>
-                <a class="popup-detail-btn" style="background:#34495e; color:white; text-decoration:none; margin-top:5px; display:inline-block; font-size:0.75rem; text-align:center;" href="https://www.google.com/maps/dir/?api=1&destination=${ccn.lat},${ccn.lng}" target="_blank">
-                    🚗 Chỉ đường
-                </a>
+                <div class="popup-actions">
+                    <button class="uxpop-btn uxpop-btn-primary" data-action="open-detail" data-slug="${escapeHtml(slugC)}" data-ten="${escapeHtml(ccn.ten)}">
+                        <span>📖</span> Xem trang chi tiết
+                    </button>
+                    <a class="uxpop-btn uxpop-btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=${ccn.lat},${ccn.lng}" target="_blank" rel="noopener">
+                        <span>🚗</span> Chỉ đường
+                    </a>
+                </div>
             </div>
         </div>
     `;
@@ -823,17 +827,22 @@ function initKCNMap() {
         });
 
         var kcnSlug = slugify(kcn.ten);
+        var statusClass = 'is-' + kcn.trangThai;
         L.marker([kcn.lat, kcn.lng], { icon: icon })
             .addTo(window.kcnMap)
             .bindPopup(
-                '<div style="min-width:220px;">' +
-                '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + escapeHtml(kcn.ten) + '</h3>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + escapeHtml(kcn.viTri) + '</p>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + kcn.dienTich + ' ha</p>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Trạng thái:</b> ' + escapeHtml(kcnLabels[kcn.trangThai]) + '</p>' +
-                '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;">' + escapeHtml(kcn.moTa) + '</p>' +
-                '<button data-action="open-detail" data-slug="' + escapeHtml(kcnSlug) + '" data-ten="' + escapeHtml(kcn.ten) + '" style="margin-top:10px; width:100%; background:' + color + '; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
-                '</div>'
+                '<div class="uxpop-body">' +
+                '<h3 class="uxpop-title ' + statusClass + '">🏭 ' + escapeHtml(kcn.ten) + '</h3>' +
+                '<div class="uxpop-row"><span class="uxpop-label">Vị trí:</span><span class="uxpop-value">' + escapeHtml(kcn.viTri) + '</span></div>' +
+                '<div class="uxpop-row"><span class="uxpop-label">Diện tích:</span><span class="uxpop-value">' + kcn.dienTich + ' ha</span></div>' +
+                '<div class="uxpop-row"><span class="uxpop-label">Trạng thái:</span><span class="uxpop-value">' + escapeHtml(kcnLabels[kcn.trangThai]) + '</span></div>' +
+                (kcn.moTa ? '<p class="uxpop-desc">' + escapeHtml(kcn.moTa) + '</p>' : '') +
+                '<div class="uxpop-actions">' +
+                '<button class="uxpop-btn uxpop-btn-primary" data-action="open-detail" data-slug="' + escapeHtml(kcnSlug) + '" data-ten="' + escapeHtml(kcn.ten) + '"><span>📖</span> Xem trang chi tiết</button>' +
+                '<a class="uxpop-btn uxpop-btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=' + kcn.lat + ',' + kcn.lng + '" target="_blank" rel="noopener"><span>🚗</span> Chỉ đường</a>' +
+                '</div>' +
+                '</div>',
+                { minWidth: 320, maxWidth: 360, autoPanPadding: [20, 60] }
             );
     });
 
@@ -1696,7 +1705,7 @@ function renderRanhGioi(data) {
 
         var approxNote = '';
         if (isApprox) {
-            approxNote = '<div style="margin-top:8px;padding:8px;background:#fff7ed;border-left:3px solid #ea580c;font-size:0.82rem;color:#9a3412;border-radius:4px;">' +
+            approxNote = '<div class="uxpop-warning">' +
                 '<b>📍 CHƯA CẬP NHẬT TỌA ĐỘ RANH GIỚI CHÍNH XÁC</b><br>' +
                 'Dấu chấm chỉ vị trí gần đúng (theo tọa độ trung tâm xã/phường hoặc điểm tham chiếu). ' +
                 (isSynthetic
@@ -1704,22 +1713,23 @@ function renderRanhGioi(data) {
                     : (item.reason ? 'Lý do: ' + item.reason : 'Ranh giới chính thức đang được rà soát.')) +
                 '</div>';
         }
-        var sourceNote = item.sourceDesc
-            ? '<p style="margin:6px 0 0;padding:6px 8px;background:#f8fafc;border-radius:4px;font-size:0.82rem;color:#334155;line-height:1.4;">' + item.sourceDesc + '</p>'
-            : '';
 
+        var statusClassRG = 'is-' + (item.trangThai || 'quy-hoach');
+        var rgSlug = slugify(item.name || '');
         layer.bindPopup(
-            '<div style="min-width:240px;max-width:320px;">' +
-            '<h3 style="margin:0 0 6px;font-size:1rem;color:' + color + ';">' + displayName + '</h3>' +
-            '<p style="margin:2px 0;font-size:0.85rem;">' + statusBadge + ' &nbsp; <b>' + (item.giaiDoan || '') + '</b></p>' +
-            (item.xa ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + item.xa + '</p>' : '') +
-            '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích:</b> ' + item.area_ha + ' ha' +
-            (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</p>' +
-            (!isApprox ? '<p style="margin:2px 0;font-size:0.85rem;"><b>Số điểm ranh giới:</b> ' + item.num_points + '</p>' : '') +
-            sourceNote +
+            '<div class="uxpop-body">' +
+            '<h3 class="uxpop-title ' + statusClassRG + '">' + displayName + '</h3>' +
+            '<div class="uxpop-row">' + statusBadge + ' &nbsp; <b>' + (item.giaiDoan || '') + '</b></div>' +
+            (item.xa ? '<div class="uxpop-row"><span class="uxpop-label">Vị trí:</span><span class="uxpop-value">' + item.xa + '</span></div>' : '') +
+            '<div class="uxpop-row"><span class="uxpop-label">Diện tích:</span><span class="uxpop-value">' + item.area_ha + ' ha' +
+            (isApprox ? ' (công bố)' : ' (tính từ tọa độ)') + '</span></div>' +
+            (!isApprox ? '<div class="uxpop-row"><span class="uxpop-label">Số điểm ranh giới:</span><span class="uxpop-value">' + item.num_points + '</span></div>' : '') +
+            (item.sourceDesc ? '<div class="uxpop-source">' + item.sourceDesc + '</div>' : '') +
             approxNote +
-            (!isApprox ? '<p style="margin:6px 0 0;font-size:0.78rem;color:#666;font-style:italic;">VN-2000, KT trục 104°45\'</p>' : '') +
-            '</div>'
+            (!isApprox ? '<p class="uxpop-note">VN-2000, kinh tuyến trục 104°45\'</p>' : '') +
+            (rgSlug ? '<div class="uxpop-actions"><button class="uxpop-btn uxpop-btn-primary" data-action="open-detail" data-slug="' + escapeHtml(rgSlug) + '" data-ten="' + escapeHtml(item.name || '') + '"><span>📖</span> Xem trang chi tiết</button></div>' : '') +
+            '</div>',
+            { minWidth: 320, maxWidth: 360, autoPanPadding: [20, 60] }
         );
 
         layer.bindTooltip(displayName, { permanent: false, direction: isApprox ? 'top' : 'center', offset: isApprox ? [0, -8] : [0, 0], className: 'polygon-label' });
@@ -1727,6 +1737,19 @@ function renderRanhGioi(data) {
 
     if (bounds.length > 0) {
         window.ranhGioiMap.fitBounds(bounds, { padding: [20, 20] });
+    }
+
+    // Event delegation cho nút "Xem trang chi tiết" trong popup map ranh giới
+    if (!window._ranhGioiPopupHandlerBound) {
+        window.ranhGioiMap.on('popupopen', function(e) {
+            var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
+            if (btn) {
+                btn.onclick = function() {
+                    openUnitDetail(btn.dataset.slug, btn.dataset.ten);
+                };
+            }
+        });
+        window._ranhGioiPopupHandlerBound = true;
     }
 }
 
@@ -1785,19 +1808,23 @@ function initCCNQHMap() {
             iconAnchor: [13, 13]
         });
 
-        var ghiChu = ccn.gc ? '<p style="margin:6px 0 0;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:6px;">' + escapeHtml(ccn.gc) + '</p>' : '';
+        var ghiChu = ccn.gc ? '<p class="uxpop-desc">' + escapeHtml(ccn.gc) + '</p>' : '';
 
         var ccnSlug = slugify(ccn.ten);
         L.marker([ccn.lat, ccn.lng], { icon: icon })
             .addTo(window.ccnqhMap)
             .bindPopup(
-                '<div style="min-width:240px;max-width:320px;">' +
-                '<h3 style="margin:0 0 6px;font-size:1rem;color:#1565c0;">' + ccn.stt + '. ' + escapeHtml(ccn.ten) + '</h3>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Vị trí:</b> ' + escapeHtml(ccn.xa) + '</p>' +
-                '<p style="margin:2px 0;font-size:0.85rem;"><b>Diện tích quy hoạch:</b> ' + ccn.dt + ' ha</p>' +
+                '<div class="uxpop-body">' +
+                '<h3 class="uxpop-title is-quy-hoach">' + ccn.stt + '. ' + escapeHtml(ccn.ten) + '</h3>' +
+                '<div class="uxpop-row"><span class="uxpop-label">Vị trí:</span><span class="uxpop-value">' + escapeHtml(ccn.xa) + '</span></div>' +
+                '<div class="uxpop-row"><span class="uxpop-label">Diện tích quy hoạch:</span><span class="uxpop-value">' + ccn.dt + ' ha</span></div>' +
                 ghiChu +
-                '<button data-action="open-detail" data-slug="' + escapeHtml(ccnSlug) + '" data-ten="' + escapeHtml(ccn.ten) + '" style="margin-top:10px; width:100%; background:#1565c0; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;">📖 Xem trang chi tiết</button>' +
-                '</div>'
+                '<div class="uxpop-actions">' +
+                '<button class="uxpop-btn uxpop-btn-primary" data-action="open-detail" data-slug="' + escapeHtml(ccnSlug) + '" data-ten="' + escapeHtml(ccn.ten) + '"><span>📖</span> Xem trang chi tiết</button>' +
+                '<a class="uxpop-btn uxpop-btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=' + ccn.lat + ',' + ccn.lng + '" target="_blank" rel="noopener"><span>🚗</span> Chỉ đường</a>' +
+                '</div>' +
+                '</div>',
+                { minWidth: 320, maxWidth: 360, autoPanPadding: [20, 60] }
             );
     });
 
