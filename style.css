@@ -241,12 +241,8 @@ a:hover {
 .leaflet-popup {
     z-index: 951 !important;
 }
-/* Popup CCN khá dài (tên + 5 dòng info + 2 nút) — giới hạn chiều cao
-   và cho cuộn bên trong, tránh bị cắt khi viewport thấp (laptop/mobile landscape) */
-.leaflet-popup-content {
-    max-height: 60vh;
-    overflow-y: auto;
-}
+/* Chiều cao popup do .ccn-popup (max-height 70vh) tự quản lý qua flex column,
+   .ccn-popup__body có overflow-y:auto -> không cần giới hạn ở wrapper. */
 
 /* ---- Filter Bar ---- */
 .filter-bar {
@@ -1118,30 +1114,186 @@ a:hover {
 }
 
 /* ============================================================
-   Custom Leaflet Popup — UX Enhanced (.uxpop)
-   Đáp ứng yêu cầu UX cho bản đồ #kcn, #ccnqh, #ccnranhgioi và bản đồ CCN chung:
-   - Tap target lớn (≥44px nút, ≥32px nút đóng)
-   - Typography rõ (title 17px/700, label 14px/600, content 15px)
-   - Nút full-width xếp dọc, primary xanh lá, secondary trắng-viền-xanh
-   - Mobile responsive (90vw)
+   Leaflet Popup — Kiến trúc 3 tầng (header / body / footer)
+   - Header: tiêu đề + chỗ chừa cho nút X (40px), KHÔNG scroll
+   - Body: nội dung dài (vị trí, diện tích, mô tả...), CÓ scroll khi tràn
+   - Footer: các nút action LUÔN cố định ở đáy, không bị cắt
+   - max-height 70vh để popup không bao giờ tràn viewport
    ============================================================ */
 
 .leaflet-popup-content-wrapper {
-    border-radius: 12px !important;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10) !important;
     padding: 0 !important;
-    overflow: hidden;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10) !important;
 }
 
 .leaflet-popup-content {
     margin: 0 !important;
-    width: 320px !important;
+    width: 340px !important;
+    max-width: 90vw !important;
+}
+
+/* ===== 3-tier container ===== */
+.ccn-popup {
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+    font-family: 'Roboto', sans-serif;
+    color: #1a2332;
+}
+
+.ccn-popup__header {
+    padding: 14px 44px 12px 16px;   /* right 44px chừa chỗ nút X */
+    border-bottom: 1px solid #e5e7eb;
+    flex-shrink: 0;
+    background: #fff;
+}
+.ccn-popup__header h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+    color: #0d47a1;
+    word-wrap: break-word;
+}
+.ccn-popup__header h3.is-hoat-dong { color: #1B5E20; }
+.ccn-popup__header h3.is-xay-dung  { color: #E65100; }
+.ccn-popup__header h3.is-quy-hoach { color: #0D47A1; }
+.ccn-popup__header h3.is-rut-qh    { color: #B71C1C; }
+.ccn-popup__header h3.is-tam-dung  { color: #B71C1C; }
+
+.ccn-popup__body {
+    padding: 14px 16px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1a2332;
+    /* Scrollbar mỏng */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+.ccn-popup__body::-webkit-scrollbar { width: 6px; }
+.ccn-popup__body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.ccn-popup__body::-webkit-scrollbar-track { background: transparent; }
+
+.ccn-popup__body .row {
+    margin: 6px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+.ccn-popup__body .row .label {
+    display: inline;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-right: 4px;
+}
+.ccn-popup__body .row .value {
+    color: #0f172a;
+    font-weight: 500;
+}
+.ccn-popup__body .desc {
+    margin: 10px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+.ccn-popup__body .source {
+    background: #f8fafc;
+    border-left: 3px solid #0d47a1;
+    padding: 8px 10px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.4;
+    border-radius: 4px;
+}
+.ccn-popup__body .warning {
+    background: #fff7ed;
+    border-left: 3px solid #ea580c;
+    padding: 8px 10px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #7c2d12;
+    line-height: 1.4;
+    border-radius: 4px;
+}
+.ccn-popup__body .note {
+    font-size: 13px;
+    color: #64748b;
+    font-style: italic;
+    margin: 8px 0 0;
+}
+
+.ccn-popup__footer {
+    padding: 12px 16px 14px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.ccn-popup__footer .btn-primary,
+.ccn-popup__footer .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box;
+    line-height: 1.2;
+    border: 1.5px solid transparent;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.08s ease;
+}
+.ccn-popup__footer .btn-primary {
+    background: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
+}
+.ccn-popup__footer .btn-primary:hover {
+    background: #15803d;
+    border-color: #15803d;
+    color: #fff;
+}
+.ccn-popup__footer .btn-primary:active {
+    transform: scale(0.98);
+}
+.ccn-popup__footer .btn-secondary {
+    background: #fff;
+    color: #16a34a;
+    border-color: #16a34a;
+}
+.ccn-popup__footer .btn-secondary:hover {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #15803d;
+}
+.ccn-popup__footer .btn-secondary:active {
+    transform: scale(0.98);
 }
 
 @media (max-width: 480px) {
-    .leaflet-popup-content {
-        width: min(90vw, 360px) !important;
-    }
+    .ccn-popup { max-height: 75vh; }
+    .ccn-popup__header { padding: 12px 40px 10px 14px; }
+    .ccn-popup__header h3 { font-size: 16px; }
+    .ccn-popup__body { padding: 12px 14px; font-size: 14px; }
+    .ccn-popup__footer { padding: 10px 14px 12px; }
 }
 
 /* Nút đóng X — tap target ≥ 32×32px, góc trên phải, không đè title */
@@ -1150,14 +1302,15 @@ a:hover {
     height: 32px !important;
     font-size: 22px !important;
     font-weight: 700 !important;
-    line-height: 30px !important;
+    line-height: 24px !important;
     text-align: center !important;
-    top: 8px !important;
-    right: 8px !important;
+    top: 6px !important;
+    right: 6px !important;
+    padding: 4px !important;
     color: #64748b !important;
     border-radius: 50% !important;
     transition: background 0.15s ease, color 0.15s ease;
-    padding: 0 !important;
+    z-index: 2;
 }
 .leaflet-popup-close-button:hover {
     background: #f1f5f9 !important;
