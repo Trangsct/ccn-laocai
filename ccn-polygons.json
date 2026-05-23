@@ -597,54 +597,6 @@
   },
   {
     "section": "CCN",
-    "name": "CCN Mông Sơn",
-    "num_points": 8,
-    "area_ha": 38.38,
-    "coords": [
-      [
-        21.864724,
-        104.910411
-      ],
-      [
-        21.866525,
-        104.910701
-      ],
-      [
-        21.868172,
-        104.915755
-      ],
-      [
-        21.865742,
-        104.917937
-      ],
-      [
-        21.864636,
-        104.910063
-      ],
-      [
-        21.862516,
-        104.917064
-      ],
-      [
-        21.860625,
-        104.909188
-      ],
-      [
-        21.862444,
-        104.907526
-      ],
-      [
-        21.864724,
-        104.910411
-      ]
-    ],
-    "is_approx": false,
-    "trangThai": "quy-hoach",
-    "giaiDoan": "2031-2050",
-    "xa": "Xã Bảo Ái"
-  },
-  {
-    "section": "CCN",
     "name": "CCN Ngòi A",
     "num_points": 6,
     "area_ha": 65.93,
@@ -1463,7 +1415,9 @@
   },
   {
     "name": "Cụm công nghiệp Mông Sơn",
-    "polygon": [
+    "is_approx": false,
+    "source": "Bản đồ vị trí CCN Mông Sơn (2026.4)",
+    "coords": [
       [
         21.863748,
         105.162299
@@ -1501,12 +1455,16 @@
         105.159414
       ]
     ],
-    "is_approx": false,
-    "source": "Bản đồ vị trí CCN Mông Sơn (2026.4)"
+    "num_points": 9,
+    "area_ha": 49.29,
+    "section": "CCN_QH",
+    "trangThai": "quy-hoach"
   },
   {
     "name": "Cụm công nghiệp Hợp Minh",
-    "polygon": [
+    "is_approx": false,
+    "source": "Bản đồ CCN Hợp Minh 37,4ha (Tập đoàn Hòa Bình Minh)",
+    "coords": [
       [
         21.667792,
         105.123543
@@ -1544,12 +1502,16 @@
         105.124784
       ]
     ],
-    "is_approx": false,
-    "source": "Bản đồ CCN Hợp Minh 37,4ha (Tập đoàn Hòa Bình Minh)"
+    "num_points": 9,
+    "area_ha": 39.43,
+    "section": "CCN_QH",
+    "trangThai": "quy-hoach"
   },
   {
     "name": "Cụm công nghiệp Tân Lĩnh",
-    "polygon": [
+    "is_approx": false,
+    "source": "Bảng tọa độ VN-2000 UBND xã 4/2026",
+    "coords": [
       [
         22.107841,
         104.739187
@@ -1631,7 +1593,9 @@
         104.741702
       ]
     ],
-    "is_approx": false,
-    "source": "Bảng tọa độ VN-2000 UBND xã 4/2026"
+    "num_points": 20,
+    "area_ha": 75.53,
+    "section": "CCN_QH",
+    "trangThai": "quy-hoach"
   }
 ]
