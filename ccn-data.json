@@ -684,7 +684,7 @@
       "dienTich": 75,
       "huongPhatTrien": "Giai đoạn 2025-2030. Quy mô 75 ha tại Thôn 1, xã Tân Lĩnh (sáp nhập từ huyện Lục Yên cũ). Định hướng đa ngành, khai thác lợi thế tài nguyên đá tự nhiên và nông - lâm sản của địa phương Lục Yên: chế biến đá tự nhiên (đá ốp lát, đá cẩm thạch), chế biến nông - lâm sản, vật liệu xây dựng, công nghiệp hỗ trợ. Vị trí cách Km64 Quốc lộ 70 khoảng 16 km.",
       "coBaoCao": false,
-      "baoCao": "Hiện trạng đất: 35,5 ha rừng tự nhiên (47,33%), 12 ha cây lâu năm (16%), 8,8 ha rừng sản xuất (11,73%), 6,5 ha đất lúa (8,7%), 3,8 ha đất chưa sử dụng, 2,6 ha đất khác, 2,2 ha cây hàng năm khác, 1,4 ha giao thông, 1,2 ha đất ở. Không sử dụng đất rừng phòng hộ và rừng đặc dụng. Tác động dân cư: 62 hộ bị ảnh hưởng (228 nhân khẩu), 59 hộ dân tộc thiểu số; 46 hộ thu hồi toàn bộ đất ở và cần tái định cư; 15 hộ ảnh hưởng đất sản xuất trên 30%. Mức độ đồng thuận của người dân: cao (>80%).",
+      "baoCao": "Hiện trạng đất: 35,5 ha rừng tự nhiên (47,33%), 12 ha cây lâu năm (16%), 8,8 ha rừng sản xuất (11,73%), 6,5 ha đất lúa (8,7%), 3,8 ha đất chưa sử dụng, 2,6 ha đất khác, 2,2 ha cây hàng năm khác, 1,4 ha giao thông, 1,2 ha đất ở. Không sử dụng đất rừng phòng hộ và rừng đặc dụng. Tác động dân cư: 62 hộ bị ảnh hưởng (228 nhân khẩu), 59 hộ dân tộc thiểu số; 46 hộ thu hồi toàn bộ đất ở và cần tái định cư; 15 hộ ảnh hưởng đất sản xuất trên 30%. Mức độ đồng thuận của người dân: cao (>80%). Ranh giới chính xác được xác định bởi 20 mốc tọa độ VN-2000 (kinh tuyến trục 104°45', múi chiếu 3°), từ X 2.444.315 đến 2.445.636 m, Y 498.689 đến 500.983 m, khép kín polygon 75 ha. Tờ trình của UBND huyện Lục Yên (cũ) đề nghị bổ sung Cụm công nghiệp vào Quy hoạch phát triển công nghiệp tỉnh đã được ban hành tháng 6/2022.",
       "lat": 22.1264,
       "lng": 104.7197,
       "ghiChu": "Diện tích 75 ha theo Quyết định số 2251/QĐ-UBND ngày 28/11/2023 của Ủy ban nhân dân huyện Lục Yên (cũ) về Quy hoạch sử dụng đất thời kỳ 2021-2030, tầm nhìn 2050. Hiện ở trạng thái \"chưa thành lập\" - đang chuẩn bị Báo cáo đánh giá sơ bộ để trình thành lập."
@@ -786,12 +786,12 @@
       "huyen": "khu-vuc-moi",
       "xa": "Phường Âu Lâu, tỉnh Lào Cai",
       "dienTich": 75,
-      "huongPhatTrien": "Giai đoạn 2025-2030. Đa ngành - sản xuất công nghiệp tổng hợp gắn với hành lang công nghiệp Văn Phú - Âu Lâu, kế cận Cụm công nghiệp Minh Quân và trạm biến áp 110 kV Bảo Hưng. Diện tích đề xuất ban đầu 75 ha, sau khi rà soát theo kiến nghị của Sở Xây dựng và Sở Nông nghiệp và Môi trường (loại bỏ phần đất đã quy hoạch cho mục đích khác) đã điều chỉnh còn 49,463 ha; tổng mức đầu tư điều chỉnh giảm tương ứng từ 757,212 tỷ đồng xuống còn 470 tỷ đồng, trong đó vốn vay ngân hàng 385,4 tỷ (khoảng 82%).",
+      "huongPhatTrien": "Giai đoạn 2025-2030 (đang tái khởi động hồ sơ). Đa ngành - sản xuất công nghiệp tổng hợp gắn với hành lang công nghiệp Văn Phú - Âu Lâu, kế cận Cụm công nghiệp Minh Quân và trạm biến áp 110 kV Bảo Hưng. Diện tích đề xuất ban đầu 75 ha; sau khi rà soát đã điều chỉnh còn 49,463 ha (loại bỏ phần đất chồng lấn quy hoạch khoáng sản theo kiến nghị Sở Xây dựng và Sở Nông nghiệp và Môi trường).",
       "coBaoCao": false,
-      "baoCao": "",
+      "baoCao": "Tổng mức đầu tư đề xuất điều chỉnh: từ 757,212 tỷ đồng giảm còn 470 tỷ đồng (vốn vay ngân hàng 385,4 tỷ đồng - tương đương 82%). Hiện trạng có khoảng 51 ha đất rừng trồng và một phần đất thủy lợi cần rà soát loại bỏ trong quá trình lập quy hoạch chi tiết.",
       "lat": 21.657659,
       "lng": 104.911829,
-      "ghiChu": "Đang ở giai đoạn thẩm định hồ sơ thành lập (Hội đồng đánh giá lựa chọn chủ đầu tư hạ tầng đã được kiện toàn). Hiện trạng có khoảng 51 ha đất rừng trồng và một phần đất thủy lợi cần rà soát trong quá trình lập quy hoạch chi tiết. Khi được phê duyệt sẽ tiếp tục lập quy hoạch chi tiết, báo cáo kinh tế kỹ thuật, đánh giá tác động môi trường theo quy định."
+      "ghiChu": "Cập nhật tháng 10/2025: Sở Tài chính tỉnh Lào Cai có Tờ trình số 167/TTr-STC ngày 17/9/2025 đề nghị bãi bỏ Quyết định số 122/QĐ-UBND ngày 21/01/2025 của UBND tỉnh Yên Bái (cũ) về chấp thuận chủ trương đầu tư Dự án xây dựng kết cấu hạ tầng kỹ thuật cụm công nghiệp Bảo Hưng 2. Văn phòng UBND tỉnh Lào Cai đã xin ý kiến các Ủy viên UBND tỉnh (đến hết 4/10/2025) để hoàn thiện hồ sơ. Hồ sơ chủ trương đầu tư của Công ty Cổ phần Công nghiệp EUP đang cần được lập lại theo quy định mới sau khi hợp nhất tỉnh."
     },
     {
       "stt": 30,
