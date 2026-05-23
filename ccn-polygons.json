@@ -1597,5 +1597,71 @@
     "area_ha": 75.53,
     "section": "CCN_QH",
     "trangThai": "quy-hoach"
+  },
+  {
+    "name": "Khu công nghiệp Việt Hồng 1",
+    "coords": [
+      [
+        21.633826,
+        105.109589
+      ],
+      [
+        21.635,
+        105.117478
+      ],
+      [
+        21.616975,
+        105.127363
+      ],
+      [
+        21.61406,
+        105.123322
+      ],
+      [
+        21.618587,
+        105.107847
+      ]
+    ],
+    "is_approx": false,
+    "num_points": 5,
+    "area_ha": 298.03,
+    "section": "KCN_QH",
+    "trangThai": "quy-hoach",
+    "source": "CV UBND xã Việt Hồng ngày -/12/2025"
+  },
+  {
+    "name": "Khu công nghiệp Việt Hồng 2",
+    "coords": [
+      [
+        21.618442,
+        105.107775
+      ],
+      [
+        21.613968,
+        105.123219
+      ],
+      [
+        21.608705,
+        105.12026
+      ],
+      [
+        21.609506,
+        105.115545
+      ],
+      [
+        21.598391,
+        105.114113
+      ],
+      [
+        21.599957,
+        105.105943
+      ]
+    ],
+    "is_approx": false,
+    "num_points": 6,
+    "area_ha": 220.91,
+    "section": "KCN_QH",
+    "trangThai": "quy-hoach",
+    "source": "CV UBND xã Việt Hồng ngày -/12/2025"
   }
 ]
