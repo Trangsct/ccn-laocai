@@ -241,8 +241,7 @@ a:hover {
 .leaflet-popup {
     z-index: 951 !important;
 }
-/* Chiều cao popup do .ccn-popup (max-height 70vh) tự quản lý qua flex column,
-   .ccn-popup__body có overflow-y:auto -> không cần giới hạn ở wrapper. */
+/* Popup KCN/CCN đã thay bằng component .info-card (xem block info-card phía dưới). */
 
 /* ---- Filter Bar ---- */
 .filter-bar {
