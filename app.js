@@ -20,79 +20,79 @@ if (typeof L !== 'undefined' && L.Popup) {
     });
 }
 
-// ============================================================
-// INFO CARD — Component thay thế Leaflet popup
-// Desktop: floating card góc dưới-trái; Mobile: bottom-sheet
-// ============================================================
-var currentInfoCard = null;
-
-function closeInfoCard() {
-    if (currentInfoCard) {
-        currentInfoCard.remove();
-        currentInfoCard = null;
-    }
+// Tự đo chiều cao header + nav để autoPan né khu vực sticky top
+function updatePopupAutoPanPadding() {
+    if (typeof L === 'undefined' || !L.Popup) return;
+    var header = document.getElementById('header');
+    var nav = document.getElementById('main-nav');
+    var topPad = ((header && header.offsetHeight) || 0) + ((nav && nav.offsetHeight) || 0) + 20;
+    L.Popup.mergeOptions({
+        autoPanPaddingTopLeft: L.point(20, topPad)
+    });
 }
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updatePopupAutoPanPadding);
+} else {
+    updatePopupAutoPanPadding();
+}
+window.addEventListener('resize', updatePopupAutoPanPadding);
 
-function showInfoCard(data) {
-    // Đóng card cũ trước khi mở mới
-    closeInfoCard();
+// ============================================================
+// Popup KCN/CCN — dùng Leaflet popup gốc (khung viền + mũi tên trỏ marker)
+// Style class .popup-card với gradient header theo trạng thái.
+// ============================================================
+function buildPopupHTML(data) {
+    var rows = '';
+    if (data.viTri)       rows += '<p><strong>📍 Vị trí:</strong> ' + escapeHtml(data.viTri) + '</p>';
+    if (data.dienTich)    rows += '<p><strong>📐 Diện tích:</strong> ' + escapeHtml(String(data.dienTich)) + ' ha</p>';
+    if (data.trangThai)   rows += '<p><strong>🔖 Trạng thái:</strong> ' + escapeHtml(data.trangThai) + '</p>';
+    if (data.giaiDoan)    rows += '<p><strong>📅 Giai đoạn:</strong> ' + escapeHtml(data.giaiDoan) + '</p>';
+    if (data.soDoanhNghiep != null) rows += '<p><strong>🏢 Doanh nghiệp:</strong> ' + escapeHtml(String(data.soDoanhNghiep)) + '</p>';
+    if (data.tyLeLapDay != null)    rows += '<p><strong>📊 Tỷ lệ lấp đầy:</strong> ' + escapeHtml(String(data.tyLeLapDay)) + '%</p>';
+    if (data.extraHtml)   rows += data.extraHtml;
+    if (data.moTa)        rows += '<p>' + escapeHtml(data.moTa) + '</p>';
 
-    var card = document.createElement('div');
-    card.className = 'info-card';
-
-    var bodyHtml = '';
-    if (data.viTri)       bodyHtml += '<p><strong>📍 Vị trí:</strong> ' + escapeHtml(data.viTri) + '</p>';
-    if (data.dienTich)    bodyHtml += '<p><strong>📐 Diện tích:</strong> ' + escapeHtml(String(data.dienTich)) + ' ha</p>';
-    if (data.trangThai)   bodyHtml += '<p><strong>🔖 Trạng thái:</strong> ' + escapeHtml(data.trangThai) + '</p>';
-    if (data.giaiDoan)    bodyHtml += '<p><strong>📅 Giai đoạn:</strong> ' + escapeHtml(data.giaiDoan) + '</p>';
-    if (data.soDoanhNghiep != null) bodyHtml += '<p><strong>🏢 Doanh nghiệp:</strong> ' + escapeHtml(String(data.soDoanhNghiep)) + '</p>';
-    if (data.tyLeLapDay != null)    bodyHtml += '<p><strong>📊 Tỷ lệ lấp đầy:</strong> ' + escapeHtml(String(data.tyLeLapDay)) + '%</p>';
-    if (data.extraHtml)   bodyHtml += data.extraHtml;     // HTML đã được tin cậy (source/warning blocks)
-    if (data.moTa)        bodyHtml += '<p>' + escapeHtml(data.moTa) + '</p>';
-
-    var footerHtml = '';
+    var buttons = '';
     if (data.slug) {
-        footerHtml += '<button class="btn-primary" data-action="open-detail" data-slug="' + escapeHtml(data.slug) + '" data-ten="' + escapeHtml(data.ten) + '">' +
-            '<span>📖</span> Xem chi tiết</button>';
+        buttons += '<button class="btn-primary" data-action="open-detail" data-slug="' + escapeHtml(data.slug) + '" data-ten="' + escapeHtml(data.ten) + '">📖 Xem chi tiết</button>';
     }
     if (data.lat != null && data.lng != null) {
-        footerHtml += '<a class="btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=' + data.lat + ',' + data.lng + '" target="_blank" rel="noopener">' +
-            '<span>🚗</span> Chỉ đường</a>';
+        buttons += '<a class="btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=' + data.lat + ',' + data.lng + '" target="_blank" rel="noopener">🚗 Chỉ đường</a>';
     }
 
-    card.innerHTML = '' +
-        '<div class="info-card__header">' +
-            '<h3>' + escapeHtml(data.ten) + '</h3>' +
-            '<button class="info-card__close" aria-label="Đóng">×</button>' +
+    return '<div class="popup-card">' +
+        '<div class="popup-card__header is-' + (data.statusClass || 'quy-hoach') + '">' + escapeHtml(data.ten) + '</div>' +
+        '<div class="popup-card__body">' +
+            rows +
+            (buttons ? '<div class="popup-card__actions">' + buttons + '</div>' : '') +
         '</div>' +
-        '<div class="info-card__body">' + bodyHtml + '</div>' +
-        (footerHtml ? '<div class="info-card__footer">' + footerHtml + '</div>' : '');
-
-    document.body.appendChild(card);
-    currentInfoCard = card;
-
-    // Nút đóng
-    card.querySelector('.info-card__close').onclick = function() {
-        closeInfoCard();
-    };
-
-    // Nút Xem chi tiết
-    var detailBtn = card.querySelector('[data-action="open-detail"]');
-    if (detailBtn) {
-        detailBtn.onclick = function(e) {
-            e.preventDefault();
-            openUnitDetail(detailBtn.dataset.slug, detailBtn.dataset.ten);
-            closeInfoCard();
-        };
-    }
-
-    return card;
+    '</div>';
 }
 
-// Đóng info-card khi nhấn Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && currentInfoCard) closeInfoCard();
-});
+// Options chung cho mọi bindPopup KCN/CCN
+function popupOptions() {
+    return {
+        maxWidth: 320,
+        minWidth: 320,
+        autoPan: true,
+        autoPanPaddingBottomRight: L.point(20, 100),  // chừa chỗ chatbot widget bottom-right
+        keepInView: true,
+        closeButton: true
+    };
+}
+
+// Gắn handler cho nút "Xem chi tiết" trên mọi popup của 1 map
+function bindPopupDetailHandler(mapInstance) {
+    mapInstance.on('popupopen', function(e) {
+        var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
+        if (btn) {
+            btn.onclick = function() {
+                openUnitDetail(btn.dataset.slug, btn.dataset.ten);
+                mapInstance.closePopup();
+            };
+        }
+    });
+}
 
 // ---- News toggle ----
 function openNews(id) {
@@ -284,8 +284,7 @@ function initMap() {
         dashArray: '8, 8'
     }).addTo(map);
 
-    // Click vào vùng trống của map -> đóng info-card
-    map.on('click', closeInfoCard);
+    bindPopupDetailHandler(map);
 }
 
 // ---- Create custom marker icon ----
@@ -311,20 +310,23 @@ function addMarkers(ccnList) {
             icon: createMarkerIcon(ccn.trangThai)
         });
 
+        const status = TRANG_THAI[ccn.trangThai] || {};
+        const html = buildPopupHTML({
+            ten: '🏭 ' + ccn.ten,
+            slug: slugify(ccn.ten),
+            viTri: ccn.xa,
+            dienTich: ccn.dienTich,
+            trangThai: (status.icon ? status.icon + ' ' : '') + (status.ten || ccn.trangThai),
+            soDoanhNghiep: ccn.soDoanhNghiep,
+            tyLeLapDay: ccn.tyLeLapDay,
+            lat: ccn.lat,
+            lng: ccn.lng,
+            statusClass: ccn.trangThai
+        });
+        marker.bindPopup(html, popupOptions());
+
         marker.on('click', () => {
             map.flyTo([ccn.lat, ccn.lng], 13, { duration: 0.8 });
-            const status = TRANG_THAI[ccn.trangThai] || {};
-            showInfoCard({
-                ten: ccn.ten,
-                slug: slugify(ccn.ten),
-                viTri: ccn.xa,
-                dienTich: ccn.dienTich,
-                trangThai: (status.icon ? status.icon + ' ' : '') + (status.ten || ccn.trangThai),
-                soDoanhNghiep: ccn.soDoanhNghiep,
-                tyLeLapDay: ccn.tyLeLapDay,
-                lat: ccn.lat,
-                lng: ccn.lng
-            });
         });
 
         marker.addTo(markerLayer);
@@ -840,22 +842,20 @@ function initKCNMap() {
         var kcnSlug = slugify(kcn.ten);
         L.marker([kcn.lat, kcn.lng], { icon: icon })
             .addTo(window.kcnMap)
-            .on('click', function() {
-                showInfoCard({
-                    ten: kcn.ten,
-                    slug: kcnSlug,
-                    viTri: kcn.viTri,
-                    dienTich: kcn.dienTich,
-                    trangThai: kcnLabels[kcn.trangThai],
-                    moTa: kcn.moTa,
-                    lat: kcn.lat,
-                    lng: kcn.lng
-                });
-            });
+            .bindPopup(buildPopupHTML({
+                ten: '🏭 ' + kcn.ten,
+                slug: kcnSlug,
+                viTri: kcn.viTri,
+                dienTich: kcn.dienTich,
+                trangThai: kcnLabels[kcn.trangThai],
+                moTa: kcn.moTa,
+                lat: kcn.lat,
+                lng: kcn.lng,
+                statusClass: kcn.trangThai
+            }), popupOptions());
     });
 
-    // Click vùng trống map -> đóng info-card
-    window.kcnMap.on('click', closeInfoCard);
+    bindPopupDetailHandler(window.kcnMap);
 }
 
 // ---- KCN Cards (tổng hợp đã TL + chưa TL) ----
@@ -1729,17 +1729,16 @@ function renderRanhGioi(data) {
             extraHtml += '<p class="note">VN-2000, kinh tuyến trục 104°45\'</p>';
         }
 
-        layer.on('click', function() {
-            showInfoCard({
-                ten: displayName,
-                slug: rgSlug,
-                viTri: item.xa || '',
-                dienTich: item.area_ha + (isApprox ? ' (công bố)' : ' (tính từ tọa độ)'),
-                extraHtml: extraHtml,
-                lat: rgLatLng ? rgLatLng[0] : null,
-                lng: rgLatLng ? rgLatLng[1] : null
-            });
-        });
+        layer.bindPopup(buildPopupHTML({
+            ten: displayName,
+            slug: rgSlug,
+            viTri: item.xa || '',
+            dienTich: item.area_ha + (isApprox ? ' (công bố)' : ' (tính từ tọa độ)'),
+            extraHtml: extraHtml,
+            lat: rgLatLng ? rgLatLng[0] : null,
+            lng: rgLatLng ? rgLatLng[1] : null,
+            statusClass: item.trangThai || 'quy-hoach'
+        }), popupOptions());
 
         layer.bindTooltip(displayName, { permanent: false, direction: isApprox ? 'top' : 'center', offset: isApprox ? [0, -8] : [0, 0], className: 'polygon-label' });
     });
@@ -1748,10 +1747,9 @@ function renderRanhGioi(data) {
         window.ranhGioiMap.fitBounds(bounds, { padding: [20, 20] });
     }
 
-    // Click vùng trống map -> đóng info-card
-    if (!window._ranhGioiClickHandlerBound) {
-        window.ranhGioiMap.on('click', closeInfoCard);
-        window._ranhGioiClickHandlerBound = true;
+    if (!window._ranhGioiPopupHandlerBound) {
+        bindPopupDetailHandler(window.ranhGioiMap);
+        window._ranhGioiPopupHandlerBound = true;
     }
 }
 
@@ -1813,22 +1811,20 @@ function initCCNQHMap() {
         var ccnSlug = slugify(ccn.ten);
         L.marker([ccn.lat, ccn.lng], { icon: icon })
             .addTo(window.ccnqhMap)
-            .on('click', function() {
-                showInfoCard({
-                    ten: ccn.stt + '. ' + ccn.ten,
-                    slug: ccnSlug,
-                    viTri: ccn.xa,
-                    dienTich: ccn.dt,
-                    trangThai: '📋 Quy hoạch',
-                    moTa: ccn.gc,
-                    lat: ccn.lat,
-                    lng: ccn.lng
-                });
-            });
+            .bindPopup(buildPopupHTML({
+                ten: ccn.stt + '. ' + ccn.ten,
+                slug: ccnSlug,
+                viTri: ccn.xa,
+                dienTich: ccn.dt,
+                trangThai: '📋 Quy hoạch',
+                moTa: ccn.gc,
+                lat: ccn.lat,
+                lng: ccn.lng,
+                statusClass: 'quy-hoach'
+            }), popupOptions());
     });
 
-    // Click vùng trống map -> đóng info-card
-    window.ccnqhMap.on('click', closeInfoCard);
+    bindPopupDetailHandler(window.ccnqhMap);
 }
 
 // ---- Setup Scroll Effects ----
