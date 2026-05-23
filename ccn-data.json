@@ -374,7 +374,7 @@
       "nganhNghe": "Sản xuất gạch ba banh",
       "moTa": "Chủ đầu tư: Ủy ban nhân dân xã Văn Bàn. Giáp đường liên xã số 15 (Nam) và suối Nà Lộc (Tây). Doanh nghiệp: HTX Mường Thát - sản xuất gạch ba banh 1,05ha, công suất 1,2 triệu viên/năm, vốn 11 triệu đồng. Quy mô nhỏ (5,17ha), còn nhiều quỹ đất chờ nhà đầu tư.",
       "haTang": "Đang hoạt động quy mô nhỏ (5,17ha, đất công nghiệp 3ha). Quy hoạch chi tiết: Quyết định số 4063/QĐ-UBND ngày 10/11/2015; chủ trương đầu tư: Quyết định số 248/QĐ-UBND ngày 9/2/2009. Còn nhiều quỹ đất trống chờ thu hút đầu tư.",
-      "quyetDinh": "Quyết định số 2971/QĐ-UBND ngày 09/9/2016",
+      "quyetDinh": "Quy hoạch chi tiết: Quyết định số 4063/QĐ-UBND ngày 10/11/2015 của UBND tỉnh Lào Cai; chủ trương đầu tư: Quyết định số 248/QĐ-UBND ngày 9/2/2009; thành lập Cụm công nghiệp: Quyết định số 2971/QĐ-UBND ngày 9/9/2016. Điều chỉnh cục bộ Quy hoạch chi tiết theo Quyết định của UBND xã Văn Bàn tháng 3/2026 (căn cứ Kết luận số 262-KL/ĐU ngày 4/3/2026 của Đảng ủy xã Văn Bàn).",
       "lat": 22.095,
       "lng": 104.15
     },
@@ -771,14 +771,14 @@
       "stt": 28,
       "ten": "Cụm công nghiệp Hợp Minh",
       "huyen": "khu-vuc-moi",
-      "xa": "Phường Âu Lâu, tỉnh Lào Cai",
+      "xa": "Phường Hợp Minh (TP Yên Bái cũ) và một phần xã Bảo Hưng, xã Minh Quân (huyện Trấn Yên cũ), tỉnh Lào Cai",
       "dienTich": 37.4,
-      "huongPhatTrien": "Giai đoạn 2025-2030. Quy hoạch tại phường Âu Lâu, tỉnh Lào Cai với diện tích 37,4 ha. Cùng địa bàn phường Âu Lâu đã có Cụm công nghiệp Âu Lâu (50 ha) và Cụm công nghiệp Minh Quân (75 ha) đang hoạt động/triển khai, cùng với các cụm/khu công nghiệp khác như Khu công nghiệp Phía Nam, Cụm công nghiệp Bảo Hưng 2 đang được nghiên cứu — hình thành hành lang công nghiệp Văn Phú - Âu Lâu. Định hướng phát triển đa ngành sản xuất công nghiệp tổng hợp, ưu tiên các ngành công nghiệp tương đối sạch, ít gây ô nhiễm, phù hợp với khu vực đô thị hóa.",
+      "huongPhatTrien": "Giai đoạn 2025-2030. Quy mô 37,4 ha tại phường Hợp Minh (thành phố Yên Bái cũ) và một phần thuộc xã Bảo Hưng, xã Minh Quân (huyện Trấn Yên cũ), tỉnh Lào Cai. Đã loại bỏ khoảng 8 ha thuộc quy hoạch đất khai thác khoáng sản (vùng Bảo Hưng, Minh Quân) ra khỏi ranh giới cụm. Cùng địa bàn phường Hợp Minh có Cụm công nghiệp Âu Lâu (50 ha) và Cụm công nghiệp Minh Quân (75 ha) đang hoạt động/triển khai — hình thành hành lang công nghiệp Văn Phú - Âu Lâu - Hợp Minh. Định hướng đa ngành sản xuất công nghiệp tổng hợp, ưu tiên các ngành tương đối sạch, phù hợp khu vực đô thị hóa.",
       "coBaoCao": false,
-      "baoCao": "",
+      "baoCao": "Ranh giới được xác định bởi 9 mốc tọa độ VN-2000 (kinh tuyến trục 105°00'): X từ 2.395.702 đến 2.397.018 m, Y từ 512.590 đến 513.511 m. Tờ trình số 508/TTr-UBND ngày 13/10/2021 của UBND thành phố Yên Bái đề nghị bổ sung quy hoạch phát triển cụm công nghiệp. UBND huyện Trấn Yên có Văn bản 1278/UBND-TCKH ngày 5/11/2021 yêu cầu loại bỏ phần đất khai thác khoáng sản tại xã Bảo Hưng và Minh Quân. Nhà đầu tư cùng UBND thành phố Yên Bái đã điều chỉnh ranh giới theo ý kiến này.",
       "lat": 21.692,
       "lng": 104.842,
-      "ghiChu": "Được bổ sung vào quy hoạch theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của Ủy ban nhân dân tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030, tầm nhìn đến năm 2050. Hiện chưa có chủ đầu tư hạ tầng được lựa chọn; chưa có quy hoạch chi tiết được phê duyệt."
+      "ghiChu": "Đã có Báo cáo Đầu tư thành lập (2025) do đơn vị tư vấn lập. Bổ sung vào quy hoạch theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của UBND tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030, tầm nhìn 2050."
     },
     {
       "stt": 29,
@@ -829,6 +829,19 @@
       "lat": 22.5381093,
       "lng": 103.9059822,
       "ghiChu": "Bổ sung quy hoạch theo Quyết định 1958/QĐ-TTg ngày 10/9/2025 và Quyết định 525/QĐ-UBND ngày 25/02/2026."
+    },
+    {
+      "stt": 33,
+      "ten": "Cụm công nghiệp Yên Hợp 2",
+      "huyen": "van-yen",
+      "xa": "Xã Xuân Ái, tỉnh Lào Cai",
+      "dienTich": 75,
+      "huongPhatTrien": "Giai đoạn 2026-2030. Quy mô khoảng 75 ha tại xã Xuân Ái, tỉnh Lào Cai (sáp nhập từ huyện Văn Yên cũ). Định hướng đa ngành, ưu tiên: chế biến khoáng sản; chế biến nông - lâm - thuỷ sản (quế, gỗ rừng trồng, ván ép, ván sàn, viên nén nhiên liệu, măng tre, thức ăn gia súc); công nghệ cao; vật liệu xây dựng (kính, tấm lợp, đá ốp lát, composite, gạch không nung, bê tông đúc sẵn, vật liệu cách âm/cách nhiệt); sản phẩm nhựa và nhôm; hoá chất công nghiệp; cơ khí chế tạo - công nghiệp hỗ trợ - điện tử.",
+      "coBaoCao": true,
+      "baoCao": "Cùng địa bàn xã Xuân Ái với Cụm công nghiệp Yên Hợp giai đoạn I (12 ha) đang hoạt động. Đề xuất mở rộng theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của UBND tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030.",
+      "lat": 21.685,
+      "lng": 104.628,
+      "ghiChu": "Tiến độ thành lập: Thông báo tiếp nhận hồ sơ số 30/TB-UBND ngày 17/4/2026 của UBND xã Xuân Ái; kết thúc tiếp nhận hồ sơ ngày 3/5/2026. Đến thời điểm chốt nhận, có 01 đơn vị đăng ký: Công ty cổ phần PH GREEN (địa chỉ MG2-16, tổ dân phố Nguyễn Thái Học 13, phường Yên Bái). UBND xã Xuân Ái đã trình Tờ trình số 101/TTr-UBND ngày 8/5/2026 lên UBND tỉnh Lào Cai và Sở Công Thương đề nghị thành lập."
     }
   ],
   "KHU_CONG_NGHIEP": [
