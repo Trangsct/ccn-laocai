@@ -264,8 +264,8 @@
       "namThanhLap": 2024,
       "soDoanhNghiep": 2,
       "nganhNghe": "Sản xuất gia vị, tinh dầu quế",
-      "moTa": "Chủ đầu tư: Ban Quản lý dự án ĐTXD khu vực Trấn Yên (Giai đoạn I 12ha). 2 dự án đang triển khai và đi vào hoạt động: (1) Công ty TNHH Hương Gia Vị Sơn Hà - sản xuất gia vị (quế sáo, quế mảnh, ABC) 4,769ha, vốn 286 tỷ, khởi công 11/7/2025. (2) Công ty Cổ phần sản xuất và xuất khẩu Phúc Long - tinh dầu quế 4,695ha. Đang tiếp tục xây dựng hạ tầng (đường, điện, hệ thống thoát nước). Quy hoạch mở rộng Giai đoạn II lên 63ha (Cụm công nghiệp Yên Hợp 1).",
-      "haTang": "Đang hoạt động (giai đoạn I, 12 ha). Tỷ lệ lấp đầy 78,87% với 2 dự án đăng ký (9,464 ha): Nhà máy chế biến gia vị của Công ty TNHH Hương Gia Vị Sơn Hà (4,769 ha, 286 tỷ đồng, công suất quế sáo 1.875 tấn/năm + quế mảnh 992 tấn/năm + quế ABC 4.454 tấn/năm — khởi công 11/7/2025); Nhà máy chế biến tinh dầu quế của Công ty Cổ phần sản xuất và xuất khẩu Phúc Long (4,695 ha — đang giải phóng mặt bằng). Tổng mức đầu tư 50 tỷ đồng (vốn ngân sách nhà nước, chủ yếu phục vụ giải phóng mặt bằng). Hiện trạng: đã giải phóng mặt bằng 4,7 ha; 7,3 ha còn lại đang đền bù. Khó khăn: chưa xây dựng hệ thống thoát nước nội bộ, sau khi san gạt mặt bằng dẫn đến một số hộ dân có diện tích cây trồng xung quanh bị ngập úng. Sở Công Thương đã đề xuất Sở Tài chính điều chỉnh Quy hoạch tỉnh, bổ sung Cụm công nghiệp Yên Hợp 1 với diện tích 63 ha.",
+      "moTa": "Chủ đầu tư: Ban Quản lý dự án ĐTXD khu vực Trấn Yên (12 ha). 2 dự án đang triển khai và đi vào hoạt động: (1) Công ty TNHH Hương Gia Vị Sơn Hà - sản xuất gia vị (quế sáo, quế mảnh, ABC) 4,769ha, vốn 286 tỷ, khởi công 11/7/2025. (2) Công ty Cổ phần sản xuất và xuất khẩu Phúc Long - tinh dầu quế 4,695ha. Đang tiếp tục xây dựng hạ tầng (đường, điện, hệ thống thoát nước). Quy hoạch mở rộng thêm Cụm công nghiệp Yên Hợp 1 (63 ha).",
+      "haTang": "Đang hoạt động (12 ha). Tỷ lệ lấp đầy 78,87% với 2 dự án đăng ký (9,464 ha): Nhà máy chế biến gia vị của Công ty TNHH Hương Gia Vị Sơn Hà (4,769 ha, 286 tỷ đồng, công suất quế sáo 1.875 tấn/năm + quế mảnh 992 tấn/năm + quế ABC 4.454 tấn/năm — khởi công 11/7/2025); Nhà máy chế biến tinh dầu quế của Công ty Cổ phần sản xuất và xuất khẩu Phúc Long (4,695 ha — đang giải phóng mặt bằng). Tổng mức đầu tư 50 tỷ đồng (vốn ngân sách nhà nước, chủ yếu phục vụ giải phóng mặt bằng). Hiện trạng: đã giải phóng mặt bằng 4,7 ha; 7,3 ha còn lại đang đền bù. Khó khăn: chưa xây dựng hệ thống thoát nước nội bộ, sau khi san gạt mặt bằng dẫn đến một số hộ dân có diện tích cây trồng xung quanh bị ngập úng. Sở Công Thương đã đề xuất Sở Tài chính điều chỉnh Quy hoạch tỉnh, bổ sung Cụm công nghiệp Yên Hợp 1 với diện tích 63 ha.",
       "quyetDinh": "Số 2201/QĐ-UBND ngày 06/11/2024",
       "lat": 21.895,
       "lng": 104.643
@@ -747,12 +747,12 @@
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
       "dienTich": 63,
-      "huongPhatTrien": "Giai đoạn II mở rộng Cụm công nghiệp Yên Hợp sau 2030",
+      "huongPhatTrien": "Cụm công nghiệp quy hoạch quy mô 63 ha tại xã Xuân Ái; định hướng triển khai giai đoạn sau năm 2030.",
       "coBaoCao": false,
       "baoCao": "",
       "lat": 21.850365,
       "lng": 104.718854,
-      "ghiChu": "Giai đoạn II mở rộng Cụm công nghiệp Yên Hợp sau 2030."
+      "ghiChu": "Đề xuất bổ sung vào Quy hoạch tỉnh; định hướng triển khai sau năm 2030."
     },
     {
       "stt": 27,
@@ -760,12 +760,12 @@
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
       "dienTich": 75,
-      "huongPhatTrien": "Mở rộng Cụm công nghiệp Yên Hợp Giai đoạn II (điều chỉnh tăng lên 75ha theo Quyết định số 525/2026)",
+      "huongPhatTrien": "Quy hoạch mở rộng quy mô 75 ha tại xã Xuân Ái theo Quyết định số 525/2026.",
       "coBaoCao": false,
       "baoCao": "",
       "lat": 21.9,
       "lng": 104.638,
-      "ghiChu": "Mở rộng Cụm công nghiệp Yên Hợp Giai đoạn II (tăng lên 75ha theo Quyết định số 525/2026)."
+      "ghiChu": "Quy hoạch mở rộng quy mô 75 ha tại xã Xuân Ái theo Quyết định số 525/2026."
     },
     {
       "stt": 28,
@@ -838,7 +838,7 @@
       "dienTich": 75,
       "huongPhatTrien": "Giai đoạn 2026-2030. Quy mô khoảng 75 ha tại xã Xuân Ái, tỉnh Lào Cai (sáp nhập từ huyện Văn Yên cũ). Định hướng đa ngành, ưu tiên: chế biến khoáng sản; chế biến nông - lâm - thuỷ sản (quế, gỗ rừng trồng, ván ép, ván sàn, viên nén nhiên liệu, măng tre, thức ăn gia súc); công nghệ cao; vật liệu xây dựng (kính, tấm lợp, đá ốp lát, composite, gạch không nung, bê tông đúc sẵn, vật liệu cách âm/cách nhiệt); sản phẩm nhựa và nhôm; hoá chất công nghiệp; cơ khí chế tạo - công nghiệp hỗ trợ - điện tử.",
       "coBaoCao": true,
-      "baoCao": "Cùng địa bàn xã Xuân Ái với Cụm công nghiệp Yên Hợp giai đoạn I (12 ha) đang hoạt động. Đề xuất mở rộng theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của UBND tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030.",
+      "baoCao": "Cùng địa bàn xã Xuân Ái với Cụm công nghiệp Yên Hợp (12 ha) đang hoạt động. Đề xuất bổ sung theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của UBND tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030.",
       "lat": 21.685,
       "lng": 104.628,
       "ghiChu": "Tiến độ thành lập: Thông báo tiếp nhận hồ sơ số 30/TB-UBND ngày 17/4/2026 của UBND xã Xuân Ái; kết thúc tiếp nhận hồ sơ ngày 3/5/2026. Đến thời điểm chốt nhận, có 01 đơn vị đăng ký: Công ty cổ phần PH GREEN (địa chỉ MG2-16, tổ dân phố Nguyễn Thái Học 13, phường Yên Bái). UBND xã Xuân Ái đã trình Tờ trình số 101/TTr-UBND ngày 8/5/2026 lên UBND tỉnh Lào Cai và Sở Công Thương đề nghị thành lập."
