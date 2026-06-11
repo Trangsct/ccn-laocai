@@ -24,12 +24,16 @@ Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng ti
 ├── data.js                 # Dữ liệu fallback (TINH_INFO, HUYEN_LIST, biến global khởi tạo)
 ├── ccn-data.json           # Nguồn dữ liệu CHÍNH (CMS ghi vào) — CUM_CONG_NGHIEP, CCN_CHUA_DAU_TU, KHU_CONG_NGHIEP
 ├── ccn-polygons.json       # Polygon ranh giới CCN trên bản đồ
-├── unit-details.json       # Chi tiết mở rộng từng CCN (mốc tọa độ, hộ ảnh hưởng, BC…)
+├── unit-details.json       # Chi tiết mở rộng từng CCN/KCN (mốc tọa độ, hộ ảnh hưởng, BC…) — nguồn cho trang chi tiết động trong SPA, key = slug
 ├── map-layers.json         # Cấu hình tile layer Leaflet
-├── manifest.json + service-worker.js   # PWA
+├── manifest.json + service-worker.js   # PWA (SW đang ở v36)
 ├── admin/
 │   ├── index.html          # Netlify CMS entrypoint
 │   └── config.yml          # Schema CMS (collections: ccn_hien_huu, …)
+├── api/                    # Serverless trên Vercel (KHÔNG phải static)
+│   ├── chat.js             # Vercel Edge Function: proxy gọi Google Gemini (free tier) cho chatbot. Endpoint POST /api/chat. Giữ GEMINI_API_KEY ở server.
+│   └── chatbot-context.js  # Export CHATBOT_CONTEXT (~72KB) — cơ sở dữ liệu nhồi vào system prompt của Gemini
+├── units/                  # 77 trang HTML TĨNH độc lập từng đơn vị (ccn-*.html, kcn-*.html) — bản SEO-friendly (meta/OG/canonical), nằm trong sitemap.xml; KHÔNG link từ nav SPA, tồn tại song song với trang chi tiết động
 ├── unit-files/             # Tài liệu riêng từng CCN (ccn-phu-thinh-4, ccn-bat-xat, …)
 ├── *.pdf                   # 6 file văn bản pháp luật (NĐ 32/2024, NĐ 35/2022, NQ 34, QĐ quy chế CCN…)
 ├── netlify.toml            # Build config Netlify (publish = ".")
@@ -42,8 +46,9 @@ Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng ti
 - **Leaflet 1.9.4** (CDN unpkg) cho bản đồ + popup tự né nav sticky.
 - **Chart.js** (CDN) cho biểu đồ thống kê.
 - **Netlify CMS + git-gateway + Netlify Identity** cho editorial workflow — biên tập sửa `ccn-data.json` rồi merge PR.
-- **PWA** với service worker tự cache (đang ở **v8** — bump khi đổi asset).
-- Host: **Netlify** (CMS, Identity) + **Vercel** (public domain chính).
+- **PWA** với service worker tự cache (đang ở **v36** — bump `CACHE_VERSION` mỗi khi đổi asset lõi).
+- **Chatbot AI**: `api/chat.js` (Vercel Edge Function) proxy gọi **Google Gemini** (`gemini-2.5-flash-lite` chính, `gemini-2.5-flash` dự phòng — free tier), context từ `api/chatbot-context.js`. Đây là phần serverless duy nhất, chỉ chạy trên Vercel.
+- Host: **Netlify** (CMS, Identity) + **Vercel** (public domain chính + serverless `api/`).
 
 ## Quy ước
 
@@ -54,7 +59,7 @@ Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng ti
   - `ccn-data.json` được fetch trong `DOMContentLoaded` rồi **ghi đè** lên biến global. Nguồn này là sự thật — CMS chỉ sửa file JSON.
   - Khi thêm trường mới: cập nhật cả `data.js` (fallback) + `ccn-data.json` (thật) + `admin/config.yml` (schema CMS) + chỗ render trong `app.js`.
 - **PDF iframe**: dùng thuộc tính `data-pdf-src` thay vì `src` (browser sẽ không tự tải lúc parse HTML). JS xử lý sau DOMContentLoaded: desktop copy sang `src`, mobile thay bằng nút "Mở file PDF".
-- **Service worker cache version**: bump số version trong `service-worker.js` mỗi khi thay đổi asset chính, nếu không user sẽ thấy bản cũ.
+- **Service worker cache version**: bump `CACHE_VERSION` trong `service-worker.js` mỗi khi thay đổi asset chính, nếu không user sẽ thấy bản cũ. Chiến lược: **network-first cho HTML + JSON** (`index.html`, `ccn-data.json`, `unit-details.json`… luôn lấy bản mới), **cache-first cho asset tĩnh** (`app.js`, `data.js`, `style.css`, ảnh, font, PDF — chỉ thay khi đổi version). ⚠️ Vì logic render nằm trong `app.js` (cache-first), nếu sửa `app.js` mà QUÊN bump version thì user kẹt bản cũ dù JSON đã mới — đây là nguyên nhân điển hình của lỗi "Thông tin chi tiết đang được cập nhật" còn hiện trên production dù `unit-details.json` đã đủ dữ liệu. Khi bump version: SW mới activate → xóa cache cũ → `clients.claim()` → postMessage `sw-updated` → `index.html` tự `location.reload()`.
 - **Popup Leaflet**:
   - `autoPanPaddingTopLeft` được tính ĐỘNG từ `#header.offsetHeight + #main-nav.offsetHeight + 20` (xem `updatePopupAutoPanPadding` trong app.js đầu file). Khi mở popup, page tự cuộn xuống để map full viewport (xử lý trong `map.on('popupopen')` của initMap).
   - z-index popup 950 > main-nav 900 > header 100.
