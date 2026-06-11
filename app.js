@@ -1059,7 +1059,7 @@ function renderThongKeCharts() {
             labels: ['KCN (số)','CCN (số)','KCN (1000 ha)','CCN (1000 ha)'],
             datasets: [
                 {label:'Hiện tại (2025)', data:[7, 23, 2.139, 0.904], backgroundColor:'#90caf9'},
-                {label:'Quy hoạch 2030', data:[20, 54, 5.797, 2.928], backgroundColor:'#1565c0'},
+                {label:'Định hướng 2030 (QĐ 525 + 02 cụm huy động bổ sung)', data:[20, 56, 5.797, 3.053], backgroundColor:'#1565c0'},
                 {label:'Tầm nhìn 2050', data:[22, 62, 8.078, 3.779], backgroundColor:'#0d47a1'}
             ]
         },
@@ -1241,11 +1241,11 @@ function renderThongKeCharts() {
     new Chart(document.getElementById('chart-timeline'), {
         type: 'line',
         data: {
-            labels: ['Hiện tại (2025)', 'Quy hoạch 2030', 'Tầm nhìn 2050'],
+            labels: ['Hiện tại (2025)', 'Định hướng 2030', 'Tầm nhìn 2050'],
             datasets: [
                 {label:'KCN (số)', data:[7, 20, 22], borderColor:'#c62828', backgroundColor:'rgba(198,40,40,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
-                {label:'CCN (số)', data:[23, 54, 62], borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
-                {label:'Tổng diện tích (1000 ha)', data:[3.04, 8.73, 11.86], borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,0.15)', tension:0.3, fill:true, yAxisID:'y1', borderDash:[6,4], borderWidth:3, pointRadius:6}
+                {label:'CCN (số)', data:[23, 56, 62], borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,0.1)', tension:0.3, fill:false, yAxisID:'y', borderWidth:3, pointRadius:6},
+                {label:'Tổng diện tích (1000 ha)', data:[3.04, 8.85, 11.86], borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,0.15)', tension:0.3, fill:true, yAxisID:'y1', borderDash:[6,4], borderWidth:3, pointRadius:6}
             ]
         },
         options: {
