@@ -435,6 +435,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-gia-hoi.html</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phong-hai.html</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-dong-pho-moi.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>

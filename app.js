@@ -928,7 +928,7 @@ function renderKCNCards() {
     };
 }
 
-// ---- CCN QH Cards (31 CCN chưa TL - dạng card) ----
+// ---- CCN QH Cards (35 CCN chưa TL - dạng card) ----
 function renderCCNQHCards() {
     var grid = document.getElementById('ccnqh-grid');
     if (!grid) return;
@@ -990,7 +990,7 @@ function renderThongKeCharts() {
     // === DATA SOURCES ===
     // 23 CCN đã TL (CUM_CONG_NGHIEP - từ data.js hoặc ccn-data.json)
     var ccnHien = CUM_CONG_NGHIEP;
-    // 31 CCN chưa TL
+    // 35 CCN chưa TL
     var ccnQH = CCN_CHUA_DAU_TU;
     // 21 KCN (7 đã TL + 14 chưa TL)
     var kcnList = [
@@ -1130,7 +1130,7 @@ function renderThongKeCharts() {
         }
     });
 
-    // === CHART 6: Diện tích 31 CCN chưa TL ===
+    // === CHART 6: Diện tích 35 CCN chưa TL ===
     var ccnQHSorted = ccnQH.slice().sort(function(a,b){return b.dienTich-a.dienTich;});
     new Chart(document.getElementById('chart-dt-ccn-qh'), {
         type: 'bar',
@@ -1344,7 +1344,7 @@ function initRanhGioiMap() {
     // TÍCH HỢP 3 NGUỒN DỮ LIỆU vào bản đồ ranh giới:
     //   - 21 KCN (KHU_CONG_NGHIEP)
     //   - 23 CCN hiện hữu (CUM_CONG_NGHIEP)
-    //   - 31 CCN quy hoạch (CCN_CHUA_DAU_TU)
+    //   - 35 CCN quy hoạch (CCN_CHUA_DAU_TU)
     //   + 25 polygon chính xác từ ccn-polygons.json
     // Nếu một KCN/CCN đã có polygon chính thức -> dùng polygon đó.
     // Nếu chưa có -> vẽ ô vuông CAM (is_synthetic) quanh toạ độ UBND xã.
@@ -1476,7 +1476,7 @@ function buildRanhGioiData(polygons) {
         });
     });
 
-    // 2c. 31 CCN quy hoạch từ CCN_CHUA_DAU_TU
+    // 2c. 35 CCN quy hoạch từ CCN_CHUA_DAU_TU
     (window.CCN_CHUA_DAU_TU || []).forEach(function(c) {
         // CCN QH không có field trangThai, mặc định là quy-hoach
         var gd = /2031-2050/i.test(c.huongPhatTrien || '') ? '2031-2050' : '2025-2030';
@@ -1753,9 +1753,9 @@ function renderRanhGioi(data) {
     }
 }
 
-// ---- CCN Quy Hoach Map (31 CCN chưa thành lập) ----
+// ---- CCN Quy Hoach Map (35 CCN chưa thành lập) ----
 function initCCNQHMap() {
-    // Tọa độ 31 CCN - ưu tiên từ báo cáo xã, fallback về tọa độ UBND xã (Wikidata)
+    // Tọa độ 35 CCN - ưu tiên từ báo cáo xã, fallback về tọa độ UBND xã (Wikidata)
     // Lấy từ window.CCN_CHUA_DAU_TU (đã có lat/lng + ghiChu được merge vào ccn-data.json)
     var src = (typeof CCN_CHUA_DAU_TU !== 'undefined' ? CCN_CHUA_DAU_TU : (window.CCN_CHUA_DAU_TU || []));
     var ccnqhData = src.map(function(c) {
