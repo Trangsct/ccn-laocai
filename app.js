@@ -162,8 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
             CCN_CHUA_DAU_TU = data.CCN_CHUA_DAU_TU;
             window.KHU_CONG_NGHIEP = data.KHU_CONG_NGHIEP || [];
             // Tính lại THONG_KE từ dữ liệu mới (ghi đè giá trị cũ từ data.js)
+            // Tổng CCN = 54 cụm theo Quy hoạch tỉnh (QĐ 525/QĐ-UBND ngày 25/02/2026,
+            // Phụ lục III) + số cụm đề xuất bổ sung quy hoạch (cờ deXuatBoSung trong dữ liệu).
+            // KHÔNG dùng tổng danh mục (23+35) vì danh mục gồm cả 4 cụm rút khỏi quy hoạch
+            // và 2 cụm đề xuất, đồng thời còn thiếu 2 cụm thuộc QĐ 525 chưa nhập danh mục.
             THONG_KE = {
-                tongCCN: CUM_CONG_NGHIEP.length + CCN_CHUA_DAU_TU.length,
+                tongCCN: 54 + CCN_CHUA_DAU_TU.filter(c => c.deXuatBoSung).length,
                 dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
                 dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,
                 choDauTu: CCN_CHUA_DAU_TU.length,
@@ -188,8 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // trong data.js (CUM_CONG_NGHIEP, CCN_CHUA_DAU_TU đã được load sẵn).
             // Vẫn phải tính lại THONG_KE và gọi init để UI hiển thị được.
             console.warn('Không tải được ccn-data.json, dùng fallback từ data.js:', err);
+            // Tổng CCN = 54 cụm theo Quy hoạch tỉnh (QĐ 525/QĐ-UBND ngày 25/02/2026,
+            // Phụ lục III) + số cụm đề xuất bổ sung quy hoạch (cờ deXuatBoSung trong dữ liệu).
+            // KHÔNG dùng tổng danh mục (23+35) vì danh mục gồm cả 4 cụm rút khỏi quy hoạch
+            // và 2 cụm đề xuất, đồng thời còn thiếu 2 cụm thuộc QĐ 525 chưa nhập danh mục.
             THONG_KE = {
-                tongCCN: CUM_CONG_NGHIEP.length + CCN_CHUA_DAU_TU.length,
+                tongCCN: 54 + CCN_CHUA_DAU_TU.filter(c => c.deXuatBoSung).length,
                 dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
                 dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,
                 choDauTu: CCN_CHUA_DAU_TU.length,
@@ -429,7 +437,7 @@ function renderStats() {
         <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=list]').click()" style="cursor:pointer;" title="Xem danh sách Cụm công nghiệp">
             <div class="stat-icon">🏭</div>
             <div class="stat-number" data-target="${THONG_KE.tongCCN}">0</div>
-            <div class="stat-label">Tổng Cụm công nghiệp theo Quy hoạch</div>
+            <div class="stat-label">Tổng Cụm công nghiệp (54 theo Quyết định 525/QĐ-UBND + 02 đề xuất bổ sung)</div>
         </div>
         <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=map]').click()" style="cursor:pointer;" title="Xem bản đồ Cụm công nghiệp đã thành lập (đang hoạt động)">
             <div class="stat-icon">🟢</div>
@@ -449,12 +457,12 @@ function renderStats() {
         <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=list]').click()" style="cursor:pointer;" title="Xem danh sách Cụm công nghiệp đã thành lập">
             <div class="stat-icon">📐</div>
             <div class="stat-number" data-target="${THONG_KE.dienTichHienHuu}">0</div>
-            <div class="stat-label">Diện tích Cụm công nghiệp đã thành lập (héc-ta)</div>
+            <div class="stat-label">Diện tích Cụm công nghiệp đã thành lập (ha)</div>
         </div>
         <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=listqh]').click()" style="cursor:pointer;" title="Xem danh sách Cụm công nghiệp chưa thành lập">
             <div class="stat-icon">🟦</div>
             <div class="stat-number" data-target="${THONG_KE.dienTichQuyHoach}">0</div>
-            <div class="stat-label">Diện tích Cụm công nghiệp chưa thành lập (héc-ta)</div>
+            <div class="stat-label">Diện tích Cụm công nghiệp chưa thành lập (ha)</div>
         </div>
         <div class="stat-card animate-in" onclick="document.querySelector('[data-tab=thuhut]').click()" style="cursor:pointer;" title="Xem cơ hội đầu tư">
             <div class="stat-icon">🏢</div>
@@ -2226,7 +2234,7 @@ function renderUnitDetail(slug, details, srcMatch, optionalName) {
     // Meta dòng
     var metaHtml = '';
     if (viTri) metaHtml += '<div><b>📍 Vị trí:</b> ' + escapeHtml(viTri) + '</div>';
-    if (dienTich) metaHtml += '<div><b>📐 Diện tích:</b> ' + dienTich + ' héc-ta</div>';
+    if (dienTich) metaHtml += '<div><b>📐 Diện tích:</b> ' + dienTich + ' ha</div>';
     if (namTL) metaHtml += '<div><b>📅 Năm thành lập:</b> ' + namTL + '</div>';
     if (trangThai) {
         var ttLabel = {

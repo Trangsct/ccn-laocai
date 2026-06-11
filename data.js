@@ -214,8 +214,8 @@ let CCN_CHUA_DAU_TU = [
     { stt: 29, ten: "Cụm công nghiệp Phú Thịnh 5", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },
     { stt: 30, ten: "Cụm công nghiệp Phú Thịnh 6", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },
     { stt: 31, ten: "Cụm công nghiệp Châu Quế Thượng", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 40, huongPhatTrien: "" },
-    { stt: 32, ten: "Cụm công nghiệp Gia Hội", huyen: "van-chan", xa: "Thôn Nậm Pươi, xã Gia Hội, tỉnh Lào Cai", dienTich: 50, huongPhatTrien: "Đã đưa vào phương án phát triển CCN tỉnh thời kỳ 2021-2030; thành lập khi có nhà đầu tư đề xuất đầu tư hạ tầng." },
-    { stt: 33, ten: "Cụm công nghiệp Phong Hải", huyen: "bao-thang", xa: "Thôn Nậm Chủ, xã Phong Hải, tỉnh Lào Cai", dienTich: 75, huongPhatTrien: "Đã đưa vào phương án phát triển CCN tỉnh thời kỳ 2021-2030; thành lập khi có nhà đầu tư đề xuất đầu tư hạ tầng." }
+    { stt: 32, ten: "Cụm công nghiệp Gia Hội", huyen: "van-chan", xa: "Thôn Nậm Pươi, xã Gia Hội, tỉnh Lào Cai", dienTich: 50, huongPhatTrien: "Đề xuất bổ sung quy hoạch — đang nghiên cứu, chưa có trong QĐ 525/QĐ-UBND (UBND xã đề xuất tháng 6/2026).", deXuatBoSung: true },
+    { stt: 33, ten: "Cụm công nghiệp Phong Hải", huyen: "bao-thang", xa: "Thôn Nậm Chủ, xã Phong Hải, tỉnh Lào Cai", dienTich: 75, huongPhatTrien: "Đề xuất bổ sung quy hoạch — đang nghiên cứu, chưa có trong QĐ 525/QĐ-UBND (UBND xã đề xuất tháng 6/2026).", deXuatBoSung: true }
 ];
 
 
@@ -223,7 +223,7 @@ let CCN_CHUA_DAU_TU = [
 
 // Thống kê tổng hợp
 let THONG_KE = {
-    tongCCN: 54, // 54 theo Quy hoạch tỉnh (QĐ 525); app.js ghi đè = tổng danh mục (23 đã thành lập + 35 chưa thành lập)
+    tongCCN: 56, // = 54 cụm theo Quy hoạch tỉnh (QĐ 525/QĐ-UBND, Phụ lục III) + 02 cụm đề xuất bổ sung (Gia Hội, Phong Hải). app.js tính lại theo cùng công thức.
     dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
     dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,
     choDauTu: CCN_CHUA_DAU_TU.length,
