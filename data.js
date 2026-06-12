@@ -183,8 +183,8 @@ let CUM_CONG_NGHIEP = [
 ];
 
 let CCN_CHUA_DAU_TU = [
-    { stt: 1, ten: "Cụm công nghiệp Gia Hội", huyen: "van-chan", xa: "Thôn Nậm Pươi, xã Gia Hội, tỉnh Lào Cai", dienTich: 50, huongPhatTrien: "Đề xuất bổ sung quy hoạch — đang nghiên cứu, chưa có trong QĐ 525/QĐ-UBND (UBND xã đề xuất tháng 6/2026).", deXuatBoSung: true },
-    { stt: 2, ten: "Cụm công nghiệp Phong Hải", huyen: "bao-thang", xa: "Thôn Nậm Chủ, xã Phong Hải, tỉnh Lào Cai", dienTich: 75, huongPhatTrien: "Đề xuất bổ sung quy hoạch — đang nghiên cứu, chưa có trong QĐ 525/QĐ-UBND (UBND xã đề xuất tháng 6/2026).", deXuatBoSung: true },
+    { stt: 1, ten: "Cụm công nghiệp Gia Hội", huyen: "van-chan", xa: "Thôn Nậm Pươi, xã Gia Hội, tỉnh Lào Cai", dienTich: 50, huongPhatTrien: "Theo thuyết minh Quy hoạch tỉnh: huy động vào giai đoạn trước năm 2030 nếu có nhà đầu tư đề xuất.", deXuatBoSung: true },
+    { stt: 2, ten: "Cụm công nghiệp Phong Hải", huyen: "bao-thang", xa: "Thôn Nậm Chủ, xã Phong Hải, tỉnh Lào Cai", dienTich: 75, huongPhatTrien: "Theo thuyết minh Quy hoạch tỉnh: huy động vào giai đoạn trước năm 2030 nếu có nhà đầu tư đề xuất.", deXuatBoSung: true },
     { stt: 3, ten: "Cụm công nghiệp Phú Thịnh 4", huyen: "yen-binh", xa: "Xã Yên Bình", dienTich: 75, huongPhatTrien: "" },
     { stt: 4, ten: "Cụm công nghiệp Tân Lĩnh", huyen: "luc-yen", xa: "Xã Tân Lĩnh", dienTich: 75, huongPhatTrien: "" },
     { stt: 5, ten: "Cụm công nghiệp Thượng Bằng La", huyen: "van-chan", xa: "Xã Thượng Bằng La", dienTich: 20, huongPhatTrien: "Sau 2030 mở rộng lên thành 50 ha" },
@@ -223,7 +223,7 @@ let CCN_CHUA_DAU_TU = [
 
 // Thống kê tổng hợp
 let THONG_KE = {
-    tongCCN: 56, // = 54 cụm theo Quy hoạch tỉnh (QĐ 525/QĐ-UBND, Phụ lục III) + 02 cụm đề xuất bổ sung (Gia Hội, Phong Hải). app.js tính lại theo cùng công thức.
+    tongCCN: 56, // = 54 cụm theo Quy hoạch tỉnh (QĐ 525/QĐ-UBND, Phụ lục III) + 02 cụm huy động bổ sung (Gia Hội, Phong Hải). app.js tính lại theo cùng công thức.
     dangHoatDong: CUM_CONG_NGHIEP.filter(c => c.trangThai === "hoat-dong").length,
     dangXayDung: CUM_CONG_NGHIEP.filter(c => c.trangThai === "xay-dung").length,
     choDauTu: CCN_CHUA_DAU_TU.length,
