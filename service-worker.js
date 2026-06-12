@@ -2,7 +2,7 @@
 // Chiến lược: Network-first cho HTML/JSON (luôn lấy bản mới nhất),
 // Cache-first cho tài nguyên tĩnh (CSS, JS, ảnh, font, PDF).
 
-const CACHE_VERSION = 'ccn-laocai-v39';
+const CACHE_VERSION = 'ccn-laocai-v40';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
