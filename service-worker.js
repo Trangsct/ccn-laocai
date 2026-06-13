@@ -1,8 +1,8 @@
 // Service Worker — Khu, Cụm công nghiệp tỉnh Lào Cai
-// Chiến lược: Network-first cho HTML/JSON (luôn lấy bản mới nhất),
-// Cache-first cho tài nguyên tĩnh (CSS, JS, ảnh, font, PDF).
+// Chiến lược: Network-first cho HTML/JSON/JS/CSS (luôn lấy bản mới nhất),
+// Cache-first cho tài nguyên nặng ít đổi (ảnh, font, PDF).
 
-const CACHE_VERSION = 'ccn-laocai-v44';
+const CACHE_VERSION = 'ccn-laocai-v45';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -61,9 +61,12 @@ self.addEventListener('fetch', function (event) {
 
   const isHTML = req.mode === 'navigate' || req.destination === 'document';
   const isJSON = url.pathname.endsWith('.json');
+  // Mã nguồn (JS/CSS) cũng dùng network-first để đổi là thấy ngay, không kẹt cache.
+  // Ảnh/font/PDF (nặng, ít đổi) vẫn cache-first ở nhánh dưới.
+  const isCode = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
 
-  // Network-first cho HTML và JSON (cập nhật mới nhất)
-  if (isHTML || isJSON) {
+  // Network-first cho HTML, JSON, JS, CSS (luôn lấy bản mới nhất)
+  if (isHTML || isJSON || isCode) {
     event.respondWith(
       fetch(req).then(function (resp) {
         const respClone = resp.clone();
