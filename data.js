@@ -215,7 +215,8 @@ let CCN_CHUA_DAU_TU = [
     { stt: 30, ten: "Cụm công nghiệp Châu Quế", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 75, huongPhatTrien: "" },
     { stt: 31, ten: "Cụm công nghiệp Phú Thịnh 5", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },
     { stt: 32, ten: "Cụm công nghiệp Phú Thịnh 6", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },
-    { stt: 33, ten: "Cụm công nghiệp Châu Quế Thượng", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 40, huongPhatTrien: "" }
+    { stt: 33, ten: "Cụm công nghiệp Châu Quế Thượng", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 40, huongPhatTrien: "" },
+    { stt: 34, ten: "Cụm công nghiệp Châu Quế Thượng", huyen: "van-yen", xa: "Xã Châu Quế, tỉnh Lào Cai", dienTich: 40, huongPhatTrien: "Danh mục mời gọi nhà đầu tư hạ tầng 2026-2030; chưa có nhà đầu tư.", phanLoai: "moi-goi" }
 ];
 
 

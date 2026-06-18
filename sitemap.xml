@@ -435,6 +435,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-chau-que-thuong.html</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-gia-hoi.html</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>monthly</changefreq>

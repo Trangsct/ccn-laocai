@@ -1176,7 +1176,7 @@
     "type": "Cụm công nghiệp quy hoạch",
     "viTriMoTa": "Xã Xuân Ái, tỉnh Lào Cai",
     "dienTich": 75,
-    "gioiThieu": "<p><b>Cụm công nghiệp Xuân Ái (mở rộng)</b> được quy hoạch tại <b>Xã Xuân Ái, tỉnh Lào Cai</b>, quy mô diện tích dự kiến <b>75 ha</b>. Cụm thuộc danh mục quy hoạch cụm công nghiệp theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của Ủy ban nhân dân tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030, tầm nhìn 2050.</p><p><b>Định hướng phát triển:</b> Mở rộng Cụm công nghiệp Yên Hợp Giai đoạn II (điều chỉnh tăng lên 75ha theo Quyết định số 525/2026)</p><p><b>Ghi chú:</b> Mở rộng Cụm công nghiệp Yên Hợp Giai đoạn II (tăng lên 75ha theo Quyết định số 525/2026).</p><p><b>Hiện trạng:</b> đang ở giai đoạn quy hoạch, chuẩn bị các bước thành lập theo Nghị định 32/2024/NĐ-CP – chưa có quyết định thành lập chính thức.</p>",
+    "gioiThieu": "<p><b>Cụm công nghiệp Xuân Ái (mở rộng)</b> được quy hoạch tại <b>xã Xuân Ái, tỉnh Lào Cai</b>, quy mô diện tích <b>75 ha</b> (được điều chỉnh tăng diện tích trong kỳ điều chỉnh quy hoạch gần nhất).</p><p><b>Trạng thái:</b> chưa thành lập; thuộc Danh mục thu hút, mời gọi nhà đầu tư hạ tầng giai đoạn 2026-2030; hiện chưa có nhà đầu tư. Tọa độ hiển thị trên bản đồ là vị trí ước lượng mức xã, cần cập nhật chính xác.</p>",
     "centerLat": 21.9,
     "centerLng": 104.638
   },
@@ -1454,5 +1454,14 @@
     "gioiThieu": "<p><b>Cụm công nghiệp Phong Hải</b> — xã Phong Hải, diện tích khoảng 75 ha.</p><p><b>Cập nhật tình hình triển khai (Báo cáo Sở Công Thương tháng 6/2026):</b> đã có nhà đầu tư quan tâm, đang nghiên cứu, lập hồ sơ đề nghị thành lập; Sở Công Thương phối hợp, hướng dẫn hoàn thiện hồ sơ theo quy định.</p><p>Cụm được đề xuất bổ sung quy hoạch (Văn bản số 3378/SCT-CN ngày 11/6/2026) và theo thuyết minh Quy hoạch tỉnh thuộc nhóm huy động trước năm 2030 khi có nhà đầu tư đề xuất.</p>",
     "centerLat": 22.45,
     "centerLng": 104.15
+  },
+  "ccn-chau-que-thuong": {
+    "ten": "Cụm công nghiệp Châu Quế Thượng",
+    "type": "Cụm công nghiệp quy hoạch",
+    "viTriMoTa": "Xã Châu Quế, tỉnh Lào Cai",
+    "dienTich": 40,
+    "gioiThieu": "<p><b>Cụm công nghiệp Châu Quế Thượng</b> được quy hoạch tại <b>xã Châu Quế, tỉnh Lào Cai</b>, quy mô diện tích khoảng <b>40 ha</b>.</p><p><b>Trạng thái:</b> chưa thành lập; thuộc Danh mục thu hút, mời gọi nhà đầu tư hạ tầng giai đoạn 2026-2030 (Báo cáo Sở Công Thương tháng 6/2026, tổng mức đầu tư dự kiến khoảng 480 tỷ đồng); hiện chưa có nhà đầu tư.</p><p>Vị trí khu vực Văn Yên, dọc cao tốc Nội Bài - Lào Cai. Tọa độ hiển thị trên bản đồ là vị trí ước lượng mức xã, cần cập nhật chính xác.</p>",
+    "centerLat": 22.03,
+    "centerLng": 104.53
   }
 }
