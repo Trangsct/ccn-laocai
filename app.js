@@ -1059,7 +1059,7 @@ function renderThongKeCharts() {
         data: {
             labels: ['KCN (số)','CCN (số)','KCN (1000 ha)','CCN (1000 ha)'],
             datasets: [
-                {label:'Hiện tại (2025)', data:[7, 23, 2.139, 0.904], backgroundColor:'#90caf9'},
+                {label:'Hiện tại (2025)', data:[7, 23, 2.139, 0.970], backgroundColor:'#90caf9'},
                 {label:'Định hướng 2030 (QĐ 525 + 02 cụm huy động bổ sung)', data:[20, 56, 5.797, 3.053], backgroundColor:'#1565c0'},
                 {label:'Tầm nhìn 2050', data:[22, 62, 8.078, 3.779], backgroundColor:'#0d47a1'}
             ]
