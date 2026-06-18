@@ -651,7 +651,7 @@
       "lat": 22.3397,
       "lng": 104.0681,
       "ghiChu": "Rừng sản xuất 13ha, đất lúa 22,5ha. ~100 hộ ảnh hưởng. Cách QL4E 6km, giáp sông Hồng. Cần nâng cấp TL161.",
-      "phanLoai": "cho-ra-soat"
+      "phanLoai": "moi-goi"
     },
     {
       "stt": 13,
@@ -791,7 +791,7 @@
       "lat": 21.9019723,
       "lng": 104.6449406,
       "ghiChu": "Giai đoạn 2025-2030. Xã Mậu A đã có báo cáo.",
-      "phanLoai": "cho-ra-soat"
+      "phanLoai": "moi-goi"
     },
     {
       "stt": 23,
@@ -883,13 +883,13 @@
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
       "dienTich": 75,
-      "huongPhatTrien": "Mở rộng Cụm công nghiệp Yên Hợp Giai đoạn II (điều chỉnh tăng lên 75ha theo Quyết định số 525/2026)",
+      "huongPhatTrien": "Cụm công nghiệp chưa thành lập, được điều chỉnh tăng diện tích lên 75 ha trong kỳ điều chỉnh quy hoạch gần nhất; thuộc Danh mục thu hút, mời gọi nhà đầu tư hạ tầng giai đoạn 2026-2030, hiện chưa có nhà đầu tư.",
       "coBaoCao": false,
       "baoCao": "",
       "lat": 21.9,
       "lng": 104.638,
-      "ghiChu": "Mở rộng Cụm công nghiệp Yên Hợp Giai đoạn II (tăng lên 75ha theo Quyết định số 525/2026).",
-      "phanLoai": "cho-ra-soat"
+      "ghiChu": "Cụm trong quy hoạch, chưa thành lập, chưa có nhà đầu tư hạ tầng. Tọa độ hiển thị là vị trí ước lượng mức xã, cần cập nhật chính xác.",
+      "phanLoai": "moi-goi"
     },
     {
       "stt": 30,
@@ -917,7 +917,7 @@
       "lat": 21.657659,
       "lng": 104.911829,
       "ghiChu": "Cập nhật tháng 10/2025: Sở Tài chính tỉnh Lào Cai có Tờ trình số 167/TTr-STC ngày 17/9/2025 đề nghị bãi bỏ Quyết định số 122/QĐ-UBND ngày 21/01/2025 của UBND tỉnh Yên Bái (cũ) về chấp thuận chủ trương đầu tư Dự án xây dựng kết cấu hạ tầng kỹ thuật cụm công nghiệp Bảo Hưng 2. Văn phòng UBND tỉnh Lào Cai đã xin ý kiến các Ủy viên UBND tỉnh (đến hết 4/10/2025) để hoàn thiện hồ sơ. Hồ sơ chủ trương đầu tư của Công ty Cổ phần Công nghiệp EUP đang cần được lập lại theo quy định mới sau khi hợp nhất tỉnh.",
-      "phanLoai": "cho-ra-soat"
+      "phanLoai": "moi-goi"
     },
     {
       "stt": 32,
@@ -930,7 +930,7 @@
       "baoCao": "Diện tích 75ha chủ yếu đất nông lâm nghiệp: 42ha rừng sản xuất, 8,5ha lúa, 2ha đất ở, 5ha công ích, 17,5ha NN khác. Ảnh hưởng 76 hộ dân (11 DTTS/nghèo/CS), 27 hộ cần tái định cư (bố trí tại tái định cư Khu công nghiệp Phía Nam và tái định cư Phú Thịnh). Không có rừng tự nhiên. Cách IC cao tốc Nội Bài - Lào Cai ~5km, QL70 ~3,5km, QL32C ~3km, QL2D ~3,5km, cầu Văn Phú ~5km. Thuộc lưu vực Ngòi Sen → sông Hồng. Điện 35kV có sẵn. Có ống cấp nước D300 từ hồ Thác Bà. Khó khăn: địa hình nhiều đồi, nhà kiên cố trên đất thu hồi. Tọa độ VN-2000 (KT 104°45'): (2397130.48, 522607.15), (2396707.56, 522147.00), (2395829.81, 522965.26), (2396255.99, 523422.42).",
       "lat": 21.6661546,
       "lng": 104.9698219,
-      "phanLoai": "cho-ra-soat"
+      "phanLoai": "moi-goi"
     },
     {
       "stt": 33,
@@ -972,6 +972,21 @@
       "lng": 104.628,
       "ghiChu": "Tiến độ thành lập: Thông báo tiếp nhận hồ sơ số 30/TB-UBND ngày 17/4/2026 của UBND xã Xuân Ái; kết thúc tiếp nhận hồ sơ ngày 3/5/2026. Đến thời điểm chốt nhận, có 01 đơn vị đăng ký: Công ty cổ phần PH GREEN (địa chỉ MG2-16, tổ dân phố Nguyễn Thái Học 13, phường Yên Bái). UBND xã Xuân Ái đã trình Tờ trình số 101/TTr-UBND ngày 8/5/2026 lên UBND tỉnh Lào Cai và Sở Công Thương đề nghị thành lập.",
       "phanLoai": "dang-thanh-lap"
+    },
+    {
+      "stt": 36,
+      "ten": "Cụm công nghiệp Châu Quế Thượng",
+      "huyen": "van-yen",
+      "xa": "Xã Châu Quế, tỉnh Lào Cai",
+      "dienTich": 40,
+      "tongMucDauTu": 480,
+      "huongPhatTrien": "Thuộc Danh mục thu hút, mời gọi nhà đầu tư hạ tầng giai đoạn 2026-2030 (Báo cáo Sở Công Thương tháng 6/2026); chưa có nhà đầu tư. Quy mô khá (40 ha), khu vực Văn Yên (xã Châu Quế), dọc cao tốc Nội Bài - Lào Cai.",
+      "coBaoCao": false,
+      "baoCao": "",
+      "lat": 22.03,
+      "lng": 104.53,
+      "ghiChu": "Cụm trong quy hoạch, chưa thành lập, chưa có nhà đầu tư hạ tầng. Tổng mức đầu tư dự kiến khoảng 480 tỷ đồng. Tọa độ hiển thị là vị trí ước lượng mức xã, cần cập nhật chính xác.",
+      "phanLoai": "moi-goi"
     }
   ],
   "KHU_CONG_NGHIEP": [
