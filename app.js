@@ -228,6 +228,11 @@ function updateHeaderStats() {
     if (elDn) elDn.textContent = THONG_KE.tongDoanhNghiep;
     if (elDt) elDt.textContent = (THONG_KE.dienTichHienHuu + THONG_KE.dienTichQuyHoach).toFixed(1);
 
+    // Bộ đếm "Cụm công nghiệp chưa thành lập" trên header — lấy động theo
+    // số cụm thực có trong CCN_CHUA_DAU_TU (tự khớp khi CMS thêm/bớt cụm).
+    const elHeaderQh = document.getElementById('header-ccn-qh');
+    if (elHeaderQh) elHeaderQh.textContent = THONG_KE.choDauTu;
+
     const elHd = document.getElementById('legend-hoatdong');
     const elXd = document.getElementById('legend-xaydung');
     const elQh = document.getElementById('legend-quyhoach');
@@ -937,7 +942,7 @@ function renderKCNCards() {
     };
 }
 
-// ---- CCN QH Cards (35 CCN chưa TL - dạng card) ----
+// ---- CCN QH Cards (36 CCN chưa TL - dạng card) ----
 function renderCCNQHCards() {
     var grid = document.getElementById('ccnqh-grid');
     if (!grid) return;
@@ -1139,7 +1144,7 @@ function renderThongKeCharts() {
         }
     });
 
-    // === CHART 6: Diện tích 35 CCN chưa TL ===
+    // === CHART 6: Diện tích 36 CCN chưa TL ===
     var ccnQHSorted = ccnQH.slice().sort(function(a,b){return b.dienTich-a.dienTich;});
     new Chart(document.getElementById('chart-dt-ccn-qh'), {
         type: 'bar',
