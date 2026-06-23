@@ -152,7 +152,7 @@
             <div class="header-stats">
                 <div class="header-stat" onclick="document.querySelector('[data-tab=kcn]').click()" title="Xem bản đồ Khu công nghiệp"><div class="header-stat-number">20</div><div class="header-stat-label">Khu công nghiệp<br>(Quy hoạch 2030)</div></div>
                 <div class="header-stat" onclick="document.querySelector('[data-tab=map]').click()" title="Xem bản đồ Cụm công nghiệp đã thành lập"><div class="header-stat-number">23</div><div class="header-stat-label">Cụm công nghiệp<br>đã thành lập</div></div>
-                <div class="header-stat" onclick="document.querySelector('[data-tab=ccnqh]').click()" title="Xem bản đồ Cụm công nghiệp quy hoạch"><div class="header-stat-number">35</div><div class="header-stat-label">Cụm công nghiệp<br>chưa thành lập</div></div>
+                <div class="header-stat" onclick="document.querySelector('[data-tab=ccnqh]').click()" title="Xem bản đồ Cụm công nghiệp quy hoạch"><div class="header-stat-number" id="header-ccn-qh">36</div><div class="header-stat-label">Cụm công nghiệp<br>chưa thành lập</div></div>
                 <div class="header-stat" onclick="document.querySelector('[data-tab=thongke]').click()" title="Xem thống kê chi tiết"><div class="header-stat-number">462+</div><div class="header-stat-label">Dự án đã<br>đăng ký đầu tư</div></div>
             </div>
         </div>
@@ -342,7 +342,7 @@
                         </div>
                         <div style="font-size:2.4rem; font-weight:800; color:#2e7d32; line-height:1;">56</div>
                         <div style="font-size:0.9rem; color:#475569; margin-top:8px; font-weight:500;">Định hướng đến năm 2030 — tổng diện tích 3.052,81 ha (54 cụm theo Quyết định 525/QĐ-UBND + 02 cụm huy động bổ sung)</div>
-                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">23 đã thành lập · 35 chưa thành lập (gồm 02 cụm huy động bổ sung) · 4 rút khỏi quy hoạch</div>
+                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">23 đã thành lập · 36 chưa thành lập (gồm 02 cụm huy động bổ sung) · 4 rút khỏi quy hoạch</div>
                     </div>
 
                     <div onclick="document.querySelector('[data-tab=thongke]').click()" style="cursor:pointer; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #7b1fa2; transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(123,31,162,0.18)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'">
@@ -352,7 +352,7 @@
                         </div>
                         <div style="font-size:2.4rem; font-weight:800; color:#7b1fa2; line-height:1;">462<span style="font-size:1.2rem;">+</span></div>
                         <div style="font-size:0.9rem; color:#475569; margin-top:8px; font-weight:500;">Đã đăng ký đầu tư vào các khu, cụm công nghiệp</div>
-                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">228 dự án ở khu công nghiệp · 233 dự án ở cụm công nghiệp</div>
+                        <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">228 dự án ở khu công nghiệp · 234 dự án ở cụm công nghiệp</div>
                     </div>
 
                     <div onclick="document.querySelector('[data-tab=thuhut]').click()" style="cursor:pointer; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #e65100; transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(230,81,0,0.18)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'">
@@ -564,7 +564,7 @@
                     <p style="text-indent:2em;">Tầm nhìn đến năm 2050: <b>62 Cụm công nghiệp</b> với tổng diện tích khoảng <b>3.779 ha</b>.</p>
 
                     <div style="text-align:center; margin:18px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                        <button onclick="document.querySelector('[data-tab=ccnqh]').click()" style="background:#e65100; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">🗺️ Bản đồ 35 Cụm công nghiệp quy hoạch</button>
+                        <button onclick="document.querySelector('[data-tab=ccnqh]').click()" style="background:#e65100; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">🗺️ Bản đồ 36 Cụm công nghiệp quy hoạch</button>
                         <button onclick="document.querySelector('[data-tab=listqh]').click()" style="background:#fff; color:#e65100; border:1.5px solid #e65100; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">📋 Danh sách Cụm công nghiệp chưa thành lập</button>
                         <button onclick="document.querySelector('[data-tab=thuhut]').click()" style="background:#fff; color:#c2410c; border:1.5px solid #c2410c; padding:10px 20px; border-radius:8px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">💰 Cơ hội đầu tư</button>
                     </div>
@@ -1081,7 +1081,7 @@
                         <div style="position:relative; height:380px;"><canvas id="chart-dt-ccn-hien"></canvas></div>
                     </div>
 
-                    <!-- Chart 6: Diện tích 35 CCN chưa thành lập -->
+                    <!-- Chart 6: Diện tích 36 CCN chưa thành lập -->
                     <div style="background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px;">
                         <h3 style="font-size:1rem; margin:0 0 12px; color:var(--primary);">📐 Diện tích Cụm công nghiệp chưa thành lập (ha)</h3>
                         <div style="position:relative; height:380px;"><canvas id="chart-dt-ccn-qh"></canvas></div>
@@ -1163,7 +1163,7 @@
                         <h3 style="margin:0; font-size:1.05rem; color:#2e7d32; font-weight:700;">Cụm công nghiệp kêu gọi đầu tư</h3>
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
-                        <div onclick="document.querySelector('[data-tab=ccnqh]').click()" title="Xem bản đồ 35 Cụm công nghiệp quy hoạch" style="cursor:pointer; background:linear-gradient(135deg,#2e7d32,#388e3c); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(46,125,50,0.25); transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 18px rgba(46,125,50,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(46,125,50,0.25)'">
+                        <div onclick="document.querySelector('[data-tab=ccnqh]').click()" title="Xem bản đồ 36 Cụm công nghiệp quy hoạch" style="cursor:pointer; background:linear-gradient(135deg,#2e7d32,#388e3c); color:#fff; border-radius:12px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(46,125,50,0.25); transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 18px rgba(46,125,50,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(46,125,50,0.25)'">
                             <div style="font-size:2.4rem; font-weight:800; line-height:1;">35</div>
                             <div style="font-size:0.92rem; opacity:0.95; margin-top:6px;">Dự án Cụm công nghiệp</div>
                             <div style="font-size:0.75rem; opacity:0.78; margin-top:2px;">🗺️ Bấm để xem trên bản đồ</div>
