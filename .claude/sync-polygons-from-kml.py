@@ -34,8 +34,8 @@ MAPPING = {
     'ccn-phu-thinh-4':    'CCN Phú Thịnh 4',
     'ccn-phu-thinh-5':    'CCN Phú Thịnh 5',
     'ccn-phu-thinh-6':    'CCN Phú Thịnh 6',
-    'kcn-viet-hong-1':    'KCN Việt Hồng 1',
-    'kcn-viet-hong-2':    'KCN Việt Hồng 2',
+    'kcn-viet-hong-1':    'Khu công nghiệp Việt Hồng 1',
+    'kcn-viet-hong-2':    'Khu công nghiệp Việt Hồng 2',
 }
 
 
