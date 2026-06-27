@@ -28,6 +28,7 @@ MAPPING = {
     'ccn-cam-duong-1':    'CCN Cam Đường 1',
     'ccn-cam-duong-2':    'CCN Cam Đường 2',
     'ccn-quang-kim-so-1': 'CCN Quang Kim 1',
+    'ccn-tan-hop':        'CCN Tân Hợp',
     'ccn-phu-thinh-1':    'CCN Phú Thịnh 1',
     'ccn-phu-thinh-2':    'CCN Phú Thịnh 2',
     'ccn-phu-thinh-3':    'CCN Phú Thịnh 3',

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>Cụm CN Tân Hợp</name>
+  <description>Cụm công nghiệp Tân Hợp, diện tích 75 ha - xã Tân Hợp, tỉnh Lào Cai. Tọa độ gốc VN-2000 (KTT 104°45', múi 3°), chuyển sang WGS84.</description>
+  <Style id="poly">
+    <LineStyle><color>ff0000ff</color><width>3</width></LineStyle>
+    <PolyStyle><color>4d0000ff</color></PolyStyle>
+  </Style>
+  <Style id="pt">
+    <IconStyle><scale>0.9</scale>
+      <Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon>
+    </IconStyle>
+  </Style>
+  <Placemark>
+    <name>Ranh giới Cụm CN Tân Hợp (75 ha)</name>
+    <styleUrl>#poly</styleUrl>
+    <Polygon>
+      <tessellate>1</tessellate>
+      <outerBoundaryIs><LinearRing>
+        <coordinates>104.62467754,21.92541249,0 104.62669826,21.92787505,0 104.63140935,21.92935533,0 104.63603315,21.92510725,0 104.63451664,21.92227377,0 104.63238395,21.91983696,0 104.62467754,21.92541249,0</coordinates>
+      </LinearRing></outerBoundaryIs>
+    </Polygon>
+  </Placemark>
+    <Placemark>
+      <name>Mốc 1</name>
+      <styleUrl>#pt</styleUrl>
+      <Point><coordinates>104.62467754,21.92541249,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Mốc 2</name>
+      <styleUrl>#pt</styleUrl>
+      <Point><coordinates>104.62669826,21.92787505,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Mốc 3</name>
+      <styleUrl>#pt</styleUrl>
+      <Point><coordinates>104.63140935,21.92935533,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Mốc 4</name>
+      <styleUrl>#pt</styleUrl>
+      <Point><coordinates>104.63603315,21.92510725,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Mốc 5</name>
+      <styleUrl>#pt</styleUrl>
+      <Point><coordinates>104.63451664,21.92227377,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Mốc 6</name>
+      <styleUrl>#pt</styleUrl>
+      <Point><coordinates>104.63238395,21.91983696,0</coordinates></Point>
+    </Placemark>
+</Document>
+</kml>
