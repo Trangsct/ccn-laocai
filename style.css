@@ -1132,6 +1132,23 @@ a:hover {
     -webkit-overflow-scrolling: touch;
 }
 
+/* Popup GHIM cố định ở góc trên-trái bản đồ (class .popup-pinned gắn trong JS).
+   Ghi đè vị trí động (transform/left/bottom) mà Leaflet đặt theo marker — để popup
+   luôn nằm 1 chỗ, không bám marker, không bị tràn khỏi khung. Ẩn mũi tên trỏ marker. */
+.leaflet-popup.popup-pinned {
+    position: absolute !important;
+    left: 10px !important;
+    top: 10px !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    z-index: 1100 !important;   /* trên cả nút zoom / lớp nền */
+}
+.leaflet-popup.popup-pinned .leaflet-popup-tip-container {
+    display: none !important;
+}
+
 .popup-card {
     font-family: 'Roboto', sans-serif;
     color: #1a2332;

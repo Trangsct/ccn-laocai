@@ -70,9 +70,8 @@ function buildPopupHTML(data) {
 }
 
 // Options chung cho mọi bindPopup KCN/CCN
-// autoPan của Leaflet tự né không đáng tin khi popup cao hơn vùng hiển thị
-// (popup bị đẩy xuống dưới, nút "Chỉ đường"/"Xem chi tiết" lọt khỏi đáy bản đồ).
-// → tắt autoPan, tự đưa popup lên đầu bản đồ trong ensurePopupVisible().
+// Tắt autoPan/keepInView: popup được GHIM cố định góc trên-trái (pinPopupTopLeft)
+// chứ không bám marker, nên không cần Leaflet tự pan bản đồ.
 function popupOptions() {
     return {
         maxWidth: 320,
@@ -83,45 +82,31 @@ function popupOptions() {
     };
 }
 
-// Đưa popup vừa mở lên SÁT ĐẦU bản đồ để luôn nhìn thấy đủ nội dung + các nút bấm.
-// Vì popup neo theo marker, khi marker nằm gần đáy bản đồ thì popup cao sẽ tràn xuống
-// dưới và các nút bị che. Ta tự pan bản đồ sao cho mép trên popup nằm ngay đầu vùng
-// hiển thị (chừa thanh nav sticky đang dính trên cùng).
-function ensurePopupVisible(mapInstance, popup) {
-    var doPan = function() {
-        var el = popup && popup.getElement();
-        if (!el || !mapInstance) return;
-        // Marker bản đồ chính có flyTo khi click — đợi bay xong rồi mới canh,
-        // tránh thao tác pan bị flyTo ghi đè (gây giật).
-        if (mapInstance._flyingToMarker) {
-            mapInstance.once('moveend', function() { setTimeout(doPan, 20); });
-            return;
-        }
-        var mapRect = mapInstance.getContainer().getBoundingClientRect();
-        // Mép trên mong muốn: dưới thanh nav sticky (nếu nó đang che mép trên bản đồ),
-        // hoặc ngay đầu bản đồ — cộng 12px lề cho thoáng.
-        var nav = document.getElementById('main-nav');
-        var navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
-        var desiredTop = Math.max(mapRect.top, navBottom) + 12;
-        // Giới hạn chiều cao popup để cả khung (kể cả hàng nút ghim đáy) nằm GỌN
-        // trong bản đồ — nếu không, popup cao sẽ tràn xuống dưới mép bản đồ và bị cắt.
-        // Chừa ~28px cho mũi tên + lề dưới.
-        var avail = mapRect.bottom - desiredTop - 28;
-        var contentEl = el.querySelector('.leaflet-popup-content');
-        if (contentEl && avail > 150) {
-            contentEl.style.maxHeight = avail + 'px';
-        }
-        // Đo lại sau khi đổi chiều cao rồi pan mép trên popup về desiredTop
-        var popRect = el.getBoundingClientRect();
-        var dy = popRect.top - desiredTop; // > 0: popup đang ở dưới → pan để kéo lên
-        if (Math.abs(dy) > 4) {
-            mapInstance.panBy([0, dy], { animate: true, duration: 0.3 });
-        }
-    };
-    setTimeout(doPan, 30);
+// GHIM popup cố định ở GÓC TRÊN-TRÁI bản đồ (không bám theo marker nữa).
+// Marker có thể nằm bất kỳ đâu — kể cả sát đáy — nên popup bám marker hay bị tràn
+// khỏi khung và bị cắt. Thay vào đó cố định popup ở góc trên-trái: luôn thấy đủ
+// nội dung + các nút bấm, dù click marker ở vị trí nào. (Vị trí cố định xử lý bằng
+// class CSS .popup-pinned; ở đây chỉ giới hạn chiều cao cho vừa khung bản đồ.)
+function pinPopupTopLeft(mapInstance, popup) {
+    var el = popup && popup.getElement();
+    if (!el || !mapInstance) return;
+    el.classList.add('popup-pinned');
+    // Popup gốc nằm trong .leaflet-popup-pane — pane này bị transform (dịch chuyển)
+    // mỗi khi kéo/zoom bản đồ, nên ghim bằng CSS không thôi sẽ bị trôi theo. Đưa
+    // popup ra gắn THẲNG vào khung bản đồ để cố định tuyệt đối theo góc bản đồ.
+    var mapContainer = mapInstance.getContainer();
+    if (el.parentNode !== mapContainer) {
+        mapContainer.appendChild(el);
+    }
+    // Giới hạn chiều cao để popup không tràn xuống dưới đáy bản đồ; nếu mô tả dài
+    // thì cuộn trong popup (hàng nút vẫn ghim đáy nhờ position:sticky).
+    var contentEl = el.querySelector('.leaflet-popup-content');
+    if (contentEl) {
+        contentEl.style.maxHeight = Math.max(150, mapContainer.clientHeight - 34) + 'px';
+    }
 }
 
-// Gắn handler cho nút "Xem chi tiết" + đưa popup lên đầu bản đồ
+// Gắn handler cho nút "Xem chi tiết" + ghim popup cố định góc trên-trái
 function bindPopupDetailHandler(mapInstance) {
     mapInstance.on('popupopen', function(e) {
         var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
@@ -131,7 +116,7 @@ function bindPopupDetailHandler(mapInstance) {
                 mapInstance.closePopup();
             };
         }
-        ensurePopupVisible(mapInstance, e.popup);
+        pinPopupTopLeft(mapInstance, e.popup);
     });
 }
 
@@ -375,9 +360,6 @@ function addMarkers(ccnList) {
         marker.bindPopup(html, popupOptions());
 
         marker.on('click', () => {
-            // Đánh dấu đang bay để ensurePopupVisible đợi bay xong mới canh popup lên đầu
-            map._flyingToMarker = true;
-            map.once('moveend', () => { map._flyingToMarker = false; });
             map.flyTo([ccn.lat, ccn.lng], 13, { duration: 0.8 });
         });
 
