@@ -98,12 +98,21 @@ function ensurePopupVisible(mapInstance, popup) {
             return;
         }
         var mapRect = mapInstance.getContainer().getBoundingClientRect();
-        var popRect = el.getBoundingClientRect();
         // Mép trên mong muốn: dưới thanh nav sticky (nếu nó đang che mép trên bản đồ),
-        // hoặc ngay đầu bản đồ — cộng 16px lề cho thoáng.
+        // hoặc ngay đầu bản đồ — cộng 12px lề cho thoáng.
         var nav = document.getElementById('main-nav');
         var navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
-        var desiredTop = Math.max(mapRect.top, navBottom) + 16;
+        var desiredTop = Math.max(mapRect.top, navBottom) + 12;
+        // Giới hạn chiều cao popup để cả khung (kể cả hàng nút ghim đáy) nằm GỌN
+        // trong bản đồ — nếu không, popup cao sẽ tràn xuống dưới mép bản đồ và bị cắt.
+        // Chừa ~28px cho mũi tên + lề dưới.
+        var avail = mapRect.bottom - desiredTop - 28;
+        var contentEl = el.querySelector('.leaflet-popup-content');
+        if (contentEl && avail > 150) {
+            contentEl.style.maxHeight = avail + 'px';
+        }
+        // Đo lại sau khi đổi chiều cao rồi pan mép trên popup về desiredTop
+        var popRect = el.getBoundingClientRect();
         var dy = popRect.top - desiredTop; // > 0: popup đang ở dưới → pan để kéo lên
         if (Math.abs(dy) > 4) {
             mapInstance.panBy([0, dy], { animate: true, duration: 0.3 });

@@ -1200,7 +1200,16 @@ a:hover {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 12px;
+    /* Ghim hàng nút (Chỉ đường / Xem chi tiết) dính ĐÁY popup: dù phần mô tả dài
+       phải cuộn, các nút vẫn luôn hiển thị và bấm được. Tràn full bề ngang, bù
+       padding của .popup-card__body (12px 16px 14px). */
+    position: sticky;
+    bottom: 0;
+    margin: 12px -16px -14px;
+    padding: 12px 16px;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -5px 10px rgba(255,255,255,0.95);
 }
 .popup-card__actions .btn-primary,
 .popup-card__actions .btn-secondary {
