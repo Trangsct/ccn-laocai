@@ -19,7 +19,7 @@ Allow: /manifest.json
 Allow: /*.pdf$
 
 # Sitemap
-Sitemap: https://congnghieplaocai.vn/sitemap.xml
+Sitemap: https://www.congnghieplaocai.vn/sitemap.xml
 
 # Tốc độ thu thập (chỉ áp dụng với crawler không phải Google)
 Crawl-delay: 5

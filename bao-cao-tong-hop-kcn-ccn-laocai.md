@@ -602,7 +602,7 @@ Hầu hết các cụm trong nhóm này hình thành trước Quyết định s�
 - Hotline xúc tiến đầu tư: 0912.011.358
 - Email: contact-sct@laocai.gov.vn
 - Website: https://sct.laocai.gov.vn
-- Website chuyên đề KCN/CCN: https://congnghieplaocai.vn
+- Website chuyên đề KCN/CCN: https://www.congnghieplaocai.vn
 
 ---
 
