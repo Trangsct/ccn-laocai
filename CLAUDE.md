@@ -10,7 +10,7 @@ Cổng thông tin **Khu, Cụm công nghiệp tỉnh Lào Cai** — một websit
 - Hiển thị thống kê (Chart.js), tin tức, văn bản pháp luật (PDF), chi tiết từng CCN.
 - Cho cán bộ Sở chỉnh sửa dữ liệu qua **Netlify CMS** mà không cần biết code.
 
-Production deploy: **https://congnghieplaocai.vn** (host kép Netlify + Vercel; Netlify để chạy git-gateway + Identity cho CMS, Vercel cho tốc độ tải public).
+Production deploy: **https://www.congnghieplaocai.vn** (host kép Netlify + Vercel; Netlify để chạy git-gateway + Identity cho CMS, Vercel cho tốc độ tải public).
 
 Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng tiếng Việt). Source code lưu tại `C:\Users\USER\OneDrive\Web KCN CCN` (OneDrive sync — cẩn thận xung đột file khi đang sync).
 
