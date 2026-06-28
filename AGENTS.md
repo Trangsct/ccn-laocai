@@ -4,7 +4,7 @@
 Website quản lý nhà nước về Khu công nghiệp (KCN) và Cụm công nghiệp (CCN)
 của Sở Công Thương tỉnh Lào Cai (tỉnh mới sau hợp nhất 01/7/2025, gồm cả
 địa bàn Yên Bái cũ). Người dùng cuối là Lãnh đạo Sở, chuyên viên Phòng
-QLCN, Lãnh đạo UBND tỉnh. Deploy tại deploy-teal-ten-71.vercel.app.
+QLCN, Lãnh đạo UBND tỉnh. Deploy tại congnghieplaocai.vn.
 
 ## Ràng buộc
 - Toàn bộ giao diện và dữ liệu bằng tiếng Việt.

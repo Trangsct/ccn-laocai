@@ -19,7 +19,7 @@ Allow: /manifest.json
 Allow: /*.pdf$
 
 # Sitemap
-Sitemap: https://deploy-teal-ten-71.vercel.app/sitemap.xml
+Sitemap: https://congnghieplaocai.vn/sitemap.xml
 
 # Tốc độ thu thập (chỉ áp dụng với crawler không phải Google)
 Crawl-delay: 5

@@ -4,7 +4,7 @@
 **Sở Công Thương tỉnh Lào Cai**
 
 > Áp dụng cho toàn bộ tài khoản có quyền chỉnh sửa dữ liệu trên cổng thông tin
-> `https://deploy-teal-ten-71.vercel.app` (sau đây gọi là "Cổng").
+> `https://congnghieplaocai.vn` (sau đây gọi là "Cổng").
 >
 > Ban hành: 2026-05-21 · Phiên bản: 1.0
 

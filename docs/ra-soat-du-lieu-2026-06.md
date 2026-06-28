@@ -129,7 +129,7 @@ Hiện trong dữ liệu tồn tại **3 thực thể** cùng địa bàn xã Xu
 | 7 | **Cập nhật các mốc quá hạn** (mục 2.3) khi có thông tin chính thức từ Phòng QLCN; đặt lịch rà mốc 30/6/2026 | Tránh nội dung "treo" trên trang công khai | Thấp (cần dữ liệu) |
 | 8 | **Đưa tin tức vào dữ liệu/CMS** (hiện hardcode trong `index.html`, mỗi tin mới phải sửa code) + bổ sung dòng ngày cho card tin 4 | Giảm phụ thuộc người biết code; quy trình đăng tin nhanh hơn | Trung bình |
 | 9 | Dọn dead code `updateHeaderStats` (mục 1.6) | Vệ sinh code, tránh hiểu nhầm | Rất thấp |
-| 10 | Cân nhắc domain chính thức thay `deploy-teal-ten-71.vercel.app` (ảnh hưởng canonical, sitemap, OG của 78 trang) | Hình ảnh cơ quan nhà nước; nên làm trước khi SEO "bám rễ" domain tạm | Trung bình (ngoài code là chính) |
+| 10 | Cân nhắc domain chính thức thay `congnghieplaocai.vn` (ảnh hưởng canonical, sitemap, OG của 78 trang) | Hình ảnh cơ quan nhà nước; nên làm trước khi SEO "bám rễ" domain tạm | Trung bình (ngoài code là chính) |
 
 ---
 

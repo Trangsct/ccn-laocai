@@ -5,7 +5,7 @@
 
   <!-- Trang chủ -->
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/</loc>
+    <loc>https://congnghieplaocai.vn/</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -13,43 +13,43 @@
 
   <!-- Văn bản pháp luật (PDF) -->
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/nghi-quyet-34.pdf</loc>
+    <loc>https://congnghieplaocai.vn/nghi-quyet-34.pdf</loc>
     <lastmod>2026-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/ke-hoach-thuc-hien-nq34.pdf</loc>
+    <loc>https://congnghieplaocai.vn/ke-hoach-thuc-hien-nq34.pdf</loc>
     <lastmod>2026-03-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/nghi-dinh-32-2024.pdf</loc>
+    <loc>https://congnghieplaocai.vn/nghi-dinh-32-2024.pdf</loc>
     <lastmod>2024-03-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/nghi-dinh-35-2022.pdf</loc>
+    <loc>https://congnghieplaocai.vn/nghi-dinh-35-2022.pdf</loc>
     <lastmod>2022-05-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/thong-tu-14-2024.pdf</loc>
+    <loc>https://congnghieplaocai.vn/thong-tu-14-2024.pdf</loc>
     <lastmod>2024-08-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/quyet-dinh-quy-che-ccn-lao-cai-2026.pdf</loc>
+    <loc>https://congnghieplaocai.vn/quyet-dinh-quy-che-ccn-lao-cai-2026.pdf</loc>
     <lastmod>2026-02-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/ban-do-khu-cum-cn-2025.pdf</loc>
+    <loc>https://congnghieplaocai.vn/ban-do-khu-cum-cn-2025.pdf</loc>
     <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -57,7 +57,7 @@
 
   <!-- Hướng dẫn thủ tục -->
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/huong-dan-chu-dau-tu-ccn.docx</loc>
+    <loc>https://congnghieplaocai.vn/huong-dan-chu-dau-tu-ccn.docx</loc>
     <lastmod>2026-05-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -65,13 +65,13 @@
 
   <!-- Báo cáo Sở Công Thương (cập nhật T5/2026) -->
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/bao-cao-tong-hop-kcn-ccn-laocai.md</loc>
+    <loc>https://congnghieplaocai.vn/bao-cao-tong-hop-kcn-ccn-laocai.md</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/bao-cao-tinh-hinh-chi-tiet-tung-ccn.docx</loc>
+    <loc>https://congnghieplaocai.vn/bao-cao-tinh-hinh-chi-tiet-tung-ccn.docx</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -79,19 +79,19 @@
 
   <!-- File dữ liệu JSON (tra cứu kỹ thuật) -->
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/ccn-data.json</loc>
+    <loc>https://congnghieplaocai.vn/ccn-data.json</loc>
     <lastmod>2026-06-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/unit-details.json</loc>
+    <loc>https://congnghieplaocai.vn/unit-details.json</loc>
     <lastmod>2026-06-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/ccn-polygons.json</loc>
+    <loc>https://congnghieplaocai.vn/ccn-polygons.json</loc>
     <lastmod>2026-05-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -99,481 +99,481 @@
 
   <!-- 76 trang chi tiết KCN/CCN -->
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-dam-hong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-dam-hong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-au-lau.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-au-lau.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-thinh-hung.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-thinh-hung.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phu-thinh-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phu-thinh-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phu-thinh-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phu-thinh-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phu-thinh-3.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phu-thinh-3.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-son-thinh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-son-thinh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-yen-the.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-yen-the.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bao-dap.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bao-dap.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-hung-khanh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-hung-khanh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-minh-quan.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-minh-quan.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-y-can.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-y-can.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-tay-cau-mau-a.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-tay-cau-mau-a.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-dong-an.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-dong-an.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-yen-hop.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-yen-hop.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bac-van-yen.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bac-van-yen.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bac-duyen-hai.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bac-duyen-hai.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-dong-pho-moi.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-dong-pho-moi.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-son-man.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-son-man.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-pho-rang.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-pho-rang.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-khanh-yen-thuong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-khanh-yen-thuong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-thong-nhat-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-thong-nhat-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bao-minh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bao-minh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phu-thinh-4.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phu-thinh-4.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-mong-son.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-mong-son.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-tan-nguyen.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-tan-nguyen.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bat-xat.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bat-xat.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-muong-khuong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-muong-khuong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-ban-phiet-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-ban-phiet-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-ban-phiet-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-ban-phiet-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-cam-duong-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-cam-duong-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-cam-duong-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-cam-duong-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bao-thang-thi-tran-pho-lu.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bao-thang-thi-tran-pho-lu.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-tra-trau.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-tra-trau.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-pho-rang-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-pho-rang-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-pho-rang-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-pho-rang-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-tan-an.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-tan-an.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-ban-phung.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-ban-phung.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-hoa-mac.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-hoa-mac.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-tan-hop.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-tan-hop.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-ngoi-a.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-ngoi-a.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-yen-hung.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-yen-hung.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-an-thinh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-an-thinh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-tan-linh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-tan-linh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-thuong-bang-la.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-thuong-bang-la.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-van-chan.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-van-chan.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-an-binh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-an-binh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-chau-que.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-chau-que.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-yen-hop-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-yen-hop-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-xuan-ai-mo-rong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-xuan-ai-mo-rong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-hop-minh.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-hop-minh.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-bao-hung-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-bao-hung-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phu-thinh-5.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phu-thinh-5.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phu-thinh-6.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phu-thinh-6.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-quang-kim-so-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-quang-kim-so-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-yen-hop-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-yen-hop-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-chau-que-thuong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-chau-que-thuong.html</loc>
     <lastmod>2026-06-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-gia-hoi.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-gia-hoi.html</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/ccn-phong-hai.html</loc>
+    <loc>https://congnghieplaocai.vn/units/ccn-phong-hai.html</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-dong-pho-moi.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-dong-pho-moi.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-bac-duyen-hai.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-bac-duyen-hai.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-tang-loong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-tang-loong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-phia-nam.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-phia-nam.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-au-lau.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-au-lau.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-minh-quan.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-minh-quan.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-tran-yen.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-tran-yen.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-ban-qua.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-ban-qua.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-y-can.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-y-can.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-dong-an.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-dong-an.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-thinh-hung.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-thinh-hung.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-luc-yen.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-luc-yen.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-vo-lao-giai-doan-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-vo-lao-giai-doan-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-coc-my-trinh-tuong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-coc-my-trinh-tuong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-phu-xuan.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-phu-xuan.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-bat-xat.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-bat-xat.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-cam-duong.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-cam-duong.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-thong-nhat.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-thong-nhat.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-viet-hong-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-viet-hong-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-viet-hong-2.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-viet-hong-2.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://deploy-teal-ten-71.vercel.app/units/kcn-phu-xuan-1.html</loc>
+    <loc>https://congnghieplaocai.vn/units/kcn-phu-xuan-1.html</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
