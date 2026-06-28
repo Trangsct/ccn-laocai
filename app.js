@@ -70,18 +70,43 @@ function buildPopupHTML(data) {
 }
 
 // Options chung cho mọi bindPopup KCN/CCN
+// Tắt autoPan/keepInView: popup được GHIM cố định góc trên-trái (pinPopupTopLeft)
+// chứ không bám marker, nên không cần Leaflet tự pan bản đồ.
 function popupOptions() {
     return {
         maxWidth: 320,
         minWidth: 320,
-        autoPan: true,
-        autoPanPaddingBottomRight: L.point(20, 100),  // chừa chỗ chatbot widget bottom-right
-        keepInView: true,
+        autoPan: false,
+        keepInView: false,
         closeButton: true
     };
 }
 
-// Gắn handler cho nút "Xem chi tiết" trên mọi popup của 1 map
+// GHIM popup cố định ở GÓC TRÊN-TRÁI bản đồ (không bám theo marker nữa).
+// Marker có thể nằm bất kỳ đâu — kể cả sát đáy — nên popup bám marker hay bị tràn
+// khỏi khung và bị cắt. Thay vào đó cố định popup ở góc trên-trái: luôn thấy đủ
+// nội dung + các nút bấm, dù click marker ở vị trí nào. (Vị trí cố định xử lý bằng
+// class CSS .popup-pinned; ở đây chỉ giới hạn chiều cao cho vừa khung bản đồ.)
+function pinPopupTopLeft(mapInstance, popup) {
+    var el = popup && popup.getElement();
+    if (!el || !mapInstance) return;
+    el.classList.add('popup-pinned');
+    // Popup gốc nằm trong .leaflet-popup-pane — pane này bị transform (dịch chuyển)
+    // mỗi khi kéo/zoom bản đồ, nên ghim bằng CSS không thôi sẽ bị trôi theo. Đưa
+    // popup ra gắn THẲNG vào khung bản đồ để cố định tuyệt đối theo góc bản đồ.
+    var mapContainer = mapInstance.getContainer();
+    if (el.parentNode !== mapContainer) {
+        mapContainer.appendChild(el);
+    }
+    // Giới hạn chiều cao để popup không tràn xuống dưới đáy bản đồ; nếu mô tả dài
+    // thì cuộn trong popup (hàng nút vẫn ghim đáy nhờ position:sticky).
+    var contentEl = el.querySelector('.leaflet-popup-content');
+    if (contentEl) {
+        contentEl.style.maxHeight = Math.max(150, mapContainer.clientHeight - 34) + 'px';
+    }
+}
+
+// Gắn handler cho nút "Xem chi tiết" + ghim popup cố định góc trên-trái
 function bindPopupDetailHandler(mapInstance) {
     mapInstance.on('popupopen', function(e) {
         var btn = e.popup.getElement() && e.popup.getElement().querySelector('[data-action="open-detail"]');
@@ -91,6 +116,7 @@ function bindPopupDetailHandler(mapInstance) {
                 mapInstance.closePopup();
             };
         }
+        pinPopupTopLeft(mapInstance, e.popup);
     });
 }
 
