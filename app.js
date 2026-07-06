@@ -902,7 +902,7 @@ function renderKCNCards() {
     var kcnAll = [
         { ten:"KCN Phía Nam", viTri:"Phường Văn Phú, tỉnh Lào Cai", dt:400, tt:"hoat-dong", gc:"66 DA, lấp đầy 91,54%. Đa ngành, 12 DA FDI." },
         { ten:"KCN Trấn Yên", viTri:"Phường Âu Lâu, tỉnh Lào Cai", dt:339, tt:"xay-dung", gc:"GĐ I: 254,59 ha (QĐ 1438/TTg). Đang triển khai san nền." },
-        { ten:"KCN Bản Qua (GĐ 1)", viTri:"Xã Bản Qua, tỉnh Lào Cai", dt:107, tt:"quy-hoach", gc:"Giữ nguyên QH. GĐ 2025-2030." },
+        { ten:"KCN Bản Qua (GĐ 1)", viTri:"Xã Bát Xát, tỉnh Lào Cai", dt:76.39, tt:"xay-dung", gc:"Đã chấp thuận CTĐT (QĐ 2170/QĐ-UBND ngày 23/6/2026). KCN sinh thái. NĐT: Công ty CP ĐTPT công nghiệp Lào Cai (Shinec). QH ban đầu 107 ha." },
         { ten:"KCN Y Can", viTri:"Xã Y Can, tỉnh Lào Cai", dt:350, tt:"quy-hoach", gc:"Giữ nguyên QH. GĐ 2025-2030." },
         { ten:"KCN Đông An", viTri:"Xã Đông An, tỉnh Lào Cai", dt:350, tt:"quy-hoach", gc:"Giữ nguyên QH. GĐ 2025-2030." },
         { ten:"KCN Thịnh Hưng (GĐ 1)", viTri:"Xã Thịnh Hưng, tỉnh Lào Cai", dt:104, tt:"quy-hoach", gc:"Giữ nguyên QH. GĐ 2025-2030." },
@@ -913,13 +913,13 @@ function renderKCNCards() {
         { ten:"KCN Minh Quân", viTri:"Xã Minh Quân, tỉnh Lào Cai", dt:75, tt:"hoat-dong", gc:"17 DA, lấp đầy 94,65% — cao nhất các KCN. Còn 4,01 ha." },
         { ten:"KCN Cốc Mỳ - Trịnh Tường (GĐ 1)", viTri:"Xã Trịnh Tường, tỉnh Lào Cai", dt:500, tt:"quy-hoach", gc:"Giảm DT từ 800 → 500 ha." },
         { ten:"KCN Võ Lao (GĐ 1)", viTri:"Xã Võ Lao, tỉnh Lào Cai", dt:500, tt:"quy-hoach", gc:"Tăng DT từ 200 → 500 ha." },
-        { ten:"KCN Phú Xuân", viTri:"Xã Xuân Hòa, tỉnh Lào Cai", dt:300, tt:"quy-hoach", gc:"Đẩy nhanh từ sau 2030 lên 2026-2030." },
+        { ten:"KCN Phú Xuân", viTri:"Xã Gia Phú, tỉnh Lào Cai", dt:300, tt:"xay-dung", gc:"Đã chấp thuận CTĐT (QĐ 2336/QĐ-UBND ngày 02/7/2026). NĐT: Công ty CP Công nghiệp Linh Linh. Vốn 3.277 tỷ, 70 năm." },
         { ten:"KCN Bát Xát", viTri:"Xã Bát Xát, tỉnh Lào Cai", dt:76, tt:"quy-hoach", gc:"Bổ sung mới. Phục vụ di chuyển từ KCN Đông Phố Mới." },
         { ten:"KCN Cam Đường", viTri:"Phường Cam Đường, TP. Lào Cai", dt:200, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
         { ten:"KCN Thống Nhất", viTri:"Xã Gia Phú, tỉnh Lào Cai", dt:150, tt:"quy-hoach", gc:"Bổ sung mới. Chuyển từ CCN." },
         { ten:"KCN Việt Hồng 1", viTri:"Xã Việt Hồng, tỉnh Lào Cai", dt:300, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
         { ten:"KCN Việt Hồng 2", viTri:"Xã Việt Hồng, tỉnh Lào Cai", dt:200, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
-        { ten:"KCN Phú Xuân 1", viTri:"Xã Xuân Hòa, tỉnh Lào Cai", dt:200, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
+        { ten:"KCN Phú Xuân 1", viTri:"Xã Gia Phú, tỉnh Lào Cai", dt:200, tt:"xay-dung", gc:"Đã chấp thuận CTĐT (QĐ 2338/QĐ-UBND ngày 02/7/2026). NĐT: Công ty CP Công nghiệp Linh Linh. Vốn 2.185 tỷ, 70 năm." },
         { ten:"KCN Đông Phố Mới", viTri:"Phường Lào Cai, TP. Lào Cai", dt:100, tt:"rut-qh", gc:"41 DA, lấp đầy >90%. Sẽ rút khỏi QH — di dời phục vụ đường sắt tốc độ cao LC-HN-HP → chuyển về KCN Bát Xát." }
     ];
 
@@ -1027,11 +1027,11 @@ function renderThongKeCharts() {
     var ccnHien = CUM_CONG_NGHIEP;
     // 35 CCN chưa TL
     var ccnQH = CCN_CHUA_DAU_TU;
-    // 21 KCN (7 đã TL + 14 chưa TL)
+    // 21 KCN (10 đã TL/đã chấp thuận CTĐT + 11 chưa TL)
     var kcnList = [
         {ten:'KCN Phía Nam', xa:'Phường Văn Phú', dt:400, tt:'hoat-dong', da:66, ld:91.54, status:'da-tl'},
         {ten:'KCN Trấn Yên', xa:'Phường Âu Lâu', dt:339, tt:'xay-dung', da:0, ld:0, status:'da-tl'},
-        {ten:'KCN Bản Qua (GĐ 1)', xa:'Xã Bản Qua', dt:107, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Bản Qua (GĐ 1)', xa:'Xã Bát Xát', dt:76.39, tt:'xay-dung', da:0, ld:0, status:'da-tl'},
         {ten:'KCN Y Can', xa:'Xã Y Can', dt:350, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Đông An', xa:'Xã Đông An', dt:350, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Thịnh Hưng (GĐ 1)', xa:'Xã Thịnh Hưng', dt:104, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
@@ -1042,13 +1042,13 @@ function renderThongKeCharts() {
         {ten:'KCN Minh Quân', xa:'Xã Minh Quân', dt:75, tt:'hoat-dong', da:17, ld:94.65, status:'da-tl'},
         {ten:'KCN Cốc Mỳ - Trịnh Tường (GĐ 1)', xa:'Xã Trịnh Tường', dt:500, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Võ Lao (GĐ 1)', xa:'Xã Võ Lao', dt:500, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
-        {ten:'KCN Phú Xuân', xa:'Xã Xuân Hòa', dt:300, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Phú Xuân', xa:'Xã Gia Phú', dt:300, tt:'xay-dung', da:0, ld:0, status:'da-tl'},
         {ten:'KCN Bát Xát', xa:'Xã Bát Xát', dt:76, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Cam Đường', xa:'Phường Cam Đường', dt:200, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Thống Nhất', xa:'Xã Gia Phú', dt:150, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Việt Hồng 1', xa:'Xã Việt Hồng', dt:300, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
         {ten:'KCN Việt Hồng 2', xa:'Xã Việt Hồng', dt:200, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
-        {ten:'KCN Phú Xuân 1', xa:'Xã Xuân Hòa', dt:200, tt:'quy-hoach', da:0, ld:0, status:'chua-tl'},
+        {ten:'KCN Phú Xuân 1', xa:'Xã Gia Phú', dt:200, tt:'xay-dung', da:0, ld:0, status:'da-tl'},
         {ten:'KCN Đông Phố Mới', xa:'Phường Lào Cai', dt:100, tt:'rut-qh', da:41, ld:90, status:'rut-qh'}
     ];
 
