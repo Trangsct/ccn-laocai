@@ -146,11 +146,11 @@ Sau khi sáp nhập đơn vị hành chính theo Nghị quyết số 202/2025/QH
 
 #### Các KCN đang trong quá trình thành lập, lập quy hoạch
 
-- **KCN Bản Qua**: 107 ha, xã Bản Qua. Nhà đầu tư đề xuất là Công ty Cổ phần đầu tư phát triển công nghiệp Lào Cai (cổ đông chính là Công ty Cổ phần Shinec Hải Phòng). Ban Quản lý Khu kinh tế đã có Báo cáo kết quả thẩm định số 62/BC-BQL ngày 20/3/2026; Văn phòng UBND tỉnh đang xin ý kiến các Ủy viên UBND tỉnh.
+- **KCN Bản Qua**: 76,39 ha (quy hoạch ban đầu 107 ha), xã Bát Xát. **Đã được UBND tỉnh chấp thuận chủ trương đầu tư đồng thời chấp thuận nhà đầu tư tại Quyết định số 2170/QĐ-UBND ngày 23/6/2026**; Ban Quản lý Khu kinh tế tỉnh Lào Cai cấp Giấy chứng nhận đăng ký đầu tư mã số dự án 4275604886 ngày 30/6/2026. Nhà đầu tư: Công ty Cổ phần Đầu tư phát triển công nghiệp Lào Cai (thuộc Công ty Cổ phần Shinec). Khu công nghiệp sinh thái; tổng vốn đầu tư 1.360,668 tỷ đồng; thời hạn hoạt động 50 năm.
 - **KCN Võ Lao**: 482,6 ha, xã Võ Lao. Nhà đầu tư đề xuất là Công ty Cổ phần đầu tư hạ tầng Châu Giang (cổ đông chính là Công ty CP Công nghệ Viễn Thông Sài Gòn - Saigontel). UBND tỉnh đã có Văn bản số 3384/UBND-KT ngày 03/5/2026 xin ý kiến Bộ Công an; UBND tỉnh đã có Tờ trình số 525/TTr-UBND ngày 19/8/2026 trình Thường trực Đảng ủy.
 - **KCN Cốc Mỳ - Trịnh Tường**: 1.000 ha (Giai đoạn I: 500 ha), xã Trịnh Tường. Quy hoạch phân khu đã được giao tại Quyết định số 2107/QĐ-UBND ngày 27/11/2025. Sở Xây dựng đang thẩm định dự toán kinh phí lập quy hoạch.
-- **KCN Phú Xuân**: 300 ha, xã Gia Phú. UBND tỉnh đã phê duyệt bổ sung dự toán kinh phí lập quy hoạch tại Quyết định số 1757/QĐ-UBND ngày 18/5/2026.
-- **KCN Phú Xuân 1**: 200 ha, xã Gia Phú. Đã được giao danh mục lập quy hoạch tại Quyết định số 1250/QĐ-UBND ngày 14/4/2026.
+- **KCN Phú Xuân**: 300 ha, xã Gia Phú. **Đã được Chủ tịch UBND tỉnh chấp thuận chủ trương đầu tư đồng thời chấp thuận nhà đầu tư tại Quyết định số 2336/QĐ-UBND ngày 02/7/2026**. Nhà đầu tư: Công ty Cổ phần Công nghiệp Linh Linh. Tổng vốn đầu tư 3.277 tỷ đồng; thời hạn hoạt động 70 năm.
+- **KCN Phú Xuân 1**: 200 ha, xã Gia Phú. **Đã được Chủ tịch UBND tỉnh chấp thuận chủ trương đầu tư đồng thời chấp thuận nhà đầu tư tại Quyết định số 2338/QĐ-UBND ngày 02/7/2026**. Nhà đầu tư: Công ty Cổ phần Công nghiệp Linh Linh (cùng chủ đầu tư với KCN Phú Xuân). Tổng vốn đầu tư 2.185 tỷ đồng; thời hạn hoạt động 70 năm.
 - **KCN Cam Đường**: 200 ha, phường Cam Đường. Đã được giao danh mục lập quy hoạch tại Quyết định số 1250/QĐ-UBND ngày 14/4/2026; UBND tỉnh đã phê duyệt bổ sung dự toán tại Quyết định số 1681/QĐ-UBND ngày 15/5/2026.
 - **KCN Thống Nhất**: 150 ha, xã Gia Phú. Đã có trong quy hoạch điều chỉnh tỉnh Lào Cai.
 - **KCN Bát Xát**: 76 ha, xã Bát Xát. Phục vụ di dời các dự án từ KCN Đông Phố Mới.
