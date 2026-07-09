@@ -920,6 +920,7 @@ function renderKCNCards() {
         { ten:"KCN Việt Hồng 1", viTri:"Xã Việt Hồng, tỉnh Lào Cai", dt:300, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
         { ten:"KCN Việt Hồng 2", viTri:"Xã Việt Hồng, tỉnh Lào Cai", dt:200, tt:"quy-hoach", gc:"Bổ sung mới. GĐ 2025-2030." },
         { ten:"KCN Phú Xuân 1", viTri:"Xã Gia Phú, tỉnh Lào Cai", dt:200, tt:"xay-dung", gc:"Đã chấp thuận CTĐT (QĐ 2338/QĐ-UBND ngày 02/7/2026). NĐT: Công ty CP Công nghiệp Linh Linh. Vốn 2.185 tỷ, 70 năm." },
+        { ten:"KCN Vùng Thượng Văn Yên", viTri:"Vùng Thượng Văn Yên, tỉnh Lào Cai", dt:300, tt:"quy-hoach", gc:"Định hướng phát triển SAU năm 2030 (QĐ 525/QĐ-UBND ngày 25/02/2026). Ranh giới tạm theo bản đồ KMZ/CAD 2025." },
         { ten:"KCN Đông Phố Mới", viTri:"Phường Lào Cai, TP. Lào Cai", dt:100, tt:"rut-qh", gc:"41 DA, lấp đầy >90%. Sẽ rút khỏi QH — di dời phục vụ đường sắt tốc độ cao LC-HN-HP → chuyển về KCN Bát Xát." }
     ];
 
@@ -1377,12 +1378,14 @@ function initRanhGioiMap() {
 
     // ===========================================================
     // TÍCH HỢP 3 NGUỒN DỮ LIỆU vào bản đồ ranh giới:
-    //   - 21 KCN (KHU_CONG_NGHIEP)
+    //   - 22 KCN (KHU_CONG_NGHIEP)
     //   - 23 CCN hiện hữu (CUM_CONG_NGHIEP)
-    //   - 35 CCN quy hoạch (CCN_CHUA_DAU_TU)
-    //   + 25 polygon chính xác từ ccn-polygons.json
-    // Nếu một KCN/CCN đã có polygon chính thức -> dùng polygon đó.
-    // Nếu chưa có -> vẽ ô vuông CAM (is_synthetic) quanh toạ độ UBND xã.
+    //   - các CCN quy hoạch (CCN_CHUA_DAU_TU)
+    //   + 57 ranh giới số hóa từ ccn-polygons.json (bộ KMZ + bảng tọa độ
+    //     VN-2000 của Sở Công Thương, cập nhật 7/2026 — sinh bằng
+    //     .claude/import-polygons-from-kmz.py)
+    // Nếu một KCN/CCN đã có ranh giới -> vẽ polygon (ranh TẠM vẽ nét đứt).
+    // Nếu chưa có -> vẽ chấm CAM (is_synthetic) quanh toạ độ UBND xã.
     // ===========================================================
     fetch('ccn-polygons.json')
         .then(function(r) { return r.json(); })
@@ -1405,7 +1408,8 @@ function initRanhGioiMap() {
                 });
                 window._ranhGioiFiltersBound = true;
             }
-            renderRanhGioi(window.ranhGioiData);
+            // Render lần đầu qua applyRanhGioiFilters để bộ đếm "Hiện: x/y" cập nhật ngay
+            applyRanhGioiFilters();
         })
         .catch(function(e) { console.error('Lỗi tải ccn-polygons.json:', e); });
 }
@@ -1416,7 +1420,13 @@ function initRanhGioiMap() {
 // KCN/CCN chưa có polygon -> vẽ ô vuông cam (is_synthetic=true).
 // ===========================================================
 function buildRanhGioiData(polygons) {
-    function normName(s) { return (s || '').toLowerCase().trim().replace(/\s+/g, ' '); }
+    // Chuẩn hóa tên để match polygon với ccn-data.json — mở rộng viết tắt
+    // KCN/CCN để tên kiểu cũ ("CCN Bát Xát") vẫn khớp tên đầy đủ.
+    function normName(s) {
+        return (s || '').toLowerCase().trim().replace(/\s+/g, ' ')
+            .replace(/^kcn /, 'khu công nghiệp ')
+            .replace(/^ccn /, 'cụm công nghiệp ');
+    }
 
     var polygonByName = {};
     polygons.forEach(function(p) { polygonByName[normName(p.name)] = p; });
@@ -1444,11 +1454,17 @@ function buildRanhGioiData(polygons) {
     function describeCCN_HH(c) { return c.moTa || ''; }
     function describeCCN_QH(c) { return c.ghiChu || c.baoCao || c.huongPhatTrien || ''; }
 
+    // Nguồn dữ liệu: CUM_CONG_NGHIEP / CCN_CHUA_DAU_TU là biến let toàn cục
+    // (KHÔNG nằm trên window) -> phải đọc trực tiếp, giống initCCNQHMap.
+    var srcKCN = window.KHU_CONG_NGHIEP || [];
+    var srcCCNHH = (typeof CUM_CONG_NGHIEP !== 'undefined' ? CUM_CONG_NGHIEP : (window.CUM_CONG_NGHIEP || []));
+    var srcCCNQH = (typeof CCN_CHUA_DAU_TU !== 'undefined' ? CCN_CHUA_DAU_TU : (window.CCN_CHUA_DAU_TU || []));
+
     // Pre-index các source theo normName để match với polygon
     var kcnByName = {}, ccnHHByName = {}, ccnQHByName = {};
-    (window.KHU_CONG_NGHIEP || []).forEach(function(k) { kcnByName[normName(k.ten)] = k; });
-    (window.CUM_CONG_NGHIEP || []).forEach(function(c) { ccnHHByName[normName(c.ten)] = c; });
-    (window.CCN_CHUA_DAU_TU || []).forEach(function(c) { ccnQHByName[normName(c.ten)] = c; });
+    srcKCN.forEach(function(k) { kcnByName[normName(k.ten)] = k; });
+    srcCCNHH.forEach(function(c) { ccnHHByName[normName(c.ten)] = c; });
+    srcCCNQH.forEach(function(c) { ccnQHByName[normName(c.ten)] = c; });
 
     // 1. Đưa tất cả polygon chính thức vào trước, MERGE thêm sourceDesc/xa
     //    từ ccn-data.json nếu có match theo tên.
@@ -1493,8 +1509,8 @@ function buildRanhGioiData(polygons) {
         });
     }
 
-    // 2a. 21 KCN từ KHU_CONG_NGHIEP
-    (window.KHU_CONG_NGHIEP || []).forEach(function(k) {
+    // 2a. 22 KCN từ KHU_CONG_NGHIEP
+    srcKCN.forEach(function(k) {
         addSynthetic(k, 'KCN', {
             trangThai: k.trangThai,
             giaiDoan: k.trangThai === 'hoat-dong' || k.trangThai === 'xay-dung' ? 'Hiện hữu' : '2025-2030',
@@ -1503,7 +1519,7 @@ function buildRanhGioiData(polygons) {
     });
 
     // 2b. 23 CCN hiện hữu từ CUM_CONG_NGHIEP
-    (window.CUM_CONG_NGHIEP || []).forEach(function(c) {
+    srcCCNHH.forEach(function(c) {
         addSynthetic(c, 'CCN', {
             trangThai: c.trangThai,
             giaiDoan: 'Hiện hữu',
@@ -1511,8 +1527,8 @@ function buildRanhGioiData(polygons) {
         });
     });
 
-    // 2c. 35 CCN quy hoạch từ CCN_CHUA_DAU_TU
-    (window.CCN_CHUA_DAU_TU || []).forEach(function(c) {
+    // 2c. CCN quy hoạch từ CCN_CHUA_DAU_TU
+    srcCCNQH.forEach(function(c) {
         // CCN QH không có field trangThai, mặc định là quy-hoach
         var gd = /2031-2050/i.test(c.huongPhatTrien || '') ? '2031-2050' : '2025-2030';
         addSynthetic(c, 'CCN', {
@@ -1703,17 +1719,19 @@ function renderRanhGioi(data) {
         var isSynthetic = item.is_synthetic === true;
         var color = statusColors[item.trangThai] || '#1565c0';
         var fillColor = statusFillColors[item.trangThai] || '#42a5f5';
-        if (isApprox) {
+        if (isSynthetic) {
+            // Chưa có tọa độ ranh giới -> chấm cam minh họa vị trí
             color = '#ea580c';
             fillColor = '#fb923c';
         }
 
-        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isApprox ? ' 📍' : '');
+        var displayName = (isKCN ? '🏭 ' : '📦 ') + item.name + (isSynthetic ? ' 📍' : '');
         var statusBadge = '<span style="display:inline-block; padding:2px 8px; border-radius:10px; background:' + color + '; color:#fff; font-size:0.72rem; font-weight:600;">' + (statusLabels[item.trangThai] || item.trangThai) + '</span>';
 
-        // ---- Polygon chưa chuẩn (is_approx=true bao gồm cả ô vuông synthetic và polygon ước lượng) -> hiển thị bằng chấm tròn ----
+        // ---- Chưa có tọa độ ranh giới (is_synthetic) -> chấm tròn cam.
+        //      Có ranh giới (kể cả ranh TẠM is_approx=true) -> polygon; ranh tạm vẽ NÉT ĐỨT. ----
         var layer;
-        if (isApprox) {
+        if (isSynthetic) {
             var center = polyCentroid(item.coords);
             // Bán kính dấu chấm theo diện tích công bố: sqrt(area)/2 + 6, giới hạn 7-16 px
             var radius = Math.min(16, Math.max(7, Math.round(Math.sqrt(parseFloat(item.area_ha) || 1) / 2 + 6)));
@@ -1727,13 +1745,12 @@ function renderRanhGioi(data) {
             }).addTo(window.ranhGioiMap);
             bounds.push(center);
         } else {
-            // Polygon chính xác (is_approx=false) -> giữ nguyên hình polygon
             layer = L.polygon(item.coords, {
                 color: color,
                 weight: 2,
                 fillColor: fillColor,
-                fillOpacity: 0.4,
-                dashArray: null
+                fillOpacity: isApprox ? 0.25 : 0.4,
+                dashArray: isApprox ? '8 6' : null
             }).addTo(window.ranhGioiMap);
             item.coords.forEach(function(c) { bounds.push(c); });
         }
@@ -1751,14 +1768,17 @@ function renderRanhGioi(data) {
         // Build extra HTML (warning + source + note) — đã escape bên trên hoặc là chuỗi tin cậy
         var extraHtml = '';
         extraHtml += '<p>' + statusBadge + ' &nbsp; <strong>' + escapeHtml(item.giaiDoan || '') + '</strong></p>';
-        extraHtml += '<p><strong>Số điểm ranh giới:</strong> ' + (isApprox ? '(chưa có)' : escapeHtml(String(item.num_points))) + '</p>';
+        extraHtml += '<p><strong>Số điểm ranh giới:</strong> ' + (isSynthetic ? '(chưa có)' : escapeHtml(String(item.num_points))) + '</p>';
+        if (item.source) extraHtml += '<p class="note">📌 Nguồn ranh giới: ' + escapeHtml(item.source) + '</p>';
         if (item.sourceDesc) extraHtml += '<div class="source">' + escapeHtml(item.sourceDesc) + '</div>';
-        if (isApprox) {
+        if (isSynthetic) {
             extraHtml += '<div class="warning"><b>📍 CHƯA CẬP NHẬT TỌA ĐỘ RANH GIỚI CHÍNH XÁC</b><br>' +
                 'Dấu chấm chỉ vị trí gần đúng (theo tọa độ trung tâm xã/phường hoặc điểm tham chiếu). ' +
-                (isSynthetic
-                    ? 'Sẽ được thay bằng ranh giới chính xác khi có quyết định phê duyệt quy hoạch chi tiết.'
-                    : escapeHtml(item.reason ? 'Lý do: ' + item.reason : 'Ranh giới chính thức đang được rà soát.')) +
+                'Sẽ được thay bằng ranh giới chính xác khi có quyết định phê duyệt quy hoạch chi tiết.' +
+                '</div>';
+        } else if (isApprox) {
+            extraHtml += '<div class="warning"><b>⚠️ RANH GIỚI TẠM (nét đứt)</b><br>' +
+                escapeHtml(item.reason || 'Ranh giới tạm trích từ bản đồ KMZ/CAD — sẽ được chuẩn hóa khi đối chiếu xong hồ sơ chính thức.') +
                 '</div>';
         } else {
             extraHtml += '<p class="note">VN-2000, kinh tuyến trục 104°45\'</p>';
@@ -1768,14 +1788,14 @@ function renderRanhGioi(data) {
             ten: displayName,
             slug: rgSlug,
             viTri: item.xa || '',
-            dienTich: item.area_ha + (isApprox ? ' (công bố)' : ' (tính từ tọa độ)'),
+            dienTich: item.area_ha + (isSynthetic ? ' (công bố)' : ' (tính từ tọa độ ranh giới)'),
             extraHtml: extraHtml,
             lat: rgLatLng ? rgLatLng[0] : null,
             lng: rgLatLng ? rgLatLng[1] : null,
             statusClass: item.trangThai || 'quy-hoach'
         }), popupOptions());
 
-        layer.bindTooltip(displayName, { permanent: false, direction: isApprox ? 'top' : 'center', offset: isApprox ? [0, -8] : [0, 0], className: 'polygon-label' });
+        layer.bindTooltip(displayName, { permanent: false, direction: isSynthetic ? 'top' : 'center', offset: isSynthetic ? [0, -8] : [0, 0], className: 'polygon-label' });
     });
 
     if (bounds.length > 0) {
