@@ -46,37 +46,37 @@ let CUM_CONG_NGHIEP = [
         id: 1, ten: "Cụm công nghiệp Đầm Hồng", huyen: "khu-vuc-moi", xa: "Phường Yên Bái, phường Văn Phú",
         trangThai: "hoat-dong", dienTich: 16, dienTichDaChoThue: 11.99, tyLeLapDay: 100,
         namThanhLap: 2009, soDoanhNghiep: 20, nganhNghe: "Đa ngành, vật liệu xây dựng, cơ khí", moTa: "Chủ đầu tư: UBND phường Yên Bái và phường Văn Phú",
-        haTang: "Đang hoạt động", quyetDinh: "Số 1245/QĐ-UBND", lat: 21.722, lng: 104.899
+        haTang: "Đang hoạt động", quyetDinh: "Số 1245/QĐ-UBND", lat: 21.697352, lng: 104.913733
     },
     {
         id: 2, ten: "Cụm công nghiệp Âu Lâu", huyen: "khu-vuc-moi", xa: "Phường Âu Lâu",
         trangThai: "hoat-dong", dienTich: 50, dienTichDaChoThue: 27.09, tyLeLapDay: 86.83,
         namThanhLap: 2009, soDoanhNghiep: 4, nganhNghe: "Chế biến gỗ, tinh dầu, vật liệu xây dựng", moTa: "Chủ đầu tư: UBND phường Âu Lâu",
-        haTang: "Đang hoạt động", quyetDinh: "Số 1656/QĐ-UBND", lat: 21.733, lng: 104.888
+        haTang: "Đang hoạt động", quyetDinh: "Số 1656/QĐ-UBND", lat: 21.708474, lng: 104.829562
     },
     {
         id: 3, ten: "Cụm công nghiệp Thịnh Hưng", huyen: "yen-binh", xa: "Xã Yên Bình",
         trangThai: "hoat-dong", dienTich: 53.05, dienTichDaChoThue: 32.59, tyLeLapDay: 87.75,
         namThanhLap: 2009, soDoanhNghiep: 3, nganhNghe: "May mặc xuất khẩu, chế biến sản phẩm gỗ", moTa: "Chủ đầu tư: UBND Xã Yên Bình",
-        haTang: "Đang hoạt động", quyetDinh: "Số 106/QĐ-UBND", lat: 21.758, lng: 104.891
+        haTang: "Đang hoạt động", quyetDinh: "Số 106/QĐ-UBND", lat: 21.714905, lng: 104.99767
     },
     {
         id: 4, ten: "Cụm công nghiệp Phú Thịnh 1", huyen: "yen-binh", xa: "Phường Văn Phú",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2022, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Liên danh công ty CP tập đoàn Đông Đô và công ty CP đầu tư XD số 9 Bắc Giang",
-        haTang: "Đang GPMB", quyetDinh: "Số 1689/QĐ-UBND", lat: 21.711, lng: 104.877
+        haTang: "Đang GPMB", quyetDinh: "Số 1689/QĐ-UBND", lat: 21.691169, lng: 104.969171
     },
     {
         id: 5, ten: "Cụm công nghiệp Phú Thịnh 2", huyen: "yen-binh", xa: "Phường Văn Phú, Xã Yên Bình",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2022, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty TNHH Lâm nghiệp 888 Yên Bái",
-        haTang: "Đang GPMB", quyetDinh: "Số 1454/QĐ-UBND", lat: 21.712, lng: 104.881
+        haTang: "Đang GPMB", quyetDinh: "Số 1454/QĐ-UBND", lat: 21.696029, lng: 104.974171
     },
     {
         id: 6, ten: "Cụm công nghiệp Phú Thịnh 3", huyen: "yen-binh", xa: "Phường Văn Phú, Xã Yên Bình",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2023, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty Cổ phần công nghiệp EUP",
-        haTang: "Đang GPMB", quyetDinh: "Số 2220/QĐ-UBND", lat: 21.713, lng: 104.885
+        haTang: "Đang GPMB", quyetDinh: "Số 2220/QĐ-UBND", lat: 21.682673, lng: 104.975467
     },
     {
         id: 7, ten: "Cụm công nghiệp Sơn Thịnh", huyen: "van-chan", xa: "Xã Văn Chấn",
@@ -88,13 +88,13 @@ let CUM_CONG_NGHIEP = [
         id: 8, ten: "Cụm công nghiệp Yên Thế", huyen: "luc-yen", xa: "Xã Lục Yên",
         trangThai: "hoat-dong", dienTich: 39.97, dienTichDaChoThue: 11.26, tyLeLapDay: 40.24,
         namThanhLap: 2006, soDoanhNghiep: 3, nganhNghe: "Đá hoa trắng, đá tự nhiên", moTa: "Chủ đầu tư: UBND Xã Lục Yên",
-        haTang: "Đang hoạt động", quyetDinh: "Số 346/QĐ-UBND", lat: 22.102, lng: 104.721
+        haTang: "Đang hoạt động", quyetDinh: "Số 346/QĐ-UBND", lat: 22.103201, lng: 104.777694
     },
     {
         id: 9, ten: "Cụm công nghiệp Báo Đáp", huyen: "tran-yen", xa: "Xã Trấn Yên",
         trangThai: "hoat-dong", dienTich: 20, dienTichDaChoThue: 3.26, tyLeLapDay: 23.29,
         namThanhLap: 2008, soDoanhNghiep: 2, nganhNghe: "Chế biến quế, ghép thanh ván", moTa: "Chủ đầu tư: UBND xã Trấn Yên",
-        haTang: "Đang hoạt động", quyetDinh: "Số 1583/QĐ-UBND", lat: 21.812, lng: 104.832
+        haTang: "Đang hoạt động", quyetDinh: "Số 1583/QĐ-UBND", lat: 21.825586, lng: 104.754013
     },
     {
         id: 10, ten: "Cụm công nghiệp Hưng Khánh", huyen: "tran-yen", xa: "Xã Hưng Khánh",
@@ -106,25 +106,25 @@ let CUM_CONG_NGHIEP = [
         id: 11, ten: "Cụm công nghiệp Minh Quân", huyen: "khu-vuc-moi", xa: "Phường Âu Lâu",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2019, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty TNHH 1TV HTCN Bảo Hưng",
-        haTang: "Đang GPMB", quyetDinh: "Số 2364/QĐ-UBND", lat: 21.734, lng: 104.889
+        haTang: "Đang GPMB", quyetDinh: "Số 2364/QĐ-UBND", lat: 21.653383, lng: 104.92031
     },
     {
         id: 12, ten: "Cụm công nghiệp Y Can", huyen: "tran-yen", xa: "Xã Quy Mông",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2025, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty CP luyện kim hóa chất Tây Bắc",
-        haTang: "Đang triển khai", quyetDinh: "Số 949/QĐ-UBND", lat: 21.851, lng: 104.811
+        haTang: "Đang triển khai", quyetDinh: "Số 949/QĐ-UBND", lat: 21.735369, lng: 104.83252
     },
     {
         id: 13, ten: "Cụm công nghiệp Tây Cầu Mậu A", huyen: "van-yen", xa: "Xã Mậu A",
         trangThai: "hoat-dong", dienTich: 35, dienTichDaChoThue: 11.16, tyLeLapDay: 45.55,
         namThanhLap: 2009, soDoanhNghiep: 1, nganhNghe: "Sản xuất giấy đế xuất khẩu", moTa: "Chủ đầu tư: UBND xã Mậu A",
-        haTang: "Đang hoạt động", quyetDinh: "Số 1992/QĐ-UBND", lat: 21.902, lng: 104.654
+        haTang: "Đang hoạt động", quyetDinh: "Số 1992/QĐ-UBND", lat: 21.885747, lng: 104.66833
     },
     {
         id: 14, ten: "Cụm công nghiệp Đông An", huyen: "van-yen", xa: "Xã Đông Cuông",
         trangThai: "hoat-dong", dienTich: 34, dienTichDaChoThue: 11.14, tyLeLapDay: 48.35,
         namThanhLap: 2010, soDoanhNghiep: 1, nganhNghe: "Thuốc BVTV, phân bón", moTa: "Chủ đầu tư: UBND Xã Đông Cuông",
-        haTang: "Đang hoạt động", quyetDinh: "Số 1934/QĐ-UBND", lat: 21.921, lng: 104.661
+        haTang: "Đang hoạt động", quyetDinh: "Số 1934/QĐ-UBND", lat: 21.975618, lng: 104.570344
     },
     {
         id: 15, ten: "Cụm công nghiệp Yên Hợp", huyen: "van-yen", xa: "Xã Xuân Ái",
@@ -136,7 +136,7 @@ let CUM_CONG_NGHIEP = [
         id: 16, ten: "Cụm công nghiệp Bắc Văn Yên", huyen: "van-yen", xa: "Xã Đông Cuông",
         trangThai: "hoat-dong", dienTich: 55, dienTichDaChoThue: 33.9, tyLeLapDay: 88.05,
         namThanhLap: 2017, soDoanhNghiep: 4, nganhNghe: "Sản xuất tinh bột sắn, tinh dầu quế", moTa: "Chủ đầu tư: UBND Xã Đông Cuông",
-        haTang: "Đang hoạt động", quyetDinh: "Số 667/QĐ-UBND", lat: 21.925, lng: 104.669
+        haTang: "Đang hoạt động", quyetDinh: "Số 667/QĐ-UBND", lat: 21.932305, lng: 104.628188
     },
     {
         id: 17, ten: "Cụm công nghiệp Bắc Duyên Hải", huyen: "tp-lao-cai", xa: "Phường Lào Cai",
@@ -160,25 +160,25 @@ let CUM_CONG_NGHIEP = [
         id: 20, ten: "Cụm công nghiệp Phố Ràng", huyen: "bao-yen", xa: "Xã Bảo Yên",
         trangThai: "hoat-dong", dienTich: 31.01, dienTichDaChoThue: 6.2, tyLeLapDay: 20,
         namThanhLap: 2016, soDoanhNghiep: 3, nganhNghe: "Sản xuất, chế biến nông lâm sản", moTa: "Chủ đầu tư: UBND xã Bảo Yên",
-        haTang: "Đang hoạt động", quyetDinh: "QĐ số 2972/QĐ-UBND", lat: 22.180, lng: 104.370
+        haTang: "Đang hoạt động", quyetDinh: "QĐ số 2972/QĐ-UBND", lat: 22.224428, lng: 104.492615
     },
     {
         id: 21, ten: "Cụm công nghiệp Khánh Yên Thượng", huyen: "van-ban", xa: "Xã Văn Bàn",
         trangThai: "hoat-dong", dienTich: 5.17, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2016, soDoanhNghiep: 1, nganhNghe: "Khai thác, chế biến khoáng sản", moTa: "Chủ đầu tư: UBND xã Văn Bàn",
-        haTang: "Đang triển khai", quyetDinh: "QĐ số 2971/QĐ-UBND", lat: 22.095, lng: 104.150
+        haTang: "Đang triển khai", quyetDinh: "QĐ số 2971/QĐ-UBND", lat: 22.08304, lng: 104.293915
     },
     {
         id: 22, ten: "Cụm công nghiệp Thống Nhất 1", huyen: "bao-thang", xa: "Xã Gia Phú",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2025, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty CP đầu tư và phát triển Công nghiệp Lào Cai",
-        haTang: "Đang thực hiện GPMB", quyetDinh: "QĐ số 298/QĐ-UBND", lat: 22.381, lng: 104.051
+        haTang: "Đang thực hiện GPMB", quyetDinh: "QĐ số 298/QĐ-UBND", lat: 22.384579, lng: 104.044904
     },
     {
         id: 23, ten: "Cụm công nghiệp Bảo Minh", huyen: "bao-thang", xa: "N/A",
         trangThai: "xay-dung", dienTich: 20, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Sản xuất đa ngành", moTa: "Mới ký quyết định",
-        haTang: "Đang xây dựng", quyetDinh: "Quyết định thành lập mới", lat: 22.385, lng: 104.055
+        haTang: "Đang xây dựng", quyetDinh: "Quyết định thành lập mới", lat: 21.662266, lng: 104.916867
     }
 ];
 

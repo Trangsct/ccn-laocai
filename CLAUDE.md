@@ -100,7 +100,7 @@ Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng ti
 
 ### A. Độ chính xác tọa độ KCN/CCN — workflow KML chuẩn
 
-**Hiện trạng (sau commit đầu tiên về polygon)**: 4 CCN có polygon CHUẨN từ KML pháp lý (Thống Nhất 1, Bát Xát, Cam Đường 1, Cam Đường 2). Còn lại 19 KCN + 19 CCN đã thành lập + 32 CCN quy hoạch ở dạng polygon ước lượng hoặc marker điểm.
+**Hiện trạng (cập nhật 7/2026)**: `ccn-polygons.json` được sinh từ bộ ranh giới TỔNG HỢP `unit-files/_tong-hop/ranh-gioi-kcn-ccn.kml` (giải nén từ `Ranh_gioi_KCN_CCN_Lao_Cai.kmz` — Sở tổng hợp từ QĐ thành lập, hồ sơ quy hoạch và báo cáo xã/phường, kèm bảng tọa độ VN-2000 `Toa_do_KCN_CCN_Lao_Cai_sapxep.xlsx`). Tổng **57 ranh giới** (16 KCN + 41 CCN), trong đó 27 là ranh TẠM (`is_approx: true` — trích KMZ/CAD 2025 hoặc báo cáo chờ hồ sơ gốc, vẽ NÉT ĐỨT trên bản đồ chung). Chưa có ranh giới (hiển thị chấm cam): KCN Bắc Duyên Hải, Cốc Mỳ - Trịnh Tường, Bát Xát, Cam Đường, Thống Nhất, Đông Phố Mới + ~19 CCN. **Script sinh file: `python .claude/import-polygons-from-kmz.py`** (hỗ trợ `--dry-run`; META mapping ở đầu script; KHÔNG chạy script cũ `sync-polygons-from-kml.py` nữa — các KML lẻ trong `unit-files/` có thể lỗi thời so với bộ tổng hợp). Tên polygon trong `ccn-polygons.json` là tên ĐẦY ĐỦ trùng `ten` trong `ccn-data.json` (để bản đồ chung merge được mô tả và slugify ra trang chi tiết). Tab **"🗺️ Bản đồ chung KCN–CCN"** (`data-tab="ccnranhgioi"`) đã khôi phục trên nav từ 7/2026: polygon chuẩn = nét liền, ranh tạm = nét đứt, chưa có tọa độ = chấm cam.
 
 **Workflow chuẩn của Sở** (đã thiết lập từ CCN Thống Nhất 1):
 1. Cán bộ nhận "Bảng tọa độ ranh giới CCN.docx" từ QĐ thành lập (hệ **VN-2000 / TM-3** — kinh tuyến trục 104°45' cho phía Tây tỉnh, 105°00' cho phía Đông).
