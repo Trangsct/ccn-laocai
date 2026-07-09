@@ -106,7 +106,7 @@ let CUM_CONG_NGHIEP = [
         id: 11, ten: "Cụm công nghiệp Minh Quân", huyen: "khu-vuc-moi", xa: "Phường Âu Lâu",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2019, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Chủ đầu tư: Công ty TNHH 1TV HTCN Bảo Hưng",
-        haTang: "Đang GPMB", quyetDinh: "Số 2364/QĐ-UBND", lat: 21.653383, lng: 104.92031
+        haTang: "Đang GPMB", quyetDinh: "Số 2364/QĐ-UBND", lat: 21.653674, lng: 104.920082
     },
     {
         id: 12, ten: "Cụm công nghiệp Y Can", huyen: "tran-yen", xa: "Xã Quy Mông",

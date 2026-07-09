@@ -2617,13 +2617,9 @@
     "viTriMoTa": "Phường Âu Lâu, tỉnh Lào Cai",
     "dienTich": 75,
     "gioiThieu": "<p><b>Cụm công nghiệp Minh Quân</b> — phường Âu Lâu, diện tích 75 ha (đất công nghiệp 53,5 ha). Chủ đầu tư hạ tầng: Công ty TNHH MTV Hạ tầng công nghiệp Bảo Hưng. Quyết định thành lập số 2364/QĐ-UBND ngày 18/10/2019.</p><p><b>Cập nhật tình hình triển khai (Báo cáo Sở Công Thương tháng 6/2026):</b> đã hoàn thành đo đạc bản đồ thu hồi toàn bộ 75 ha và bản đồ thu hồi đất giai đoạn 1 (9,5 ha); Sở Công Thương đã trình UBND tỉnh hồ sơ điều chỉnh địa điểm và tiến độ thực hiện dự án.</p><p><b>Định hướng:</b> chủ đầu tư phối hợp chặt chẽ với UBND phường Âu Lâu đẩy nhanh giải phóng mặt bằng; hoàn thiện hồ sơ điều chỉnh trình UBND tỉnh.</p>",
-    "centerLat": 21.653383,
-    "centerLng": 104.92031,
+    "centerLat": 21.653674,
+    "centerLng": 104.920082,
     "polygon": [
-      [
-        21.6495009,
-        104.9175619
-      ],
       [
         21.6531627,
         104.9137305
@@ -2631,30 +2627,6 @@
       [
         21.6566907,
         104.9173963
-      ],
-      [
-        21.6529562,
-        104.9215079
-      ],
-      [
-        21.6512386,
-        104.9229261
-      ],
-      [
-        21.6497409,
-        104.9213495
-      ],
-      [
-        21.6514406,
-        104.9196897
-      ],
-      [
-        21.6514641,
-        104.9231583
-      ],
-      [
-        21.6531275,
-        104.9217786
       ],
       [
         21.6569072,
@@ -2667,6 +2639,22 @@
       [
         21.6545498,
         104.92636
+      ],
+      [
+        21.6514641,
+        104.9231583
+      ],
+      [
+        21.6512386,
+        104.9229261
+      ],
+      [
+        21.6497409,
+        104.9213495
+      ],
+      [
+        21.6495009,
+        104.9175619
       ]
     ]
   },
