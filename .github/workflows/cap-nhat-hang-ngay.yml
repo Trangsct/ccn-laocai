@@ -1,4 +1,9 @@
-# Bot tự động đọc văn bản mới trên QLVB (qlvb.yenbai.gov.vn) và cập nhật 2 trang web.
+# Bot đọc văn bản mới trên QLVB (qlvb.yenbai.gov.vn) và cập nhật 2 trang web.
+#
+# TRẠNG THÁI (02/9/2026): KHÔNG chạy theo lịch. Cổng đăng nhập SSO login.yenbai.gov.vn
+# có captcha bắt buộc nên bot không tự đăng nhập được từ GitHub Actions. Việc đọc bảng
+# văn bản chuyển sang userscript Tampermonkey chạy trong Chrome của cán bộ (xem
+# tools/qlvb-sync.user.js). Workflow này giữ lại để chạy tay (soi giao diện / dự phòng).
 #
 # Secrets cần tạo (Settings -> Secrets and variables -> Actions -> New repository secret):
 #   QLVB_USER      tên đăng nhập QLVB (cổng SSO login.yenbai.gov.vn)
@@ -10,12 +15,10 @@
 # Chưa có QLVB_USER thì bot tự chạy chế độ SOI GIAO DIỆN: chỉ chụp ảnh + lưu HTML
 # trang đăng nhập vào artifact "bot-output", không ghi dữ liệu.
 #
-# Lịch: 00:00 UTC = 07:00 giờ Việt Nam, thứ Hai đến thứ Sáu. Có thể chạy tay bằng Run workflow.
+# Chỉ chạy tay bằng Run workflow (lịch cron đã tắt vì captcha).
 
 name: Cap nhat van ban tu QLVB
 on:
-  schedule:
-    - cron: '0 0 * * 1-5'
   workflow_dispatch:
     inputs:
       che_do:
@@ -73,7 +76,7 @@ jobs:
         run: |
           git config user.name "qlvb-bot"
           git config user.email "qlvb-bot@users.noreply.github.com"
-          git add -A -- van-ban-moi.json
+          [ -f van-ban-moi.json ] && git add van-ban-moi.json
           if git diff --cached --quiet; then
             echo "Không có văn bản KCN/CCN mới"
           else

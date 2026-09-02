@@ -1,4 +1,10 @@
 """
+LƯU Ý (02/9/2026): cổng đăng nhập SSO login.yenbai.gov.vn có CAPTCHA bắt buộc nên bot này
+KHÔNG tự đăng nhập được từ GitHub Actions. Phương án đang dùng là userscript Tampermonkey
+tools/qlvb-sync.user.js (cán bộ tự đăng nhập, script đọc bảng và gửi lên GitHub).
+File này giữ lại làm công cụ soi giao diện / dự phòng; bộ từ khóa TU_KHOA là nguồn chuẩn
+và được chép sang userscript.
+
 Bot đọc văn bản mới trên qlvb.yenbai.gov.vn và ghi ra JSON cho 2 trang web
 (congnghieplaocai.vn - repo ccn-laocai; vlncn-laocai.vercel.app - repo vlncn-laocai).
 
@@ -82,10 +88,32 @@ def luu(page, ten: str):
             print(f"  [soi] title: {page.title()}")
             for tag in re.findall(r"<(?:form|input|button|select|textarea)\b[^>]*>", html, flags=re.I)[:60]:
                 print("  [soi]", re.sub(r"\s+", " ", tag)[:300])
+            for tag in re.findall(r"<img\b[^>]*>", html, flags=re.I)[:30]:
+                print("  [img]", re.sub(r"\s+", " ", tag)[:300])
             for m in re.findall(r"<(?:label|a|span|td)\b[^>]*>([^<]{3,80})</", html, flags=re.I)[:80]:
                 m = m.strip()
                 if m:
                     print("  [chu]", m)
+            # Captcha: có hiện không, ảnh lấy từ đâu
+            try:
+                cap = page.locator("#captcha")
+                if cap.count():
+                    print("  [captcha] o nhap hien thi:", cap.first.is_visible())
+                for s in ("#captchaImg", "img[src*='captcha' i]", "img[id*='captcha' i]", "img[alt*='captcha' i]"):
+                    im = page.locator(s)
+                    if im.count():
+                        print(f"  [captcha] anh {s}: visible={im.first.is_visible()} src={(im.first.get_attribute('src') or '')[:200]}")
+                        try:
+                            im.first.screenshot(path=str(OUT_DIR / f"{ten}-captcha.png"))
+                        except Exception:
+                            pass
+                # Đoạn JS xử lý captcha / submit để biết cơ chế tải ảnh mới
+                for js in re.findall(r"(?:function\s+(?:submitCredentials|reloadCaptcha|refreshCaptcha|loadCaptcha)[^{]*\{[\s\S]{0,900})", html):
+                    print("  [js]", re.sub(r"\s+", " ", js)[:900])
+                for u in sorted(set(re.findall(r"['\"]([^'\"]*captcha[^'\"]*)['\"]", html, flags=re.I)))[:20]:
+                    print("  [captcha-url]", u[:200])
+            except Exception as e:
+                print("  [captcha] loi soi:", e)
     except Exception as e:  # không để việc lưu ảnh làm hỏng luồng chính
         print(f"  [luu] {ten}: loi {e}")
 
