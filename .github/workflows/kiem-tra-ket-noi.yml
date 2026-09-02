@@ -1,8 +1,11 @@
 # Đặt tại: .github/workflows/kiem-tra-ket-noi.yml
 # Mục đích: kiểm tra máy chủ GitHub Actions (đặt ở nước ngoài) có mở được
-# qlvb.yenbai.gov.vn không. Chạy thủ công 1 lần: tab Actions -> Kiem tra ket noi QLVB -> Run workflow.
+# qlvb.yenbai.gov.vn không. Chạy thủ công: tab Actions -> Kiem tra ket noi QLVB -> Run workflow.
 # Không cần tài khoản. Nếu HTTP 200 -> làm tiếp. Nếu timeout / 403 -> QLVB chặn IP ngoài,
 # phải chuyển sang chạy bot trên máy cơ quan.
+# Kết quả lần 1 (02/9/2026): HTTP 302 sau 1,7s -> kết nối được, có chuyển hướng.
+# Bản này đi theo chuyển hướng (-L), in header và lưu HTML trang cuối làm artifact
+# để soi cấu trúc form đăng nhập.
 
 name: Kiem tra ket noi QLVB
 on:
@@ -14,8 +17,23 @@ jobs:
     steps:
       - name: Gọi thử trang đăng nhập
         run: |
-          echo "== Thử kết nối qlvb.yenbai.gov.vn =="
-          curl -s -o /tmp/qlvb.html -w "HTTP %{http_code} - %{time_total}s - %{size_download} bytes\n" \
-               --max-time 30 https://qlvb.yenbai.gov.vn/index.zul || echo "KHONG KET NOI DUOC (timeout hoac bi chan)"
-          echo "== 20 dòng đầu trang trả về =="
-          head -n 20 /tmp/qlvb.html || true
+          mkdir -p ket-qua
+          echo "== Thử kết nối qlvb.yenbai.gov.vn (theo chuyển hướng) =="
+          curl -sS -L --max-redirs 5 --max-time 30 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128 Safari/537.36" \
+               -D ket-qua/headers.txt -o ket-qua/trang-dang-nhap.html \
+               -w "HTTP %{http_code} - URL cuối: %{url_effective} - %{time_total}s - %{size_download} bytes\n" \
+               https://qlvb.yenbai.gov.vn/index.zul || echo "KHONG KET NOI DUOC (timeout hoac bi chan)"
+          echo "== Header trả về =="
+          cat ket-qua/headers.txt || true
+          echo "== 40 dòng đầu trang trả về =="
+          head -n 40 ket-qua/trang-dang-nhap.html || true
+          echo "== Các thẻ input/form/button trong trang =="
+          grep -oiE '<(input|form|button)[^>]*>' ket-qua/trang-dang-nhap.html | head -n 40 || true
+
+      - name: Lưu HTML trang đăng nhập
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trang-dang-nhap-qlvb
+          path: ket-qua/
+          if-no-files-found: ignore
