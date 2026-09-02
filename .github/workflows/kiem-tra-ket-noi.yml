@@ -1,0 +1,21 @@
+# Đặt tại: .github/workflows/kiem-tra-ket-noi.yml
+# Mục đích: kiểm tra máy chủ GitHub Actions (đặt ở nước ngoài) có mở được
+# qlvb.yenbai.gov.vn không. Chạy thủ công 1 lần: tab Actions -> Kiem tra ket noi QLVB -> Run workflow.
+# Không cần tài khoản. Nếu HTTP 200 -> làm tiếp. Nếu timeout / 403 -> QLVB chặn IP ngoài,
+# phải chuyển sang chạy bot trên máy cơ quan.
+
+name: Kiem tra ket noi QLVB
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gọi thử trang đăng nhập
+        run: |
+          echo "== Thử kết nối qlvb.yenbai.gov.vn =="
+          curl -s -o /tmp/qlvb.html -w "HTTP %{http_code} - %{time_total}s - %{size_download} bytes\n" \
+               --max-time 30 https://qlvb.yenbai.gov.vn/index.zul || echo "KHONG KET NOI DUOC (timeout hoac bi chan)"
+          echo "== 20 dòng đầu trang trả về =="
+          head -n 20 /tmp/qlvb.html || true
