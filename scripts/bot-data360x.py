@@ -454,13 +454,47 @@ def dang_nhap_lan_dau():
     return 0 if ok else 1
 
 
+def kiem_tra_token():
+    """Kiểm tra token GitHub trong config.json: đọc 4 repo, ghi rồi xóa 1 file thử trong 2 repo đích."""
+    token = doc_config().get("github_token", "")
+    if not token:
+        print("CHUA CO token trong", CONFIG)
+        return 1
+    ok = True
+    try:
+        u = gh("GET", "https://api.github.com/user", token=token)
+        print(f"Token hop le, tai khoan: {u.get('login')}")
+    except Exception as e:
+        print("Token KHONG hop le:", e)
+        return 1
+    for repo in ("ccn-laocai", "vlncn-laocai", "vlncn-laocai-files", "skill-sct"):
+        r = gh("GET", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}", token=token)
+        print(f"  doc {repo:22s}: {'OK' if r else 'KHONG THAY (chua tich repo nay khi tao token)'}")
+        ok = ok and bool(r)
+    for repo in ("vlncn-laocai", "ccn-laocai"):
+        path = "inbox/.thu-token.txt"
+        try:
+            r = gh_ghi(repo, path, b"kiem tra quyen ghi, tu xoa", "kiểm tra quyền ghi token bot (tự xóa)", token)
+            gh("DELETE", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}",
+               {"message": "xóa file kiểm tra quyền ghi", "sha": r["content"]["sha"], "branch": "main"}, token)
+            print(f"  ghi {repo:22s}: OK (da ghi va xoa file thu)")
+        except Exception as e:
+            print(f"  ghi {repo:22s}: KHONG ({e}) -> token thieu quyen Contents: Read and write")
+            ok = False
+    print("\nKET QUA:", "TOKEN DUNG DUOC, sang buoc dang-nhap-lan-dau.bat" if ok else "TOKEN CHUA DUNG DUOC, tao lai token theo huong dan")
+    return 0 if ok else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dang-nhap", action="store_true")
     ap.add_argument("--giu-phien", action="store_true")
     ap.add_argument("--soi", action="store_true")
+    ap.add_argument("--kiem-tra-token", action="store_true")
     a = ap.parse_args()
     try:
+        if a.kiem_tra_token:
+            return kiem_tra_token()
         if a.dang_nhap:
             return dang_nhap_lan_dau()
         if a.giu_phien:

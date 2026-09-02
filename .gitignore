@@ -17,3 +17,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 .vercel
+
+# Bo file .bat cua bot (bot/) khoi luat *.bat o tren
+!bot/*.bat
