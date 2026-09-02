@@ -84,9 +84,16 @@ Trang KCN CCN (repo ccn-laocai):
 
 Văn bản không khớp loại nào: bỏ qua, không tải.
 
-[BỔ SUNG 02/9/2026 sau khi chạy thật] Phòng Công nghiệp còn ký Giấy phép vận chuyển hàng hóa nguy hiểm (cùng ký hiệu GP-SCT, trích yếu "Giấy phép vận chuyển HHNH loại ..."), khoảng 10 giấy/tháng. Chưa thuộc 8 loại trên; bot loại 1 đã lọc bỏ. Ứng viên loại 9 (Bạn quyết định sau): cập nhật mục GP tiền chất/hóa chất, plugin hc-sct-vn. Văn bản có trích yếu bắt đầu bằng "Dự thảo" luôn bỏ qua.
+[BỔ SUNG 02/9/2026 sau khi chạy thật] Phòng Công nghiệp còn ký Giấy phép vận chuyển hàng hóa nguy hiểm (cùng ký hiệu GP-SCT, trích yếu "Giấy phép vận chuyển HHNH loại ..."), khoảng 10 giấy/tháng. Bạn chốt chiều 02/9/2026: đây là LOẠI 9, trang VLNCN mở thêm mục "Giấy phép vận chuyển hàng hóa nguy hiểm" (bảng hazmat_permits, đã lên web). Trích yếu Data360X hay sai (kể cả chữ "Dự thảo") nên bot khâu 1 gom MỌI GP-SCT của Phòng Công nghiệp, khâu 2 để Gemini phân loại theo NỘI DUNG PDF; bản dự thảo/chưa ký không đưa lên web.
 
 [BỔ SUNG 02/9/2026] Trang lịch lãnh đạo Sở (lichlanhdaosocongthuong.com, công khai, không đăng nhập): làm ở Bước 3, bot đọc lịch ngày mai, lọc cuộc họp có Phòng Quản lý Công nghiệp hoặc từ khóa của Phòng, đưa vào tin Telegram 18h30. Không đưa lên website.
+[BỔ SUNG chiều 02/9/2026 - KHÂU 2 + 3 ĐÃ TỰ ĐỘNG, GIAO CHO GEMINI] Bạn chốt: việc đọc ảnh/PDF giao hết cho Gemini để tiết kiệm token Claude, nhưng Gemini đọc số hay sai nên phải kiểm soát số liệu. Đã làm (repo vlncn-laocai, PR #24, #25):
+- Workflow "Doc inbox (Gemini)" (.github/workflows/doc-inbox.yml, script scripts/doc_inbox.py) tự chạy khi bot đẩy file vào inbox/ và 18h20 hằng ngày: Gemini phân loại PDF theo nội dung (GP sử dụng VLNCN / GP vận chuyển HHNH / khác / dự thảo), trích xuất theo schema của trang, ghi CSDL, chuyển PDF sang vlncn-laocai-files/uploads.
+- Kiểm soát số liệu (scripts/doc_gp_vlncn.py, hàm doc_pdf_kiem_soat): mỗi PDF đọc 2 LƯỢT bằng 2 model Flash khác nhau, so từng trường (số, ngày, mã số so tuyệt đối; danh sách khối lượng/hàng hóa so tập con số; chữ so gần đúng). Trường lệch thì KHÔNG ghi, hạ tin cậy, ghi "[CẦN ĐỐI CHIẾU]". Kiểm tra hợp lý: ngày hết hạn >= ngày cấp, ngày cấp không ở tương lai, số giấy phép khớp tên file, MST 10/12/13 chữ số, loại hàng 1-9, thời hạn GP HHNH <= 24 tháng, khối lượng VLNCN > 0; số/ngày còn đối chiếu với cột Số ký hiệu / Ngày ban hành của Data360X (cột có cấu trúc, không dùng trích yếu).
+- Khâu 3: đợt nào MỌI giấy phép đạt chuẩn (không lệch 2 lượt, không cảnh báo, số/ngày tin cậy cao) thì commit thẳng main; có 1 giấy phép chưa chắc thì mở PR "Gemini đọc inbox ngày ... - chờ duyệt" kèm bảng đối chiếu để Bạn xem rồi bấm Merge.
+- Workflow "Doc GP van chuyen HHNH" (scripts/doc_gp_hhnh.py) đọc lại 10 GP HHNH tháng 8/2026 đã nạp sơ bộ từ trích yếu, chế độ cap-nhat mở PR chờ duyệt.
+- Việc Bạn cần làm 1 lần: thêm secret BOT_GITHUB_TOKEN vào repo vlncn-laocai (Settings > Secrets and variables > Actions > New repository secret; Name: BOT_GITHUB_TOKEN; Secret: dán chuỗi github_token trong D:\du-an\bot-profile\config.json). Thiếu secret này PDF ở lại inbox/, chưa chuyển sang vlncn-laocai-files.
+- Còn lại của Bước 3: Telegram 18h30 + lịch lãnh đạo.
 
 VI. THỨ TỰ THỰC HIỆN
 
