@@ -54,11 +54,18 @@ LOAI_VAN_BAN = [
         "ma": "gp_su_dung_vlncn",
         "ten": "Giấy phép sử dụng VLNCN",
         "repo": "vlncn-laocai",
+        # Phòng Công nghiệp còn ký GP vận chuyển hàng hóa nguy hiểm (cùng ký hiệu GP-SCT) -> phải có chữ "nổ"
+        # trong trích yếu (vật liệu nổ / nổ mìn / "nổ tại mỏ"); bỏ bản "Dự thảo". Vụ 02/9/2026: gom nhầm 10 GP HHNH.
         "khop": lambda vb: (
-            ("GP-SCT" in vb["so_ky_hieu"].upper() and vb["nguon"] == "di"
-             and "cong nghiep" in bo_dau(vb.get("don_vi", "")))
-            or ("GP-UBND" in vb["so_ky_hieu"].upper() and vb["nguon"] == "den"
-                and "vat lieu no" in bo_dau(vb["trich_yeu"]))
+            not bo_dau(vb["trich_yeu"]).lstrip("0123456789./- ").startswith("du thao")
+            and (
+                ("GP-SCT" in vb["so_ky_hieu"].upper() and vb["nguon"] == "di"
+                 and "cong nghiep" in bo_dau(vb.get("don_vi", ""))
+                 and ("vat lieu no" in bo_dau(vb["trich_yeu"]) or "no min" in bo_dau(vb["trich_yeu"])
+                      or " no tai " in " " + bo_dau(vb["trich_yeu"]) + " " or " de no " in " " + bo_dau(vb["trich_yeu"]) + " "))
+                or ("GP-UBND" in vb["so_ky_hieu"].upper() and vb["nguon"] == "den"
+                    and "vat lieu no" in bo_dau(vb["trich_yeu"]))
+            )
         ),
     },
 ]

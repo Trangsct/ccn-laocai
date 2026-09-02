@@ -84,6 +84,10 @@ Trang KCN CCN (repo ccn-laocai):
 
 Văn bản không khớp loại nào: bỏ qua, không tải.
 
+[BỔ SUNG 02/9/2026 sau khi chạy thật] Phòng Công nghiệp còn ký Giấy phép vận chuyển hàng hóa nguy hiểm (cùng ký hiệu GP-SCT, trích yếu "Giấy phép vận chuyển HHNH loại ..."), khoảng 10 giấy/tháng. Chưa thuộc 8 loại trên; bot loại 1 đã lọc bỏ. Ứng viên loại 9 (Bạn quyết định sau): cập nhật mục GP tiền chất/hóa chất, plugin hc-sct-vn. Văn bản có trích yếu bắt đầu bằng "Dự thảo" luôn bỏ qua.
+
+[BỔ SUNG 02/9/2026] Trang lịch lãnh đạo Sở (lichlanhdaosocongthuong.com, công khai, không đăng nhập): làm ở Bước 3, bot đọc lịch ngày mai, lọc cuộc họp có Phòng Quản lý Công nghiệp hoặc từ khóa của Phòng, đưa vào tin Telegram 18h30. Không đưa lên website.
+
 VI. THỨ TỰ THỰC HIỆN
 
 Mỗi bước xong báo cáo ngắn rồi mới sang bước sau. Báo cáo gồm: đã làm gì, kết quả thử, việc tôi cần làm (nếu có, kèm hướng dẫn), bước tiếp theo.
