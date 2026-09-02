@@ -20,7 +20,7 @@ Không làm mục "Văn bản mới" dạng danh sách tin. Nếu còn PR nào v
 II. RÀNG BUỘC CỨNG
 
 1. Không dùng dịch vụ giải captcha dưới bất kỳ hình thức nào. Không cố đăng nhập tự động vào cổng login.yenbai.gov.vn. Việc đăng nhập là của tôi; máy chỉ dùng lại phiên đã đăng nhập.
-2. Không bịa số, ngày, tên, giá trị. Chỉ ghi những gì đọc được trong PDF. Không đọc được thì để trống và ghi chú "không có trong văn bản".
+2. Không bịa số, ngày, tên, giá trị. Chỉ ghi những gì đọc được trong PDF. Không đọc được thì để trống và ghi chú "không có trong văn bản". [SỬA 02/9/2026] Trích yếu trên Data360X rất hay sai (ghi "Dự thảo" dù đã phát hành, tên tổ chức cụt, ngày ghi lẫn vào trích yếu): trích yếu chỉ dùng để lọc sơ bộ ở khâu 1; phân loại cuối cùng và mọi dữ liệu lên web phải căn cứ nội dung PDF ở khâu 2. Bot gom rộng mọi GP-SCT của Phòng Công nghiệp, không loại vì chữ "Dự thảo".
 3. Mật khẩu, token, khóa API không được xuất hiện trong code, trong log, trong PR. Chúng nằm ở GitHub Secrets hoặc file cấu hình trên máy tôi (đã đưa vào .gitignore). [SỬA] Khóa Gemini dùng secret tên GEMINI_API_KEY; không còn tham chiếu ANTHROPIC_API_KEY hay api.anthropic.com ở bất kỳ workflow, script nào.
 4. Dữ liệu chỉ lấy từ Data360X. Trang vOffice cũ (qlvb.yenbai.gov.vn) bỏ hẳn.
 5. CCN Yên Hợp (12 ha, đã thành lập) và CCN Yên Hợp 1 (63 ha, chưa thành lập) là 2 dự án độc lập tại xã Xuân Ái, không gọi giai đoạn I, II. CCN Bản Phung nhà đầu tư đã rút, không hiển thị.
