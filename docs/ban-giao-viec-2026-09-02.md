@@ -95,6 +95,17 @@ Văn bản không khớp loại nào: bỏ qua, không tải.
 - Việc Bạn cần làm 1 lần: thêm secret BOT_GITHUB_TOKEN vào repo vlncn-laocai (Settings > Secrets and variables > Actions > New repository secret; Name: BOT_GITHUB_TOKEN; Secret: dán chuỗi github_token trong D:\du-an\bot-profile\config.json). Thiếu secret này PDF ở lại inbox/, chưa chuyển sang vlncn-laocai-files.
 - Còn lại của Bước 3: Telegram 18h30 + lịch lãnh đạo.
 
+[BỔ SUNG chiều 02/9/2026 - BƯỚC 3 ĐÃ LÀM XONG PHẦN TỰ ĐỘNG]
+- Bản tin Telegram 18h30: workflow "Ban tin Telegram 18h30" (vlncn-laocai/.github/workflows/bao-cao-telegram.yml, script scripts/bao_cao_telegram.py). Nội dung: (1) giấy phép dây chuyền đưa lên trang trong ngày, (2) việc cần Bạn xem (giấy phép còn dấu [CẦN ĐỐI CHIẾU], tệp chưa đọc được, tệp còn ở hộp thư), (3) lịch Lãnh đạo Sở ngày mai lấy từ lichlanhdaosocongthuong.com, Gemini lọc phần thuộc Phòng Quản lý Công nghiệp (cụm/khu công nghiệp, khuyến công, VLNCN, tiền chất, hóa chất, điện, năng lượng, thủy điện, khoáng sản, an toàn công nghiệp). Không tải được trang thì ghi rõ lý do, không bịa.
+- Kết quả chạy thật khâu 2 ngày 02/9/2026: 6 Giấy phép sử dụng VLNCN (5234, 5235, 5236, 5315, 5323, 5347/GP-SCT) đã vào CSDL trang VLNCN; 5 giấy đạt chuẩn kiểm soát số liệu nên tự commit main, riêng 5236 hai lượt đọc lệch ở khối lượng VLNCN nên để trống và ghi [CẦN ĐỐI CHIẾU].
+- Bài học vận hành: Vercel gói miễn phí chỉ cho 100 lượt triển khai/ngày tính chung cả tài khoản (cả 2 trang). Ngày 02/9/2026 chạm trần vì mỗi lần đẩy nhánh làm việc và mỗi PR đều sinh một bản xem trước, trang không cập nhật được dù dữ liệu đã lên main. Đã sửa vercel.json cả 2 repo: git.deploymentEnabled tắt triển khai cho nhánh claude/..., github.silent tắt bình luận bot. Chạm trần thì chờ 24 giờ hoặc vào Vercel > dự án > Deployments > dấu ba chấm > Redeploy.
+
+VIỆC BẠN CẦN LÀM (3 việc, mỗi việc vài phút):
+1. Thêm secret BOT_GITHUB_TOKEN vào repo vlncn-laocai: GitHub > repo vlncn-laocai > Settings > Secrets and variables > Actions > New repository secret; Name: BOT_GITHUB_TOKEN; Secret: dán chuỗi github_token trong D:\du-an\bot-profile\config.json. Thiếu secret này thì PDF ở lại inbox/, không chuyển sang kho vlncn-laocai-files.
+2. Tạo bot Telegram: mở Telegram, tìm @BotFather, gõ /newbot, đặt tên bất kỳ, BotFather trả về một chuỗi dạng 1234567890:AAH... Nhắn một tin bất kỳ cho bot vừa tạo, rồi mở trình duyệt vào https://api.telegram.org/bot<CHUỖI_VỪA_NHẬN>/getUpdates để lấy số chat id trong mục "chat":{"id":...}. Thêm 2 secret vào repo vlncn-laocai như bước 1: TELEGRAM_TOKEN (chuỗi của BotFather) và TELEGRAM_CHAT_ID (số chat id).
+3. Đặt lịch cho bot trên laptop: mở thư mục D:\du-an\bot, bấm chuột phải dat-lich.bat > Run as administrator.
+
+
 VI. THỨ TỰ THỰC HIỆN
 
 Mỗi bước xong báo cáo ngắn rồi mới sang bước sau. Báo cáo gồm: đã làm gì, kết quả thử, việc tôi cần làm (nếu có, kèm hướng dẫn), bước tiếp theo.
