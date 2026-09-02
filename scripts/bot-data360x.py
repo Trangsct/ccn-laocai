@@ -31,6 +31,7 @@ import time
 import unicodedata
 import urllib.request
 import urllib.error
+from urllib.parse import urljoin
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -38,9 +39,11 @@ BOT_HOME = Path(os.environ.get("BOT_HOME") or (r"D:\du-an\bot-profile" if Path("
 PROFILE = BOT_HOME / "chrome-profile"
 LOG_DIR = BOT_HOME / "logs"
 CONFIG = BOT_HOME / "config.json"
-TRANG_CHU = "https://csdlvb.laocai.gov.vn/trang-chu/"
+GOC_WEB = "https://csdlvb.laocai.gov.vn"
+TRANG_CHU = GOC_WEB + "/trang-chu/"
 TRANG = {"den": "https://csdlvb.laocai.gov.vn/van-ban-den/", "di": "https://csdlvb.laocai.gov.vn/van-ban-di/"}
 SO_NGAY_QUET = 3
+SO_NGAY_QUET_SOI = 30      # chế độ soi quét rộng hơn để chắc chắn gặp giấy phép mà thử tải PDF
 CHO_DANG_NHAP_PHUT = 15
 SO_LAN_CHO_DANG_NHAP = 6
 GITHUB_OWNER = "Trangsct"
@@ -235,6 +238,7 @@ def doc_bang(page, nguon):
         lay = lambda k: cells[idx[k]].inner_text().strip() if k in idx else ""
         link = tr.locator("a[href*='/detail/']").first
         href = link.get_attribute("href") if link.count() else ""
+        href = urljoin(GOC_WEB, href) if href else ""      # Data360X trả đường dẫn tương đối /van-ban-di/detail/?id=...
         m = re.search(r"[?&]id=(\d+)", href or "")
         ket.append({
             "so_ky_hieu": lay("so"), "ngay_ban_hanh": lay("ngay"), "trich_yeu": lay("trich_yeu"),
@@ -333,7 +337,7 @@ def chay_chinh(soi=False):
     if soi:
         soi_dir = LOG_DIR / "soi" / datetime.now().strftime("%Y-%m-%d_%H%M")
         soi_dir.mkdir(parents=True, exist_ok=True)
-    tu_ngay = date.today() - timedelta(days=SO_NGAY_QUET)
+    tu_ngay = date.today() - timedelta(days=SO_NGAY_QUET_SOI if soi else SO_NGAY_QUET)
     tong_quet, da_day, loi = 0, [], []
 
     with sync_playwright() as p:
@@ -356,6 +360,9 @@ def chay_chinh(soi=False):
                 van_ban.extend(rows)
             tong_quet = len(van_ban)
             log(f"Quét được {tong_quet} văn bản từ {tu_ngay.isoformat()}")
+            if soi:
+                for vb in van_ban:
+                    log(f"    [{vb['nguon']}] {vb['ngay_ban_hanh']} | {vb['so_ky_hieu']} | {vb.get('don_vi','')[:30]} | {vb['trich_yeu'][:80]}")
 
             # Lọc theo loại theo dõi
             chon = []
@@ -368,9 +375,10 @@ def chay_chinh(soi=False):
                     except Exception:
                         pass
             log(f"Thuộc loại theo dõi: {len(chon)}")
-            if soi and not chon and van_ban:
-                chon = [(LOAI_VAN_BAN[0], van_ban[0])]   # soi thử 1 trang chi tiết bất kỳ
-                log("Chế độ soi: mở thử trang chi tiết của văn bản đầu tiên.")
+            if soi:
+                # Soi: chỉ mở 1 giấy phép (ưu tiên loại theo dõi), không có thì 1 văn bản bất kỳ
+                chon = chon[:1] if chon else ([(LOAI_VAN_BAN[0], van_ban[0])] if van_ban else [])
+                log("Chế độ soi: mở thử trang chi tiết của " + (chon[0][1]["so_ky_hieu"] if chon else "không có văn bản nào"))
 
             cache_da_xu_ly = {}
             for loai, vb in chon:
