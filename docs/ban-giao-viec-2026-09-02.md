@@ -54,7 +54,7 @@ KHÂU 1. THU THẬP, chạy trên máy tính Windows ở cơ quan tôi
 
 KHÂU 2. ĐỌC VÀ BÓC DỮ LIỆU, chạy trên GitHub Actions trong từng repo đích
 - Workflow .github/workflows/doc-van-ban.yml chạy khi có file mới trong inbox/.
-- [SỬA] Script Python gọi Gemini API qua thư viện google-genai, secret GEMINI_API_KEY, model gemini-2.5-flash. Nếu model này không còn thì script liệt kê tên các model Flash hiện hành và dừng để tôi chọn; không tự chọn model Pro.
+- [SỬA] Script Python gọi Gemini API qua thư viện google-genai, secret GEMINI_API_KEY, model gemini-2.5-flash. Nếu model này không còn thì script liệt kê tên các model Flash hiện hành và dừng để tôi chọn; không tự chọn model Pro. (Kết quả chạy 02/9/2026: gemini-2.5-flash đã đóng với người dùng mới, Google khuyến nghị gemini-3.6-flash; các model Flash hiện có: gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-flash-latest, gemini-flash-lite-latest. Đang dùng gemini-3.6-flash.)
 - [SỬA] Gửi PDF trực tiếp dưới dạng file đính kèm (inline data; File API khi file lớn), không chỉ gửi text. PDF ảnh quét Gemini đọc được, không cần OCR riêng.
 - [SỬA] Giới hạn gói miễn phí (khoảng 10-15 yêu cầu/phút, vài trăm yêu cầu/ngày): xử lý tuần tự từng PDF, nghỉ 6 giây giữa hai lần gọi; lỗi 429 thì chờ 30, 60, 120 giây thử lại tối đa 3 lần; vẫn lỗi thì để PDF lại inbox cho ngày mai và ghi vào báo cáo Telegram.
 - Quy tắc bóc trường giữ nguyên: chỉ ghi giá trị đọc được trong PDF, trường không có để trống và mở PR chờ tôi; không bịa, không suy đoán. [SỬA] Prompt gửi Gemini phải chứa schema dữ liệu hiện có của trang (đọc từ file dữ liệu / models.py đang dùng, không tự đặt schema mới) và ví dụ mẫu từ file tham chiếu trong skill-sct (sd-vlncn-sct-vn/mau-van-ban).
