@@ -1,0 +1,115 @@
+# Bot tự động đọc văn bản mới trên QLVB (qlvb.yenbai.gov.vn) và cập nhật 2 trang web.
+#
+# Secrets cần tạo (Settings -> Secrets and variables -> Actions -> New repository secret):
+#   QLVB_USER      tên đăng nhập QLVB (cổng SSO login.yenbai.gov.vn)
+#   QLVB_PASS      mật khẩu QLVB
+#   GH_PAT_VLNCN   Personal Access Token có quyền ghi repo Trangsct/vlncn-laocai
+#                  (GitHub -> Settings -> Developer settings -> Fine-grained tokens,
+#                   chọn repo vlncn-laocai, quyền Contents: Read and write)
+#
+# Chưa có QLVB_USER thì bot tự chạy chế độ SOI GIAO DIỆN: chỉ chụp ảnh + lưu HTML
+# trang đăng nhập vào artifact "bot-output", không ghi dữ liệu.
+#
+# Lịch: 00:00 UTC = 07:00 giờ Việt Nam, thứ Hai đến thứ Sáu. Có thể chạy tay bằng Run workflow.
+
+name: Cap nhat van ban tu QLVB
+on:
+  schedule:
+    - cron: '0 0 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      che_do:
+        description: 'Chế độ chạy'
+        type: choice
+        default: cap-nhat
+        options:
+          - cap-nhat
+          - soi-giao-dien
+
+permissions:
+  contents: write
+
+jobs:
+  cap-nhat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cài Playwright
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Chạy bot đọc QLVB
+        env:
+          QLVB_USER: ${{ secrets.QLVB_USER }}
+          QLVB_PASS: ${{ secrets.QLVB_PASS }}
+        run: |
+          if [ "${{ github.event.inputs.che_do }}" = "soi-giao-dien" ]; then
+            python scripts/qlvb_bot.py --soi
+          else
+            python scripts/qlvb_bot.py
+          fi
+
+      - name: Lưu ảnh chụp và HTML để soi lỗi
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bot-output
+          path: |
+            bot-output/*.png
+            bot-output/*.html
+            bot-output/*.json
+          if-no-files-found: ignore
+
+      - name: Commit dữ liệu KCN/CCN vào repo này
+        run: |
+          git config user.name "qlvb-bot"
+          git config user.email "qlvb-bot@users.noreply.github.com"
+          git add van-ban-moi.json
+          if git diff --cached --quiet; then
+            echo "Không có văn bản KCN/CCN mới"
+          else
+            git commit -m "Bot: văn bản KCN/CCN mới ngày $(TZ=Asia/Ho_Chi_Minh date +%d/%m/%Y)"
+            git push
+          fi
+
+      - name: Đẩy dữ liệu VLNCN sang repo vlncn-laocai
+        env:
+          GH_PAT: ${{ secrets.GH_PAT_VLNCN }}
+        run: |
+          if [ ! -f bot-output/van-ban-moi-vlncn.json ]; then
+            echo "Không có văn bản VLNCN mới"; exit 0
+          fi
+          if [ -z "$GH_PAT" ]; then
+            echo "Chưa có secret GH_PAT_VLNCN, bỏ qua bước đẩy sang vlncn-laocai"; exit 0
+          fi
+          git clone --depth 1 https://x-access-token:${GH_PAT}@github.com/Trangsct/vlncn-laocai.git /tmp/vlncn
+          cd /tmp/vlncn
+          python3 - <<'EOF'
+          import json, pathlib
+          moi = json.loads(pathlib.Path("/home/runner/work/ccn-laocai/ccn-laocai/bot-output/van-ban-moi-vlncn.json").read_text(encoding="utf-8"))
+          f = pathlib.Path("van-ban-moi.json")
+          cu = json.loads(f.read_text(encoding="utf-8")) if f.exists() else []
+          da_co = {v["so_ky_hieu"] for v in cu}
+          them = [v for v in moi if v["so_ky_hieu"] not in da_co]
+          if them:
+              f.write_text(json.dumps((them + cu)[:200], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print("VLNCN thêm mới:", len(them))
+          EOF
+          git config user.name "qlvb-bot"
+          git config user.email "qlvb-bot@users.noreply.github.com"
+          git add van-ban-moi.json
+          if git diff --cached --quiet; then
+            echo "Dữ liệu VLNCN không đổi"
+          else
+            git commit -m "Bot: văn bản VLNCN mới ngày $(TZ=Asia/Ho_Chi_Minh date +%d/%m/%Y)"
+            git push
+          fi
