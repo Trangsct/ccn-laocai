@@ -17,7 +17,7 @@ Hồ sơ Chrome + cấu hình + log: D:\\du-an\\bot-profile  (đổi bằng bi�
 Nguyên tắc: không đăng nhập hộ, không giải captcha. Bị đưa về trang đăng nhập thì mở cửa sổ Chrome cho
 cán bộ tự đăng nhập, thông báo Windows + Telegram, thử lại mỗi 15 phút tối đa 6 lần.
 
-Giai đoạn hiện tại (Bước 2): CHỈ nối loại 1 - Giấy phép sử dụng VLNCN -> repo vlncn-laocai.
+Đang nối: loại 1 (GP sử dụng VLNCN) và loại 9 (GP vận chuyển hàng hóa nguy hiểm) -> repo vlncn-laocai.
 """
 
 import argparse
@@ -66,6 +66,20 @@ LOAI_VAN_BAN = [
                 or ("GP-UBND" in vb["so_ky_hieu"].upper() and vb["nguon"] == "den"
                     and "vat lieu no" in bo_dau(vb["trich_yeu"]))
             )
+        ),
+    },
+    {
+        # Loại 9 (Bạn chốt 02/9/2026): GP vận chuyển hàng hóa nguy hiểm, Phòng Công nghiệp ký GP-SCT
+        # -> mục "GP vận chuyển HHNH" trên trang VLNCN (bảng hazmat_permits)
+        "ma": "gp_van_chuyen_hhnh",
+        "ten": "Giấy phép vận chuyển hàng hóa nguy hiểm",
+        "repo": "vlncn-laocai",
+        "khop": lambda vb: (
+            not bo_dau(vb["trich_yeu"]).lstrip("0123456789./- ").startswith("du thao")
+            and "GP-SCT" in vb["so_ky_hieu"].upper() and vb["nguon"] == "di"
+            and "cong nghiep" in bo_dau(vb.get("don_vi", ""))
+            and "van chuyen" in bo_dau(vb["trich_yeu"])
+            and ("hang hoa nguy hiem" in bo_dau(vb["trich_yeu"]) or "hhnh" in bo_dau(vb["trich_yeu"]))
         ),
     },
 ]
