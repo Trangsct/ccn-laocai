@@ -7,7 +7,7 @@ if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_HOME=%ROOT%\bot-profile
 set BOT_DIR=%ROOT%\bot
 set RAW=https://raw.githubusercontent.com/Trangsct/ccn-laocai/main
-curl -sSL --max-time 60 -o "%BOT_DIR%\bot-data360x.py.new" "%RAW%/scripts/bot-data360x.py" && move /y "%BOT_DIR%\bot-data360x.py.new" "%BOT_DIR%\bot-data360x.py" >nul
+curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\bot-data360x.py.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/scripts/bot-data360x.py?ref=main" && move /y "%BOT_DIR%\bot-data360x.py.new" "%BOT_DIR%\bot-data360x.py" >nul
 if "%~1"=="giu-phien" (
     python "%BOT_DIR%\bot-data360x.py" --giu-phien
 ) else (
