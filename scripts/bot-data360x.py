@@ -48,39 +48,45 @@ CHO_DANG_NHAP_PHUT = 15
 SO_LAN_CHO_DANG_NHAP = 6
 GITHUB_OWNER = "Trangsct"
 
-# Loại văn bản theo dõi (mục V bản giao việc). Bước 2 chỉ bật loại 1.
+# Loại văn bản theo dõi (mục V bản giao việc). Bước 2: loại 1 (GP sử dụng VLNCN) và loại 9 (GP vận chuyển HHNH).
+# NGUYÊN TẮC (Bạn chốt 02/9/2026): trích yếu trên Data360X hay sai/thiếu (ghi "Dự thảo" dù đã phát hành, tên tổ chức
+# cụt...), nên trích yếu CHỈ dùng để lọc sơ bộ; phân loại cuối cùng và mọi dữ liệu ghi lên web căn cứ NỘI DUNG PDF
+# (khâu 2 đọc bằng Gemini). Vì vậy bot gom RỘNG: mọi GP-SCT của Phòng Công nghiệp đều tải; không loại vì chữ "Dự thảo".
+def _ty(vb):
+    return " " + bo_dau(vb["trich_yeu"]) + " "
+
+
+def _gp_phong_cong_nghiep(vb):
+    return ("GP-SCT" in vb["so_ky_hieu"].upper() and vb["nguon"] == "di"
+            and "cong nghiep" in bo_dau(vb.get("don_vi", "")))
+
+
 LOAI_VAN_BAN = [
     {
         "ma": "gp_su_dung_vlncn",
         "ten": "Giấy phép sử dụng VLNCN",
         "repo": "vlncn-laocai",
-        # Phòng Công nghiệp còn ký GP vận chuyển hàng hóa nguy hiểm (cùng ký hiệu GP-SCT) -> phải có chữ "nổ"
-        # trong trích yếu (vật liệu nổ / nổ mìn / "nổ tại mỏ"); bỏ bản "Dự thảo". Vụ 02/9/2026: gom nhầm 10 GP HHNH.
         "khop": lambda vb: (
-            not bo_dau(vb["trich_yeu"]).lstrip("0123456789./- ").startswith("du thao")
-            and (
-                ("GP-SCT" in vb["so_ky_hieu"].upper() and vb["nguon"] == "di"
-                 and "cong nghiep" in bo_dau(vb.get("don_vi", ""))
-                 and ("vat lieu no" in bo_dau(vb["trich_yeu"]) or "no min" in bo_dau(vb["trich_yeu"])
-                      or " no tai " in " " + bo_dau(vb["trich_yeu"]) + " " or " de no " in " " + bo_dau(vb["trich_yeu"]) + " "))
-                or ("GP-UBND" in vb["so_ky_hieu"].upper() and vb["nguon"] == "den"
-                    and "vat lieu no" in bo_dau(vb["trich_yeu"]))
-            )
+            (_gp_phong_cong_nghiep(vb)
+             and ("vat lieu no" in _ty(vb) or "no min" in _ty(vb) or " no tai " in _ty(vb) or " de no " in _ty(vb)))
+            or ("GP-UBND" in vb["so_ky_hieu"].upper() and vb["nguon"] == "den" and "vat lieu no" in _ty(vb))
         ),
     },
     {
-        # Loại 9 (Bạn chốt 02/9/2026): GP vận chuyển hàng hóa nguy hiểm, Phòng Công nghiệp ký GP-SCT
-        # -> mục "GP vận chuyển HHNH" trên trang VLNCN (bảng hazmat_permits)
         "ma": "gp_van_chuyen_hhnh",
         "ten": "Giấy phép vận chuyển hàng hóa nguy hiểm",
         "repo": "vlncn-laocai",
         "khop": lambda vb: (
-            not bo_dau(vb["trich_yeu"]).lstrip("0123456789./- ").startswith("du thao")
-            and "GP-SCT" in vb["so_ky_hieu"].upper() and vb["nguon"] == "di"
-            and "cong nghiep" in bo_dau(vb.get("don_vi", ""))
-            and "van chuyen" in bo_dau(vb["trich_yeu"])
-            and ("hang hoa nguy hiem" in bo_dau(vb["trich_yeu"]) or "hhnh" in bo_dau(vb["trich_yeu"]))
+            _gp_phong_cong_nghiep(vb) and "van chuyen" in _ty(vb)
+            and ("hang hoa nguy hiem" in _ty(vb) or "hhnh" in _ty(vb))
         ),
+    },
+    {
+        # Giấy phép khác của Phòng Công nghiệp mà trích yếu không đủ để xếp loại -> vẫn tải, khâu 2 phân loại theo nội dung
+        "ma": "gp_cong_nghiep_chua_ro",
+        "ten": "Giấy phép Phòng Công nghiệp (chưa rõ loại, phân loại theo PDF)",
+        "repo": "vlncn-laocai",
+        "khop": _gp_phong_cong_nghiep,
     },
 ]
 
