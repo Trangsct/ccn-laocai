@@ -275,52 +275,103 @@ def quet_danh_sach(page, nguon, tu_ngay, soi_dir=None):
     return [r for r in tat_ca if parse_ngay(r["ngay_ban_hanh"]) and parse_ngay(r["ngay_ban_hanh"]) >= tu_ngay]
 
 
+def _la_pdf(b):
+    return isinstance(b, (bytes, bytearray)) and b[:5] == b"%PDF-"
+
+
+def tai_qua_chrome(page, url):
+    """Cho chính Chrome (đang đăng nhập) tải URL rồi trả bytes; tránh lỗi chứng chỉ của backend."""
+    js = """async (u) => {
+        const r = await fetch(u, {credentials: 'include'});
+        if (!r.ok) return null;
+        const a = new Uint8Array(await r.arrayBuffer());
+        let s = '';
+        for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000));
+        return btoa(s);
+    }"""
+    try:
+        b64 = page.evaluate(js, url)
+        return base64.b64decode(b64) if b64 else None
+    except Exception as e:
+        log("  Chrome fetch lỗi:", str(e)[:120])
+        return None
+
+
 def tai_pdf(ctx, page, vb, soi_dir=None):
-    """Mở trang chi tiết, tìm và tải PDF đính kèm. Trả bytes hoặc None."""
-    page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
-    page.wait_for_timeout(3000)
-    if soi_dir:
-        (soi_dir / f"chi-tiet-{lam_sach(vb['so_ky_hieu'])}.html").write_text(page.content(), encoding="utf-8")
-        page.screenshot(path=str(soi_dir / f"chi-tiet-{lam_sach(vb['so_ky_hieu'])}.png"), full_page=True)
-    # 1) link trực tiếp tới .pdf (hoặc đường tải file)
-    for a in page.locator("a[href]").all():
-        href = a.get_attribute("href") or ""
-        if re.search(r"\.pdf(\?|$)", href, flags=re.I) or "download" in href.lower() or "/file/" in href.lower():
+    """Mở trang chi tiết, tìm và tải PDF đính kèm. Trả bytes hoặc None.
+    Data360X hiển thị PDF trong iframe trỏ tới csdlvb-backend.laocai.gov.vn/api/documentpublic/get-attach-by-id?...
+    (backend thiếu chứng chỉ trung gian nên không tải bằng request riêng được). Thứ tự thử:
+      1) bắt đúng phản hồi PDF mà Chrome đã tải cho iframe;  2) nhờ Chrome fetch lại URL đó;
+      3) link .pdf / nút Tải trên trang."""
+    bat_duoc = []
+
+    def _on_response(resp):
+        try:
+            u = resp.url
+            if "get-attach-by-id" in u or u.lower().split("?")[0].endswith(".pdf") \
+                    or resp.headers.get("content-type", "").lower().startswith("application/pdf"):
+                bat_duoc.append(resp)
+        except Exception:
+            pass
+
+    page.on("response", _on_response)
+    try:
+        page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(5000)   # chờ iframe tải PDF
+        if soi_dir:
+            (soi_dir / f"chi-tiet-{lam_sach(vb['so_ky_hieu'])}.html").write_text(page.content(), encoding="utf-8")
+            page.screenshot(path=str(soi_dir / f"chi-tiet-{lam_sach(vb['so_ky_hieu'])}.png"), full_page=True)
+        # 1) phản hồi PDF Chrome đã tải cho iframe
+        for resp in bat_duoc:
             try:
-                r = ctx.request.get(href, timeout=120000)
-                if r.ok and (r.headers.get("content-type", "").lower().startswith("application/pdf")
-                             or r.body()[:4] == b"%PDF"):
-                    return r.body()
+                b = resp.body()
+                if _la_pdf(b):
+                    log(f"  PDF lấy từ phản hồi của Chrome ({len(b)} bytes)")
+                    return bytes(b)
             except Exception as e:
-                log("  link PDF lỗi:", href[:80], e)
-    # 2) iframe / embed hiển thị PDF
-    for sel in ("iframe[src]", "embed[src]", "object[data]"):
-        for el in page.locator(sel).all():
-            src = el.get_attribute("src") or el.get_attribute("data") or ""
-            src = re.sub(r"^.*?file=", "", src) if "file=" in src else src   # pdf.js viewer?file=...
-            if not src or src.startswith("about:"):
-                continue
+                log("  không đọc được body phản hồi:", str(e)[:100])
+        # 2) nhờ Chrome fetch lại URL trong iframe / embed / object / link
+        urls = []
+        for sel in ("iframe[src]", "embed[src]", "object[data]"):
+            for el in page.locator(sel).all():
+                src = el.get_attribute("src") or el.get_attribute("data") or ""
+                src = re.sub(r"^.*?file=", "", src) if "file=" in src else src   # pdf.js viewer?file=...
+                if src and not src.startswith("about:"):
+                    urls.append(urljoin(GOC_WEB, src))
+        for a in page.locator("a[href]").all():
+            href = a.get_attribute("href") or ""
+            if re.search(r"\.pdf(\?|$)", href, flags=re.I) or "get-attach" in href or "download" in href.lower():
+                urls.append(urljoin(GOC_WEB, href))
+        for u in urls:
+            b = tai_qua_chrome(page, u)
+            if _la_pdf(b):
+                log(f"  PDF lấy bằng Chrome fetch ({len(b)} bytes)")
+                return b
+            b2 = None
             try:
-                r = ctx.request.get(src, timeout=120000)
-                if r.ok and r.body()[:4] == b"%PDF":
-                    return r.body()
+                r = ctx.request.get(u, timeout=120000)
+                b2 = r.body() if r.ok else None
             except Exception as e:
-                log("  iframe PDF lỗi:", src[:80], e)
-    # 3) nút tải xuống (mở hộp thoại download)
-    for sel in ("a:has-text('Tải'), button:has-text('Tải')", "[aria-label*='Tải'], [title*='Tải']",
-                "a:has-text('.pdf'), button:has-text('.pdf')"):
-        nut = page.locator(sel)
-        if nut.count():
-            try:
-                with page.expect_download(timeout=60000) as dl:
-                    nut.first.click()
-                p = dl.value.path()
-                data = Path(p).read_bytes()
-                if data[:4] == b"%PDF":
-                    return data
-            except Exception as e:
-                log("  nút tải lỗi:", e)
-    return None
+                log("  request lỗi:", str(e)[:100])
+            if _la_pdf(b2):
+                return b2
+        # 3) nút tải xuống
+        for sel in ("a:has-text('Tải'), button:has-text('Tải')", "[aria-label*='Tải'], [title*='Tải']"):
+            nut = page.locator(sel)
+            if nut.count():
+                try:
+                    with page.expect_download(timeout=60000) as dl:
+                        nut.first.click()
+                    data = Path(dl.value.path()).read_bytes()
+                    if _la_pdf(data):
+                        return data
+                except Exception as e:
+                    log("  nút tải lỗi:", str(e)[:100])
+        if urls:
+            log("  đã thấy URL PDF nhưng không tải được:", re.sub(r"token=[A-Za-z0-9]+", "token=…", urls[0])[:140])
+        return None
+    finally:
+        page.remove_listener("response", _on_response)
 
 
 # ---------------------------------------------------------------- luồng chính
