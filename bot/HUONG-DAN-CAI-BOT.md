@@ -13,17 +13,17 @@ do Phòng Công nghiệp soạn, hoặc GP-UBND ở Văn bản đến có "vật
    Repository access → Only select repositories → tích 4 repo `ccn-laocai`, `vlncn-laocai`,
    `vlncn-laocai-files`, `skill-sct`. Repository permissions → **Contents: Read and write**.
    Bấm Generate token, copy chuỗi `github_pat_...` (chỉ hiện 1 lần, để sẵn trong Notepad).
-2. Máy phải có ổ **D:**. Nếu không có ổ D, báo Claude Code để đổi đường dẫn.
+2. Bot tự đặt vào `D:\du-an` nếu máy có ổ D, không thì `C:\du-an` (laptop thường chỉ có ổ C). Trong hướng dẫn, chỗ nào ghi `D:\du-an` thì trên máy chỉ có ổ C đọc là `C:\du-an`.
 
 ## B. Cài đặt (mỗi bước chỉ bấm)
 
 1. Mở **PowerShell** (Start → gõ PowerShell → Enter), dán lệnh sau rồi Enter để tải file cài:
 
    ```
-   mkdir D:\du-an\bot -Force | Out-Null; curl.exe -sSL -o D:\du-an\bot\cai-dat.bat https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat; explorer D:\du-an\bot
+   $r = if (Test-Path D:\) {'D:\du-an'} else {'C:\du-an'}; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -o "$r\bot\cai-dat.bat" https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat; explorer "$r\bot"
    ```
 
-   Cửa sổ thư mục `D:\du-an\bot` mở ra, trong đó có `cai-dat.bat`.
+   Cửa sổ thư mục `du-an\bot` (ổ D hoặc C) mở ra, trong đó có `cai-dat.bat`.
 2. Nháy đúp **cai-dat.bat**. Nó tự cài Python (nếu chưa có), Playwright, Chromium, tải các file bot,
    rồi hỏi token: dán chuỗi `github_pat_...`, Enter. Nếu nó báo "Da cai Python, hay dong cua so nay"
    thì đóng rồi nháy đúp cai-dat.bat lần nữa.
