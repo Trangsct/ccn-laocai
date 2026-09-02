@@ -375,7 +375,7 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
 
 
 # ---------------------------------------------------------------- luồng chính
-def chay_chinh(soi=False):
+def chay_chinh(soi=False, so_ngay=None):
     from playwright.sync_api import sync_playwright
 
     cfg = doc_config()
@@ -388,7 +388,7 @@ def chay_chinh(soi=False):
     if soi:
         soi_dir = LOG_DIR / "soi" / datetime.now().strftime("%Y-%m-%d_%H%M")
         soi_dir.mkdir(parents=True, exist_ok=True)
-    tu_ngay = date.today() - timedelta(days=SO_NGAY_QUET_SOI if soi else SO_NGAY_QUET)
+    tu_ngay = date.today() - timedelta(days=so_ngay or (SO_NGAY_QUET_SOI if soi else SO_NGAY_QUET))
     tong_quet, da_day, loi = 0, [], []
 
     with sync_playwright() as p:
@@ -549,6 +549,7 @@ def main():
     ap.add_argument("--dang-nhap", action="store_true")
     ap.add_argument("--giu-phien", action="store_true")
     ap.add_argument("--soi", action="store_true")
+    ap.add_argument("--ngay", type=int, help="quét N ngày gần nhất (mặc định 3; chạy bù lần đầu dùng 30)")
     ap.add_argument("--kiem-tra-token", action="store_true")
     a = ap.parse_args()
     try:
@@ -558,7 +559,7 @@ def main():
             return dang_nhap_lan_dau()
         if a.giu_phien:
             return giu_phien()
-        return chay_chinh(soi=a.soi)
+        return chay_chinh(soi=a.soi, so_ngay=a.ngay)
     except Exception as e:
         log("LỖI:", repr(e))
         telegram(f"Bot Data360X lỗi: {e!r}")
