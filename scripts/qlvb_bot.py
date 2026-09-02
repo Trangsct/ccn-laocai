@@ -74,8 +74,18 @@ def luu(page, ten: str):
     """Chụp ảnh + lưu HTML của trang hiện tại để soi lỗi / soi giao diện."""
     try:
         page.screenshot(path=str(OUT_DIR / f"{ten}.png"), full_page=True)
-        (OUT_DIR / f"{ten}.html").write_text(page.content(), encoding="utf-8")
+        html = page.content()
+        (OUT_DIR / f"{ten}.html").write_text(html, encoding="utf-8")
         print(f"  [luu] {ten}: {page.url}")
+        if CHE_DO_SOI:
+            # In cấu trúc form ra log để hoàn thiện selector mà không cần tải artifact
+            print(f"  [soi] title: {page.title()}")
+            for tag in re.findall(r"<(?:form|input|button|select|textarea)\b[^>]*>", html, flags=re.I)[:60]:
+                print("  [soi]", re.sub(r"\s+", " ", tag)[:300])
+            for m in re.findall(r"<(?:label|a|span|td)\b[^>]*>([^<]{3,80})</", html, flags=re.I)[:80]:
+                m = m.strip()
+                if m:
+                    print("  [chu]", m)
     except Exception as e:  # không để việc lưu ảnh làm hỏng luồng chính
         print(f"  [luu] {ten}: loi {e}")
 
