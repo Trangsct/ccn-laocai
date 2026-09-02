@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         QLVB -> congnghieplaocai.vn + vlncn-laocai (đồng bộ văn bản mới)
 // @namespace    https://www.congnghieplaocai.vn/
-// @version      1.0.0
+// @version      1.1.0
 // @description  Khi bảng Văn bản đến / Văn bản đi trên QLVB hiện ra: đọc số ký hiệu, ngày, cơ quan, trích yếu, độ mật; chỉ lấy độ mật Thường; phân loại KCN/CCN và VLNCN; gửi văn bản chưa có lên GitHub (van-ban-moi.json) bằng Contents API. Vercel tự deploy.
 // @author       Sở Công Thương Lào Cai
 // @match        https://qlvb.yenbai.gov.vn/*
@@ -9,25 +9,32 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
 // @connect      api.github.com
+// @connect      raw.githubusercontent.com
+// @updateURL    https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/tools/qlvb-sync.user.js
+// @downloadURL  https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/tools/qlvb-sync.user.js
 // @run-at       document-idle
 // ==/UserScript==
 
 /*
- * HƯỚNG DẪN CÀI (5 dòng):
- * 1. Chrome -> Chrome Web Store -> tìm "Tampermonkey" -> Thêm vào Chrome (bật Developer mode trong chrome://extensions nếu được hỏi).
- * 2. GitHub -> Settings -> Developer settings -> Personal access tokens -> Fine-grained tokens -> Generate:
- *    chọn 2 repo ccn-laocai và vlncn-laocai, Repository permissions -> Contents: Read and write. Copy token.
- * 3. Bấm biểu tượng Tampermonkey -> Create a new script -> xóa hết, dán toàn bộ file này vào.
- * 4. Sửa dòng GITHUB_TOKEN bên dưới: dán token vào giữa 2 dấu nháy. Ctrl+S để lưu.
- * 5. Mở QLVB, đăng nhập (nhập captcha như thường), vào Văn bản đến / Văn bản đi. Góc dưới phải hiện thông báo số văn bản đã gửi.
+ * HƯỚNG DẪN CÀI (chỉ bấm chuột, không sửa code):
+ * 1. Cài tiện ích Tampermonkey từ Chrome Web Store.
+ * 2. Tạo token GitHub (fine-grained, 2 repo ccn-laocai + vlncn-laocai, Contents: Read and write).
+ * 3. Dán link này vào thanh địa chỉ Chrome, bấm Install:
+ *    https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/tools/qlvb-sync.user.js
+ * 4. Mở QLVB, đăng nhập, vào Văn bản đến. Hộp thoại hiện lên hỏi token: dán token, bấm OK.
+ *    Token lưu trong Tampermonkey, các lần sau tự dùng. Muốn đổi: bấm biểu tượng Tampermonkey
+ *    -> menu "Đổi token GitHub (QLVB sync)".
+ * Script tự cập nhật khi file này trên GitHub (nhánh main) có phiên bản mới.
  */
 
 (function () {
     'use strict';
 
     // ================= CẤU HÌNH =================
-    const GITHUB_TOKEN = 'DAN_TOKEN_VAO_DAY';          // token fine-grained, KHÔNG chia sẻ cho ai
+    const KHOA_TOKEN = 'qlvb_github_token';   // token lưu trong kho Tampermonkey, không nằm trong code
     const REPO = {
         kccn:  { owner: 'Trangsct', repo: 'ccn-laocai',   path: 'van-ban-moi.json', branch: 'main' },
         vlncn: { owner: 'Trangsct', repo: 'vlncn-laocai', path: 'van-ban-moi.json', branch: 'main' },
@@ -104,13 +111,55 @@
         hop._t = setTimeout(() => { hop.style.opacity = '0'; }, 8000);
     }
 
+    // ================= TOKEN GITHUB =================
+    function layToken() {
+        return (GM_getValue(KHOA_TOKEN, '') || '').trim();
+    }
+    function hoiToken(loiTruoc) {
+        const t = prompt(
+            (loiTruoc ? loiTruoc + '\n\n' : '') +
+            'QLVB sync: dán token GitHub (bắt đầu bằng github_pat_) rồi bấm OK.\n' +
+            'Token tạo tại github.com/settings/personal-access-tokens/new, chọn 2 repo ccn-laocai và vlncn-laocai, quyền Contents: Read and write.\n' +
+            'Token chỉ lưu trong Tampermonkey trên máy này.',
+            layToken());
+        if (t === null) return '';           // bấm Cancel
+        const sach = t.trim();
+        if (sach) {
+            GM_setValue(KHOA_TOKEN, sach);
+            thongBao('QLVB sync: đã lưu token GitHub', '#2e7d32');
+        }
+        return sach;
+    }
+    let daHoiToken = false;
+    function tokenSanSang() {
+        let t = layToken();
+        if (!t && !daHoiToken) {
+            daHoiToken = true;               // mỗi lần tải trang chỉ hỏi 1 lần, không làm phiền
+            t = hoiToken('');
+        }
+        return t;
+    }
+    if (typeof GM_registerMenuCommand === 'function') {
+        GM_registerMenuCommand('Đổi token GitHub (QLVB sync)', () => hoiToken(''));
+        GM_registerMenuCommand('Xóa token GitHub (QLVB sync)', () => {
+            GM_deleteValue(KHOA_TOKEN);
+            thongBao('QLVB sync: đã xóa token. Tải lại trang sẽ hỏi token mới.', '#546e7a');
+        });
+        GM_registerMenuCommand('Quên danh sách đã gửi (gửi lại từ đầu)', () => {
+            GM_deleteValue('qlvb_da_gui');
+            daGui = new Set();
+            dauBangTruoc = '';
+            thongBao('QLVB sync: đã xóa bộ nhớ văn bản đã gửi', '#546e7a');
+        });
+    }
+
     // ================= GITHUB API =================
     function ghRequest(method, url, body) {
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
                 method, url,
                 headers: {
-                    'Authorization': 'Bearer ' + GITHUB_TOKEN,
+                    'Authorization': 'Bearer ' + layToken(),
                     'Accept': 'application/vnd.github+json',
                     'Content-Type': 'application/json',
                     'X-GitHub-Api-Version': '2022-11-28',
@@ -226,10 +275,6 @@
 
     async function quet() {
         if (dangGui) return;
-        if (!GITHUB_TOKEN || GITHUB_TOKEN === 'DAN_TOKEN_VAO_DAY') {
-            thongBao('QLVB sync: chưa điền GITHUB_TOKEN trong script Tampermonkey', '#c62828');
-            return;
-        }
         let vanBan = [];
         for (const bang of timBang()) {
             const cot = nhanDienCot(bang);
@@ -257,6 +302,13 @@
         }
         if (!chon.length) return;
 
+        // Có văn bản cần gửi mới hỏi token (lần đầu). Chưa có token thì để lần quét sau thử lại.
+        if (!tokenSanSang()) {
+            thongBao('QLVB sync: chưa có token GitHub. Bấm biểu tượng Tampermonkey -> "Đổi token GitHub (QLVB sync)".', '#c62828');
+            dauBangTruoc = '';
+            return;
+        }
+
         dangGui = true;
         try {
             let tong = 0;
@@ -281,7 +333,12 @@
                 tong ? '#2e7d32' : '#546e7a');
         } catch (e) {
             console.error('[QLVB sync]', e);
-            thongBao('QLVB sync lỗi: ' + e.message, '#c62828');
+            if (/GitHub (401|403)/.test(e.message)) {
+                // Token sai / hết hạn / thiếu quyền: hỏi lại ngay
+                hoiToken('Token GitHub bị từ chối (' + e.message + '). Nhập lại token:');
+            } else {
+                thongBao('QLVB sync lỗi: ' + e.message, '#c62828');
+            }
             dauBangTruoc = '';   // để lần sau thử lại
         } finally {
             dangGui = false;

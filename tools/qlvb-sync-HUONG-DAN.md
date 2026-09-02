@@ -4,13 +4,29 @@ Cổng đăng nhập tập trung `login.yenbai.gov.vn` có captcha bắt buộc 
 từ GitHub Actions (đã thử ngày 02/9/2026). Phương án thay thế: cán bộ đăng nhập QLVB như thường,
 script `tools/qlvb-sync.user.js` chạy trong Chrome đọc bảng Văn bản đến / Văn bản đi rồi gửi lên GitHub.
 
-## Cài đặt (5 bước)
+## Cài đặt (3 việc, chỉ bấm chuột)
 
-1. Chrome → Chrome Web Store → tìm **Tampermonkey** → Thêm vào Chrome.
-2. GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token: chọn 2 repo `ccn-laocai` và `vlncn-laocai`, Repository permissions → **Contents: Read and write**. Copy token (không dán vào chat).
-3. Bấm biểu tượng Tampermonkey → **Create a new script** → xóa hết, dán toàn bộ nội dung file `tools/qlvb-sync.user.js`.
-4. Sửa dòng `const GITHUB_TOKEN = 'DAN_TOKEN_VAO_DAY';` → dán token vào giữa 2 dấu nháy. Ctrl+S.
-5. Mở QLVB, đăng nhập (nhập captcha như thường), vào Văn bản đến / Văn bản đi. Góc dưới phải hiện thông báo số văn bản đã gửi.
+1. **Cài Tampermonkey**: mở Chrome, vào chrome.google.com/webstore, gõ Tampermonkey, bấm "Thêm vào Chrome".
+   Bấm biểu tượng mảnh ghép (góc phải thanh địa chỉ) → bấm ghim cạnh Tampermonkey để nó hiện ra ngoài.
+2. **Tạo token**: mở github.com/settings/personal-access-tokens/new. Tên "qlvb-sync", Expiration 1 năm.
+   Repository access → "Only select repositories" → tích `ccn-laocai` và `vlncn-laocai`.
+   Repository permissions → dòng **Contents** → "Read and write". Bấm Generate token, copy chuỗi `github_pat_...` (chỉ hiện 1 lần).
+3. **Cài script**: dán link sau vào thanh địa chỉ Chrome, Tampermonkey hiện trang cài, bấm **Install**:
+
+   https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/tools/qlvb-sync.user.js
+
+   Mở QLVB, đăng nhập, vào Văn bản đến. Khi có văn bản cần gửi, hộp thoại hiện lên hỏi token: dán chuỗi ở bước 2, bấm OK.
+   Token lưu trong Tampermonkey trên máy, các lần sau tự dùng.
+
+Từ đó chỉ mở QLVB như mọi ngày. Góc dưới phải hiện thông báo số văn bản đã gửi.
+
+## Menu Tampermonkey (bấm biểu tượng Tampermonkey khi đang ở trang QLVB)
+
+- **Đổi token GitHub (QLVB sync)**: nhập lại token khi hết hạn hoặc đổi.
+- **Xóa token GitHub (QLVB sync)**.
+- **Quên danh sách đã gửi (gửi lại từ đầu)**: xóa bộ nhớ số ký hiệu đã gửi (GitHub vẫn tự loại trùng).
+
+Token sai hoặc hết hạn: script tự hỏi lại ngay khi GitHub trả lỗi 401/403.
 
 ## Script làm gì
 
@@ -20,6 +36,7 @@ script `tools/qlvb-sync.user.js` chạy trong Chrome đọc bảng Văn bản đ
   - `Trangsct/ccn-laocai` → `van-ban-moi.json` (nhóm KCCN)
   - `Trangsct/vlncn-laocai` → `van-ban-moi.json` (nhóm VLNCN)
 - Ghi nhớ số ký hiệu đã gửi trong Tampermonkey để không gửi lại.
+- Tự cập nhật phiên bản mới khi file trên nhánh `main` đổi (`@updateURL`), Tampermonkey kiểm tra định kỳ.
 - Vercel tự deploy khi có commit.
 
 ## Khi bảng không được nhận diện
