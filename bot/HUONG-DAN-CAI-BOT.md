@@ -1,0 +1,65 @@
+# Hướng dẫn cài Bot Data360X trên máy cơ quan (Windows)
+
+Bot đọc Văn bản đến / Văn bản đi trên Data360X (csdlvb.laocai.gov.vn) lúc 18h hằng ngày, tải PDF của
+văn bản thuộc lĩnh vực theo dõi và đẩy vào thư mục `inbox/` của repo đích trên GitHub. Từ đó GitHub
+Actions đọc PDF bằng Gemini và cập nhật website. Bạn chỉ đăng nhập Data360X khi bot báo phiên hết hạn.
+
+Giai đoạn hiện tại chỉ nối **loại 1: Giấy phép sử dụng VLNCN** (số ký hiệu có GP-SCT ở Văn bản đi
+do Phòng Công nghiệp soạn, hoặc GP-UBND ở Văn bản đến có "vật liệu nổ" trong trích yếu) → repo `vlncn-laocai`.
+
+## A. Chuẩn bị (5 phút, làm 1 lần)
+
+1. **Token GitHub**: mở github.com/settings/personal-access-tokens/new. Tên `bot-data360x`, Expiration 1 năm.
+   Repository access → Only select repositories → tích 4 repo `ccn-laocai`, `vlncn-laocai`,
+   `vlncn-laocai-files`, `skill-sct`. Repository permissions → **Contents: Read and write**.
+   Bấm Generate token, copy chuỗi `github_pat_...` (chỉ hiện 1 lần, để sẵn trong Notepad).
+2. Máy phải có ổ **D:**. Nếu không có ổ D, báo Claude Code để đổi đường dẫn.
+
+## B. Cài đặt (mỗi bước chỉ bấm)
+
+1. Mở **PowerShell** (Start → gõ PowerShell → Enter), dán lệnh sau rồi Enter để tải file cài:
+
+   ```
+   mkdir D:\du-an\bot -Force | Out-Null; curl.exe -sSL -o D:\du-an\bot\cai-dat.bat https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat; explorer D:\du-an\bot
+   ```
+
+   Cửa sổ thư mục `D:\du-an\bot` mở ra, trong đó có `cai-dat.bat`.
+2. Nháy đúp **cai-dat.bat**. Nó tự cài Python (nếu chưa có), Playwright, Chromium, tải các file bot,
+   rồi hỏi token: dán chuỗi `github_pat_...`, Enter. Nếu nó báo "Da cai Python, hay dong cua so nay"
+   thì đóng rồi nháy đúp cai-dat.bat lần nữa.
+3. Nháy đúp **dang-nhap-lan-dau.bat**. Chrome (hồ sơ riêng của bot) mở trang Data360X: đăng nhập như
+   thường, nhập captcha. Khi thấy trang chủ Data360X, quay lại cửa sổ đen bấm Enter. Phiên được lưu.
+4. Nháy đúp **chay-thu.bat**. Bot chạy 1 lần ở chế độ soi: đọc 2 danh sách, mở thử trang chi tiết, tải
+   PDF, lưu tất cả vào `D:\du-an\bot-profile\logs\soi\` và KHÔNG đẩy gì lên GitHub. Xong, nén thư mục
+   `logs\soi` (chuột phải → Send to → Compressed folder) gửi cho Claude Code để khóa selector trang chi tiết.
+5. Khi Claude Code báo bot đã chạy thật được: chuột phải **dat-lich.bat** → **Run as administrator**.
+   Nó đăng ký 4 lịch: 18:00 chạy chính; 07:00, 12:00, 15:00 giữ phiên. Chạy cả T7, CN, kể cả khi khóa
+   màn hình, đánh thức máy nếu đang ngủ. Máy phải bật (không tắt nguồn).
+
+## C. Bot chạy thế nào, kiểm tra ở đâu
+
+- Mỗi lần chạy bot tự tải bản script mới nhất từ GitHub (`chay-bot.bat`), nên sửa code không cần cài lại.
+- Log: `D:\du-an\bot-profile\logs\<ngày>.log`. Mở bằng Notepad, dòng cuối là tóm tắt: quét bao nhiêu
+  văn bản, đẩy bao nhiêu file, lỗi gì.
+- Kiểm tra bot đã chạy chưa: mở Task Scheduler (Start → gõ Task Scheduler), mục Task Scheduler Library,
+  4 dòng "Bot Data360X - ...", cột Last Run Time / Last Run Result (0x0 là thành công).
+- Kết quả trên GitHub: repo `vlncn-laocai` → thư mục `inbox/` có file `<số>_GP-UBND.pdf` + `.json`,
+  và `inbox/_da-xu-ly.json` là danh sách đã tải (bot không tải trùng).
+
+## D. Khi bot báo "cần bạn đăng nhập lại"
+
+Bot hiện thông báo Windows (và Telegram nếu đã cấu hình) rồi để nguyên cửa sổ Chrome ở trang đăng nhập.
+Bạn đăng nhập trong cửa sổ đó, bot tự nhận ra và chạy tiếp (chờ tối đa 6 lần × 15 phút). Nếu lỡ mất,
+nháy đúp `dang-nhap-lan-dau.bat`, đăng nhập, rồi nháy đúp `chay-thu.bat` hoặc chờ 18h hôm sau.
+
+## E. Telegram (làm ở Bước 3, 3 phút)
+
+Mở Telegram → tìm **BotFather** → gửi `/newbot` → đặt tên → nhận token. Tìm **userinfobot** → gửi
+`/start` → nhận chat id. Mở `D:\du-an\bot-profile\config.json` bằng Notepad, dán vào 2 dòng
+`telegram_token` và `telegram_chat_id`, lưu. Từ đó mỗi lần chạy bot nhắn 1 tin tóm tắt.
+
+## F. Đổi token, đổi máy
+
+- Đổi token GitHub: nháy đúp `cai-dat.bat`, dán token mới (các bước khác tự bỏ qua vì đã cài).
+- Cài sang máy khác: làm lại mục B. Hồ sơ Chrome nằm ở `D:\du-an\bot-profile\chrome-profile`, không
+  chép sang máy khác, đăng nhập lại là xong.
