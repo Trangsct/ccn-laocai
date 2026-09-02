@@ -21,7 +21,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 if errorlevel 1 (
     echo LOI: hay bam chuot phai vao dat-lich.bat, chon "Run as administrator" roi thu lai.
 ) else (
-    echo Da dat lich. Kiem tra: mo Task Scheduler (go "Task Scheduler" o Start), muc Task Scheduler Library.
+    echo Da dat lich. Kiem tra: bam Start, go Task Scheduler, xem muc Task Scheduler Library.
 )
 echo.
 pause
