@@ -1,4 +1,10 @@
 """
+LƯU Ý (02/9/2026): cổng đăng nhập SSO login.yenbai.gov.vn có CAPTCHA bắt buộc nên bot này
+KHÔNG tự đăng nhập được từ GitHub Actions. Phương án đang dùng là userscript Tampermonkey
+tools/qlvb-sync.user.js (cán bộ tự đăng nhập, script đọc bảng và gửi lên GitHub).
+File này giữ lại làm công cụ soi giao diện / dự phòng; bộ từ khóa TU_KHOA là nguồn chuẩn
+và được chép sang userscript.
+
 Bot đọc văn bản mới trên qlvb.yenbai.gov.vn và ghi ra JSON cho 2 trang web
 (congnghieplaocai.vn - repo ccn-laocai; vlncn-laocai.vercel.app - repo vlncn-laocai).
 
