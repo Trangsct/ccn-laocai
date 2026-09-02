@@ -34,7 +34,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-BOT_HOME = Path(os.environ.get("BOT_HOME", r"D:\du-an\bot-profile"))
+BOT_HOME = Path(os.environ.get("BOT_HOME") or (r"D:\du-an\bot-profile" if Path("D:\\").exists() else r"C:\du-an\bot-profile"))
 PROFILE = BOT_HOME / "chrome-profile"
 LOG_DIR = BOT_HOME / "logs"
 CONFIG = BOT_HOME / "config.json"
