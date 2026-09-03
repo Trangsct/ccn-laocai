@@ -82,3 +82,25 @@ trạng thái các lượt chạy gần đây. Lần đầu cần cấu hình ha
 Bình thường bot chỉ quét 3 ngày gần nhất cho nhanh. Khi cần lấy lại văn bản cũ (ví dụ giấy phép vận chuyển
 hàng hóa nguy hiểm tháng 6, 7/2026 chưa có trên trang), bấm đúp **`quet-lai-120-ngay.bat`** trong `D:\du-an\bot`.
 Bot quét 120 ngày gần nhất, bỏ qua văn bản đã xử lý, chỉ tải cái còn thiếu. Mất khoảng 10 đến 25 phút.
+
+## Chạy bot trên máy thứ hai (ví dụ máy để bàn ở cơ quan)
+
+Bot chạy được trên nhiều máy. Danh sách văn bản đã xử lý (`inbox/_da-xu-ly.json`) nằm trên GitHub chứ không nằm
+trên máy, nên **hai máy không tải trùng nhau**: máy nào chạy trước lấy văn bản mới, máy chạy sau tự bỏ qua.
+
+**KHÔNG cần chép thư mục `du-an` sang.** Chép hồ sơ Chrome (`bot-profile\chrome-profile`) giữa hai máy thường mất
+phiên đăng nhập, lại nặng. Cài mới sạch sẽ hơn và chỉ mất khoảng 10 phút:
+
+1. Trên máy mới, tải file cài đặt: mở https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat
+   → bấm chuột phải → *Lưu thành* → lưu vào thư mục `D:\du-an\bot` (chưa có thì tạo mới; máy không có ổ D thì dùng `C:\du-an\bot`).
+2. Bấm đúp `cai-dat.bat`. File tự cài Python, Playwright, Chromium, tải toàn bộ script và các file .bat.
+3. Khi máy hỏi token, dán chuỗi `github_pat_...` — mở `config.json` trên máy cũ (`D:\du-an\bot-profile\config.json`)
+   bằng Notepad để chép, hoặc tạo token mới trên GitHub. Chạy xong phải thấy dòng **TOKEN DUNG DUOC**.
+4. Bấm đúp `dang-nhap-lan-dau.bat`, đăng nhập Data360X trên máy mới (có captcha, Bạn tự nhập).
+5. Bấm đúp `chay-thu.bat` để kiểm tra bot đọc được văn bản.
+
+**Chọn MỘT máy giữ lịch tự chạy 18h**, tránh hai máy cùng chạy một lúc:
+- Máy giữ lịch: bấm chuột phải `dat-lich.bat` → *Run as administrator*.
+- Máy còn lại: bấm đúp `bo-lich.bat` để gỡ lịch; vẫn chạy tay bằng `cap-nhat-ngay.bat` bất cứ lúc nào.
+
+Nên để lịch ở máy **hay bật và hay đăng nhập Data360X nhất**. Máy kia dùng khi cần chạy gấp.
