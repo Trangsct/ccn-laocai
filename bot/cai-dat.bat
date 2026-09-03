@@ -9,7 +9,8 @@ set BOT_DIR=%ROOT%\bot
 set RAW=https://raw.githubusercontent.com/Trangsct/ccn-laocai/main
 
 echo ================================================================
-echo   CAI DAT BOT DATA360X (chi can chay 1 lan)
+echo   CAI DAT BOT DATA360X (chay lan dau tren may moi;
+echo   chay lai bat cu luc nao de tai ve day du cac file .bat moi)
 echo ================================================================
 echo.
 
@@ -49,6 +50,9 @@ curl -sSL -o "%BOT_DIR%\dang-nhap-lan-dau.bat" "%RAW%/bot/dang-nhap-lan-dau.bat"
 curl -sSL -o "%BOT_DIR%\chay-thu.bat" "%RAW%/bot/chay-thu.bat"
 curl -sSL -o "%BOT_DIR%\dat-lich.bat" "%RAW%/bot/dat-lich.bat"
 curl -sSL -o "%BOT_DIR%\chay-bot.bat" "%RAW%/bot/chay-bot.bat"
+curl -sSL -o "%BOT_DIR%\cap-nhat-ngay.bat" "%RAW%/bot/cap-nhat-ngay.bat"
+curl -sSL -o "%BOT_DIR%\quet-lai-120-ngay.bat" "%RAW%/bot/quet-lai-120-ngay.bat"
+curl -sSL -o "%BOT_DIR%\bo-lich.bat" "%RAW%/bot/bo-lich.bat"
 if not exist "%BOT_DIR%\bot-data360x.py" (
     echo   Khong tai duoc script. Kiem tra mang.
     pause
