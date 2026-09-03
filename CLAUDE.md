@@ -47,7 +47,7 @@ Người sở hữu / vận hành: **trangsct@gmail.com** (giao tiếp bằng ti
 - **Chart.js** (CDN) cho biểu đồ thống kê.
 - **Netlify CMS + git-gateway + Netlify Identity** cho editorial workflow — biên tập sửa `ccn-data.json` rồi merge PR.
 - **PWA** với service worker tự cache (đang ở **v36** — bump `CACHE_VERSION` mỗi khi đổi asset lõi).
-- **Chatbot AI**: `api/chat.js` (Vercel Edge Function) proxy gọi **Google Gemini** (`gemini-2.5-flash-lite` chính, `gemini-2.5-flash` dự phòng — free tier), context từ `api/chatbot-context.js`. Đây là phần serverless duy nhất, chỉ chạy trên Vercel.
+- **Chatbot AI**: `api/chat.js` (Vercel Edge Function) proxy gọi **Google Gemini** — free tier. Danh sách `MODELS` thử lần lượt từ bản Flash cao nhất xuống (`gemini-3.8-flash` → 3.7 → 2.5-flash → 2.5-flash-lite làm lưới an toàn); bản chưa mở cho khóa API trả 404 thì tự bỏ qua, nên ra bản mới chỉ cần thêm một dòng vào đầu danh sách. Bạn chốt 03/9/2026: luôn ưu tiên bản Flash cao nhất, không dùng Pro. Context từ `api/chatbot-context.js`. Đây là phần serverless duy nhất, chỉ chạy trên Vercel.
 - Host: **Netlify** (CMS, Identity) + **Vercel** (public domain chính + serverless `api/`).
 
 ## Quy ước
