@@ -1,5 +1,7 @@
 @echo off
 chcp 65001 >nul
+rem Bao tieng Viet hien dung dau trong cua so nay (khong co dong nay Python in ra dau hoi)
+set PYTHONIOENCODING=utf-8
 rem File nay do Task Scheduler goi. Tham so: chinh | giu-phien
 rem Moi lan chay tu tai ban script moi nhat tu GitHub (bot tu cap nhat).
 rem Tu chon o D neu co, khong thi o C

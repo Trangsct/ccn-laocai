@@ -1,5 +1,7 @@
 @echo off
 chcp 65001 >nul
+rem Bao tieng Viet hien dung dau trong cua so nay (khong co dong nay Python in ra dau hoi)
+set PYTHONIOENCODING=utf-8
 title QUET BU 120 NGAY - Bot Data360X
 rem Chay bu cac van ban cu (mac dinh bot chi quet 3 ngay gan nhat).
 rem Dung khi can bo sung giay phep da ky truoc do, vi du GP van chuyen HHNH thang 6-7/2026.
