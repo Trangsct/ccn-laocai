@@ -7,6 +7,10 @@ rem Chay bu cac van ban cu (mac dinh bot chi quet 3 ngay gan nhat).
 rem Dung khi can bo sung giay phep da ky truoc do, vi du GP van chuyen HHNH thang 6-7/2026.
 if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_DIR=%ROOT%\bot
+rem Tu cap nhat: tai ban moi cua moi file (tru file dang chay) truoc khi lam viec
+curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\tai-ban-moi.bat.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/tai-ban-moi.bat?ref=main"
+if exist "%BOT_DIR%\tai-ban-moi.bat.new" move /y "%BOT_DIR%\tai-ban-moi.bat.new" "%BOT_DIR%\tai-ban-moi.bat" >nul
+if exist "%BOT_DIR%\tai-ban-moi.bat" call "%BOT_DIR%\tai-ban-moi.bat" quet-lai-120-ngay.bat
 
 echo.
 echo ============================================================
@@ -22,9 +26,7 @@ echo  Ban co the thu nho cua so, dung tat.
 echo.
 pause
 
-echo [1/2] Tai ban script moi nhat...
-curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\bot-data360x.py.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/scripts/bot-data360x.py?ref=main"
-if exist "%BOT_DIR%\bot-data360x.py.new" move /y "%BOT_DIR%\bot-data360x.py.new" "%BOT_DIR%\bot-data360x.py" >nul
+echo [1/2] Tai ban moi nhat cua bot...
 
 echo [2/2] Dang quet 120 ngay, vui long cho...
 echo.
