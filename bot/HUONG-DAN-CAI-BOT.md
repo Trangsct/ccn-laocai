@@ -63,3 +63,16 @@ Mở Telegram → tìm **BotFather** → gửi `/newbot` → đặt tên → nh�
 - Đổi token GitHub: nháy đúp `cai-dat.bat`, dán token mới (các bước khác tự bỏ qua vì đã cài).
 - Cài sang máy khác: làm lại mục B. Hồ sơ Chrome nằm ở `D:\du-an\bot-profile\chrome-profile`, không
   chép sang máy khác, đăng nhập lại là xong.
+
+## Chủ động cập nhật khi Bạn thấy cần (không chờ 18h)
+
+Có hai cách, dùng cách nào cũng được:
+
+**Cách 1 - bấm trên máy tính (lấy văn bản mới nhất từ Data360X):**
+mở thư mục `D:\du-an\bot`, bấm đúp vào **`cap-nhat-ngay.bat`**. Bot quét văn bản mới, tải PDF và đẩy lên GitHub;
+phần đọc nội dung tự chạy tiếp. Muốn tiện hơn: bấm chuột phải vào file → *Gửi tới* → *Desktop (tạo lối tắt)*,
+sau này chỉ cần bấm đúp biểu tượng ngoài màn hình.
+
+**Cách 2 - bấm trên trang web (xử lý văn bản bot đã tải về):**
+vào https://vlncn-laocai.vercel.app/cap-nhat, nhập mã bảo vệ rồi bấm *Chạy ngay*. Trang đó cũng hiện
+trạng thái các lượt chạy gần đây. Lần đầu cần cấu hình hai biến trên Vercel, hướng dẫn ngay trên trang.
