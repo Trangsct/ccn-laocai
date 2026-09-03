@@ -76,3 +76,9 @@ sau này chỉ cần bấm đúp biểu tượng ngoài màn hình.
 **Cách 2 - bấm trên trang web (xử lý văn bản bot đã tải về):**
 vào https://vlncn-laocai.vercel.app/cap-nhat, nhập mã bảo vệ rồi bấm *Chạy ngay*. Trang đó cũng hiện
 trạng thái các lượt chạy gần đây. Lần đầu cần cấu hình hai biến trên Vercel, hướng dẫn ngay trên trang.
+
+## Quét bù văn bản cũ (khi cần lấy lại giấy phép đã ký trước đây)
+
+Bình thường bot chỉ quét 3 ngày gần nhất cho nhanh. Khi cần lấy lại văn bản cũ (ví dụ giấy phép vận chuyển
+hàng hóa nguy hiểm tháng 6, 7/2026 chưa có trên trang), bấm đúp **`quet-lai-120-ngay.bat`** trong `D:\du-an\bot`.
+Bot quét 120 ngày gần nhất, bỏ qua văn bản đã xử lý, chỉ tải cái còn thiếu. Mất khoảng 10 đến 25 phút.
