@@ -3,22 +3,27 @@
 //
 // Endpoint: POST /api/chat
 // Body: { messages: [{role: 'user'|'model', text: string}, ...] }
-// Response: { reply: string, usedModel: 'flash-lite'|'flash', fallback?: true }
+// Response: { reply: string, usedModel: '<tên model đã dùng>', fallback?: true }
 //
-// Free-tier strategy:
-// - Primary: gemini-2.5-flash-lite (1000 RPD free, rate quota cao nhất)
-// - Fallback: gemini-2.5-flash (250 RPD free, quota tách biệt, lưu cho khi primary 429/503)
-// Cả 2 đều thuộc free tier — không phát sinh chi phí.
+// Chọn model (Bạn chốt 03/9/2026: LUÔN ưu tiên bản Flash cao nhất, chỉ Flash, không dùng Pro):
+// thử lần lượt từ bản mới nhất xuống. Bản chưa mở cho khóa API này trả 404 → tự bỏ qua,
+// nên khi Google ra bản mới chỉ cần thêm 1 dòng vào đầu MODELS, không sợ hỏng chatbot.
+// Bản cuối trong danh sách là bản nhẹ đã chạy ổn định, giữ làm lưới an toàn cho hạn mức free tier.
+// Tất cả đều thuộc free tier — không phát sinh chi phí.
 
 import { CHATBOT_CONTEXT } from './chatbot-context.js';
 
 export const config = { runtime: 'edge' };
 
-const PRIMARY_MODEL = 'gemini-2.5-flash-lite';
-const FALLBACK_MODEL = 'gemini-2.5-flash';
+const MODELS = [
+  'gemini-3.8-flash',        // bản cao nhất hiện tại (03/9/2026)
+  'gemini-3.7-flash',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',   // lưới an toàn: hạn mức free cao nhất
+];
 
-// HTTP status cần fallback sang model thứ 2 (upstream rate limit / overload)
-const FALLBACK_STATUSES = new Set([429, 500, 502, 503, 504]);
+// HTTP status cần chuyển sang model kế tiếp: 404 = bản chưa mở cho khóa này; còn lại là quá tải / hết hạn mức
+const FALLBACK_STATUSES = new Set([404, 429, 500, 502, 503, 504]);
 
 const SYSTEM_INSTRUCTION = `Bạn là **Trợ lý thông tin Khu công nghiệp và Cụm công nghiệp tỉnh Lào Cai**, do Sở Công Thương tỉnh Lào Cai phát triển.
 
@@ -108,34 +113,38 @@ export default async function handler(req) {
   }
   const truncated = messages.slice(-20);
 
-  // Thử primary trước
-  const primary = await callGemini(PRIMARY_MODEL, truncated, apiKey);
-  if (primary.ok) {
-    return new Response(JSON.stringify({ reply: primary.reply, usedModel: 'flash-lite' }), {
-      status: 200, headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  // Fallback sang model thứ 2 nếu primary gặp rate limit / upstream error
-  const shouldFallback = FALLBACK_STATUSES.has(primary.status) || primary.status === 0;
-  if (shouldFallback) {
-    const fb = await callGemini(FALLBACK_MODEL, truncated, apiKey);
-    if (fb.ok) {
+  // Thử lần lượt từ bản Flash cao nhất xuống; bản nào 404 (chưa mở) hoặc quá tải thì sang bản kế tiếp
+  let dauTien = null;
+  const daThu = [];
+  for (const model of MODELS) {
+    const kq = await callGemini(model, truncated, apiKey);
+    if (kq.ok) {
+      const body = { reply: kq.reply, usedModel: model };
+      if (daThu.length) {
+        body.fallback = true;
+        body.fallbackReason = daThu.map(x => `${x.model} lỗi ${x.status}`).join('; ');
+      }
+      return new Response(JSON.stringify(body), {
+        status: 200, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (!dauTien) dauTien = kq;
+    // Lỗi do khóa/nội dung (400/401/403) thì đổi model cũng vô ích — dừng luôn
+    if (!(FALLBACK_STATUSES.has(kq.status) || kq.status === 0)) {
       return new Response(
-        JSON.stringify({ reply: fb.reply, usedModel: 'flash', fallback: true, fallbackReason: `${PRIMARY_MODEL} lỗi ${primary.status}` }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: kq.error, detail: kq.detail, usedModel: model }),
+        { status: kq.status || 502, headers: { 'Content-Type': 'application/json' } }
       );
     }
-    // Cả 2 đều fail — trả lỗi primary kèm thông tin fallback
-    return new Response(
-      JSON.stringify({ error: primary.error, detail: primary.detail, fallbackTried: true, fallbackError: fb.error }),
-      { status: primary.status || 502, headers: { 'Content-Type': 'application/json' } }
-    );
+    daThu.push({ model, status: kq.status });
   }
 
-  // Lỗi non-fallback của primary (vd 400/401/403)
+  // Mọi bản đều không dùng được
   return new Response(
-    JSON.stringify({ error: primary.error, detail: primary.detail }),
-    { status: primary.status || 502, headers: { 'Content-Type': 'application/json' } }
+    JSON.stringify({
+      error: dauTien.error, detail: dauTien.detail, fallbackTried: true,
+      fallbackError: daThu.map(x => `${x.model}: ${x.status}`).join('; '),
+    }),
+    { status: dauTien.status || 502, headers: { 'Content-Type': 'application/json' } }
   );
 }
