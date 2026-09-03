@@ -55,6 +55,7 @@ curl -sSL -o "%BOT_DIR%\chay-bot.bat" "%RAW%/bot/chay-bot.bat"
 curl -sSL -o "%BOT_DIR%\cap-nhat-ngay.bat" "%RAW%/bot/cap-nhat-ngay.bat"
 curl -sSL -o "%BOT_DIR%\quet-lai-120-ngay.bat" "%RAW%/bot/quet-lai-120-ngay.bat"
 curl -sSL -o "%BOT_DIR%\bo-lich.bat" "%RAW%/bot/bo-lich.bat"
+curl -sSL -o "%BOT_DIR%\tai-ban-moi.bat" "%RAW%/bot/tai-ban-moi.bat"
 if not exist "%BOT_DIR%\bot-data360x.py" (
     echo   Khong tai duoc script. Kiem tra mang.
     pause

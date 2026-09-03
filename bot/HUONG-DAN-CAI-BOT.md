@@ -38,7 +38,9 @@ do Phòng Công nghiệp soạn, hoặc GP-UBND ở Văn bản đến có "vật
 
 ## C. Bot chạy thế nào, kiểm tra ở đâu
 
-- Mỗi lần chạy bot tự tải bản script mới nhất từ GitHub (`chay-bot.bat`), nên sửa code không cần cài lại.
+- **Bot tự cập nhật**: mỗi lần chạy (tự động 18h hay Bạn bấm `cap-nhat-ngay.bat`, `quet-lai-120-ngay.bat`, `chay-thu.bat`),
+  file `tai-ban-moi.bat` tải bản mới nhất của script Python và TẤT CẢ file .bat từ GitHub về `D:\du-an\bot`.
+  Vì vậy khi tôi sửa bot, Bạn không phải tải lại gì; máy thứ hai cũng tự lấy bản mới.
 - Log: `D:\du-an\bot-profile\logs\<ngày>.log`. Mở bằng Notepad, dòng cuối là tóm tắt: quét bao nhiêu
   văn bản, đẩy bao nhiêu file, lỗi gì.
 - Kiểm tra bot đã chạy chưa: mở Task Scheduler (Start → gõ Task Scheduler), mục Task Scheduler Library,
