@@ -1,5 +1,7 @@
 @echo off
 chcp 65001 >nul
+rem Bao tieng Viet hien dung dau trong cua so nay (khong co dong nay Python in ra dau hoi)
+set PYTHONIOENCODING=utf-8
 title CAP NHAT NGAY - Bot Data360X
 rem Bam dup vao file nay khi muon cap nhat ngay, khong cho den 18h.
 rem Bot dung lai phien dang nhap san co, quet van ban moi, tai PDF va day len GitHub.

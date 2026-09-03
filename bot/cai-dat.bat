@@ -1,5 +1,7 @@
 @echo off
 chcp 65001 >nul
+rem Bao tieng Viet hien dung dau trong cua so nay (khong co dong nay Python in ra dau hoi)
+set PYTHONIOENCODING=utf-8
 setlocal
 title Cai dat Bot Data360X
 rem Tu chon o D neu co, khong thi o C
