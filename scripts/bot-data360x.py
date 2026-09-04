@@ -261,8 +261,12 @@ def mo_trinh_duyet_online(p, phien_json):
     """Chạy trên GitHub: KHÔNG đăng nhập, chỉ dùng lại phiên Bạn đã đăng nhập tay rồi xuất lên
     (đúng ràng buộc 1: không giải captcha, không tự đăng nhập)."""
     b = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
+    # Cổng Data360X không gửi kèm chứng thư trung gian. Chrome trên Windows tự đi tải nên vào được, còn
+    # Chromium trên máy chủ Linux thì không, dẫn tới treo 90 giây rồi lỗi (vụ 04/9/2026). Workflow cài sẵn
+    # chứng thư trung gian; BO_QUA_TLS=1 chỉ dùng khi cách đó không xong.
     ctx = b.new_context(storage_state=json.loads(phien_json), viewport={"width": 1400, "height": 900},
-                        locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh", accept_downloads=True)
+                        locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh", accept_downloads=True,
+                        ignore_https_errors=os.environ.get("BO_QUA_TLS") == "1")
     return ctx
 
 
