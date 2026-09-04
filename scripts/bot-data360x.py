@@ -121,13 +121,38 @@ def parse_ngay(s):
 
 
 def doc_config():
+    """Đọc config.json. Tệp bị thừa nội dung (dán đè, chạy cài đặt 2 lần...) thì lấy khối JSON ĐẦU TIÊN
+    rồi ghi lại cho sạch, thay vì bỏ trắng token như trước (vụ 04/9/2026: 'Extra data: line 5 column 3')."""
     if not CONFIG.exists():
         return {}
+    chu = CONFIG.read_text(encoding="utf-8-sig").strip()
     try:
-        return json.loads(CONFIG.read_text(encoding="utf-8"))
+        return json.loads(chu)
+    except json.JSONDecodeError:
+        pass
+    try:
+        cfg, _ = json.JSONDecoder().raw_decode(chu)      # bỏ phần thừa phía sau
+        if isinstance(cfg, dict):
+            log("config.json có phần thừa - đã lấy phần hợp lệ và ghi lại cho sạch.")
+            try:
+                CONFIG.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+            except Exception as e:
+                log("  (không ghi lại được:", repr(e), ")")
+            return cfg
     except Exception as e:
         log("config.json lỗi:", e)
-        return {}
+    # cứu vớt lần cuối: nhặt từng khóa bằng biểu thức
+    cfg = {k: m.group(1) for k in ("github_token", "telegram_token", "telegram_chat_id")
+           for m in [re.search(rf'"{k}"\s*:\s*"([^"]*)"', chu)] if m}
+    if cfg.get("github_token"):
+        log("config.json hỏng nặng - đã nhặt được token, ghi lại tệp mới.")
+        try:
+            CONFIG.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+        except Exception:
+            pass
+    else:
+        log("config.json không đọc được token nào.")
+    return cfg
 
 
 # ---------------------------------------------------------------- thông báo
