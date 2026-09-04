@@ -189,6 +189,31 @@ def gh_ghi(repo, path, noi_dung: bytes, msg, token, sha=None):
     return gh("PUT", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}", body, token)
 
 
+def ghi_nhip_tim(token, tong_quet, da_day, loi):
+    """Ghi 'nhịp tim' mỗi lần bot chạy, kể cả khi không có văn bản mới.
+
+    GitHub căn vào tệp này để biết máy đã nghỉ bao lâu: quá 7 ngày thì tự mở một phiên chạy online
+    (Bạn chốt 04/9/2026). Để ngoài thư mục inbox/ để không kích hoạt workflow đọc Gemini mỗi lần ghi.
+    """
+    import socket
+
+    noi_dung = {
+        "lan_cuoi": datetime.now().isoformat(timespec="minutes"),
+        "may": socket.gethostname(),
+        "quet": tong_quet,
+        "day": len(da_day),
+        "loi": loi[:5],
+    }
+    try:
+        _, sha = gh_doc("vlncn-laocai", "trang-thai/bot-chay.json", token)
+        gh_ghi("vlncn-laocai", "trang-thai/bot-chay.json",
+               json.dumps(noi_dung, ensure_ascii=False, indent=2).encode(),
+               f"Bot Data360X: nhịp tim {noi_dung['lan_cuoi']} ({socket.gethostname()})", token, sha)
+        log("  đã ghi nhịp tim lên GitHub")
+    except Exception as e:
+        log("  không ghi được nhịp tim:", repr(e))
+
+
 def da_xu_ly_doc(repo, token):
     raw, sha = gh_doc(repo, "inbox/_da-xu-ly.json", token)
     try:
@@ -499,6 +524,7 @@ def chay_chinh(soi=False, so_ngay=None):
                + (f". Lỗi {len(loi)}: " + "; ".join(loi) if loi else ""))
     log(tom_tat)
     if not soi:
+        ghi_nhip_tim(token, tong_quet, da_day, loi)
         telegram(tom_tat)
     return 0
 
