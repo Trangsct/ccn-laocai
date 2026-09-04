@@ -445,6 +445,16 @@ def quet_danh_sach(page, nguon, tu_ngay, soi_dir=None):
         tat_ca.extend(rows)
         ngay_cu = [parse_ngay(r["ngay_ban_hanh"]) for r in rows if parse_ngay(r["ngay_ban_hanh"])]
         log(f"  {nguon}: trang {trang_so}, {len(rows)} dòng")
+        if not rows and trang_so == 1:
+            # 0 dòng ngay trang đầu: hoặc thật sự không có văn bản, hoặc phiên không được cổng chấp nhận.
+            # In vài dấu hiệu để phân biệt (vụ 04/9/2026: chạy trên GitHub ra 0 dòng, trên máy ra 62 dòng).
+            try:
+                chu = re.sub(r"\s+", " ", page.locator("body").inner_text()[:400])
+                log(f"  [chẩn đoán] URL: {page.url}")
+                log(f"  [chẩn đoán] tiêu đề: {page.title()}")
+                log(f"  [chẩn đoán] đầu trang: {chu}")
+            except Exception as e:
+                log("  [chẩn đoán] không đọc được nội dung trang:", repr(e))
         if not rows or (ngay_cu and min(ngay_cu) < tu_ngay) or trang_so >= 20:
             break
         nut = page.locator("button.p-paginator-next")
