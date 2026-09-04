@@ -66,6 +66,24 @@ Mở Telegram → tìm **BotFather** → gửi `/newbot` → đặt tên → nh�
 - Cài sang máy khác: làm lại mục B. Hồ sơ Chrome nằm ở `D:\du-an\bot-profile\chrome-profile`, không
   chép sang máy khác, đăng nhập lại là xong.
 
+## GitHub ra lệnh cho máy này chạy (cách đang dùng từ 04/9/2026)
+
+Cổng Data360X không cho máy chủ nước ngoài đọc dữ liệu, nên bot vẫn phải chạy trên máy đã đăng nhập. Cách
+làm hiện nay: GitHub giữ lịch và ra lệnh, máy cơ quan thi hành.
+
+**Cài một lần**: bấm CHUỘT PHẢI vào `cai-runner.bat` → **Run as administrator**. Làm theo hai bước hiện trên
+màn hình: mở trang GitHub nó chỉ, copy chuỗi token ở mục Configure, dán vào rồi Enter. Xong là máy nhận lệnh
+được, chạy nền như một dịch vụ, không cần mở cửa sổ nào.
+
+**Từ đó về sau**:
+
+- Tự động **11h30 thứ Tư hằng tuần**.
+- Muốn chạy ngay: vào https://github.com/Trangsct/vlncn-laocai/actions → chọn **Quet Data360X (may co quan)**
+  → **Run workflow**. Không cần ngồi trước máy cơ quan, bấm từ điện thoại cũng được.
+- Máy tắt thì lệnh nằm chờ, bật máy lên là chạy tiếp.
+- Kiểm tra máy còn nhận lệnh không: https://github.com/Trangsct/vlncn-laocai/settings/actions/runners,
+  phải thấy dòng xanh **Idle**.
+
 ## Chủ động cập nhật khi Bạn thấy cần (không chờ 18h)
 
 Có hai cách, dùng cách nào cũng được:
