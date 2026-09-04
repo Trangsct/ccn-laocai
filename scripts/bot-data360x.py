@@ -189,6 +189,31 @@ def gh_ghi(repo, path, noi_dung: bytes, msg, token, sha=None):
     return gh("PUT", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}", body, token)
 
 
+def ghi_nhip_tim(token, tong_quet, da_day, loi):
+    """Ghi 'nhịp tim' mỗi lần bot chạy, kể cả khi không có văn bản mới.
+
+    GitHub căn vào tệp này để biết máy đã nghỉ bao lâu: quá 7 ngày thì tự mở một phiên chạy online
+    (Bạn chốt 04/9/2026). Để ngoài thư mục inbox/ để không kích hoạt workflow đọc Gemini mỗi lần ghi.
+    """
+    import socket
+
+    noi_dung = {
+        "lan_cuoi": datetime.now().isoformat(timespec="minutes"),
+        "may": socket.gethostname(),
+        "quet": tong_quet,
+        "day": len(da_day),
+        "loi": loi[:5],
+    }
+    try:
+        _, sha = gh_doc("vlncn-laocai", "trang-thai/bot-chay.json", token)
+        gh_ghi("vlncn-laocai", "trang-thai/bot-chay.json",
+               json.dumps(noi_dung, ensure_ascii=False, indent=2).encode(),
+               f"Bot Data360X: nhịp tim {noi_dung['lan_cuoi']} ({socket.gethostname()})", token, sha)
+        log("  đã ghi nhịp tim lên GitHub")
+    except Exception as e:
+        log("  không ghi được nhịp tim:", repr(e))
+
+
 def da_xu_ly_doc(repo, token):
     raw, sha = gh_doc(repo, "inbox/_da-xu-ly.json", token)
     try:
@@ -205,6 +230,63 @@ def mo_trinh_duyet(p, headless=False):
         viewport={"width": 1400, "height": 900}, locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh",
         accept_downloads=True, args=["--disable-blink-features=AutomationControlled"],
     )
+
+
+def mo_trinh_duyet_online(p, phien_json):
+    """Chạy trên GitHub: KHÔNG đăng nhập, chỉ dùng lại phiên Bạn đã đăng nhập tay rồi xuất lên
+    (đúng ràng buộc 1: không giải captcha, không tự đăng nhập)."""
+    b = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
+    ctx = b.new_context(storage_state=json.loads(phien_json), viewport={"width": 1400, "height": 900},
+                        locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh", accept_downloads=True)
+    return ctx
+
+
+def cap_nhat_secret(repo, ten, gia_tri: str, token):
+    """Ghi phiên vào GitHub Secret (mã hoá bằng khoá công khai của repo trước khi gửi)."""
+    from base64 import b64encode
+
+    from nacl import encoding, public      # pip install pynacl
+
+    kc = gh("GET", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/actions/secrets/public-key", token=token)
+    hop = public.SealedBox(public.PublicKey(kc["key"].encode(), encoding.Base64Encoder()))
+    gh("PUT", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/actions/secrets/{ten}",
+       {"encrypted_value": b64encode(hop.encrypt(gia_tri.encode())).decode(), "key_id": kc["key_id"]}, token)
+
+
+def xuat_phien():
+    """Chạy trên máy Bạn: lấy phiên Data360X đang đăng nhập rồi cất vào GitHub Secret DATA360X_PHIEN."""
+    from playwright.sync_api import sync_playwright
+
+    cfg = doc_config()
+    token = cfg.get("github_token", "")
+    if not token:
+        log("Chưa có github_token trong config.json. Chạy cai-dat.bat để nhập.")
+        return 2
+    with sync_playwright() as p:
+        ctx = mo_trinh_duyet(p, headless=False)
+        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        try:
+            page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(4000)
+            if can_dang_nhap(page):
+                print("\nPhiên đã hết. Hãy đăng nhập Data360X trong cửa sổ vừa mở (nhập captcha như thường),")
+                print("thấy trang chủ hiện ra thì quay lại đây và bấm Enter.")
+                try:
+                    input()
+                except EOFError:
+                    page.wait_for_timeout(120000)
+                page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+                page.wait_for_timeout(3000)
+            if can_dang_nhap(page):
+                log("Vẫn chưa đăng nhập được, chưa xuất phiên.")
+                return 1
+            phien = json.dumps(ctx.storage_state(), ensure_ascii=False)
+        finally:
+            ctx.close()
+    cap_nhat_secret("vlncn-laocai", "DATA360X_PHIEN", phien, token)
+    log(f"Đã đưa phiên lên GitHub ({len(phien)} ký tự). Từ giờ GitHub tự quét, không cần máy này.")
+    thong_bao_windows("Bot Data360X", "Đã đưa phiên đăng nhập lên GitHub. GitHub sẽ tự quét hằng ngày.")
+    return 0
 
 
 def can_dang_nhap(page):
@@ -402,11 +484,17 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
 
 
 # ---------------------------------------------------------------- luồng chính
-def chay_chinh(soi=False, so_ngay=None):
+def chay_chinh(soi=False, so_ngay=None, online=False):
     from playwright.sync_api import sync_playwright
 
     cfg = doc_config()
     token = cfg.get("github_token", "")
+    phien = os.environ.get("DATA360X_PHIEN", "")
+    if online:
+        token = os.environ.get("BOT_GITHUB_TOKEN", "") or token
+        if not phien:
+            log("Chưa có phiên Data360X (secret DATA360X_PHIEN). Trên máy Bạn chạy xuat-phien.bat một lần.")
+            return 4
     if not soi and not token:
         log("Chưa có github_token trong config.json. Chạy cai-dat.bat để nhập.")
         thong_bao_windows("Bot Data360X", "Chưa có token GitHub trong config.json")
@@ -416,15 +504,18 @@ def chay_chinh(soi=False, so_ngay=None):
         soi_dir = LOG_DIR / "soi" / datetime.now().strftime("%Y-%m-%d_%H%M")
         soi_dir.mkdir(parents=True, exist_ok=True)
     tu_ngay = date.today() - timedelta(days=so_ngay or (SO_NGAY_QUET_SOI if soi else SO_NGAY_QUET))
-    tong_quet, da_day, loi = 0, [], []
+    tong_quet, da_day, loi, phien_moi = 0, [], [], None
 
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
             page.wait_for_timeout(3000)
             if can_dang_nhap(page):
+                if online:      # trên GitHub không có ai nhập captcha -> dừng, báo Bạn xuất lại phiên
+                    log("PHIÊN HẾT HẠN: trên máy Bạn chạy xuat-phien.bat rồi để GitHub chạy tiếp.")
+                    return 3
                 page.bring_to_front()
                 if not cho_dang_nhap(ctx, page):
                     telegram("Bot Data360X: không đăng nhập được sau 90 phút, bỏ lượt chạy hôm nay.")
@@ -490,6 +581,11 @@ def chay_chinh(soi=False, so_ngay=None):
                 log(f"  đã đẩy lên {repo}/inbox/{ten}.pdf")
         finally:
             try:
+                if online:
+                    phien_moi = json.dumps(ctx.storage_state(), ensure_ascii=False)
+            except Exception as e:
+                log("Không đọc lại được phiên:", repr(e))
+            try:
                 ctx.close()
             except Exception:
                 pass
@@ -499,7 +595,14 @@ def chay_chinh(soi=False, so_ngay=None):
                + (f". Lỗi {len(loi)}: " + "; ".join(loi) if loi else ""))
     log(tom_tat)
     if not soi:
+        ghi_nhip_tim(token, tong_quet, da_day, loi)
         telegram(tom_tat)
+    if online and phien_moi:
+        try:
+            cap_nhat_secret("vlncn-laocai", "DATA360X_PHIEN", phien_moi, token)
+            log("Đã lưu lại phiên vừa làm mới (kéo dài hạn dùng).")
+        except Exception as e:
+            log("Không lưu lại được phiên:", repr(e))
     return 0
 
 
@@ -578,6 +681,8 @@ def main():
     ap.add_argument("--soi", action="store_true")
     ap.add_argument("--ngay", type=int, help="quét N ngày gần nhất (mặc định 3; chạy bù lần đầu dùng 30)")
     ap.add_argument("--kiem-tra-token", action="store_true")
+    ap.add_argument("--xuat-phien", action="store_true", help="đưa phiên đăng nhập hiện tại lên GitHub Secret")
+    ap.add_argument("--online", action="store_true", help="chạy trên GitHub bằng phiên đã xuất (không đăng nhập)")
     a = ap.parse_args()
     try:
         if a.kiem_tra_token:
@@ -586,7 +691,9 @@ def main():
             return dang_nhap_lan_dau()
         if a.giu_phien:
             return giu_phien()
-        return chay_chinh(soi=a.soi, so_ngay=a.ngay)
+        if a.xuat_phien:
+            return xuat_phien()
+        return chay_chinh(soi=a.soi, so_ngay=a.ngay, online=a.online)
     except Exception as e:
         log("LỖI:", repr(e))
         telegram(f"Bot Data360X lỗi: {e!r}")
