@@ -132,6 +132,27 @@ Khi muốn maintainability lâu dài: tách `app.js` thành các module nhỏ (m
 - Nếu chỉ chỉnh con số, mô tả: chỉ cần sửa `ccn-data.json`.
 - Nếu chỉnh tọa độ: xem mục "Việc dài hạn A" để hỏi nguồn dữ liệu chuẩn trước.
 
+## Quy trình làm việc mỗi phiên (Bạn chốt 04/9/2026)
+
+Bạn mở phiên chat mới với Claude Code và giao việc. Nguyên tắc:
+
+1. **Việc nào làm được ngay thì làm ngay**, không hỏi lại, không chờ.
+2. **Thiếu dữ liệu thì gọi bot vào Data360X lấy cho đủ** rồi mới làm, thay vì đoán hoặc để trống.
+3. **Việc đọc hiểu, thẩm định, chốt câu chữ và cập nhật bộ plugin là của Claude bản cao nhất.** Các mô hình
+   khác (Gemini, Mistral) chỉ làm phần cơ học: đọc chữ trong PDF, rút số liệu, tải tệp.
+4. Kết quả trả cho Bạn: bản đã sửa **bôi đỏ từng chỗ** kèm bảng giải trình ngắn gọn vì sao sửa.
+
+### Gọi bot lấy dữ liệu từ Data360X
+
+| Cần gì | Làm thế nào |
+|---|---|
+| Văn bản mới của Phòng Công nghiệp | Actions → **Quet Data360X (may co quan)** → Run workflow |
+| Các văn bản mà một dự thảo viện dẫn | Actions → **Tim van ban vien dan (may co quan)** → nhập tên thư mục hồ sơ trong `du-thao/` |
+| Soát một dự thảo | Thả tệp `.docx` vào `du-thao/` (xem `du-thao/README.md`) |
+
+Cổng Data360X chỉ phục vụ máy trong nước đã đăng nhập, nên hai workflow trên chạy trên **runner tại máy cơ
+quan** (cài bằng `bot/cai-runner.bat`). Máy tắt thì lệnh nằm chờ, bật máy lên là chạy tiếp.
+
 ## Lịch sử commit gần đây (để hiểu context)
 
 ```

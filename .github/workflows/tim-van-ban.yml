@@ -1,0 +1,46 @@
+# TÌM VĂN BẢN ĐƯỢC VIỆN DẪN TRONG DỰ THẢO (Bạn chốt 04/9/2026).
+# Chạy trên máy cơ quan qua runner, vì cổng Data360X chỉ phục vụ máy trong nước đã đăng nhập.
+# Đọc du-thao/<tên>/trich-dan.json (do workflow "Soat du thao van ban" sinh ra), tìm từng văn bản trên
+# Data360X, tải PDF về du-thao/<tên>/kem-theo/ rồi đẩy lên kho để Claude đối chiếu.
+
+name: Tim van ban vien dan (may co quan)
+on:
+  workflow_dispatch:
+    inputs:
+      ho_so:
+        description: 'Tên thư mục dự thảo trong du-thao/ (ví dụ: 2026.09.03. To trinh ... CCN Phu Thinh 6)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  tim:
+    runs-on: [self-hosted, windows, laocai]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Tìm và tải văn bản viện dẫn
+        shell: cmd
+        run: |
+          set PYTHONIOENCODING=utf-8
+          set PYTHONUNBUFFERED=1
+          if exist D:\du-an (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+          curl -sSL -o "%ROOT%\bot\bot-data360x.py" ^
+            "https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/scripts/bot-data360x.py"
+          python "%ROOT%\bot\bot-data360x.py" ^
+            --tim "du-thao/${{ github.event.inputs.ho_so }}/trich-dan.json" ^
+            --luu "du-thao/${{ github.event.inputs.ho_so }}/kem-theo"
+      - name: Đẩy văn bản tìm được lên kho
+        shell: bash
+        run: |
+          git config user.name "soat-bot"
+          git config user.email "soat-bot@users.noreply.github.com"
+          git add -A "du-thao/${{ github.event.inputs.ho_so }}/kem-theo" || true
+          if git diff --cached --quiet; then echo "Không tìm thấy văn bản nào mới"; exit 0; fi
+          git commit -m "Soát dự thảo: tải văn bản viện dẫn của ${{ github.event.inputs.ho_so }}"
+          git fetch origin main
+          git rebase -X theirs origin/main
+          git push origin HEAD:main
