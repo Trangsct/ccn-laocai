@@ -283,10 +283,7 @@ def xuat_phien():
     from playwright.sync_api import sync_playwright
 
     cfg = doc_config()
-    token = cfg.get("github_token", "")
-    if not token:
-        log("Chưa có github_token trong config.json. Chạy cai-dat.bat để nhập.")
-        return 2
+    token = cfg.get("github_token", "")      # thiếu token vẫn chạy được: cuối cùng sẽ đi đường dán tay
     with sync_playwright() as p:
         ctx = mo_trinh_duyet(p, headless=False)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
@@ -308,6 +305,9 @@ def xuat_phien():
             phien = json.dumps(ctx.storage_state(), ensure_ascii=False)
         finally:
             ctx.close()
+    if not token:
+        log("Chưa có github_token trong config.json - chuyển sang cách dán tay.")
+        return dan_tay(phien)
     try:
         cap_nhat_secret("vlncn-laocai", "DATA360X_PHIEN", phien, token)
     except Exception as e:
