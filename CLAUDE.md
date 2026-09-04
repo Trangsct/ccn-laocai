@@ -146,9 +146,13 @@ Bạn mở phiên chat mới với Claude Code và giao việc. Nguyên tắc:
 
 | Cần gì | Làm thế nào |
 |---|---|
-| Văn bản mới của Phòng Công nghiệp | Actions → **Quet Data360X (may co quan)** → Run workflow |
-| Các văn bản mà một dự thảo viện dẫn | Actions → **Tim van ban vien dan (may co quan)** → nhập tên thư mục hồ sơ trong `du-thao/` |
-| Soát một dự thảo | Thả tệp `.docx` vào `du-thao/` (xem `du-thao/README.md`) |
+| Văn bản mới của Phòng Công nghiệp | Actions của kho **vlncn-laocai** → **Quet Data360X (may co quan)** → Run workflow |
+| Các văn bản mà một dự thảo viện dẫn | Actions của kho **vlncn-laocai** → **Tim van ban vien dan (may co quan)** |
+| Soát một dự thảo | Thả tệp `.docx` vào `du-thao/` của kho **vlncn-laocai** |
+
+⚠️ **Kho `ccn-laocai` là kho CÔNG KHAI** (mã nguồn trang web công bố ra Internet). Tuyệt đối không đặt dự
+thảo nội bộ, danh sách cán bộ, hồ sơ chưa ban hành vào đây. Mọi hồ sơ dạng đó nằm ở kho riêng tư
+`vlncn-laocai`, thư mục `du-thao/`.
 
 Cổng Data360X chỉ phục vụ máy trong nước đã đăng nhập, nên hai workflow trên chạy trên **runner tại máy cơ
 quan** (cài bằng `bot/cai-runner.bat`). Máy tắt thì lệnh nằm chờ, bật máy lên là chạy tiếp.
