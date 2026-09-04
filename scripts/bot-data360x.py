@@ -308,9 +308,53 @@ def xuat_phien():
             phien = json.dumps(ctx.storage_state(), ensure_ascii=False)
         finally:
             ctx.close()
-    cap_nhat_secret("vlncn-laocai", "DATA360X_PHIEN", phien, token)
+    try:
+        cap_nhat_secret("vlncn-laocai", "DATA360X_PHIEN", phien, token)
+    except Exception as e:
+        # Token không có quyền ghi Secret (403) -> chép sẵn vào clipboard, Bạn dán tay 1 lần.
+        log("Không tự ghi được khóa lên GitHub:", repr(e))
+        return dan_tay(phien)
     log(f"Đã đưa phiên lên GitHub ({len(phien)} ký tự). Từ giờ GitHub tự quét, không cần máy này.")
     thong_bao_windows("Bot Data360X", "Đã đưa phiên đăng nhập lên GitHub. GitHub sẽ tự quét hằng ngày.")
+    return 0
+
+
+def dan_tay(phien):
+    """Đường lui khi token không được phép ghi Secret: lưu ra file, chép vào clipboard, mở sẵn trang GitHub."""
+    tep = BOT_HOME / "phien-data360x.txt"
+    tep.write_text(phien, encoding="utf-8")
+    da_chep = False
+    if os.name == "nt":
+        try:
+            subprocess.run("clip", input=phien.encode("utf-16-le"), check=True)
+            da_chep = True
+        except Exception as e:
+            log("  (không chép được vào clipboard:", repr(e), ")")
+    trang = "https://github.com/Trangsct/vlncn-laocai/settings/secrets/actions/new"
+    print()
+    print("=" * 64)
+    print("  CHỈ CÒN 1 BƯỚC DÁN TAY (khoảng 30 giây)")
+    print("=" * 64)
+    print(f"  Phiên đăng nhập đã lưu tại: {tep}")
+    print("  Nội dung " + ("ĐÃ CHÉP SẴN vào clipboard (Ctrl+V là ra)." if da_chep
+                           else "nằm trong file trên: mở bằng Notepad, Ctrl+A rồi Ctrl+C."))
+    print()
+    print("  1. Trang GitHub vừa mở (nếu chưa mở, vào địa chỉ dưới đây):")
+    print(f"     {trang}")
+    print("  2. Ô Name gõ:   DATA360X_PHIEN")
+    print("  3. Ô Secret bấm Ctrl+V để dán, rồi bấm nút Add secret.")
+    print("  4. Xong. Đóng cửa sổ này. GitHub sẽ tự quét Data360X 18h hằng ngày.")
+    print()
+    print("  (Nếu GitHub báo khóa đã tồn tại: bấm vào tên DATA360X_PHIEN trong danh sách,")
+    print("   dán chuỗi mới rồi bấm Update secret.)")
+    print("=" * 64)
+    try:
+        import webbrowser
+
+        webbrowser.open(trang)
+    except Exception:
+        pass
+    thong_bao_windows("Bot Data360X", "Phiên đã chép vào clipboard - dán vào GitHub Secret DATA360X_PHIEN")
     return 0
 
 
