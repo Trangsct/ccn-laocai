@@ -566,6 +566,84 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
         page.remove_listener("response", _on_response)
 
 
+def _khop_so(a, b):
+    """So số ký hiệu bỏ khoảng trắng và chữ hoa thường: '340/TTr-UBND' == '340 /TTR - UBND'."""
+    lam = lambda x: re.sub(r"[\s.]", "", str(x or "")).upper()
+    return lam(a) == lam(b)
+
+
+def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
+    """Tìm và tải các văn bản ĐƯỢC VIỆN DẪN trong một dự thảo (Bạn chốt 04/9/2026).
+
+    can_tim: danh sách {"so_ky_hieu": "340/TTr-UBND", "ngay": "20/8/2026"} - ngày để biết quét từ đâu.
+    Quét cả văn bản đến và văn bản đi từ ngày cũ nhất trong danh sách (lùi thêm vài ngày cho chắc), lấy đúng
+    những dòng khớp số ký hiệu rồi tải PDF về thư mục luu_vao.
+    """
+    from playwright.sync_api import sync_playwright
+
+    cfg = doc_config()
+    token = cfg.get("github_token", "")
+    phien = os.environ.get("DATA360X_PHIEN", "")
+    luu_vao = Path(luu_vao)
+    luu_vao.mkdir(parents=True, exist_ok=True)
+
+    ngay = [parse_ngay(v.get("ngay") or "") for v in can_tim]
+    ngay = [n for n in ngay if n]
+    tu_ngay = (min(ngay) if ngay else date.today() - timedelta(days=30)) - timedelta(days=so_ngay_lui)
+    can = {re.sub(r"[\s.]", "", v["so_ky_hieu"]).upper(): v for v in can_tim}
+    log(f"Tìm {len(can)} văn bản, quét từ {tu_ngay.isoformat()}: {', '.join(v['so_ky_hieu'] for v in can_tim)}")
+
+    thay, thieu = [], list(can.keys())
+    with sync_playwright() as p:
+        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        try:
+            page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(3000)
+            if can_dang_nhap(page):
+                if online:
+                    log("PHIÊN HẾT HẠN: chạy xuat-phien.bat trên máy rồi thử lại.")
+                    return 3
+                page.bring_to_front()
+                if not cho_dang_nhap(ctx, page):
+                    return 3
+            for nguon in ("den", "di"):
+                rows = quet_danh_sach(page, nguon, tu_ngay)
+                if rows is None:
+                    log("Bị đưa về trang đăng nhập giữa chừng.")
+                    return 3
+                for vb in rows:
+                    khoa = re.sub(r"[\s.]", "", vb["so_ky_hieu"]).upper()
+                    if khoa not in can or khoa not in thieu:
+                        continue
+                    log(f"  thấy {vb['so_ky_hieu']} ({nguon}) - {vb['trich_yeu'][:60]}")
+                    pdf = tai_pdf(ctx, page, vb)
+                    ten = lam_sach(vb["so_ky_hieu"])
+                    if pdf:
+                        (luu_vao / f"{ten}.pdf").write_bytes(pdf)
+                    else:
+                        log("    không tải được PDF, chỉ ghi thông tin")
+                    (luu_vao / f"{ten}.json").write_text(
+                        json.dumps(vb, ensure_ascii=False, indent=2), encoding="utf-8")
+                    thay.append(vb["so_ky_hieu"])
+                    thieu.remove(khoa)
+        finally:
+            try:
+                ctx.close()
+            except Exception:
+                pass
+
+    (luu_vao / "_ket-qua-tim.json").write_text(json.dumps(
+        {"tim_luc": datetime.now().isoformat(timespec="minutes"), "tu_ngay": tu_ngay.isoformat(),
+         "thay": thay, "khong_thay": [can[k]["so_ky_hieu"] for k in thieu]},
+        ensure_ascii=False, indent=2), encoding="utf-8")
+    log(f"Tìm xong: thấy {len(thay)}, không thấy {len(thieu)}"
+        + (f" ({', '.join(can[k]['so_ky_hieu'] for k in thieu)})" if thieu else ""))
+    if token:
+        ghi_nhip_tim(token, len(thay) + len(thieu), thay, [])
+    return 0
+
+
 # ---------------------------------------------------------------- luồng chính
 def chay_chinh(soi=False, so_ngay=None, online=False):
     from playwright.sync_api import sync_playwright
@@ -766,6 +844,9 @@ def main():
     ap.add_argument("--kiem-tra-token", action="store_true")
     ap.add_argument("--xuat-phien", action="store_true", help="đưa phiên đăng nhập hiện tại lên GitHub Secret")
     ap.add_argument("--online", action="store_true", help="chạy trên GitHub bằng phiên đã xuất (không đăng nhập)")
+    ap.add_argument("--tim", metavar="TRICH_DAN_JSON",
+                    help="tìm và tải các văn bản viện dẫn liệt kê trong tệp trich-dan.json")
+    ap.add_argument("--luu", default="kem-theo", help="thư mục lưu văn bản tìm được (mặc định: kem-theo)")
     a = ap.parse_args()
     try:
         if a.kiem_tra_token:
@@ -776,6 +857,11 @@ def main():
             return giu_phien()
         if a.xuat_phien:
             return xuat_phien()
+        if a.tim:
+            d = json.loads(Path(a.tim).read_text(encoding="utf-8"))
+            can = [{"so_ky_hieu": v["so_ky_hieu"], "ngay": (v.get("ngay") or [""])[0]}
+                   for v in d.get("vien_dan", d if isinstance(d, list) else [])]
+            return tim_van_ban(can, a.luu, online=a.online)
         return chay_chinh(soi=a.soi, so_ngay=a.ngay, online=a.online)
     except Exception as e:
         log("LỖI:", repr(e))
