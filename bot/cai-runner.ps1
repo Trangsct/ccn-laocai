@@ -78,37 +78,50 @@ foreach ($ct in @(@{ ten = 'git'; id = 'Git.Git' }, @{ ten = 'python'; id = 'Pyt
     }
 }
 
-# --------------------------------------------------------------- 1. Ma dang ky
-Tieu-De '2/7  Xin ma dang ky runner'
-$pat = Lay-Pat
-$maDangKy = ''
-if ($pat) {
-    Bao 'Da thay token GitHub trong config.json, dang hoi GitHub...'
-    try {
-        $maDangKy = (Goi-Api POST "repos/$Repo/actions/runners/registration-token" $pat).token
-        Tot 'GitHub da cap ma dang ky. Khong phai lam gi them.'
-    } catch {
-        Bao "Token nay khong xin duoc ma dang ky ($($_.Exception.Message))."
-        Bao 'Thuong la do token chi co quyen Contents, chua co quyen Administration.'
-    }
-} else {
-    Bao 'Chua thay token GitHub trong config.json.'
+function Nhat-Ma($chu) {
+    # Ban dan kieu gi cung duoc: rieng ma, hay ca dong lenh ./config.cmd --url ... --token AXXXX
+    # (vu 12/9/2026: dan ca dong nen config.cmd nhan --token la "./config.cmd", GitHub tra 404).
+    $chu = "$chu".Trim().Trim([char]34).Trim([char]39)
+    if ($chu -match '--token\s+([A-Za-z0-9]+)') { return $Matches[1] }
+    if ($chu -match '([A-Z0-9]{25,})') { return $Matches[1] }
+    return $chu
 }
 
-if (-not $maDangKy) {
+function Lay-Ma-Dang-Ky($pat, $imLang) {
+    # Uu tien xin qua API bang token san co; khong duoc thi huong dan dan tay.
+    if ($pat) {
+        if (-not $imLang) { Bao 'Da thay token GitHub trong config.json, dang hoi GitHub...' }
+        try {
+            $ma = (Goi-Api POST "repos/$Repo/actions/runners/registration-token" $pat).token
+            Tot 'GitHub da cap ma dang ky. Khong phai lam gi them.'
+            return $ma
+        } catch {
+            if (-not $imLang) {
+                Bao "Token nay khong xin duoc ma dang ky ($($_.Exception.Message))."
+                Bao 'Thuong la do token chi co quyen Contents, chua co quyen Administration.'
+            }
+        }
+    } elseif (-not $imLang) {
+        Bao 'Chua thay token GitHub trong config.json.'
+    }
     $trang = "https://github.com/$Repo/settings/actions/runners/new?arch=x64&os=win"
     Write-Host ''
     Bao 'Lam tay 1 lan, khoang 30 giay:'
     Bao '  1. Trang GitHub vua mo ra trong trinh duyet (neu khong, mo dia chi duoi).'
     Bao "     $trang"
-    Bao '  2. Keo xuong muc Configure, tim dong bat dau bang  --token'
-    Bao '  3. Boi den chuoi phia sau (dang AXXXX...), bam Ctrl+C de copy.'
-    Bao '  4. Quay lai cua so nay, bam chuot phai de dan, roi bam Enter.'
+    Bao '  2. Keo xuong muc Configure, tim dong co chu  --token'
+    Bao '  3. Boi den VA COPY (Ctrl+C). Boi ca dong cung duoc, hay chi rieng chuoi AXXXX... cung duoc.'
+    Bao '  4. Quay lai cua so nay, bam CHUOT PHAI de dan, roi bam Enter.'
     Write-Host ''
     try { Start-Process $trang } catch { }
-    $maDangKy = (Read-Host '   Ma dang ky').Trim()
-    if (-not $maDangKy) { Loi 'Chua nhap ma. Dung lai.'; exit 1 }
+    return (Nhat-Ma (Read-Host '   Ma dang ky'))
 }
+
+# --------------------------------------------------------------- 1. Ma dang ky
+Tieu-De '2/7  Xin ma dang ky runner'
+$pat = Lay-Pat
+$maDangKy = Lay-Ma-Dang-Ky $pat $false
+if (-not $maDangKy) { Loi 'Chua co ma dang ky. Dung lai.'; exit 1 }
 
 # --------------------------------------------------------------- 2. Tai runner
 Tieu-De '3/7  Tai bo runner ve may'
@@ -153,12 +166,19 @@ if (Test-Path (Join-Path $RunnerDir '.runner')) {
 
 # --------------------------------------------------------------- 4. Dang ky
 Tieu-De '5/7  Dang ky may nay voi GitHub'
-& "$RunnerDir\config.cmd" --unattended --url "https://github.com/$Repo" --token $maDangKy `
-    --name $TenRunner --labels $Nhan --work _work --replace
-if ($LASTEXITCODE -ne 0) {
-    Loi 'Dang ky khong thanh cong.'
-    Loi 'Hay gap nhat la do ma dang ky het han (ma chi song 1 gio). Chay lai file nay de lay ma moi.'
-    exit 1
+for ($lan = 1; $lan -le 3; $lan++) {
+    & "$RunnerDir\config.cmd" --unattended --url "https://github.com/$Repo" --token $maDangKy `
+        --name $TenRunner --labels $Nhan --work _work --replace
+    if ($LASTEXITCODE -eq 0) { break }
+    if ($lan -eq 3) {
+        Loi 'Dang ky khong thanh cong sau 3 lan. Dong cua so va chay lai file nay.'
+        exit 1
+    }
+    Write-Host ''
+    Loi 'Dang ky khong thanh cong - thuong do ma sai hoac da het han (ma chi song 1 gio).'
+    Bao "Thu lai lan $($lan + 1)/3 voi ma moi."
+    $maDangKy = Lay-Ma-Dang-Ky $pat $true
+    if (-not $maDangKy) { Loi 'Chua co ma. Dung lai.'; exit 1 }
 }
 Tot "Da dang ky, ten may tren GitHub: $TenRunner"
 
