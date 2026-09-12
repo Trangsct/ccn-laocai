@@ -147,8 +147,19 @@ Bạn mở phiên chat mới với Claude Code và giao việc. Nguyên tắc:
 | Cần gì | Làm thế nào |
 |---|---|
 | Văn bản mới của Phòng Công nghiệp | Actions của kho **vlncn-laocai** → **Quet Data360X (may co quan)** → Run workflow |
+| Văn bản đi + đến để cập nhật plugin | Cùng workflow trên — mỗi lượt quét bot tự gom tri thức, xem `theo-doi/bao-cao/<ngày>.md` ở kho **vlncn-laocai** |
 | Các văn bản mà một dự thảo viện dẫn | Actions của kho **vlncn-laocai** → **Tim van ban vien dan (may co quan)** |
 | Soát một dự thảo | Thả tệp `.docx` vào `du-thao/` của kho **vlncn-laocai** |
+
+### Gom tri thức cho các plugin (Bạn chốt 12/9/2026)
+
+Mỗi lượt quét, ngoài giấy phép, bot xếp **mọi văn bản đi + đến** theo lĩnh vực của các plugin trong kho
+`skill-sct` (bảng `LINH_VUC` đầu `scripts/bot-data360x.py`), tải văn bản quy phạm / chỉ đạo / hướng dẫn về
+`theo-doi/` của kho riêng tư `vlncn-laocai` và ghi bản tin `theo-doi/bao-cao/<ngày>.md`. Giấy phép cá biệt
+(số ký hiệu có `/GP-`, `/GCN-`, `/GXN-`, `/CC-`) vẫn đi đường cũ vào `inbox/`.
+
+Thêm plugin mới hoặc đổi lĩnh vực theo dõi: sửa `LINH_VUC`, không phải sửa chỗ nào khác. Tắt bước này cho
+một lượt chạy: `--khong-gom`; đổi trần số tệp mỗi lượt: `--gom-toi-da N` (mặc định 40).
 
 ⚠️ **Kho `ccn-laocai` là kho CÔNG KHAI** (mã nguồn trang web công bố ra Internet). Tuyệt đối không đặt dự
 thảo nội bộ, danh sách cán bộ, hồ sơ chưa ban hành vào đây. Mọi hồ sơ dạng đó nằm ở kho riêng tư
