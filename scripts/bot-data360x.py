@@ -90,6 +90,197 @@ LOAI_VAN_BAN = [
     },
 ]
 
+
+# ---------------------------------------------------------------- GOM TRI THỨC CHO CÁC PLUGIN
+# Bạn chốt 12/9/2026: "cập nhật thông tin cả công văn đi và đến cho tất cả các plugin, để phục vụ công
+# việc một cách tốt và chính xác hơn".
+#
+# Hai luồng tách bạch:
+#   1. GIẤY PHÉP cá biệt (LOAI_VAN_BAN ở trên) -> inbox/ -> máy đọc PDF -> cơ sở dữ liệu giấy phép.
+#   2. TRI THỨC: mọi văn bản đi + đến còn lại được xếp theo lĩnh vực của từng plugin trong kho skill-sct;
+#      văn bản quy phạm / chỉ đạo / hướng dẫn thì tải PDF về kho RIÊNG TƯ vlncn-laocai/theo-doi/ kèm một
+#      bản tin theo ngày, để Claude đọc rồi cập nhật plugin (Bạn chốt: việc đọc hiểu và cập nhật plugin
+#      là của Claude bản cao nhất, máy chỉ làm phần cơ học).
+#
+# TUYỆT ĐỐI không đẩy văn bản nội bộ sang skill-sct hay ccn-laocai: hai kho đó CÔNG KHAI ra Internet.
+REPO_TRI_THUC = "vlncn-laocai"
+THU_MUC_TRI_THUC = "theo-doi"
+TOI_DA_PDF_MOI_LUOT = 40       # chặn trần để một lượt quét bù 120 ngày không kéo về hàng trăm tệp
+PDF_TOI_DA_MB = 25
+
+# Từ khóa viết KHÔNG DẤU, khớp trong trích yếu + loại văn bản. Một văn bản có thể thuộc nhiều lĩnh vực.
+LINH_VUC = [
+    {"ma": "kccn-sct-vn", "ten": "Khu công nghiệp, cụm công nghiệp",
+     "tu_khoa": ["khu cong nghiep", "cum cong nghiep", " kcn", " ccn", "ha tang ky thuat cum",
+                 "chu dau tu ha tang"]},
+    {"ma": "sd-vlncn-sct-vn", "ten": "Sử dụng vật liệu nổ công nghiệp, phương án nổ mìn",
+     "tu_khoa": ["vat lieu no cong nghiep", " vlncn", "no min", "phuong an no", "tien chat thuoc no"]},
+    {"ma": "kho-vlncn-sct-vn", "ten": "Kho vật liệu nổ công nghiệp",
+     "tu_khoa": ["kho vat lieu no", "kho vlncn", "kho chua vat lieu no", "bai chua vat lieu no"]},
+    {"ma": "hl-vlncn-sct-vn", "ten": "Huấn luyện kỹ thuật an toàn VLNCN",
+     "tu_khoa": ["huan luyen ky thuat an toan", "huan luyen vat lieu no", "giay chung nhan huan luyen",
+                 "sat hach", "boi duong nghiep vu chi huy no min"]},
+    {"ma": "hnh-sct-vn", "ten": "Vận chuyển hàng hóa nguy hiểm",
+     "tu_khoa": ["hang hoa nguy hiem", " hhnh", "van chuyen hang nguy hiem"]},
+    {"ma": "hc-sct-vn", "ten": "Hóa chất, tiền chất công nghiệp",
+     "tu_khoa": ["hoa chat", "tien chat", "khai bao hoa chat", "su co hoa chat", "phieu kiem soat"]},
+    {"ma": "attp-sct-vn", "ten": "An toàn thực phẩm ngành Công Thương",
+     "tu_khoa": ["an toan thuc pham", " attp", "thuc pham", "ruou", "bia", "nuoc giai khat",
+                 "banh keo", "dau thuc vat", "tu cong bo san pham", "co so du dieu kien"]},
+    {"ma": "atvsld-sct-vn", "ten": "An toàn, vệ sinh lao động",
+     "tu_khoa": ["an toan ve sinh lao dong", "atvsld", "an toan lao dong", "tai nan lao dong",
+                 "kiem dinh may", "kiem dinh thiet bi"]},
+    {"ma": "pccc-sct-vn", "ten": "Phòng cháy, chữa cháy và cứu nạn cứu hộ",
+     "tu_khoa": ["phong chay", "chua chay", " pccc", "cuu nan cuu ho", "phuong an chua chay"]},
+    {"ma": "bvmt-sct-vn", "ten": "Bảo vệ môi trường ngành Công Thương",
+     "tu_khoa": ["bao ve moi truong", "danh gia tac dong moi truong", " dtm", "giay phep moi truong",
+                 "chat thai", "khi thai", "quan trac moi truong", "kinh te tuan hoan"]},
+    {"ma": "qlks-sct-vn", "ten": "Quản lý khoáng sản",
+     "tu_khoa": ["khoang san", "khai thac mo", "giay phep khai thac", "tan thu khoang san",
+                 "dong cua mo", "bai thai"]},
+    {"ma": "tkm-sct-vn", "ten": "Thẩm định thiết kế mỏ",
+     "tu_khoa": ["thiet ke mo", "thiet ke co so", "thiet ke ky thuat thi cong mo", "tham dinh thiet ke"]},
+    {"ma": "xd-sct-vn", "ten": "Xây dựng chuyên ngành Công Thương",
+     "tu_khoa": ["giay phep xay dung", "bao cao nghien cuu kha thi", "nghiem thu cong trinh",
+                 "tham dinh du an", "cong trinh dien", "cum cong trinh", "kiem tra cong tac nghiem thu"]},
+    {"ma": "dacn-sct-vn", "ten": "Dự án công nghiệp, chỉ tiêu tăng trưởng",
+     "tu_khoa": ["san xuat cong nghiep", "chi so san xuat", " iip", "gia tri san xuat cong nghiep",
+                 "tang truong", "danh muc du an", "tien do du an", "kich ban tang truong"]},
+    {"ma": "quy-hoach-ct-vn", "ten": "Quy hoạch ngành Công Thương",
+     "tu_khoa": ["quy hoach", "phuong an phat trien", "dieu chinh quy hoach", "ke hoach su dung dat",
+                 "luoi dien", "nang luong", "thuy dien", "dien luc", "dien mat troi", "dien gio"]},
+    {"ma": "xp-sct-vn", "ten": "Xử phạt vi phạm hành chính, kiểm tra chuyên ngành",
+     "tu_khoa": ["vi pham hanh chinh", "xu phat", "thanh tra", "kiem tra chuyen nganh", "kiem tra lien nganh",
+                 "cuong che", "khac phuc hau qua", "don thu", "khieu nai", "to cao"]},
+    {"ma": "vbhc-vn", "ten": "Soạn thảo, thể thức văn bản hành chính",
+     "tu_khoa": ["the thuc van ban", "cong tac van thu", "luu tru", "nghi dinh 30/2020", "ky so",
+                 "chung thuc dien tu"]},
+    {"ma": "sct-laocai-org-vn", "ten": "Tổ chức bộ máy, phân công nhiệm vụ của Sở",
+     "tu_khoa": ["co cau to chuc", "phan cong nhiem vu", "quy che lam viec", "kien toan", "bo nhiem",
+                 "dieu dong", "thanh lap to cong tac", "phan cong cong tac", "vi tri viec lam"]},
+    {"ma": "bpb-sct-vn", "ten": "Bài phát biểu, tham luận của lãnh đạo Sở",
+     "tu_khoa": ["bai phat bieu", "tham luan", "dien van", "de cuong phat bieu", "tra loi phong van"]},
+]
+
+
+def xep_linh_vuc(vb):
+    """Văn bản này liên quan tới plugin nào? Trả danh sách mã (có thể nhiều, có thể rỗng)."""
+    chu = " " + bo_dau(f"{vb.get('trich_yeu', '')} {vb.get('loai', '')}") + " "
+    return [lv["ma"] for lv in LINH_VUC if any(tk in chu for tk in lv["tu_khoa"])]
+
+
+def la_giay_phep_ca_biet(vb):
+    """Giấy phép/giấy chứng nhận cấp cho một doanh nghiệp cụ thể. Không dùng để cập nhật plugin vì
+    không chứa quy định mới - đã có dây chuyền riêng đọc vào cơ sở dữ liệu giấy phép."""
+    sk = (vb.get("so_ky_hieu") or "").upper()
+    return any(x in sk for x in ("/GP-", "/GCN-", "/GXN-", "/CC-"))
+
+
+def dang_gom(vb):
+    """Có tải PDF về để Claude đọc và cập nhật plugin không?"""
+    return bool(xep_linh_vuc(vb)) and not la_giay_phep_ca_biet(vb)
+
+
+def _json_gh(repo, duong, token, mac_dinh):
+    raw, sha = gh_doc(repo, duong, token)
+    try:
+        return (json.loads(raw) if raw else mac_dinh), sha
+    except Exception:
+        return mac_dinh, sha
+
+
+def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT):
+    """Xếp mọi văn bản đi + đến theo lĩnh vực plugin, tải PDF văn bản quy phạm/chỉ đạo, ghi bản tin.
+
+    Ghi lên kho riêng tư vlncn-laocai:
+      theo-doi/danh-muc-<năm>.json  mục lục MỌI văn bản quét được (kể cả loại chưa xếp được lĩnh vực)
+      theo-doi/<năm>/<số>.pdf       bản gốc văn bản đáng đọc
+      theo-doi/bao-cao/<ngày>.md    bản tin để Claude đọc đầu phiên rồi cập nhật plugin
+      theo-doi/_da-gom.json         đã ghi nhận rồi thì lượt sau bỏ qua
+    """
+    nam = date.today().year
+    danh_muc, sha_muc = _json_gh(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json", token, [])
+    da_gom, sha_gom = _json_gh(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/_da-gom.json", token, {})
+
+    moi, da_tai, loi = [], 0, []
+    for vb in sorted(van_ban, key=lambda v: (parse_ngay(v["ngay_ban_hanh"]) or date.min), reverse=True):
+        khoa = f"{vb['so_ky_hieu']}|{vb['ngay_ban_hanh']}"
+        if khoa in da_gom:
+            continue
+        ghi = {k: vb.get(k, "") for k in ("so_ky_hieu", "ngay_ban_hanh", "trich_yeu", "don_vi",
+                                          "nguoi_ky", "loai", "nguon", "url_chi_tiet")}
+        ghi["linh_vuc"] = xep_linh_vuc(vb)
+        ghi["gom_luc"] = date.today().isoformat()
+        if dang_gom(vb):
+            if da_tai >= toi_da:
+                loi.append(f"{vb['so_ky_hieu']}: đã chạm trần {toi_da} tệp/lượt, để lượt sau")
+            else:
+                duong = f"{THU_MUC_TRI_THUC}/{nam}/{lam_sach(vb['so_ky_hieu'])}.pdf"
+                try:
+                    pdf = tai_pdf(ctx, page, vb)
+                except Exception as e:
+                    log(f"  [tri thức] lỗi tải {vb['so_ky_hieu']}: {e!r}")
+                    pdf = None
+                if pdf and len(pdf) <= PDF_TOI_DA_MB * 1024 * 1024:
+                    gh_ghi(REPO_TRI_THUC, duong, pdf, f"Theo dõi văn bản: {vb['so_ky_hieu']}", token)
+                    ghi["tep"] = duong
+                    da_tai += 1
+                    log(f"  [tri thức] {vb['so_ky_hieu']} ({', '.join(ghi['linh_vuc'])}) -> {duong}")
+                elif pdf:
+                    loi.append(f"{vb['so_ky_hieu']}: PDF {len(pdf) // 1024 // 1024} MB, quá lớn - chỉ ghi mục lục")
+                else:
+                    loi.append(f"{vb['so_ky_hieu']}: không tìm thấy PDF")
+        danh_muc.append(ghi)
+        da_gom[khoa] = ghi["gom_luc"]
+        moi.append(ghi)
+
+    if not moi:
+        log("  [tri thức] không có văn bản nào mới so với lần trước")
+        return 0
+
+    # --- bản tin cho Claude đọc đầu phiên
+    ten_lv = {lv["ma"]: lv["ten"] for lv in LINH_VUC}
+    huong = {"den": "đến", "di": "đi"}
+    dong = [f"# Văn bản mới trên Data360X - {date.today().strftime('%d/%m/%Y')}", "",
+            f"Quét từ ngày {tu_ngay.strftime('%d/%m/%Y')}: {len(van_ban)} văn bản đi + đến, "
+            f"trong đó {len(moi)} văn bản lần đầu ghi nhận, tải về {da_tai} tệp.", "",
+            "Cách dùng: Claude đọc mục nào thì mở tệp PDF tương ứng trong `theo-doi/`, đối chiếu plugin "
+            "cùng tên trong kho `skill-sct`, sửa nếu có quy định/số liệu mới rồi nâng phiên bản plugin.", ""]
+    for ma, ten in ten_lv.items():
+        nhom = [r for r in moi if ma in r["linh_vuc"]]
+        if not nhom:
+            continue
+        dong.append(f"## {ma} - {ten}")
+        for r in nhom:
+            tep = f" -> `{r['tep']}`" if r.get("tep") else (
+                " *(giấy phép cá biệt, đã vào cơ sở dữ liệu giấy phép)*" if la_giay_phep_ca_biet(r)
+                else " *(chưa tải được PDF)*")
+            dong.append(f"- [{huong.get(r['nguon'], r['nguon'])}] **{r['so_ky_hieu']}** "
+                        f"ngày {r['ngay_ban_hanh']} - {r['trich_yeu']}{tep}")
+        dong.append("")
+    khac = [r for r in moi if not r["linh_vuc"]]
+    if khac:
+        dong += ["## Chưa xếp được vào plugin nào (chỉ ghi mục lục, không tải PDF)", "",
+                 "Nếu một chủ đề lặp lại nhiều lần ở mục này thì nên cân nhắc lập plugin mới.", ""]
+        for r in khac:
+            dong.append(f"- [{huong.get(r['nguon'], r['nguon'])}] {r['so_ky_hieu']} "
+                        f"ngày {r['ngay_ban_hanh']} - {r['trich_yeu']}")
+        dong.append("")
+    if loi:
+        dong += ["## Chỗ máy chưa lấy được", ""] + [f"- {x}" for x in loi] + [""]
+
+    duong_bt = f"{THU_MUC_TRI_THUC}/bao-cao/{date.today().isoformat()}.md"
+    _, sha_bt = gh_doc(REPO_TRI_THUC, duong_bt, token)
+    msg = f"Theo dõi văn bản {date.today().strftime('%d/%m/%Y')}: {len(moi)} văn bản mới, tải {da_tai} tệp"
+    gh_ghi(REPO_TRI_THUC, duong_bt, "\n".join(dong).encode(), msg, token, sha_bt)
+    gh_ghi(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json",
+           json.dumps(danh_muc, ensure_ascii=False, indent=1).encode(), msg, token, sha_muc)
+    gh_ghi(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/_da-gom.json",
+           json.dumps(da_gom, ensure_ascii=False, indent=1).encode(), msg, token, sha_gom)
+    log(f"  [tri thức] {len(moi)} văn bản mới, tải {da_tai} tệp, bản tin: {duong_bt}")
+    return len(moi)
+
+
 _log_f = None
 
 
@@ -645,7 +836,7 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
 
 
 # ---------------------------------------------------------------- luồng chính
-def chay_chinh(soi=False, so_ngay=None, online=False):
+def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_DA_PDF_MOI_LUOT):
     from playwright.sync_api import sync_playwright
 
     cfg = doc_config()
@@ -665,7 +856,7 @@ def chay_chinh(soi=False, so_ngay=None, online=False):
         soi_dir = LOG_DIR / "soi" / datetime.now().strftime("%Y-%m-%d_%H%M")
         soi_dir.mkdir(parents=True, exist_ok=True)
     tu_ngay = date.today() - timedelta(days=so_ngay or (SO_NGAY_QUET_SOI if soi else SO_NGAY_QUET))
-    tong_quet, da_day, loi, phien_moi = 0, [], [], None
+    tong_quet, da_day, loi, phien_moi, tri_thuc_moi = 0, [], [], None, 0
 
     with sync_playwright() as p:
         ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
@@ -740,6 +931,16 @@ def chay_chinh(soi=False, so_ngay=None, online=False):
                 cache_da_xu_ly[repo] = (da, r["content"]["sha"])
                 da_day.append(f"{vb['so_ky_hieu']} -> {repo}")
                 log(f"  đã đẩy lên {repo}/inbox/{ten}.pdf")
+
+            # Gom tri thức cho các plugin: xếp MỌI văn bản đi + đến theo lĩnh vực, tải văn bản quy phạm /
+            # chỉ đạo về kho riêng tư rồi ghi bản tin (Bạn chốt 12/9/2026).
+            if gom and not soi:
+                log("Gom tri thức cho các plugin...")
+                try:
+                    tri_thuc_moi = gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, gom_toi_da)
+                except Exception as e:
+                    log("  [tri thức] lỗi:", repr(e))
+                    loi.append(f"gom tri thức: {e!r}")
         finally:
             try:
                 if online:
@@ -752,7 +953,9 @@ def chay_chinh(soi=False, so_ngay=None, online=False):
                 pass
 
     tom_tat = (f"Bot Data360X {date.today().isoformat()}: quét {tong_quet} văn bản, "
-               f"đẩy {len(da_day)} file" + (": " + "; ".join(da_day) if da_day else "")
+               f"đẩy {len(da_day)} file"
+               + (f", theo dõi thêm {tri_thuc_moi} văn bản cho plugin" if tri_thuc_moi else "")
+               + (": " + "; ".join(da_day) if da_day else "")
                + (f". Lỗi {len(loi)}: " + "; ".join(loi) if loi else ""))
     log(tom_tat)
     if not soi:
@@ -847,6 +1050,10 @@ def main():
     ap.add_argument("--tim", metavar="TRICH_DAN_JSON",
                     help="tìm và tải các văn bản viện dẫn liệt kê trong tệp trich-dan.json")
     ap.add_argument("--luu", default="kem-theo", help="thư mục lưu văn bản tìm được (mặc định: kem-theo)")
+    ap.add_argument("--khong-gom", action="store_true",
+                    help="chỉ lấy giấy phép, bỏ bước gom tri thức cho các plugin")
+    ap.add_argument("--gom-toi-da", type=int, default=TOI_DA_PDF_MOI_LUOT,
+                    help=f"tối đa bao nhiêu tệp tri thức tải về mỗi lượt (mặc định {TOI_DA_PDF_MOI_LUOT})")
     a = ap.parse_args()
     try:
         if a.kiem_tra_token:
@@ -862,7 +1069,8 @@ def main():
             can = [{"so_ky_hieu": v["so_ky_hieu"], "ngay": (v.get("ngay") or [""])[0]}
                    for v in d.get("vien_dan", d if isinstance(d, list) else [])]
             return tim_van_ban(can, a.luu, online=a.online)
-        return chay_chinh(soi=a.soi, so_ngay=a.ngay, online=a.online)
+        return chay_chinh(soi=a.soi, so_ngay=a.ngay, online=a.online,
+                          gom=not a.khong_gom, gom_toi_da=a.gom_toi_da)
     except Exception as e:
         log("LỖI:", repr(e))
         telegram(f"Bot Data360X lỗi: {e!r}")
