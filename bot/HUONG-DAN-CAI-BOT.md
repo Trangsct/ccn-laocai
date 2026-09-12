@@ -97,6 +97,12 @@ sau này chỉ cần bấm đúp biểu tượng ngoài màn hình.
 vào https://vlncn-laocai.vercel.app/cap-nhat, nhập mã bảo vệ rồi bấm *Chạy ngay*. Trang đó cũng hiện
 trạng thái các lượt chạy gần đây. Lần đầu cần cấu hình hai biến trên Vercel, hướng dẫn ngay trên trang.
 
+## Dự án nghỉ vài hôm rồi chạy lại
+
+`cap-nhat-ngay.bat` chỉ quét **3 ngày** gần nhất, nên nghỉ lâu hơn ba ngày là bỏ sót. Khi đó bấm đúp
+**`quet-lai-ngay.bat`**, nó hỏi muốn quét bao nhiêu ngày (Enter lấy 30 ngày). Quét rộng không sợ trùng: văn
+bản nào đã xử lý rồi bot tự bỏ qua, chỉ tải về cái mới.
+
 ## Quét bù văn bản cũ (khi cần lấy lại giấy phép đã ký trước đây)
 
 Bình thường bot chỉ quét 3 ngày gần nhất cho nhanh. Khi cần lấy lại văn bản cũ (ví dụ giấy phép vận chuyển
