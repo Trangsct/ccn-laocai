@@ -71,18 +71,32 @@ Mở Telegram → tìm **BotFather** → gửi `/newbot` → đặt tên → nh�
 Cổng Data360X không cho máy chủ nước ngoài đọc dữ liệu, nên bot vẫn phải chạy trên máy đã đăng nhập. Cách
 làm hiện nay: GitHub giữ lịch và ra lệnh, máy cơ quan thi hành.
 
-**Cài một lần**: bấm CHUỘT PHẢI vào `cai-runner.bat` → **Run as administrator**. Làm theo hai bước hiện trên
-màn hình: mở trang GitHub nó chỉ, copy chuỗi token ở mục Configure, dán vào rồi Enter. Xong là máy nhận lệnh
-được, chạy nền như một dịch vụ, không cần mở cửa sổ nào.
+**Cài một lần, chỉ một thao tác**: mở thư mục `D:\du-an\bot`, **bấm đúp `cai-runner.bat`**.
+Không cần Run as administrator, không cần nhập gì. Máy tự làm hết: kiểm tra git và Python (thiếu thì tự
+cài), tự xin mã đăng ký từ GitHub bằng token sẵn có trong `config.json`, tải bộ runner bản mới nhất, đăng
+ký máy, đặt lịch cho runner tự bật mỗi khi Bạn đăng nhập Windows, rồi tự kiểm tra xem GitHub đã thấy máy
+chưa. Cuối cùng nó hỏi có quét Data360X một lượt luôn không — bấm Enter là quét 30 ngày gần nhất.
+
+Chỉ có **một trường hợp phải làm tay**: nếu token trong `config.json` chưa có quyền Administration,
+màn hình sẽ tự mở trang GitHub và bảo Bạn copy chuỗi bắt đầu bằng `A...` ở mục *Configure* dán vào rồi
+Enter — mất khoảng 30 giây. Muốn khỏi phải làm cả bước đó thì vào GitHub → Settings → Developer settings
+→ token đang dùng → thêm quyền **Administration: Read and write** cho kho `vlncn-laocai`, rồi chạy lại.
+
+Runner chạy **ẩn trong phiên đăng nhập của Bạn** chứ không cài thành dịch vụ Windows. Lý do: bot phải mở
+Chrome thật bằng hồ sơ đã đăng nhập Data360X; dịch vụ Windows chạy bằng tài khoản khác nên không mở được
+cửa sổ và không giải mã được cookie phiên. Vì vậy máy cần **bật và đã đăng nhập Windows** thì lệnh mới chạy.
 
 **Từ đó về sau**:
 
-- Tự động **11h30 thứ Tư hằng tuần**.
+- Tự động **11h30 thứ Tư hằng tuần** (quét 30 ngày gần nhất, nghỉ vài tuần vẫn không sót).
 - Muốn chạy ngay: vào https://github.com/Trangsct/vlncn-laocai/actions → chọn **Quet Data360X (may co quan)**
   → **Run workflow**. Không cần ngồi trước máy cơ quan, bấm từ điện thoại cũng được.
-- Máy tắt thì lệnh nằm chờ, bật máy lên là chạy tiếp.
+- Máy tắt thì lệnh nằm chờ, bật máy lên là chạy tiếp (GitHub giữ lệnh chờ tối đa 24 giờ).
+- Runner tự bật lại mỗi lần đăng nhập Windows, và cứ 30 phút tự kiểm tra một lần (hai mục
+  *Bot Data360X - Runner GitHub* trong Task Scheduler).
 - Kiểm tra máy còn nhận lệnh không: https://github.com/Trangsct/vlncn-laocai/settings/actions/runners,
   phải thấy dòng xanh **Idle**.
+- Cài lại hoặc chuyển sang máy khác: bấm đúp `cai-runner.bat` trên máy đó, nó tự gỡ đăng ký cũ rồi đăng ký lại.
 
 ## Chủ động cập nhật khi Bạn thấy cần (không chờ 18h)
 

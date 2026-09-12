@@ -1,81 +1,32 @@
 @echo off
 chcp 65001 >nul
+title CAI RUNNER GITHUB - Bot Data360X
 rem ============================================================================
 rem   CAI RUNNER - de GitHub ra lenh cho may nay chay bot (Ban chot 04/9/2026)
-rem   BAM CHUOT PHAI VAO FILE NAY -> "Run as administrator"
+rem   CHI CAN BAM DUP VAO FILE NAY. Khong can quyen Administrator.
+rem   Moi viec nang do cai-runner.ps1 lam; file .bat nay chi tai ban moi nhat
+rem   cua no ve roi goi, de may luon chay dung ban tren GitHub.
 rem ============================================================================
-net session >nul 2>&1
-if errorlevel 1 (
-    echo.
-    echo   CHUA CHAY BANG QUYEN QUAN TRI.
-    echo   Dong cua so nay, bam CHUOT PHAI vao cai-runner.bat roi chon "Run as administrator".
-    echo.
-    pause
-    exit /b 1
-)
 if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
-set RUNNER_DIR=%ROOT%\actions-runner
-set REPO=https://github.com/Trangsct/vlncn-laocai
+set BOT_DIR=%ROOT%\bot
+if not exist "%BOT_DIR%" mkdir "%BOT_DIR%"
 
 echo.
-echo ============================================================
-echo   CAI RUNNER CHO MAY NAY
-echo ============================================================
-echo.
-echo   Buoc 1: mo trang sau trong trinh duyet (bam Ctrl roi bam vao duong dan):
-echo     %REPO%/settings/actions/runners/new?arch=x64^&os=win
-echo.
-echo   Buoc 2: tren trang do, keo xuong muc "Configure", tim dong bat dau bang
-echo     --token  roi COPY chuoi phia sau (dang AXXXX...). Chuoi nay het han sau 1 gio.
-echo.
-set /p TOKEN=  Dan chuoi token vao day roi bam Enter:
-if "%TOKEN%"=="" (
-    echo   Chua nhap token. Dung lai.
-    pause
-    exit /b 1
+echo   Dang tai ban moi nhat cua bo cai...
+curl -sSL --max-time 120 -o "%BOT_DIR%\cai-runner.ps1.new" ^
+  "https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-runner.ps1"
+if exist "%BOT_DIR%\cai-runner.ps1.new" (
+    for %%S in ("%BOT_DIR%\cai-runner.ps1.new") do if %%~zS GTR 1000 move /y "%BOT_DIR%\cai-runner.ps1.new" "%BOT_DIR%\cai-runner.ps1" >nul
+    if exist "%BOT_DIR%\cai-runner.ps1.new" del /q "%BOT_DIR%\cai-runner.ps1.new"
 )
-
-echo.
-echo [1/4] Tai runner ve %RUNNER_DIR% ...
-if not exist "%RUNNER_DIR%" mkdir "%RUNNER_DIR%"
-cd /d "%RUNNER_DIR%"
-if not exist run.cmd (
-    curl -sSL -o runner.zip https://github.com/actions/runner/releases/latest/download/actions-runner-win-x64-2.328.0.zip
-    if not exist runner.zip (
-        echo   Khong tai duoc runner. Kiem tra mang roi chay lai.
-        pause
-        exit /b 1
-    )
-    powershell -NoProfile -Command "Expand-Archive -Path runner.zip -DestinationPath . -Force"
-    del /q runner.zip
-)
-
-echo [2/4] Go ban cu neu co ...
-if exist .runner (
-    call config.cmd remove --token %TOKEN% >nul 2>&1
-)
-
-echo [3/4] Dang ky may nay voi GitHub ...
-call config.cmd --unattended --url %REPO% --token %TOKEN% ^
-     --name "may-so-cong-thuong" --labels windows,laocai --work _work --runasservice
-if errorlevel 1 (
+if not exist "%BOT_DIR%\cai-runner.ps1" (
     echo.
-    echo   DANG KY KHONG THANH CONG. Thuong do token het han (chi song 1 gio).
-    echo   Lay token moi o trang buoc 1 roi chay lai file nay.
+    echo   KHONG tai duoc bo cai. Kiem tra mang roi bam dup lai file nay.
+    echo.
     pause
     exit /b 1
 )
 
-echo [4/4] Bat dich vu chay nen ...
-sc start "actions.runner.Trangsct-vlncn-laocai.may-so-cong-thuong" >nul 2>&1
-
-echo.
-echo ============================================================
-echo   XONG. May nay da san sang nhan lenh tu GitHub.
-echo   - Lich tu dong: 11h30 THU TU hang tuan.
-echo   - Chay ngay: vao %REPO%/actions -^> "Quet Data360X (may co quan)" -^> Run workflow.
-echo   - May tat thi lenh nam cho, bat may len la chay tiep.
-echo   Kiem tra: %REPO%/settings/actions/runners  (phai thay dong mau xanh "Idle")
-echo ============================================================
+powershell -NoProfile -ExecutionPolicy Bypass -File "%BOT_DIR%\cai-runner.ps1"
 echo.
 pause
