@@ -105,8 +105,8 @@ LOAI_VAN_BAN = [
 # TUYỆT ĐỐI không đẩy văn bản nội bộ sang skill-sct hay ccn-laocai: hai kho đó CÔNG KHAI ra Internet.
 REPO_TRI_THUC = "vlncn-laocai"
 THU_MUC_TRI_THUC = "theo-doi"
-TOI_DA_PDF_MOI_LUOT = 40       # chặn trần để một lượt quét bù 120 ngày không kéo về hàng trăm tệp
-PDF_TOI_DA_MB = 25
+TOI_DA_PDF_MOI_LUOT = 30       # chặn trần để một lượt quét bù 120 ngày không phình kho
+PDF_TOI_DA_MB = 12
 
 # Từ khóa viết KHÔNG DẤU, khớp trong trích yếu + loại văn bản. Một văn bản có thể thuộc nhiều lĩnh vực.
 LINH_VUC = [
@@ -137,7 +137,7 @@ LINH_VUC = [
                  "chat thai", "khi thai", "quan trac moi truong", "kinh te tuan hoan"]},
     {"ma": "qlks-sct-vn", "ten": "Quản lý khoáng sản",
      "tu_khoa": ["khoang san", "khai thac mo", "giay phep khai thac", "tan thu khoang san",
-                 "dong cua mo", "bai thai"]},
+                 "dong cua mo", "bai thai", "apatit", "quang ", "quan ly mo", "tru luong"]},
     {"ma": "tkm-sct-vn", "ten": "Thẩm định thiết kế mỏ",
      "tu_khoa": ["thiet ke mo", "thiet ke co so", "thiet ke ky thuat thi cong mo", "tham dinh thiet ke"]},
     {"ma": "xd-sct-vn", "ten": "Xây dựng chuyên ngành Công Thương",
@@ -145,10 +145,12 @@ LINH_VUC = [
                  "tham dinh du an", "cong trinh dien", "cum cong trinh", "kiem tra cong tac nghiem thu"]},
     {"ma": "dacn-sct-vn", "ten": "Dự án công nghiệp, chỉ tiêu tăng trưởng",
      "tu_khoa": ["san xuat cong nghiep", "chi so san xuat", " iip", "gia tri san xuat cong nghiep",
-                 "tang truong", "danh muc du an", "tien do du an", "kich ban tang truong"]},
+                 "tang truong", "danh muc du an", "tien do du an", "kich ban tang truong",
+                 "chu truong dau tu", "khuyen cong", "cum lien ket nganh"]},
     {"ma": "quy-hoach-ct-vn", "ten": "Quy hoạch ngành Công Thương",
      "tu_khoa": ["quy hoach", "phuong an phat trien", "dieu chinh quy hoach", "ke hoach su dung dat",
-                 "luoi dien", "nang luong", "thuy dien", "dien luc", "dien mat troi", "dien gio"]},
+                 "luoi dien", "nang luong", "thuy dien", "dien luc", "dien mat troi", "dien gio",
+                 "phat dien", "nha may dien", "tram bien ap", "duong day", "gia dien", "phu tai"]},
     {"ma": "xp-sct-vn", "ten": "Xử phạt vi phạm hành chính, kiểm tra chuyên ngành",
      "tu_khoa": ["vi pham hanh chinh", "xu phat", "thanh tra", "kiem tra chuyen nganh", "kiem tra lien nganh",
                  "cuong che", "khac phuc hau qua", "don thu", "khieu nai", "to cao"]},
@@ -176,9 +178,65 @@ def la_giay_phep_ca_biet(vb):
     return any(x in sk for x in ("/GP-", "/GCN-", "/GXN-", "/CC-"))
 
 
+# Loại văn bản MANG QUY ĐỊNH - đọc là có thể phải sửa plugin. Nhận qua số ký hiệu.
+KY_HIEU_QUY_PHAM = ("/NĐ-CP", "/TT-", "/QĐ-TTG", "/QĐ-UBND", "/QĐ-BCT", "/CT-", "/NQ-",
+                    "/KH-", "/HD-", "/QC-", "/TB-")
+# Công văn thường nhưng nội dung là quy định đang hình thành -> vẫn đáng đọc.
+TU_KHOA_QUY_PHAM = ("du thao", "quy dinh", "huong dan", "tieu chi", "quy che", "de an",
+                    "chuong trinh", "tong ket", "so ket", "ke hoach", "sua doi", "thay the")
+# Không bao giờ tải: giấy mời, hồ sơ mời thầu, lịch họp - không có quy định nào trong đó.
+TU_KHOA_BO_QUA = ("giay moi", "moi hop", "moi du", "goi thau", "ho so moi thau", "e-hsmt",
+                  "lich cong tac", "lich tiep cong dan")
+
+
 def dang_gom(vb):
-    """Có tải PDF về để Claude đọc và cập nhật plugin không?"""
-    return bool(xep_linh_vuc(vb)) and not la_giay_phep_ca_biet(vb)
+    """Có tải PDF về để Claude đọc và cập nhật plugin không?
+
+    Bạn chốt 12/9/2026 sau lượt chạy đầu: tải mọi văn bản khớp từ khóa thì một lượt 30 ngày kéo về
+    101 MB / 40 tệp, phần lớn là công văn trao đổi từng dự án và cả giấy mời họp - đọc không sửa được
+    plugin nào. Nay chỉ tải văn bản MANG QUY ĐỊNH; văn bản còn lại vẫn vào mục lục đầy đủ (có số, ngày,
+    trích yếu, đường dẫn trang chi tiết) nên cần bản gốc nào thì gọi bot tải riêng văn bản đó.
+    """
+    if not xep_linh_vuc(vb) or la_giay_phep_ca_biet(vb):
+        return False
+    sk = (vb.get("so_ky_hieu") or "").upper()
+    ty = " " + bo_dau(vb.get("trich_yeu", "")) + " "
+    if "/GM-" in sk or any(t in ty for t in TU_KHOA_BO_QUA):
+        return False
+    return any(k in sk for k in KY_HIEU_QUY_PHAM) or any(t in ty for t in TU_KHOA_QUY_PHAM)
+
+
+def trich_chu_pdf(pdf_bytes):
+    """Lấy lớp chữ trong PDF. Không có pypdf hoặc PDF là bản scan (không có lớp chữ) thì trả chuỗi rỗng.
+
+    Vì sao cần (12/9/2026): lượt gom đầu tiên tải 40 PDF hết 101 MB, mỗi tuần như vậy là kho phình vài GB
+    một năm. Trong khi thứ Claude cần để cập nhật plugin là NỘI DUNG chữ - nặng vài chục KB. Nên văn bản
+    nào đọc được chữ thì chỉ lưu chữ; bản scan không có lớp chữ mới giữ nguyên PDF.
+    """
+    # pymupdf đọc tiếng Việt tốt hơn; pypdf là đường lui. Máy chưa có thì cài một lần, lần sau sẵn rồi.
+    for goi, cach in (("pymupdf", "pymupdf"), ("pypdf", "pypdf")):
+        for lan in (1, 2):
+            try:
+                if cach == "pymupdf":
+                    import pymupdf
+                    with pymupdf.open(stream=pdf_bytes, filetype="pdf") as doc:
+                        return "\n\n".join(t.get_text().strip() for t in doc).strip()
+                from pypdf import PdfReader
+                import io
+                return "\n\n".join((t.extract_text() or "").strip()
+                                    for t in PdfReader(io.BytesIO(pdf_bytes)).pages).strip()
+            except ImportError:
+                if lan == 2:
+                    break
+                log(f"  [tri thức] chưa có {goi}, đang cài...")
+                try:
+                    subprocess.run([sys.executable, "-m", "pip", "install", "-q", goi], timeout=300)
+                except Exception:
+                    break
+            except Exception as e:
+                log(f"  [tri thức] {goi} không đọc được:", repr(e))
+                break
+    return ""
 
 
 def _json_gh(repo, duong, token, mac_dinh):
@@ -215,21 +273,44 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
             if da_tai >= toi_da:
                 loi.append(f"{vb['so_ky_hieu']}: đã chạm trần {toi_da} tệp/lượt, để lượt sau")
             else:
-                duong = f"{THU_MUC_TRI_THUC}/{nam}/{lam_sach(vb['so_ky_hieu'])}.pdf"
+                # Data360X có văn bản để trống số ký hiệu (bản cam kết, phụ lục doanh nghiệp gửi lên):
+                # lấy tên theo mã văn bản trên cổng, nếu không sẽ ra tệp rỗng tên ".md" (vụ 12/9/2026).
+                ten_tep = lam_sach_vn(vb["so_ky_hieu"]) or f"vb-{vb.get('id_data360x') or 'khong-so'}"
+                goc = f"{THU_MUC_TRI_THUC}/{nam}/{ten_tep}"
                 try:
                     pdf = tai_pdf(ctx, page, vb)
                 except Exception as e:
                     log(f"  [tri thức] lỗi tải {vb['so_ky_hieu']}: {e!r}")
                     pdf = None
-                if pdf and len(pdf) <= PDF_TOI_DA_MB * 1024 * 1024:
-                    gh_ghi(REPO_TRI_THUC, duong, pdf, f"Theo dõi văn bản: {vb['so_ky_hieu']}", token)
-                    ghi["tep"] = duong
-                    da_tai += 1
-                    log(f"  [tri thức] {vb['so_ky_hieu']} ({', '.join(ghi['linh_vuc'])}) -> {duong}")
-                elif pdf:
-                    loi.append(f"{vb['so_ky_hieu']}: PDF {len(pdf) // 1024 // 1024} MB, quá lớn - chỉ ghi mục lục")
-                else:
+                if not pdf:
                     loi.append(f"{vb['so_ky_hieu']}: không tìm thấy PDF")
+                else:
+                    chu = trich_chu_pdf(pdf)
+                    msg_vb = f"Theo dõi văn bản: {vb['so_ky_hieu']}"
+                    if len(chu) >= 800:          # đọc được chữ -> lưu chữ, nhẹ hơn PDF vài chục lần
+                        dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                               f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
+                               f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
+                               f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
+                               f"- Lĩnh vực: {', '.join(ghi['linh_vuc'])}",
+                               f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}",
+                               "",
+                               "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
+                               "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc.",
+                               "", "---", "", chu]
+                        duong = goc + ".md"
+                        gh_ghi(REPO_TRI_THUC, duong, "\n".join(dau).encode(), msg_vb, token)
+                    elif len(pdf) <= PDF_TOI_DA_MB * 1024 * 1024:
+                        duong = goc + ".pdf"     # bản scan, không có lớp chữ -> giữ nguyên PDF
+                        gh_ghi(REPO_TRI_THUC, duong, pdf, msg_vb + " (bản scan)", token)
+                    else:
+                        loi.append(f"{vb['so_ky_hieu']}: bản scan {len(pdf) // 1024 // 1024} MB, "
+                                   f"quá lớn - chỉ ghi mục lục")
+                        duong = ""
+                    if duong:
+                        ghi["tep"] = duong
+                        da_tai += 1
+                        log(f"  [tri thức] {vb['so_ky_hieu']} ({', '.join(ghi['linh_vuc'])}) -> {duong}")
         danh_muc.append(ghi)
         da_gom[khoa] = ghi["gom_luc"]
         moi.append(ghi)
@@ -245,13 +326,21 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
             f"Quét từ ngày {tu_ngay.strftime('%d/%m/%Y')}: {len(van_ban)} văn bản đi + đến, "
             f"trong đó {len(moi)} văn bản lần đầu ghi nhận, tải về {da_tai} tệp.", "",
             "Cách dùng: Claude đọc mục nào thì mở tệp PDF tương ứng trong `theo-doi/`, đối chiếu plugin "
-            "cùng tên trong kho `skill-sct`, sửa nếu có quy định/số liệu mới rồi nâng phiên bản plugin.", ""]
+            "cùng tên trong kho `skill-sct`, sửa nếu có quy định/số liệu mới rồi nâng phiên bản plugin.",
+            "",
+            "Văn bản không có đường dẫn PDF là loại không mang quy định (công văn trao đổi từng việc, "
+            "giấy mời, hồ sơ mời thầu) nên chỉ ghi mục lục. Cần bản gốc của một văn bản trong đó thì mở "
+            "`url_chi_tiet` của nó trong `danh-muc-<năm>.json`, hoặc chạy workflow *Tim van ban vien dan "
+            "(may co quan)*.", ""]
     for ma, ten in ten_lv.items():
         nhom = [r for r in moi if ma in r["linh_vuc"]]
         if not nhom:
             continue
-        dong.append(f"## {ma} - {ten}")
-        for r in nhom:
+        dong.append(f"## {ma} - {ten} ({len(nhom)} văn bản)")
+        if len(nhom) > 40:
+            dong.append(f"*Liệt kê 40 văn bản mới nhất; đủ {len(nhom)} văn bản xem `danh-muc-{nam}.json`.*")
+            dong.append("")
+        for r in nhom[:40]:
             tep = f" -> `{r['tep']}`" if r.get("tep") else (
                 " *(giấy phép cá biệt, đã vào cơ sở dữ liệu giấy phép)*" if la_giay_phep_ca_biet(r)
                 else " *(chưa tải được PDF)*")
@@ -260,9 +349,11 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
         dong.append("")
     khac = [r for r in moi if not r["linh_vuc"]]
     if khac:
-        dong += ["## Chưa xếp được vào plugin nào (chỉ ghi mục lục, không tải PDF)", "",
-                 "Nếu một chủ đề lặp lại nhiều lần ở mục này thì nên cân nhắc lập plugin mới.", ""]
-        for r in khac:
+        dong += [f"## Chưa xếp được vào plugin nào ({len(khac)} văn bản, chỉ ghi mục lục)", "",
+                 "Nếu một chủ đề lặp lại nhiều lần ở mục này thì nên cân nhắc lập plugin mới, "
+                 "hoặc bổ sung từ khóa vào bảng LINH_VUC. "
+                 f"Liệt kê 25 văn bản mới nhất; đủ danh sách xem `danh-muc-{nam}.json`.", ""]
+        for r in khac[:25]:
             dong.append(f"- [{huong.get(r['nguon'], r['nguon'])}] {r['so_ky_hieu']} "
                         f"ngày {r['ngay_ban_hanh']} - {r['trich_yeu']}")
         dong.append("")
@@ -304,6 +395,14 @@ def bo_dau(s):
 def lam_sach(so_ky_hieu):
     """2743/GP-UBND -> 2743_GP-UBND (theo quy ước đặt tên file trong vlncn-laocai-files)."""
     return re.sub(r"[^A-Za-z0-9_.\-]+", "_", so_ky_hieu.strip()).strip("_")
+
+
+def lam_sach_vn(so_ky_hieu):
+    """Như lam_sach nhưng bỏ dấu trước, để 5962/SXD-PTĐT ra 5962_SXD-PTDT chứ không phải 5962_SXD-PT_T
+    (vụ 12/9/2026: dấu tiếng Việt bị thay bằng gạch dưới, nhìn tên tệp không biết là văn bản nào)."""
+    s = unicodedata.normalize("NFD", str(so_ky_hieu or ""))
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn").replace("đ", "d").replace("Đ", "D")
+    return re.sub(r"[^A-Za-z0-9_.\-]+", "_", s.strip()).strip("_")
 
 
 def parse_ngay(s):
@@ -646,7 +745,10 @@ def quet_danh_sach(page, nguon, tu_ngay, soi_dir=None):
                 log(f"  [chẩn đoán] đầu trang: {chu}")
             except Exception as e:
                 log("  [chẩn đoán] không đọc được nội dung trang:", repr(e))
-        if not rows or (ngay_cu and min(ngay_cu) < tu_ngay) or trang_so >= 20:
+        # Trần 80 trang (mỗi trang 25 dòng): quét 30 ngày cần khoảng 28 trang mỗi bảng. Trần cũ 20
+        # trang làm lượt 12/9/2026 cụt mất các ngày 13-19/8. Bảng sắp theo ngày giảm dần nên
+        # bình thường vòng lặp tự dừng sớm, trần chỉ là lưới an toàn.
+        if not rows or (ngay_cu and min(ngay_cu) < tu_ngay) or trang_so >= 80:
             break
         nut = page.locator("button.p-paginator-next")
         if not nut.count() or nut.first.is_disabled():
