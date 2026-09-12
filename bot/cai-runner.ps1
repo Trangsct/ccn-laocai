@@ -56,6 +56,7 @@ Write-Host '============================================================'
 Write-Host '   CAI RUNNER GITHUB CHO MAY NAY'
 Write-Host "   Kho: $Repo"
 Write-Host "   Thu muc: $RunnerDir"
+Write-Host "   Ban cai: 12/9/2026-b (dan ca dong lenh cung nhan duoc ma)"
 Write-Host '============================================================'
 
 # --------------------------------------------------------------- 0. Cong cu
