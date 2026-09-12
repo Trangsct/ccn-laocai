@@ -13,8 +13,11 @@ if not exist "%BOT_DIR%" mkdir "%BOT_DIR%"
 
 echo.
 echo   Dang tai ban moi nhat cua bo cai...
-curl -sSL --max-time 120 -o "%BOT_DIR%\cai-runner.ps1.new" ^
-  "https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-runner.ps1"
+rem Lay qua api.github.com chu KHONG qua raw.githubusercontent.com: raw di qua bo nho dem CDN,
+rem sua xong vai phut sau may van tai ve ban cu (vu 12/9/2026 chay hai lan deu ra ban cu).
+curl -sSL --max-time 120 -H "Accept: application/vnd.github.raw" -H "Cache-Control: no-cache" ^
+  -o "%BOT_DIR%\cai-runner.ps1.new" ^
+  "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/cai-runner.ps1?ref=main"
 if exist "%BOT_DIR%\cai-runner.ps1.new" (
     for %%S in ("%BOT_DIR%\cai-runner.ps1.new") do if %%~zS GTR 1000 move /y "%BOT_DIR%\cai-runner.ps1.new" "%BOT_DIR%\cai-runner.ps1" >nul
     if exist "%BOT_DIR%\cai-runner.ps1.new" del /q "%BOT_DIR%\cai-runner.ps1.new"
