@@ -1311,7 +1311,9 @@ def main():
         if a.xuat_phien:
             return xuat_phien()
         if a.lay:
-            return lay_theo_yeu_cau(a.lay, a.luu, so_ngay=a.ngay or 60, online=a.online)
+            # "@đường/dẫn.txt" = đọc yêu cầu từ tệp UTF-8 (workflow ghi ra, để chữ Việt không vỡ qua cmd Windows)
+            yeu_cau = Path(a.lay[1:]).read_text(encoding="utf-8-sig") if a.lay.startswith("@") else a.lay
+            return lay_theo_yeu_cau(yeu_cau, a.luu, so_ngay=a.ngay or 60, online=a.online)
         if a.tim:
             d = json.loads(Path(a.tim).read_text(encoding="utf-8"))
             can = [{"so_ky_hieu": v["so_ky_hieu"], "ngay": (v.get("ngay") or [""])[0]}
