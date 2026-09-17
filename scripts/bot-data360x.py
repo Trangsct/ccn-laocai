@@ -284,6 +284,7 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                     log(f"  [tri thức] lỗi tải {vb['so_ky_hieu']}: {e!r}")
                     pdf = None
                 dinh_kem = tai_dinh_kem(ctx, page, vb)            # hồ sơ nhiều tệp (17/9/2026)
+                dinh_kem += lay_theo_qr(ctx, vb, pdf, dinh_kem)   # tài liệu sau mã QR (17/9/2026)
                 if not pdf and not any(d.get("bytes") for d in dinh_kem):
                     loi.append(f"{vb['so_ky_hieu']}: không tìm thấy PDF")
                 elif pdf and len(pdf) > PDF_TOI_DA_MB * 1024 * 1024 and len(trich_chu_pdf(pdf)) < 800:
@@ -1065,6 +1066,153 @@ def tai_dinh_kem(ctx, page, vb):
     return ket
 
 
+# ---------------------------------------------------------------- TÀI LIỆU SAU MÃ QR (Bạn chốt 17/9/2026)
+# Nhiều công văn của Bộ chỉ in mã QR: "Đề nghị quét QR để tải tài liệu" - dự thảo nằm ở đường dẫn trong QR
+# (Google Drive, cổng của Bộ...). Bot dựng ảnh trang PDF, đọc QR bằng OpenCV, tải tài liệu ở đường dẫn đó.
+QR_TRANG_TOI_DA = 6
+QR_TEP_TOI_DA = 12
+
+
+def quet_qr_pdf(pdf_bytes):
+    """Trả danh sách URL đọc được từ mã QR trong PDF (mọi trang, tối đa QR_TRANG_TOI_DA trang)."""
+    try:
+        import pymupdf
+    except ImportError:
+        return []
+    try:
+        import cv2
+        import numpy as np
+    except ImportError:
+        log("  [QR] chưa có OpenCV, đang cài opencv-python-headless (một lần)...")
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "-q", "opencv-python-headless", "numpy"], timeout=600)
+            import cv2
+            import numpy as np
+        except Exception as e:
+            log("  [QR] không cài được OpenCV:", repr(e))
+            return []
+    urls = []
+    try:
+        bo_doc = cv2.QRCodeDetector()
+        with pymupdf.open(stream=pdf_bytes, filetype="pdf") as doc:
+            for i, trang in enumerate(doc):
+                if i >= QR_TRANG_TOI_DA:
+                    break
+                for dpi in (200, 300):
+                    pix = trang.get_pixmap(dpi=dpi, colorspace=pymupdf.csGRAY)
+                    anh = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w)
+                    try:
+                        ok, ds, _, _ = bo_doc.detectAndDecodeMulti(anh)
+                        chuoi = [c for c in ds if c] if ok else []
+                    except Exception:
+                        chuoi = []
+                    if not chuoi:
+                        c, _, _ = bo_doc.detectAndDecode(anh)
+                        chuoi = [c] if c else []
+                    if chuoi:
+                        for c in chuoi:
+                            if c.startswith(("http://", "https://")) and c not in urls:
+                                urls.append(c)
+                                log(f"  [QR] trang {i + 1}: {c[:100]}")
+                        break
+    except Exception as e:
+        log("  [QR] lỗi đọc:", repr(e))
+    return urls
+
+
+def _ten_tu_phan_hoi(r, url, mac_dinh):
+    cd = r.headers.get("content-disposition", "") if hasattr(r, "headers") else ""
+    m = re.search(r"filename\*=UTF-8\'\'([^;]+)", cd) or re.search(r'filename="?([^";]+)"?', cd)
+    if m:
+        from urllib.parse import unquote
+        return unquote(m.group(1)).strip()
+    duoi = url.split("?")[0].rsplit("/", 1)[-1]
+    return duoi if "." in duoi and len(duoi) < 120 else mac_dinh
+
+
+def tai_tu_url(ctx, url, mac_dinh="tai-lieu"):
+    """Tải tài liệu ở một URL bằng phiên Chrome (ctx.request: có cookie, không vướng CORS).
+    Nhận diện Google Drive (tệp, thư mục), trang web liệt kê tệp. Trả [{"ten","loai","bytes"}]."""
+    ra = []
+    try:
+        u = url.strip()
+        m = re.search(r"drive\.google\.com/file/d/([\w-]+)", u)
+        if m:
+            u = f"https://drive.google.com/uc?export=download&id={m.group(1)}&confirm=t"
+        m2 = re.search(r"drive\.google\.com/drive/(?:u/\d+/)?folders/([\w-]+)", u)
+        if m2:
+            r = ctx.request.get(u, timeout=120000)
+            html = r.text() if r.ok else ""
+            ids = []
+            for mm in re.finditer(r'data-id="([\w-]{20,})"', html):
+                if mm.group(1) not in ids and mm.group(1) != m2.group(1):
+                    ids.append(mm.group(1))
+            log(f"  [QR] thư mục Google Drive: thấy {len(ids)} tệp")
+            for i, fid in enumerate(ids[:QR_TEP_TOI_DA], 1):
+                ra += tai_tu_url(ctx, f"https://drive.google.com/uc?export=download&id={fid}&confirm=t", f"{mac_dinh}-{i}")
+            if not ids:
+                ra.append({"ten": f"{mac_dinh}-thu-muc-drive.txt", "loai": "QR", "bytes": (u + "\n").encode()})
+            return ra
+        r = ctx.request.get(u, timeout=180000)
+        if not r.ok:
+            log(f"  [QR] {u[:80]}: HTTP {r.status}")
+            return ra
+        b = r.body()
+        ct = (r.headers.get("content-type") or "").lower()
+        ten = _ten_tu_phan_hoi(r, u, mac_dinh)
+        if "text/html" in ct and not _la_pdf(b):
+            html = b.decode("utf-8", errors="replace")
+            # Google Drive hỏi xác nhận tải tệp lớn
+            m3 = re.search(r'action="([^"]+)"[^>]*>(?:(?!</form>).)*?name="confirm"', html, re.S)
+            if m3 and "drive" in u:
+                r2 = ctx.request.get(m3.group(1).replace("&amp;", "&") + "&confirm=t", timeout=180000)
+                if r2.ok:
+                    ra.append({"ten": _ten_tu_phan_hoi(r2, u, mac_dinh), "loai": "QR", "bytes": r2.body()})
+                    return ra
+            # trang web liệt kê tài liệu: lấy các link tệp
+            links = []
+            for mm in re.finditer(r'href="([^"]+\.(?:pdf|docx?|xlsx?|zip|rar))"', html, re.I):
+                l = urljoin(u, mm.group(1).replace("&amp;", "&"))
+                if l not in links:
+                    links.append(l)
+            log(f"  [QR] trang web: {len(links)} tệp liên kết")
+            ra.append({"ten": f"{mac_dinh}-trang.html", "loai": "QR", "bytes": b})
+            for i, l in enumerate(links[:QR_TEP_TOI_DA], 1):
+                r3 = ctx.request.get(l, timeout=180000)
+                if r3.ok:
+                    ra.append({"ten": _ten_tu_phan_hoi(r3, l, f"{mac_dinh}-{i}"), "loai": "QR", "bytes": r3.body()})
+            return ra
+        if "." not in ten:
+            ten += ".pdf" if _la_pdf(b) else (".docx" if b[:2] == b"PK" else ".bin")
+        ra.append({"ten": ten, "loai": "QR", "bytes": b})
+    except Exception as e:
+        log("  [QR] lỗi tải:", repr(e))
+    return ra
+
+
+def lay_theo_qr(ctx, vb, pdf_chinh, dinh_kem):
+    """Quét QR trong PDF chính và mọi PDF đính kèm; tải tài liệu ở URL đọc được, gắn thêm vào dinh_kem."""
+    nguon = [("văn bản chính", pdf_chinh)] + [(d["ten"], d["bytes"]) for d in dinh_kem if d.get("bytes") and _la_pdf(d["bytes"])]
+    da = set()
+    them = []
+    for ten_goc, b in nguon:
+        if not b:
+            continue
+        for url in quet_qr_pdf(b):
+            if url in da:
+                continue
+            da.add(url)
+            kq = tai_tu_url(ctx, url, "qr")
+            if not kq:
+                kq = [{"ten": "qr-khong-tai-duoc.txt", "loai": "QR", "bytes": (url + "\n").encode()}]
+            for d in kq:
+                d["qr_url"] = url
+                d["tu_tep"] = ten_goc
+            them += kq
+            log(f"  [QR] từ {ten_goc}: {len(kq)} tệp ({url[:60]})")
+    return them
+
+
 def dong_goi_ho_so(vb, ten_goc, pdf_chinh, dinh_kem, dau_md):
     """Từ PDF chính + đính kèm -> danh sách (tên tệp, bytes) để ghi ra đĩa hoặc lên GitHub.
     Văn bản chính: .md nếu có chữ, .pdf nếu scan. Mỗi đính kèm: tệp gốc + .md chữ (nếu trích được).
@@ -1073,13 +1221,16 @@ def dong_goi_ho_so(vb, ten_goc, pdf_chinh, dinh_kem, dau_md):
     ten_chinh = ""
     muc_dk = []
     for i, dk in enumerate(dinh_kem, 1):
+        nhan = "qr" if dk.get("loai") == "QR" else "dk"
         if not dk.get("bytes"):
             muc_dk.append(f"- {i}. {dk['ten']} ({dk.get('loai') or 'không rõ'}) - *không tải được*")
             continue
-        ten_dk = f"{ten_goc}__dk{i}-{_ten_tep_sach(dk['ten'])}"
+        ten_dk = f"{ten_goc}__{nhan}{i}-{_ten_tep_sach(dk['ten'])}"
         ra.append((ten_dk, dk["bytes"]))
         chu = trich_chu_tep(dk["ten"], dk["bytes"])
         dong = f"- {i}. {dk['ten']} ({dk.get('loai') or 'tệp'}) -> `{ten_dk}`"
+        if dk.get("qr_url"):
+            dong += f" — tải từ mã QR trong *{dk.get('tu_tep')}*: {dk['qr_url']}"
         if len(chu) >= 200:
             ten_md = ten_dk.rsplit(".", 1)[0] + ".md"
             ra.append((ten_md, f"# Đính kèm {i} của {vb['so_ky_hieu']}: {dk['ten']}\n\n{chu}".encode()))
@@ -1175,9 +1326,12 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                         (luu_vao / f"{ten}.pdf").write_bytes(pdf)
                     else:
                         log("    không tải được PDF, chỉ ghi thông tin")
-                    for i, dk in enumerate(tai_dinh_kem(ctx, page, vb), 1):      # hồ sơ nhiều tệp (17/9/2026)
+                    dk_all = tai_dinh_kem(ctx, page, vb)                          # hồ sơ nhiều tệp (17/9/2026)
+                    dk_all += lay_theo_qr(ctx, vb, pdf, dk_all)
+                    for i, dk in enumerate(dk_all, 1):
                         if dk.get("bytes"):
-                            (luu_vao / f"{ten}__dk{i}-{_ten_tep_sach(dk['ten'])}").write_bytes(dk["bytes"])
+                            nhan = "qr" if dk.get("loai") == "QR" else "dk"
+                            (luu_vao / f"{ten}__{nhan}{i}-{_ten_tep_sach(dk['ten'])}").write_bytes(dk["bytes"])
                     (luu_vao / f"{ten}.json").write_text(
                         json.dumps(vb, ensure_ascii=False, indent=2), encoding="utf-8")
                     thay.append(vb["so_ky_hieu"])
@@ -1411,6 +1565,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                         log("    lỗi tải:", repr(e))
                         pdf = None
                     dinh_kem = tai_dinh_kem(ctx, page, vb)        # hồ sơ nhiều tệp (17/9/2026)
+                    dinh_kem += lay_theo_qr(ctx, vb, pdf, dinh_kem)   # tài liệu sau mã QR (17/9/2026)
                     dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
                            f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
                            f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
