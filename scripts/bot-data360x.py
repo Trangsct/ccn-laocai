@@ -1152,7 +1152,7 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                 # Tìm từng số trong ô tìm kiếm của cổng (17/9/2026); không có ô tìm thì lật trang như cũ
                 rows = []
                 for k in list(thieu):
-                    kq = tim_tren_cong(page, nguon, can[k]["so_ky_hieu"])
+                    kq = tim_tren_cong(page, nguon, phan_so(can[k]["so_ky_hieu"]))
                     if kq is None:
                         if can_dang_nhap(page):
                             log("Bị đưa về trang đăng nhập giữa chừng.")
@@ -1262,6 +1262,39 @@ def sua_vo_ma(chu):
     return thu
 
 
+# Bạn chốt 17/9/2026: "từ khóa nên ngắn gọn: chỉ số văn bản, không kèm mã phía sau; tra về một dự án thì chỉ
+# tên riêng (Xuân Ái) vì nhiều cách viết (CCN Xuân Ái, Cụm CN Xuân Ái...) sẽ không tra được".
+_CHU_CHUNG = re.compile(
+    r"^(?:(?:cum|khu|dia diem)\s+(?:cong nghiep|cn)|ccn|kcn|cong ty|cty|doanh nghiep|dn|du an|mo|nha may|"
+    r"co so|hop tac xa|htx|xa|phuong|thi tran|huyen|tinh|thanh pho|tp|ubnd|uy ban nhan dan|so|phong|ban)\s+", re.I)
+
+
+def rut_gon_tu_khoa(tu_khoa):
+    """'Cụm công nghiệp Xuân Ái' -> 'Xuân Ái'; 'Công ty CP PH Group' -> 'PH Group'. Bỏ dần các chữ chung ở đầu."""
+    goc = tu_khoa.strip()
+    khong_dau = bo_dau(goc)
+    while True:
+        m = _CHU_CHUNG.match(khong_dau)
+        if not m:
+            break
+        # cắt cùng số CHỮ ở bản có dấu (bo_dau giữ nguyên số chữ)
+        so_chu = len(m.group(0).split())
+        goc = " ".join(goc.split()[so_chu:])
+        khong_dau = bo_dau(goc)
+        if not goc:
+            return tu_khoa.strip()
+    # "CP", "TNHH", "MTV" đứng đầu sau khi bỏ "công ty" cũng là chữ chung
+    goc = re.sub(r"^(?:cp|tnhh|mtv|co phan|trach nhiem huu han|mot thanh vien)\s+", "", goc, flags=re.I) \
+        if re.match(r"^(?:cp|tnhh|mtv|cổ phần|trách nhiệm hữu hạn|một thành viên)\s+", goc, re.I) else goc
+    return goc.strip() or tu_khoa.strip()
+
+
+def phan_so(so_ky_hieu):
+    """'3226/QĐ-UBND' -> '3226' để gõ vào ô tìm (ô tìm khớp cả số ký hiệu lẫn trích yếu; lọc lại bằng số đầy đủ)."""
+    m = re.match(r"\s*([0-9]+)", so_ky_hieu or "")
+    return m.group(1) if m else so_ky_hieu
+
+
 def _tach_yeu_cau(yeu_cau):
     """"5511/SCT-CN; 3226/QĐ-UBND; tiêu chí lựa chọn chủ đầu tư" -> ([số ký hiệu chuẩn hóa], [từ khóa không dấu]).
     Mục có dấu "/" là số ký hiệu (khớp đúng), còn lại là từ khóa (khớp trong trích yếu, không phân biệt dấu)."""
@@ -1273,7 +1306,10 @@ def _tach_yeu_cau(yeu_cau):
         if "/" in muc:
             so[re.sub(r"[\s.]", "", muc).upper()] = muc
         else:
-            tu_khoa.append(bo_dau(muc))
+            gon = rut_gon_tu_khoa(muc)
+            if gon != muc:
+                log(f"  từ khóa rút gọn: '{muc}' -> '{gon}'")
+            tu_khoa.append(bo_dau(gon))
     return so, tu_khoa
 
 
@@ -1295,7 +1331,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     luu_vao.mkdir(parents=True, exist_ok=True)
     yeu_cau = sua_vo_ma(yeu_cau)
     so, tu_khoa = _tach_yeu_cau(yeu_cau)
-    tu_khoa_goc = [m.strip().strip('"\'') for m in re.split(r"[;\n]+", yeu_cau or "")
+    tu_khoa_goc = [rut_gon_tu_khoa(m.strip().strip('"\'')) for m in re.split(r"[;\n]+", yeu_cau or "")
                    if m.strip().strip('"\'') and "/" not in m]
     if not so and not tu_khoa:
         log("Yêu cầu rỗng: cần ít nhất một số ký hiệu hoặc từ khóa.")
@@ -1318,7 +1354,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                 ok, ctx, page = cho_dang_nhap(ctx, page, p)
                 if not ok:
                     return 3
-            chuoi_tim = list(so.values()) + tu_khoa_goc
+            chuoi_tim = sorted({phan_so(v) for v in so.values()}) + tu_khoa_goc
             da_co = set()      # khử trùng trên CẢ hai bảng (vụ 17/9: 5612/TTr-SCT bị ghi hai lần)
             for nguon in ("den", "di"):
                 # Gõ từng mục vào ô tìm kiếm của cổng; ô tìm không có thì lật trang trong khoảng ngày như cũ
