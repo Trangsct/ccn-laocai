@@ -540,13 +540,46 @@ def da_xu_ly_doc(repo, token):
 
 
 # ---------------------------------------------------------------- trình duyệt
+REQ = None     # request context bỏ qua lỗi chứng thư của csdlvb-backend (thiếu chứng thư trung gian); tạo trong mo_trinh_duyet
+
+
+def _tao_req(p, ctx):
+    """Playwright APIRequestContext với ignore_https_errors, mang cookie của phiên Chrome đang đăng nhập.
+    Vụ 17/9/2026: ctx.request báo 'unable to verify the first certificate', fetch trong trang bị CORS chặn."""
+    global REQ
+    try:
+        REQ = p.request.new_context(ignore_https_errors=True, storage_state=ctx.storage_state(), timeout=120000)
+    except Exception as e:
+        log("  không tạo được request context riêng:", repr(e))
+        REQ = None
+    return REQ
+
+
+def tai_bang_req(ctx, url):
+    """Tải URL bằng REQ (bỏ qua chứng thư) rồi mới tới ctx.request. Trả (bytes|None, tên tệp theo content-disposition|'')."""
+    for r_ctx in (REQ, ctx.request):
+        if r_ctx is None:
+            continue
+        try:
+            r = r_ctx.get(url, timeout=120000)
+            if r.ok:
+                b = r.body()
+                if b and len(b) > 200:
+                    return b, _ten_tu_phan_hoi(r, url, "")
+        except Exception as e:
+            log("    tải URL lỗi:", str(e)[:90])
+    return None, ""
+
+
 def mo_trinh_duyet(p, headless=False):
     PROFILE.mkdir(parents=True, exist_ok=True)
-    return p.chromium.launch_persistent_context(
+    ctx = p.chromium.launch_persistent_context(
         str(PROFILE), headless=headless, channel="chrome" if os.name == "nt" else None,
         viewport={"width": 1400, "height": 900}, locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh",
         accept_downloads=True, args=["--disable-blink-features=AutomationControlled"],
     )
+    _tao_req(p, ctx)
+    return ctx
 
 
 def mo_trinh_duyet_online(p, phien_json):
@@ -559,6 +592,7 @@ def mo_trinh_duyet_online(p, phien_json):
     ctx = b.new_context(storage_state=json.loads(phien_json), viewport={"width": 1400, "height": 900},
                         locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh", accept_downloads=True,
                         ignore_https_errors=os.environ.get("BO_QUA_TLS") == "1")
+    _tao_req(p, ctx)
     return ctx
 
 
@@ -810,12 +844,21 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
       3) link .pdf / nút Tải trên trang."""
     bat_duoc = []
 
+    DS_DINH_KEM_JSON.clear()
+
     def _on_response(resp):
         try:
             u = resp.url
             if "get-attach-by-id" in u or u.lower().split("?")[0].endswith(".pdf") \
                     or resp.headers.get("content-type", "").lower().startswith("application/pdf"):
                 bat_duoc.append(resp)
+            elif "json" in resp.headers.get("content-type", "").lower() and ("attach" in u.lower() or "document" in u.lower()):
+                try:
+                    chu = resp.text()
+                    if "attach" in chu.lower():
+                        DS_DINH_KEM_JSON.append(json.loads(chu))
+                except Exception:
+                    pass
         except Exception:
             pass
 
@@ -1034,6 +1077,24 @@ def _ten_tep_sach(ten):
     return ten[:90] or "tep"
 
 
+DS_DINH_KEM_JSON = []     # phản hồi JSON có chứa attachId mà Chrome nhận khi mở trang chi tiết (tai_pdf gom vào)
+
+
+def _nhat_attach(obj, ra):
+    """Đệ quy qua JSON tìm object có attachId (hoặc id) + tên tệp."""
+    if isinstance(obj, dict):
+        khoa = {k.lower(): k for k in obj}
+        aid = next((obj[khoa[k]] for k in ("attachid", "attach_id", "idattach") if k in khoa), None)
+        ten = next((obj[khoa[k]] for k in ("filename", "file_name", "attachname", "name", "tenfile", "ten_file", "fileattachname") if k in khoa), None)
+        if aid and ten and isinstance(ten, str) and any(str(ten).lower().endswith(d) for d in DUOI_TEP):
+            ra.append({"attachId": str(aid), "ten": ten})
+        for v in obj.values():
+            _nhat_attach(v, ra)
+    elif isinstance(obj, list):
+        for v in obj:
+            _nhat_attach(v, ra)
+
+
 def tai_dinh_kem(ctx, page, vb):
     """Đang ở trang chi tiết: mở tab "File đính kèm", tải từng tệp. Trả [{"ten", "loai", "bytes"}].
 
@@ -1082,6 +1143,18 @@ def tai_dinh_kem(ctx, page, vb):
             if u not in url_san:
                 url_san.append(u)
         log(f"  đính kèm: {len(url_san)} URL get-attach có sẵn trong trang" + (f", ví dụ {url_san[0][:90]}" if url_san else ""))
+        ds_json = []
+        for j in DS_DINH_KEM_JSON:
+            _nhat_attach(j, ds_json)
+        if ds_json:
+            log(f"  đính kèm: JSON của cổng liệt kê {len(ds_json)} tệp: " + ", ".join(f"{d['attachId']}={d['ten'][:30]}" for d in ds_json[:6]))
+        goc_attach, aid_goc = "", None
+        for u in url_san:
+            mm = re.match(r"(.*get-attach-by-id)\?.*?attachId=(\d+)", u)
+            if mm:
+                goc_attach, aid_goc = mm.group(1), int(mm.group(2))
+                break
+        da_thu, ten_thay = set(), {}
         try:
             mau_hang = hang[0].evaluate("e => e.outerHTML.slice(0, 400)")
             log(f"  đính kèm: HTML hàng đầu: {mau_hang!r}")
@@ -1108,73 +1181,45 @@ def tai_dinh_kem(ctx, page, vb):
                 href = ""
             if href and not href.startswith(("javascript", "#")):
                 b = tai_qua_chrome(page, urljoin(GOC_WEB, href))
-            # (1b) URL get-attach có sẵn trong trang, theo thứ tự hàng
-            if not b and len(url_san) >= len(hang):
-                try:
-                    r = ctx.request.get(url_san[i - 1], timeout=120000)
-                    if r.ok and len(r.body()) > 200:
-                        b = r.body()
-                        log(f"    {ten}: tải thẳng URL có sẵn ({len(b)} bytes)")
-                except Exception as e:
-                    log("    URL có sẵn lỗi:", str(e)[:80])
-            # (2) bấm vào hàng: Data360X chọn hàng rồi nạp tệp vào KHUNG XEM qua get-attach-by-id?attachId=N.
-            # Khung xem mở PDF làm Chrome sập (vụ 9425/UBND-NC 17/9/2026, ba lần). Nên: CHẶN yêu cầu get-attach
-            # ở cấp context ngay lúc bấm (lấy URL, không cho tải), rồi tự tải bằng fetch trong trang.
+            # (1b) attachId trong JSON mà cổng trả khi mở trang chi tiết (chính xác nhất, không cần bấm)
             if not b:
-                bat_url = []
-
-                def _chan(route, request):
-                    u = request.url
-                    if "get-attach" in u:
-                        bat_url.append(u)
-                        try:
-                            route.abort()
-                        except Exception:
-                            pass
-                    else:
-                        try:
-                            route.continue_()
-                        except Exception:
-                            pass
-
-                try:
-                    ctx.route("**/*get-attach*", _chan)
+                for d in ds_json:
+                    if _ten_tep_sach(d["ten"]).lower() == _ten_tep_sach(ten).lower() or d["ten"].strip().lower() == ten.strip().lower():
+                        b, _ = tai_bang_req(ctx, f"{goc_attach}?attachId={d['attachId']}")
+                        if b:
+                            log(f"    {ten}: tải theo attachId {d['attachId']} từ JSON ({len(b)} bytes)")
+                            break
+            # (1c) URL get-attach có sẵn trong trang, theo thứ tự hàng
+            if not b and len(url_san) >= len(hang):
+                b, _ = tai_bang_req(ctx, url_san[i - 1])
+                if b:
+                    log(f"    {ten}: tải thẳng URL có sẵn ({len(b)} bytes)")
+            # (1d) quét lân cận attachId của tệp đã biết: tên tệp trong content-disposition khớp thì lấy.
+            # Data360X cấp attachId tăng dần khi văn thư đính tệp nên các tệp cùng hồ sơ nằm sát nhau.
+            if not b and goc_attach and aid_goc and REQ is not None:
+                for lech in list(range(1, 25)) + list(range(-1, -25, -1)):
+                    aid = aid_goc + lech
+                    if aid in da_thu:
+                        continue
+                    da_thu.add(aid)
                     try:
-                        muc = tr.locator("td").first if tr.locator("td").count() else tr
-                        muc.click(timeout=8000)
-                    except Exception as e:
-                        log("    bấm hàng lỗi:", str(e)[:80])
-                    page.wait_for_timeout(2500)
-                finally:
-                    try:
-                        ctx.unroute("**/*get-attach*", _chan)
+                        r = REQ.get(f"{goc_attach}?attachId={aid}", timeout=60000)
+                        if not r.ok:
+                            continue
+                        ten_r = _ten_tu_phan_hoi(r, "", "")
+                        if ten_r:
+                            ten_thay[aid] = (ten_r, r.body())
+                        if ten_r and (_ten_tep_sach(ten_r).lower() == _ten_tep_sach(ten).lower() or ten_r.strip().lower() == ten.strip().lower()):
+                            b = r.body()
+                            log(f"    {ten}: tìm thấy ở attachId {aid} ({len(b)} bytes)")
+                            break
                     except Exception:
-                        pass
-                for u in reversed(bat_url):
-                    b = tai_qua_chrome(page, u)
-                    if not b:
-                        try:
-                            r = ctx.request.get(u, timeout=120000)
-                            b = r.body() if r.ok else None
-                        except Exception as e:
-                            log("    request lỗi:", str(e)[:80])
-                    if b and len(b) > 200:
-                        log(f"    {ten}: tải qua URL bắt được khi bấm ({len(b)} bytes)")
-                        break
-                    b = None
-                if not bat_url:
-                    log(f"    {ten}: bấm hàng không sinh yêu cầu get-attach")
-                # bấm có thể chuyển trang -> quay lại trang chi tiết cho tệp kế tiếp
-                try:
-                    if "detail" not in page.url:
-                        page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
-                        page.wait_for_timeout(2500)
-                        t2 = page.locator("text=/File đính kèm|Tệp đính kèm/i")
-                        if t2.count():
-                            t2.first.click(timeout=5000)
-                            page.wait_for_timeout(1200)
-                except Exception:
-                    pass
+                        continue
+                if not b:
+                    for aid, (ten_r, bb) in ten_thay.items():
+                        if _ten_tep_sach(ten_r).lower() == _ten_tep_sach(ten).lower():
+                            b = bb
+                            break
             if not b:
                 log(f"    {ten}: KHÔNG tải được (hàng: {chu[:80]!r})")
                 ket.append({"ten": ten, "loai": loai, "bytes": None})
@@ -1266,7 +1311,7 @@ def tai_tu_url(ctx, url, mac_dinh="tai-lieu"):
         if m2:
             # Trang thư mục Drive dựng bằng JS, HTML ban đầu không có tên tệp. Trang "embeddedfolderview" là
             # HTML tĩnh: có link /file/d/<id>/view và tên tệp (vụ 9425/UBND-NC 17/9/2026: bản cũ thấy 0 tệp).
-            r = ctx.request.get(f"https://drive.google.com/embeddedfolderview?id={m2.group(1)}#list", timeout=120000)
+            r = (REQ or ctx.request).get(f"https://drive.google.com/embeddedfolderview?id={m2.group(1)}#list", timeout=120000)
             html = r.text() if r.ok else ""
             import html as _html
             ids = re.findall(r"https://drive\.google\.com/file/d/([\w-]+)/view", html)
@@ -1289,7 +1334,7 @@ def tai_tu_url(ctx, url, mac_dinh="tai-lieu"):
             if not ids_u and not thu_muc_con:
                 ra.append({"ten": f"{mac_dinh}-thu-muc-drive.txt", "loai": "QR", "bytes": (u + "\n").encode()})
             return ra
-        r = ctx.request.get(u, timeout=180000)
+        r = (REQ or ctx.request).get(u, timeout=180000)
         if not r.ok:
             log(f"  [QR] {u[:80]}: HTTP {r.status}")
             return ra
