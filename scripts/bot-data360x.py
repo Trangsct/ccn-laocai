@@ -908,14 +908,25 @@ def doc_luong_xu_ly(page):
         if bang is None:
             return ket
         heads = [bo_dau(x.inner_text()) for x in bang.locator("thead th").all()]
-        for _ in range(6):
+        # Bảng này thường NHIỀU TRANG (Bạn nhắc 17/9/2026: 16 bước / 4 trang) -> lật tới khi nút "sau" mờ đi.
+        # Nút phân trang của CHÍNH bảng này: cùng khối p-datatable, không lấy nhầm nút của bảng đính kèm.
+        nut = bang.locator("xpath=ancestor::div[contains(@class,'p-datatable')][1]//button[contains(@class,'p-paginator-next')]")
+        if not nut.count():
+            nut = bang.locator("xpath=following::button[contains(@class,'p-paginator-next')][1]")
+        da_thay = set()
+        for trang in range(20):
+            moi_them = 0
             for tr in bang.locator("tbody tr").all():
                 o = [c.inner_text().strip() for c in tr.locator("td").all()]
                 if len(o) < 4:
                     continue
+                khoa = "|".join(o)
+                if khoa in da_thay:
+                    continue
+                da_thay.add(khoa)
+                moi_them += 1
                 ket.append({heads[i] if i < len(heads) else f"cot{i}": v for i, v in enumerate(o)})
-            nut = bang.locator("xpath=following::button[contains(@class,'p-paginator-next')][1]")
-            if not nut.count() or nut.first.is_disabled():
+            if not nut.count() or nut.first.is_disabled() or moi_them == 0:
                 break
             nut.first.click()
             page.wait_for_timeout(1200)
