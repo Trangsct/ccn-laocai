@@ -662,20 +662,38 @@ def can_dang_nhap(page):
         return False
 
 
-def cho_dang_nhap(ctx, page):
-    """Mở cửa sổ nhìn thấy được, báo cán bộ đăng nhập, chờ tối đa 6 x 15 phút."""
+def cho_dang_nhap(ctx, page, p=None):
+    """Mở cửa sổ nhìn thấy được, báo cán bộ đăng nhập, chờ tối đa 6 x 15 phút.
+
+    Trả (ok, ctx, page): Chrome bị đóng giữa chừng (vụ 16/9/2026 - lượt quét thứ Tư chết sau 17 giây vì
+    TargetClosedError) thì mở lại cửa sổ và chờ tiếp thay vì đổ cả lượt chạy; vì thế ctx/page có thể là mới.
+    """
     thong_bao_windows("Bot cần bạn đăng nhập lại Data360X", "Đăng nhập trong cửa sổ Chrome vừa mở, bot sẽ tự chạy tiếp.")
     telegram("Bot Data360X: phiên đăng nhập hết hạn. Hãy đăng nhập lại trong cửa sổ Chrome trên máy cơ quan.")
     for lan in range(SO_LAN_CHO_DANG_NHAP):
         log(f"Chờ đăng nhập, lần {lan + 1}/{SO_LAN_CHO_DANG_NHAP} (tối đa {CHO_DANG_NHAP_PHUT} phút)")
         het = time.time() + CHO_DANG_NHAP_PHUT * 60
         while time.time() < het:
-            page.wait_for_timeout(10000)
-            if not can_dang_nhap(page) and "csdlvb.laocai.gov.vn" in page.url:
-                log("Đã đăng nhập, chạy tiếp.")
-                return True
+            try:
+                page.wait_for_timeout(10000)
+                if not can_dang_nhap(page) and "csdlvb.laocai.gov.vn" in page.url:
+                    log("Đã đăng nhập, chạy tiếp.")
+                    return True, ctx, page
+            except Exception as e:
+                if p is None:
+                    raise
+                log("Cửa sổ Chrome bị đóng khi đang chờ đăng nhập - mở lại:", repr(e))
+                time.sleep(5)
+                try:
+                    ctx.close()
+                except Exception:
+                    pass
+                ctx = mo_trinh_duyet(p, headless=False)
+                page = ctx.pages[0] if ctx.pages else ctx.new_page()
+                page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+                page.bring_to_front()
     log("Hết thời gian chờ đăng nhập.")
-    return False
+    return False, ctx, page
 
 
 def cho_bang(page):
@@ -898,7 +916,8 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                     log("PHIÊN HẾT HẠN: chạy xuat-phien.bat trên máy rồi thử lại.")
                     return 3
                 page.bring_to_front()
-                if not cho_dang_nhap(ctx, page):
+                ok, ctx, page = cho_dang_nhap(ctx, page, p)
+                if not ok:
                     return 3
             for nguon in ("den", "di"):
                 rows = quet_danh_sach(page, nguon, tu_ngay)
@@ -937,6 +956,127 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
     return 0
 
 
+def _tach_yeu_cau(yeu_cau):
+    """"5511/SCT-CN; 3226/QĐ-UBND; tiêu chí lựa chọn chủ đầu tư" -> ([số ký hiệu chuẩn hóa], [từ khóa không dấu]).
+    Mục có dấu "/" là số ký hiệu (khớp đúng), còn lại là từ khóa (khớp trong trích yếu, không phân biệt dấu)."""
+    so, tu_khoa = {}, []
+    for muc in re.split(r"[;\n]+", yeu_cau or ""):
+        muc = muc.strip().strip('"\'')
+        if not muc:
+            continue
+        if "/" in muc:
+            so[re.sub(r"[\s.]", "", muc).upper()] = muc
+        else:
+            tu_khoa.append(bo_dau(muc))
+    return so, tu_khoa
+
+
+def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
+    """CÁNH TAY CỦA CLAUDE (Bạn chốt 17/9/2026): Claude đang làm việc cần văn bản nào thì ra lệnh cho bot vào
+    Data360X lấy đúng văn bản đó, không phải chờ lượt quét tuần.
+
+    yeu_cau: chuỗi các mục cách nhau bằng ";": số ký hiệu (có "/") hoặc từ khóa trong trích yếu.
+    Quét cả văn bản đến và đi trong so_ngay ngày gần nhất, tải mọi dòng khớp, lưu vào luu_vao:
+      <số>.md   chữ trong văn bản (kèm số, ngày, đơn vị, đường dẫn bản gốc ở đầu) - bản scan thì .pdf
+      _ket-qua.json + README.md   thấy gì, thiếu gì, để Claude đọc ngay
+    """
+    from playwright.sync_api import sync_playwright
+
+    cfg = doc_config()
+    token = cfg.get("github_token", "")
+    phien = os.environ.get("DATA360X_PHIEN", "")
+    luu_vao = Path(luu_vao)
+    luu_vao.mkdir(parents=True, exist_ok=True)
+    so, tu_khoa = _tach_yeu_cau(yeu_cau)
+    if not so and not tu_khoa:
+        log("Yêu cầu rỗng: cần ít nhất một số ký hiệu hoặc từ khóa.")
+        return 2
+    tu_ngay = date.today() - timedelta(days=so_ngay)
+    log(f"Lấy theo yêu cầu, quét từ {tu_ngay.isoformat()}: số ký hiệu {list(so.values())}, từ khóa {tu_khoa}")
+
+    thay, thieu_so = [], set(so.keys())
+    with sync_playwright() as p:
+        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        try:
+            page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(3000)
+            if can_dang_nhap(page):
+                if online:
+                    log("PHIÊN HẾT HẠN: chạy xuat-phien.bat trên máy rồi thử lại.")
+                    return 3
+                page.bring_to_front()
+                ok, ctx, page = cho_dang_nhap(ctx, page, p)
+                if not ok:
+                    return 3
+            for nguon in ("den", "di"):
+                rows = quet_danh_sach(page, nguon, tu_ngay)
+                if rows is None:
+                    log("Bị đưa về trang đăng nhập giữa chừng.")
+                    return 3
+                for vb in rows:
+                    khoa = re.sub(r"[\s.]", "", vb["so_ky_hieu"]).upper()
+                    ty = " " + bo_dau(vb["trich_yeu"]) + " "
+                    ly_do = ("số " + so[khoa]) if khoa in so else next((f"từ khóa \"{t}\"" for t in tu_khoa if t in ty), None)
+                    if not ly_do:
+                        continue
+                    log(f"  thấy {vb['so_ky_hieu']} ({nguon}, {ly_do}) - {vb['trich_yeu'][:60]}")
+                    ten = lam_sach_vn(vb["so_ky_hieu"]) or f"vb-{vb.get('id_data360x') or 'khong-so'}"
+                    if (luu_vao / f"{ten}.md").exists() or (luu_vao / f"{ten}.pdf").exists():
+                        ten += "-" + (vb.get("id_data360x") or nguon)      # hai văn bản trùng số
+                    try:
+                        pdf = tai_pdf(ctx, page, vb)
+                    except Exception as e:
+                        log("    lỗi tải:", repr(e))
+                        pdf = None
+                    tep = ""
+                    if pdf:
+                        chu = trich_chu_pdf(pdf)
+                        if len(chu) >= 800:
+                            dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                                   f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
+                                   f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
+                                   f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
+                                   f"- Lý do lấy: {ly_do}",
+                                   f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}", "",
+                                   "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
+                                   "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc.",
+                                   "", "---", "", chu]
+                            tep = f"{ten}.md"
+                            (luu_vao / tep).write_text("\n".join(dau), encoding="utf-8")
+                        else:
+                            tep = f"{ten}.pdf"
+                            (luu_vao / tep).write_bytes(pdf)
+                    else:
+                        log("    không tải được PDF, chỉ ghi thông tin")
+                    (luu_vao / f"{ten}.json").write_text(
+                        json.dumps({**vb, "ly_do": ly_do, "tep": tep}, ensure_ascii=False, indent=2), encoding="utf-8")
+                    thay.append({**vb, "ly_do": ly_do, "tep": tep})
+                    thieu_so.discard(khoa)
+        finally:
+            try:
+                ctx.close()
+            except Exception:
+                pass
+
+    kq = {"lay_luc": datetime.now().isoformat(timespec="minutes"), "yeu_cau": yeu_cau,
+          "tu_ngay": tu_ngay.isoformat(), "thay": thay, "khong_thay_so": [so[k] for k in thieu_so]}
+    (luu_vao / "_ket-qua.json").write_text(json.dumps(kq, ensure_ascii=False, indent=2), encoding="utf-8")
+    dong = [f"# Kết quả lấy văn bản theo yêu cầu - {datetime.now().strftime('%d/%m/%Y %H:%M')}", "",
+            f"Yêu cầu: `{yeu_cau}`  |  quét từ {tu_ngay.strftime('%d/%m/%Y')}  |  thấy {len(thay)}", ""]
+    for v in thay:
+        dong.append(f"- [{'đến' if v['nguon'] == 'den' else 'đi'}] **{v['so_ky_hieu']}** ngày {v['ngay_ban_hanh']} "
+                    f"- {v['trich_yeu']} ({v['ly_do']})" + (f" -> `{v['tep']}`" if v['tep'] else " *(không tải được PDF)*"))
+    if thieu_so:
+        dong += ["", "## Không thấy trong khoảng quét", ""] + [f"- {so[k]}" for k in thieu_so] + \
+                ["", "Có thể văn bản cũ hơn khoảng quét (tăng --ngay) hoặc số ký hiệu ghi khác trên Data360X."]
+    (luu_vao / "README.md").write_text("\n".join(dong) + "\n", encoding="utf-8")
+    log(f"Lấy xong: thấy {len(thay)}, không thấy {len(thieu_so)} số ký hiệu")
+    if token:
+        ghi_nhip_tim(token, len(thay), [v["so_ky_hieu"] for v in thay], [])
+    return 0
+
+
 # ---------------------------------------------------------------- luồng chính
 def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_DA_PDF_MOI_LUOT):
     from playwright.sync_api import sync_playwright
@@ -971,7 +1111,8 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
                     log("PHIÊN HẾT HẠN: trên máy Bạn chạy xuat-phien.bat rồi để GitHub chạy tiếp.")
                     return 3
                 page.bring_to_front()
-                if not cho_dang_nhap(ctx, page):
+                ok, ctx, page = cho_dang_nhap(ctx, page, p)
+                if not ok:
                     telegram("Bot Data360X: không đăng nhập được sau 90 phút, bỏ lượt chạy hôm nay.")
                     return 3
             van_ban = []
@@ -1152,6 +1293,9 @@ def main():
     ap.add_argument("--tim", metavar="TRICH_DAN_JSON",
                     help="tìm và tải các văn bản viện dẫn liệt kê trong tệp trich-dan.json")
     ap.add_argument("--luu", default="kem-theo", help="thư mục lưu văn bản tìm được (mặc định: kem-theo)")
+    ap.add_argument("--lay", metavar="YEU_CAU",
+                    help='lấy văn bản theo yêu cầu của Claude: "5511/SCT-CN; 3226/QĐ-UBND; tiêu chí lựa chọn chủ đầu tư" '
+                         '(mục có "/" là số ký hiệu, còn lại là từ khóa trong trích yếu; quét --ngay ngày, mặc định 60)')
     ap.add_argument("--khong-gom", action="store_true",
                     help="chỉ lấy giấy phép, bỏ bước gom tri thức cho các plugin")
     ap.add_argument("--gom-toi-da", type=int, default=TOI_DA_PDF_MOI_LUOT,
@@ -1166,6 +1310,8 @@ def main():
             return giu_phien()
         if a.xuat_phien:
             return xuat_phien()
+        if a.lay:
+            return lay_theo_yeu_cau(a.lay, a.luu, so_ngay=a.ngay or 60, online=a.online)
         if a.tim:
             d = json.loads(Path(a.tim).read_text(encoding="utf-8"))
             can = [{"so_ky_hieu": v["so_ky_hieu"], "ngay": (v.get("ngay") or [""])[0]}
