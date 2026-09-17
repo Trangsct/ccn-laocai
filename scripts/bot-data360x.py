@@ -1154,7 +1154,7 @@ def tai_dinh_kem(ctx, page, vb):
         if URL_BACKEND_DA_THAY:
             log("  API backend đã thấy: " + ", ".join(URL_BACKEND_DA_THAY[:12]))
         for u in URL_ATTACH_DA_THAY[:4]:
-            log("  URL tải tệp Chrome đã dùng: " + u[:220])
+            log("  URL tải tệp Chrome đã dùng: " + re.sub(r"(token=)[^&]+", r"\1…", u)[:220])
         for j in DS_DINH_KEM_JSON[:3]:
             log("  JSON đính kèm (đầu): " + json.dumps(j, ensure_ascii=False)[:600])
         if not HDR_BACKEND:
@@ -1230,14 +1230,6 @@ def tai_dinh_kem(ctx, page, vb):
                 href = ""
             if href and not href.startswith(("javascript", "#")):
                 b = tai_qua_chrome(page, urljoin(GOC_WEB, href))
-            # (1b) attachId trong JSON mà cổng trả khi mở trang chi tiết (chính xác nhất, không cần bấm)
-            if not b:
-                for d in ds_json:
-                    if _ten_tep_sach(d["ten"]).lower() == _ten_tep_sach(ten).lower() or d["ten"].strip().lower() == ten.strip().lower():
-                        b, _ = tai_bang_req(ctx, f"{goc_attach}?attachId={d['attachId']}")
-                        if b:
-                            log(f"    {ten}: tải theo attachId {d['attachId']} từ JSON ({len(b)} bytes)")
-                            break
             # (1b') theo KHUÔN URL mà Chrome đã dùng để tải tệp đầu (đường dẫn có tên tệp + query attachId):
             # thay tên tệp và attachId bằng của tệp đang cần.
             if not b and URL_ATTACH_DA_THAY:
@@ -1259,6 +1251,14 @@ def tai_dinh_kem(ctx, page, vb):
                         log(f"    {ten}: tải theo khuôn URL của Chrome ({len(b)} bytes)")
                         break
                     b = None
+            # (1b) attachId trong JSON, URL trần không token (cổng hiện trả 400 - giữ để phòng cổng đổi)
+            if not b:
+                for d in ds_json:
+                    if _ten_tep_sach(d["ten"]).lower() == _ten_tep_sach(ten).lower() or d["ten"].strip().lower() == ten.strip().lower():
+                        b, _ = tai_bang_req(ctx, f"{goc_attach}?attachId={d['attachId']}")
+                        if b:
+                            log(f"    {ten}: tải theo attachId {d['attachId']} từ JSON ({len(b)} bytes)")
+                            break
             # (1c) URL get-attach có sẵn trong trang, theo thứ tự hàng
             if not b and len(url_san) >= len(hang):
                 b, _ = tai_bang_req(ctx, url_san[i - 1])
