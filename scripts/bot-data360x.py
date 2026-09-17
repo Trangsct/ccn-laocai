@@ -544,6 +544,7 @@ REQ = None     # request context bỏ qua lỗi chứng thư của csdlvb-backen
 HDR_BACKEND = {}   # Authorization (JWT) mà Chrome gửi tới csdlvb-backend - SPA giữ token ở localStorage, không ở cookie,
                    # nên request riêng chỉ mang cookie bị 401 (lượt 17/9/2026: 48 lần get-attach đều trượt trong 1 giây)
 URL_BACKEND_DA_THAY = []   # đường dẫn backend đã thấy khi mở trang chi tiết (ghi log để soi API)
+URL_ATTACH_DA_THAY = []    # URL đầy đủ (cả query) mà Chrome dùng để tải tệp đính kèm - làm khuôn cho các tệp còn lại
 
 
 def _bat_header_backend(req):
@@ -555,6 +556,8 @@ def _bat_header_backend(req):
         duong = u.split("?")[0].split("/api/")[-1]
         if duong not in URL_BACKEND_DA_THAY:
             URL_BACKEND_DA_THAY.append(duong)
+        if "get-attach-by-id" in u and u not in URL_ATTACH_DA_THAY:
+            URL_ATTACH_DA_THAY.append(u)
         h = req.headers
         for k, v in h.items():
             kl = k.lower()
@@ -570,9 +573,10 @@ def _gom_json_attach(resp):
     """page.on("response"): gom phản hồi JSON của backend có nhắc tới attach (danh sách đính kèm)."""
     try:
         u = resp.url
-        if "json" in resp.headers.get("content-type", "").lower() and ("attach" in u.lower() or "document" in u.lower()):
+        ct = resp.headers.get("content-type", "").lower()
+        if ("attach" in u.lower() and "get-attach-by-id" not in u) or ("json" in ct and "document" in u.lower()):
             chu = resp.text()
-            if "attach" in chu.lower():
+            if "attach" in chu.lower() or "get-attachs" in u:
                 DS_DINH_KEM_JSON.append(json.loads(chu))
     except Exception:
         pass
@@ -1117,10 +1121,12 @@ def _nhat_attach(obj, ra):
     """Đệ quy qua JSON tìm object có attachId (hoặc id) + tên tệp."""
     if isinstance(obj, dict):
         khoa = {k.lower(): k for k in obj}
-        aid = next((obj[khoa[k]] for k in ("attachid", "attach_id", "idattach") if k in khoa), None)
-        ten = next((obj[khoa[k]] for k in ("filename", "file_name", "attachname", "name", "tenfile", "ten_file", "fileattachname") if k in khoa), None)
+        aid = next((obj[khoa[k]] for k in ("attachid", "attach_id", "idattach", "attachmentid", "fileid", "id") if k in khoa), None)
+        ten = next((obj[khoa[k]] for k in ("filename", "file_name", "attachname", "name", "tenfile", "ten_file", "fileattachname", "tentep", "ten") if k in khoa), None)
+        if ten is None:
+            ten = next((v for v in obj.values() if isinstance(v, str) and any(v.lower().endswith(d) for d in DUOI_TEP)), None)
         if aid and ten and isinstance(ten, str) and any(str(ten).lower().endswith(d) for d in DUOI_TEP):
-            ra.append({"attachId": str(aid), "ten": ten})
+            ra.append({"attachId": str(aid), "ten": ten, "obj": obj})
         for v in obj.values():
             _nhat_attach(v, ra)
     elif isinstance(obj, list):
@@ -1147,6 +1153,10 @@ def tai_dinh_kem(ctx, page, vb):
                 pass
         if URL_BACKEND_DA_THAY:
             log("  API backend đã thấy: " + ", ".join(URL_BACKEND_DA_THAY[:12]))
+        for u in URL_ATTACH_DA_THAY[:4]:
+            log("  URL tải tệp Chrome đã dùng: " + u[:220])
+        for j in DS_DINH_KEM_JSON[:3]:
+            log("  JSON đính kèm (đầu): " + json.dumps(j, ensure_ascii=False)[:600])
         if not HDR_BACKEND:
             log("  chưa bắt được Authorization của backend - request riêng có thể bị 401")
         # hàng nào có tên tệp (đuôi quen thuộc) thì coi là một tệp đính kèm
@@ -1228,6 +1238,27 @@ def tai_dinh_kem(ctx, page, vb):
                         if b:
                             log(f"    {ten}: tải theo attachId {d['attachId']} từ JSON ({len(b)} bytes)")
                             break
+            # (1b') theo KHUÔN URL mà Chrome đã dùng để tải tệp đầu (đường dẫn có tên tệp + query attachId):
+            # thay tên tệp và attachId bằng của tệp đang cần.
+            if not b and URL_ATTACH_DA_THAY:
+                from urllib.parse import quote
+                khuon = URL_ATTACH_DA_THAY[0]
+                ung_vien = []
+                for d in ds_json:
+                    if _ten_tep_sach(d["ten"]).lower() == _ten_tep_sach(ten).lower() or d["ten"].strip().lower() == ten.strip().lower():
+                        u2 = re.sub(r"(get-attach-by-id)/[^?]*", lambda m: m.group(1) + "/" + quote(d["ten"]), khuon)
+                        u2 = re.sub(r"attachId=\d+", f"attachId={d['attachId']}", u2)
+                        ung_vien.append(u2)
+                        ung_vien.append(re.sub(r"(get-attach-by-id)/[^?]*", r"\1", u2))
+                if not ung_vien:
+                    # không có JSON: chỉ thay tên tệp trong đường dẫn, giữ query (thử xem cổng tra theo tên)
+                    ung_vien.append(re.sub(r"(get-attach-by-id)/[^?]*", lambda m: m.group(1) + "/" + quote(ten), khuon))
+                for u2 in ung_vien:
+                    b, ten_r = tai_bang_req(ctx, u2)
+                    if b and (_la_pdf(b) or not ten.lower().endswith(".pdf")):
+                        log(f"    {ten}: tải theo khuôn URL của Chrome ({len(b)} bytes)")
+                        break
+                    b = None
             # (1c) URL get-attach có sẵn trong trang, theo thứ tự hàng
             if not b and len(url_san) >= len(hang):
                 b, _ = tai_bang_req(ctx, url_san[i - 1])
