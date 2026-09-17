@@ -920,10 +920,20 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                 if not ok:
                     return 3
             for nguon in ("den", "di"):
-                rows = quet_danh_sach(page, nguon, tu_ngay)
-                if rows is None:
-                    log("Bị đưa về trang đăng nhập giữa chừng.")
-                    return 3
+                # Tìm từng số trong ô tìm kiếm của cổng (17/9/2026); không có ô tìm thì lật trang như cũ
+                rows = []
+                for k in list(thieu):
+                    kq = tim_tren_cong(page, nguon, can[k]["so_ky_hieu"])
+                    if kq is None:
+                        if can_dang_nhap(page):
+                            log("Bị đưa về trang đăng nhập giữa chừng.")
+                            return 3
+                        kq = quet_danh_sach(page, nguon, tu_ngay)
+                        if kq is None:
+                            return 3
+                        rows = kq
+                        break
+                    rows.extend(kq)
                 for vb in rows:
                     khoa = re.sub(r"[\s.]", "", vb["so_ky_hieu"]).upper()
                     if khoa not in can or khoa not in thieu:
@@ -954,6 +964,47 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
     if token:
         ghi_nhip_tim(token, len(thay) + len(thieu), thay, [])
     return 0
+
+
+def tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
+    """Gõ chuỗi vào ô "Nhập số/ký hiệu hoặc trích yếu văn bản" của Data360X rồi đọc bảng kết quả (Bạn chốt
+    17/9/2026: "trang cơ sở dữ liệu có thanh tìm kiếm mà, nên tìm bằng từ khóa hơn là mở từng trang").
+    Trả danh sách dòng; None nếu bị đưa về trang đăng nhập hoặc không thấy ô tìm (để nơi gọi lật trang như cũ)."""
+    page.goto(TRANG[nguon], wait_until="domcontentloaded", timeout=90000)
+    if can_dang_nhap(page):
+        return None
+    cho_bang(page)
+    o = page.get_by_placeholder(re.compile(r"ký hiệu|trích yếu|ky hieu|trich yeu", re.I))
+    if not o.count():
+        o = page.locator("input[type='text']").first
+        if not o.count():
+            log(f"  ({nguon}) không thấy ô tìm kiếm - lật trang như cũ")
+            return None
+    o = o.first
+    o.fill("")
+    o.fill(chuoi)
+    o.press("Enter")
+    page.wait_for_timeout(2500)
+    try:
+        cho_bang(page)
+    except Exception:
+        return []
+    rows, trang = [], 1
+    while True:
+        try:
+            rows.extend(doc_bang(page, nguon))
+        except RuntimeError as e:      # bảng không có dòng nào -> thiếu cột
+            log(f"  ({nguon}) '{chuoi}': {e}")
+            break
+        nut = page.locator("button.p-paginator-next")
+        if trang >= toi_da_trang or not nut.count() or nut.first.is_disabled():
+            break
+        nut.first.click()
+        page.wait_for_timeout(2000)
+        cho_bang(page)
+        trang += 1
+    log(f"  ({nguon}) tìm '{chuoi}': {len(rows)} dòng")
+    return rows
 
 
 def _tach_yeu_cau(yeu_cau):
@@ -988,6 +1039,8 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     luu_vao = Path(luu_vao)
     luu_vao.mkdir(parents=True, exist_ok=True)
     so, tu_khoa = _tach_yeu_cau(yeu_cau)
+    tu_khoa_goc = [m.strip().strip('"\'') for m in re.split(r"[;\n]+", yeu_cau or "")
+                   if m.strip().strip('"\'') and "/" not in m]
     if not so and not tu_khoa:
         log("Yêu cầu rỗng: cần ít nhất một số ký hiệu hoặc từ khóa.")
         return 2
@@ -1009,12 +1062,27 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                 ok, ctx, page = cho_dang_nhap(ctx, page, p)
                 if not ok:
                     return 3
+            chuoi_tim = list(so.values()) + tu_khoa_goc
             for nguon in ("den", "di"):
-                rows = quet_danh_sach(page, nguon, tu_ngay)
-                if rows is None:
-                    log("Bị đưa về trang đăng nhập giữa chừng.")
-                    return 3
+                # Gõ từng mục vào ô tìm kiếm của cổng; ô tìm không có thì lật trang trong khoảng ngày như cũ
+                rows, da_co = [], set()
+                for chuoi in chuoi_tim:
+                    kq = tim_tren_cong(page, nguon, chuoi)
+                    if kq is None:
+                        if can_dang_nhap(page):
+                            log("Bị đưa về trang đăng nhập giữa chừng.")
+                            return 3
+                        kq = quet_danh_sach(page, nguon, tu_ngay)
+                        if kq is None:
+                            return 3
+                        rows.extend(kq)
+                        break
+                    rows.extend(kq)
                 for vb in rows:
+                    dau = vb.get("id_data360x") or (vb["so_ky_hieu"] + vb["ngay_ban_hanh"])
+                    if dau in da_co:
+                        continue
+                    da_co.add(dau)
                     khoa = re.sub(r"[\s.]", "", vb["so_ky_hieu"]).upper()
                     ty = " " + bo_dau(vb["trich_yeu"]) + " "
                     ly_do = ("số " + so[khoa]) if khoa in so else next((f"từ khóa \"{t}\"" for t in tu_khoa if t in ty), None)
