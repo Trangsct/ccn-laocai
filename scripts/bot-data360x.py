@@ -284,6 +284,8 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                     log(f"  [tri thức] lỗi tải {vb['so_ky_hieu']}: {e!r}")
                     pdf = None
                 dinh_kem = tai_dinh_kem(ctx, page, vb)            # hồ sơ nhiều tệp (17/9/2026)
+                luong = doc_luong_xu_ly(page)
+                vai, nguoi_xl, han_xl = suy_vai_tro(luong)
                 dinh_kem += lay_theo_qr(ctx, vb, pdf, dinh_kem)   # tài liệu sau mã QR (17/9/2026)
                 if not pdf and not any(d.get("bytes") for d in dinh_kem):
                     loi.append(f"{vb['so_ky_hieu']}: không tìm thấy PDF")
@@ -296,10 +298,11 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                            f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
                            f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
                            f"- Lĩnh vực: {', '.join(ghi['linh_vuc'])}",
-                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}",
+                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl) + [
                            "",
                            "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
                            "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
+                    ghi["vai_tro_phong"], ghi["nguoi_xu_ly_chinh"], ghi["han_xu_ly"] = vai, nguoi_xl, han_xl
                     goi, ten_chinh = dong_goi_ho_so(vb, goc.rsplit("/", 1)[1], pdf, dinh_kem, dau)
                     thu_muc = goc.rsplit("/", 1)[0]
                     for ten_t, du_lieu in goi:
@@ -874,6 +877,88 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
         return None
     finally:
         page.remove_listener("response", _on_response)
+
+
+# ---------------------------------------------------------------- LUỒNG XỬ LÝ (Bạn chốt 17/9/2026)
+# "Đọc kỹ phần Thông tin gửi, nhận thì biết Trưởng phòng nào chủ trì (phải soạn văn bản của Sở), Trưởng phòng
+# nào phối hợp (chuyên viên phòng đó soạn văn bản của phòng gửi phòng chủ trì)."
+PHONG_TOI = "công nghiệp"      # phòng của người dùng, để bot suy ra vai trò chủ trì / phối hợp / nhận để biết
+
+
+def doc_luong_xu_ly(page):
+    """Đang ở trang chi tiết: mở tab "Thông tin gửi, nhận", đọc bảng luồng xử lý (mọi trang phân trang).
+    Trả danh sách dict theo tiêu đề cột đã bỏ dấu: nguoi gui, don vi gui, thoi gian, nguoi nhan, don vi nhan,
+    hanh dong, ngay qua han, trang thai."""
+    ket = []
+    try:
+        tab = page.locator("text=/Thông tin gửi, nhận|Thông tin gửi nhận|Luồng xử lý/i")
+        if not tab.count():
+            return ket
+        tab.first.click(timeout=5000)
+        page.wait_for_timeout(1500)
+        bang = None
+        for t in page.locator("table").all():
+            try:
+                h = bo_dau(t.locator("thead").inner_text())
+            except Exception:
+                continue
+            if "nguoi nhan" in h and ("hanh dong" in h or "trang thai" in h):
+                bang = t
+                break
+        if bang is None:
+            return ket
+        heads = [bo_dau(x.inner_text()) for x in bang.locator("thead th").all()]
+        for _ in range(6):
+            for tr in bang.locator("tbody tr").all():
+                o = [c.inner_text().strip() for c in tr.locator("td").all()]
+                if len(o) < 4:
+                    continue
+                ket.append({heads[i] if i < len(heads) else f"cot{i}": v for i, v in enumerate(o)})
+            nut = bang.locator("xpath=following::button[contains(@class,'p-paginator-next')][1]")
+            if not nut.count() or nut.first.is_disabled():
+                break
+            nut.first.click()
+            page.wait_for_timeout(1200)
+        log(f"  luồng xử lý: {len(ket)} bước")
+    except Exception as e:
+        log("  luồng xử lý lỗi:", repr(e))
+    return ket
+
+
+def suy_vai_tro(luong, phong=PHONG_TOI):
+    """Từ luồng xử lý suy ra vai trò của phòng: chủ trì / phối hợp / nhận để biết / không có; ai xử lý chính; hạn."""
+    vai, nguoi, han = "không có", "", ""
+    phong = bo_dau(phong)
+    for b in luong:
+        dv = bo_dau(b.get("don vi nhan", ""))
+        hd = bo_dau(b.get("hanh dong", ""))
+        if phong in dv:
+            if "xu ly chinh" in hd or "chu tri" in hd:
+                vai, nguoi = "chủ trì", b.get("nguoi nhan", "")
+            elif "phoi hop" in hd and vai != "chủ trì":
+                vai = "phối hợp"
+            elif vai == "không có":
+                vai = "nhận để biết"
+        if not han:
+            han = b.get("ngay qua han", "") or b.get("han xu ly", "")
+    return vai, nguoi, han
+
+
+def dong_luong_md(luong, vai, nguoi, han):
+    """Các dòng ghi vào đầu tệp .md."""
+    if not luong:
+        return []
+    ra = [f"- Luồng xử lý: Phòng {PHONG_TOI.title()} **{vai.upper()}**"
+          + (f" — xử lý chính: {nguoi}" if nguoi else "") + (f" — hạn xử lý: {han}" if han else ""),
+          "  - " + ("Phòng chủ trì → soạn văn bản của SỞ (công văn/tờ trình Sở ký)." if vai == "chủ trì" else
+                    "Phòng phối hợp → chuyên viên soạn công văn NỘI BỘ của Phòng gửi phòng chủ trì." if vai == "phối hợp" else
+                    "Nhận để biết → không phải soạn văn bản, chỉ theo dõi." if vai == "nhận để biết" else
+                    "Phòng không có trong luồng — hỏi lại người dùng trước khi soạn."),
+          "", "| Người gửi | Người nhận | Đơn vị nhận | Hành động | Trạng thái |", "|---|---|---|---|---|"]
+    for b in luong:
+        ra.append(f"| {b.get('nguoi gui', '')} | {b.get('nguoi nhan', '')} | {b.get('don vi nhan', '')} | "
+                  f"{b.get('hanh dong', '')} | {b.get('trang thai', '')} |")
+    return ra
 
 
 # ---------------------------------------------------------------- HỒ SƠ NHIỀU TỆP (Bạn chốt 17/9/2026)
@@ -1606,13 +1691,15 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                         log("    lỗi tải:", repr(e))
                         pdf = None
                     dinh_kem = tai_dinh_kem(ctx, page, vb)        # hồ sơ nhiều tệp (17/9/2026)
+                    luong = doc_luong_xu_ly(page)                  # ai chủ trì, ai phối hợp (17/9/2026)
+                    vai, nguoi_xl, han_xl = suy_vai_tro(luong)
                     dinh_kem += lay_theo_qr(ctx, vb, pdf, dinh_kem)   # tài liệu sau mã QR (17/9/2026)
                     dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
                            f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
                            f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
                            f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
                            f"- Lý do lấy: {ly_do}",
-                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}", "",
+                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl) + ["",
                            "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
                            "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
                     goi, tep = dong_goi_ho_so(vb, ten, pdf, dinh_kem, dau)
@@ -1620,7 +1707,8 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                         (luu_vao / ten_t).write_bytes(du_lieu)
                     if not pdf:
                         log("    không tải được PDF chính" + (f", có {sum(1 for d in dinh_kem if d.get('bytes'))} đính kèm" if dinh_kem else ""))
-                    ghi_vb = {**vb, "ly_do": ly_do, "tep": tep,
+                    ghi_vb = {**vb, "ly_do": ly_do, "tep": tep, "luong_xu_ly": luong,
+                              "vai_tro_phong": vai, "nguoi_xu_ly_chinh": nguoi_xl, "han_xu_ly": han_xl,
                               "dinh_kem": [{"ten": d["ten"], "loai": d.get("loai", ""), "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]}
                     (luu_vao / f"{ten}.json").write_text(json.dumps(ghi_vb, ensure_ascii=False, indent=2), encoding="utf-8")
                     thay.append(ghi_vb)
@@ -1644,7 +1732,9 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
         dk = v.get("dinh_kem") or []
         dong.append(f"- [{'đến' if v['nguon'] == 'den' else 'đi'}] **{v['so_ky_hieu']}** ngày {v['ngay_ban_hanh']} "
                     f"- {v['trich_yeu']} ({v['ly_do']})" + (f" -> `{v['tep']}`" if v['tep'] else " *(không tải được PDF)*")
-                    + (f" + {sum(1 for d in dk if d['tai_duoc'])}/{len(dk)} tệp đính kèm" if dk else ""))
+                    + (f" + {sum(1 for d in dk if d['tai_duoc'])}/{len(dk)} tệp đính kèm" if dk else "")
+                    + (f" — Phòng {v['vai_tro_phong']}" + (f", xử lý chính: {v['nguoi_xu_ly_chinh']}" if v.get('nguoi_xu_ly_chinh') else "")
+                       + (f", hạn {v['han_xu_ly']}" if v.get('han_xu_ly') else "") if v.get('vai_tro_phong') and v['vai_tro_phong'] != 'không có' else ""))
     if thieu_so:
         dong += ["", "## Không thấy trên Data360X", ""] + [f"- {so[k]}" for k in thieu_so] + \
                 ["", "Có thể số ký hiệu ghi khác trên Data360X (thử chỉ phần số), hoặc văn bản chưa được cập nhật lên cổng."]
