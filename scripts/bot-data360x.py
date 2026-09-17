@@ -1319,9 +1319,10 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                 if not ok:
                     return 3
             chuoi_tim = list(so.values()) + tu_khoa_goc
+            da_co = set()      # khử trùng trên CẢ hai bảng (vụ 17/9: 5612/TTr-SCT bị ghi hai lần)
             for nguon in ("den", "di"):
                 # Gõ từng mục vào ô tìm kiếm của cổng; ô tìm không có thì lật trang trong khoảng ngày như cũ
-                rows, da_co = [], set()
+                rows = []
                 for chuoi in chuoi_tim:
                     kq = tim_tren_cong(page, nguon, chuoi)
                     if kq is None:
