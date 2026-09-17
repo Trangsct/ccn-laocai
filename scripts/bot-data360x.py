@@ -1117,64 +1117,64 @@ def tai_dinh_kem(ctx, page, vb):
                         log(f"    {ten}: tải thẳng URL có sẵn ({len(b)} bytes)")
                 except Exception as e:
                     log("    URL có sẵn lỗi:", str(e)[:80])
-            # (2) bấm vào tên tệp: bắt download / phản hồi / tab mới
+            # (2) bấm vào hàng: Data360X chọn hàng rồi nạp tệp vào KHUNG XEM qua get-attach-by-id?attachId=N.
+            # Khung xem mở PDF làm Chrome sập (vụ 9425/UBND-NC 17/9/2026, ba lần). Nên: CHẶN yêu cầu get-attach
+            # ở cấp context ngay lúc bấm (lấy URL, không cho tải), rồi tự tải bằng fetch trong trang.
             if not b:
-                bat = []
-                def _resp(r):
-                    try:
-                        if "get-attach" in r.url or "download" in r.url.lower() or \
-                                any(x in r.headers.get("content-type", "").lower() for x in ("pdf", "officedocument", "msword", "octet-stream", "zip")):
-                            bat.append(r)
-                    except Exception:
-                        pass
-                page.on("response", _resp)
-                ctx.on("response", _resp)
-                try:
-                    muc = tr.locator("text=" + ten.split(".")[0][:30]).first if tr.locator("text=" + ten.split(".")[0][:30]).count() else tr
-                    try:
-                        with page.expect_download(timeout=15000) as dl:
-                            muc.click()
-                        b = Path(dl.value.path()).read_bytes()
-                        log(f"    {ten}: tải qua download ({len(b)} bytes)")
-                    except Exception:
-                        page.wait_for_timeout(4000)
-                        for r in reversed(bat):
-                            try:
-                                bb = r.body()
-                                if bb and len(bb) > 200:
-                                    b = bytes(bb)
-                                    log(f"    {ten}: bắt từ phản hồi {r.url[:70]} ({len(b)} bytes)")
-                                    break
-                            except Exception:
-                                pass
-                        if not b:
-                            for pg in ctx.pages:
-                                if pg is not page and ("get-attach" in pg.url or "download" in pg.url.lower()):
-                                    b = tai_qua_chrome(page, pg.url)
-                                    try:
-                                        pg.close()
-                                    except Exception:
-                                        pass
-                                    if b:
-                                        log(f"    {ten}: lấy từ tab mới ({len(b)} bytes)")
-                                        break
-                finally:
-                    try:
-                        page.remove_listener("response", _resp)
-                        ctx.remove_listener("response", _resp)
-                    except Exception:
-                        pass
-                # trang có thể đã chuyển đi khi bấm -> quay lại trang chi tiết cho tệp kế tiếp
-                if page.url.rstrip("/") != vb["url_chi_tiet"].rstrip("/") and "detail" not in page.url:
-                    page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
-                    page.wait_for_timeout(2500)
-                    t2 = page.locator("text=/File đính kèm|Tệp đính kèm/i")
-                    if t2.count():
+                bat_url = []
+
+                def _chan(route, request):
+                    u = request.url
+                    if "get-attach" in u:
+                        bat_url.append(u)
                         try:
-                            t2.first.click(timeout=5000)
-                            page.wait_for_timeout(1200)
+                            route.abort()
                         except Exception:
                             pass
+                    else:
+                        try:
+                            route.continue_()
+                        except Exception:
+                            pass
+
+                try:
+                    ctx.route("**/*get-attach*", _chan)
+                    try:
+                        muc = tr.locator("td").first if tr.locator("td").count() else tr
+                        muc.click(timeout=8000)
+                    except Exception as e:
+                        log("    bấm hàng lỗi:", str(e)[:80])
+                    page.wait_for_timeout(2500)
+                finally:
+                    try:
+                        ctx.unroute("**/*get-attach*", _chan)
+                    except Exception:
+                        pass
+                for u in reversed(bat_url):
+                    b = tai_qua_chrome(page, u)
+                    if not b:
+                        try:
+                            r = ctx.request.get(u, timeout=120000)
+                            b = r.body() if r.ok else None
+                        except Exception as e:
+                            log("    request lỗi:", str(e)[:80])
+                    if b and len(b) > 200:
+                        log(f"    {ten}: tải qua URL bắt được khi bấm ({len(b)} bytes)")
+                        break
+                    b = None
+                if not bat_url:
+                    log(f"    {ten}: bấm hàng không sinh yêu cầu get-attach")
+                # bấm có thể chuyển trang -> quay lại trang chi tiết cho tệp kế tiếp
+                try:
+                    if "detail" not in page.url:
+                        page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
+                        page.wait_for_timeout(2500)
+                        t2 = page.locator("text=/File đính kèm|Tệp đính kèm/i")
+                        if t2.count():
+                            t2.first.click(timeout=5000)
+                            page.wait_for_timeout(1200)
+                except Exception:
+                    pass
             if not b:
                 log(f"    {ten}: KHÔNG tải được (hàng: {chu[:80]!r})")
                 ket.append({"ten": ten, "loai": loai, "bytes": None})
