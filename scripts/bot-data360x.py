@@ -973,6 +973,24 @@ def tai_dinh_kem(ctx, page, vb):
         if not hang:
             return ket
         log(f"  đính kèm: thấy {len(hang)} tệp")
+        # Đường tắt: trang chi tiết thường đã chứa sẵn URL get-attach-by-id của từng tệp (trong href, data-*,
+        # script). Tải thẳng bằng ctx.request, KHÔNG bấm - bấm vào tệp PDF từng làm Chrome đóng (vụ 17/9/2026).
+        try:
+            html = page.content()
+        except Exception:
+            html = ""
+        url_san = []
+        for m in re.finditer(r"""(https?://[^\s"'<>]+get-attach[^\s"'<>]*|/api/[^\s"'<>]*get-attach[^\s"'<>]*)""", html):
+            u = m.group(1).replace("&amp;", "&")
+            u = u if u.startswith("http") else urljoin(GOC_WEB, u)
+            if u not in url_san:
+                url_san.append(u)
+        log(f"  đính kèm: {len(url_san)} URL get-attach có sẵn trong trang" + (f", ví dụ {url_san[0][:90]}" if url_san else ""))
+        try:
+            mau_hang = hang[0].evaluate("e => e.outerHTML.slice(0, 400)")
+            log(f"  đính kèm: HTML hàng đầu: {mau_hang!r}")
+        except Exception:
+            pass
         for i, tr in enumerate(hang[:DINH_KEM_TOI_DA], 1):
             try:
                 chu = tr.inner_text().strip()
@@ -994,6 +1012,15 @@ def tai_dinh_kem(ctx, page, vb):
                 href = ""
             if href and not href.startswith(("javascript", "#")):
                 b = tai_qua_chrome(page, urljoin(GOC_WEB, href))
+            # (1b) URL get-attach có sẵn trong trang, theo thứ tự hàng
+            if not b and len(url_san) >= len(hang):
+                try:
+                    r = ctx.request.get(url_san[i - 1], timeout=120000)
+                    if r.ok and len(r.body()) > 200:
+                        b = r.body()
+                        log(f"    {ten}: tải thẳng URL có sẵn ({len(b)} bytes)")
+                except Exception as e:
+                    log("    URL có sẵn lỗi:", str(e)[:80])
             # (2) bấm vào tên tệp: bắt download / phản hồi / tab mới
             if not b:
                 bat = []
