@@ -106,6 +106,7 @@ LOAI_VAN_BAN = [
 REPO_TRI_THUC = "vlncn-laocai"
 THU_MUC_TRI_THUC = "theo-doi"
 TOI_DA_PDF_MOI_LUOT = 30       # chặn trần để một lượt quét bù 120 ngày không phình kho
+LAY_TOI_DA_MOI_TU_KHOA = 12    # --lay: một từ khóa rộng ("quy chuẩn kỹ thuật quốc gia") không được kéo về hàng chục hồ sơ
 PDF_TOI_DA_MB = 12
 
 # Từ khóa viết KHÔNG DẤU, khớp trong trích yếu + loại văn bản. Một văn bản có thể thuộc nhiều lĩnh vực.
@@ -1339,7 +1340,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     tu_ngay = date.today() - timedelta(days=so_ngay)
     log(f"Lấy theo yêu cầu, quét từ {tu_ngay.isoformat()}: số ký hiệu {list(so.values())}, từ khóa {tu_khoa}")
 
-    thay, thieu_so = [], set(so.keys())
+    thay, thieu_so, dem_tk, bo_qua_tk, loi_chung = [], set(so.keys()), {}, {}, ""
     with sync_playwright() as p:
         ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
@@ -1381,7 +1382,26 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     ly_do = ("số " + so[khoa]) if khoa in so else next((f"từ khóa \"{t}\"" for t in tu_khoa if t in ty), None)
                     if not ly_do:
                         continue
+                    if ly_do.startswith("từ khóa"):
+                        dem_tk[ly_do] = dem_tk.get(ly_do, 0) + 1
+                        if dem_tk[ly_do] > LAY_TOI_DA_MOI_TU_KHOA:
+                            bo_qua_tk[ly_do] = bo_qua_tk.get(ly_do, 0) + 1
+                            continue
                     log(f"  thấy {vb['so_ky_hieu']} ({nguon}, {ly_do}) - {vb['trich_yeu'][:60]}")
+                    # Chrome bị đóng giữa chừng (vụ 17/9/2026: cả lượt đổ, mọi văn bản sau đều "Target closed")
+                    # -> mở lại rồi làm tiếp, không bỏ cả lượt.
+                    try:
+                        page.evaluate("1")
+                    except Exception:
+                        log("  Chrome đã bị đóng - mở lại và làm tiếp")
+                        try:
+                            ctx.close()
+                        except Exception:
+                            pass
+                        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+                        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+                        page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+                        page.wait_for_timeout(2000)
                     ten = lam_sach_vn(vb["so_ky_hieu"]) or f"vb-{vb.get('id_data360x') or 'khong-so'}"
                     if (luu_vao / f"{ten}.md").exists() or (luu_vao / f"{ten}.pdf").exists():
                         ten += "-" + (vb.get("id_data360x") or nguon)      # hai văn bản trùng số
@@ -1409,6 +1429,9 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     (luu_vao / f"{ten}.json").write_text(json.dumps(ghi_vb, ensure_ascii=False, indent=2), encoding="utf-8")
                     thay.append(ghi_vb)
                     thieu_so.discard(khoa)
+        except Exception as e:
+            loi_chung = repr(e)
+            log("LỖI giữa chừng, vẫn ghi phần đã lấy được:", loi_chung)
         finally:
             try:
                 ctx.close()
@@ -1416,7 +1439,8 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                 pass
 
     kq = {"lay_luc": datetime.now().isoformat(timespec="minutes"), "yeu_cau": yeu_cau,
-          "tu_ngay": tu_ngay.isoformat(), "thay": thay, "khong_thay_so": [so[k] for k in thieu_so]}
+          "tu_ngay": tu_ngay.isoformat(), "thay": thay, "khong_thay_so": [so[k] for k in thieu_so],
+          "bo_qua_vi_tu_khoa_rong": bo_qua_tk, "loi": loi_chung}
     (luu_vao / "_ket-qua.json").write_text(json.dumps(kq, ensure_ascii=False, indent=2), encoding="utf-8")
     dong = [f"# Kết quả lấy văn bản theo yêu cầu - {datetime.now().strftime('%d/%m/%Y %H:%M')}", "",
             f"Yêu cầu: `{yeu_cau}`  |  quét từ {tu_ngay.strftime('%d/%m/%Y')}  |  thấy {len(thay)}", ""]
@@ -1426,8 +1450,14 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     f"- {v['trich_yeu']} ({v['ly_do']})" + (f" -> `{v['tep']}`" if v['tep'] else " *(không tải được PDF)*")
                     + (f" + {sum(1 for d in dk if d['tai_duoc'])}/{len(dk)} tệp đính kèm" if dk else ""))
     if thieu_so:
-        dong += ["", "## Không thấy trong khoảng quét", ""] + [f"- {so[k]}" for k in thieu_so] + \
-                ["", "Có thể văn bản cũ hơn khoảng quét (tăng --ngay) hoặc số ký hiệu ghi khác trên Data360X."]
+        dong += ["", "## Không thấy trên Data360X", ""] + [f"- {so[k]}" for k in thieu_so] + \
+                ["", "Có thể số ký hiệu ghi khác trên Data360X (thử chỉ phần số), hoặc văn bản chưa được cập nhật lên cổng."]
+    if bo_qua_tk:
+        dong += ["", "## Từ khóa quá rộng", ""] + \
+                [f"- {k}: đã lấy {LAY_TOI_DA_MOI_TU_KHOA} văn bản mới nhất, bỏ qua {v} văn bản khác. "
+                 f"Hãy tra `danh-muc-<năm>.json` hoặc dùng từ khóa hẹp hơn / số ký hiệu cụ thể." for k, v in bo_qua_tk.items()]
+    if loi_chung:
+        dong += ["", "## Lượt lấy bị lỗi giữa chừng", "", f"- {loi_chung}", "- Phần trên là những gì đã lấy được trước khi lỗi; gọi lại để lấy phần còn thiếu."]
     (luu_vao / "README.md").write_text("\n".join(dong) + "\n", encoding="utf-8")
     log(f"Lấy xong: thấy {len(thay)}, không thấy {len(thieu_so)} số ký hiệu")
     if token:
