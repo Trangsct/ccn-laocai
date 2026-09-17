@@ -282,35 +282,32 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                 except Exception as e:
                     log(f"  [tri thức] lỗi tải {vb['so_ky_hieu']}: {e!r}")
                     pdf = None
-                if not pdf:
+                dinh_kem = tai_dinh_kem(ctx, page, vb)            # hồ sơ nhiều tệp (17/9/2026)
+                if not pdf and not any(d.get("bytes") for d in dinh_kem):
                     loi.append(f"{vb['so_ky_hieu']}: không tìm thấy PDF")
+                elif pdf and len(pdf) > PDF_TOI_DA_MB * 1024 * 1024 and len(trich_chu_pdf(pdf)) < 800:
+                    loi.append(f"{vb['so_ky_hieu']}: bản scan {len(pdf) // 1024 // 1024} MB, quá lớn - chỉ ghi mục lục")
                 else:
-                    chu = trich_chu_pdf(pdf)
                     msg_vb = f"Theo dõi văn bản: {vb['so_ky_hieu']}"
-                    if len(chu) >= 800:          # đọc được chữ -> lưu chữ, nhẹ hơn PDF vài chục lần
-                        dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
-                               f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
-                               f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
-                               f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
-                               f"- Lĩnh vực: {', '.join(ghi['linh_vuc'])}",
-                               f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}",
-                               "",
-                               "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
-                               "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc.",
-                               "", "---", "", chu]
-                        duong = goc + ".md"
-                        gh_ghi(REPO_TRI_THUC, duong, "\n".join(dau).encode(), msg_vb, token)
-                    elif len(pdf) <= PDF_TOI_DA_MB * 1024 * 1024:
-                        duong = goc + ".pdf"     # bản scan, không có lớp chữ -> giữ nguyên PDF
-                        gh_ghi(REPO_TRI_THUC, duong, pdf, msg_vb + " (bản scan)", token)
-                    else:
-                        loi.append(f"{vb['so_ky_hieu']}: bản scan {len(pdf) // 1024 // 1024} MB, "
-                                   f"quá lớn - chỉ ghi mục lục")
-                        duong = ""
-                    if duong:
-                        ghi["tep"] = duong
-                        da_tai += 1
-                        log(f"  [tri thức] {vb['so_ky_hieu']} ({', '.join(ghi['linh_vuc'])}) -> {duong}")
+                    dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                           f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
+                           f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
+                           f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
+                           f"- Lĩnh vực: {', '.join(ghi['linh_vuc'])}",
+                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}",
+                           "",
+                           "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
+                           "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
+                    goi, ten_chinh = dong_goi_ho_so(vb, goc.rsplit("/", 1)[1], pdf, dinh_kem, dau)
+                    thu_muc = goc.rsplit("/", 1)[0]
+                    for ten_t, du_lieu in goi:
+                        gh_ghi(REPO_TRI_THUC, f"{thu_muc}/{ten_t}", du_lieu, msg_vb, token)
+                    duong = f"{thu_muc}/{ten_chinh}"
+                    ghi["tep"] = duong
+                    ghi["dinh_kem"] = [{"ten": d["ten"], "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]
+                    da_tai += 1
+                    log(f"  [tri thức] {vb['so_ky_hieu']} ({', '.join(ghi['linh_vuc'])}) -> {duong}"
+                        + (f" + {sum(1 for d in dinh_kem if d.get('bytes'))} đính kèm" if dinh_kem else ""))
         danh_muc.append(ghi)
         da_gom[khoa] = ghi["gom_luc"]
         moi.append(ghi)
@@ -877,6 +874,238 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
         page.remove_listener("response", _on_response)
 
 
+# ---------------------------------------------------------------- HỒ SƠ NHIỀU TỆP (Bạn chốt 17/9/2026)
+# "Trong 1 hồ sơ thì có nhiều file, hãy nghĩ cách tải đủ file": ngoài PDF chính hiện trong khung xem, trang chi
+# tiết còn tab "File đính kèm" liệt kê dự thảo .docx, bảng so sánh, báo cáo... Bot tải tất cả, trích chữ .docx
+# bằng zipfile (không cần thư viện ngoài) để Claude đọc được ngay.
+DINH_KEM_TOI_DA = 15
+DINH_KEM_TOI_DA_MB = 25
+DUOI_TEP = (".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".zip", ".rar", ".jpg", ".png", ".txt")
+
+
+def trich_chu_docx(b):
+    """Chữ trong .docx: đọc word/document.xml, mỗi đoạn một dòng, ô bảng cách nhau bằng ' | '."""
+    import io
+    import zipfile
+    import xml.etree.ElementTree as ET
+    try:
+        with zipfile.ZipFile(io.BytesIO(b)) as z:
+            xml = z.read("word/document.xml")
+    except Exception:
+        return ""
+    ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+    try:
+        goc = ET.fromstring(xml)
+    except ET.ParseError:
+        return ""
+    dong = []
+    body = goc.find("w:body", ns)
+    if body is None:
+        return ""
+
+    def doan(p):
+        return "".join(t.text or "" for t in p.iter("{%s}t" % ns["w"])).strip()
+
+    for el in body:
+        tag = el.tag.split("}")[1]
+        if tag == "p":
+            dong.append(doan(el))
+        elif tag == "tbl":
+            for tr in el.iter("{%s}tr" % ns["w"]):
+                o = [" ".join(doan(p) for p in tc.iter("{%s}p" % ns["w"])).strip()
+                     for tc in tr.iter("{%s}tc" % ns["w"])]
+                dong.append("| " + " | ".join(o) + " |")
+            dong.append("")
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(dong)).strip()
+
+
+def trich_chu_tep(ten, b):
+    """Trả chữ của tệp theo đuôi (pdf/docx), chuỗi rỗng nếu không trích được."""
+    d = ten.lower()
+    if d.endswith(".pdf") or _la_pdf(b):
+        return trich_chu_pdf(b)
+    if d.endswith(".docx") or b[:2] == b"PK":
+        return trich_chu_docx(b)
+    return ""
+
+
+def _ten_tep_sach(ten):
+    ten = unicodedata.normalize("NFD", str(ten or "")).strip()
+    ten = "".join(c for c in ten if unicodedata.category(c) != "Mn").replace("đ", "d").replace("Đ", "D")
+    ten = re.sub(r"[^A-Za-z0-9._()\-]+", "-", ten).strip("-.")
+    return ten[:90] or "tep"
+
+
+def tai_dinh_kem(ctx, page, vb):
+    """Đang ở trang chi tiết: mở tab "File đính kèm", tải từng tệp. Trả [{"ten", "loai", "bytes"}].
+
+    Không biết trước cổng phát tệp kiểu nào nên thử lần lượt: (1) link có href; (2) bấm vào tên tệp rồi bắt
+    download; (3) bắt phản hồi get-attach-by-id hoặc tab mới mở ra. Không được cái nào thì ghi log để soi sau.
+    """
+    ket = []
+    try:
+        tab = page.locator("text=/File đính kèm|Tệp đính kèm|Tài liệu đính kèm/i")
+        if tab.count():
+            try:
+                tab.first.click(timeout=5000)
+                page.wait_for_timeout(1500)
+            except Exception:
+                pass
+        # hàng nào có tên tệp (đuôi quen thuộc) thì coi là một tệp đính kèm
+        hang = []
+        for tr in page.locator("table tbody tr").all():
+            try:
+                chu = tr.inner_text().strip()
+            except Exception:
+                continue
+            if any(d in chu.lower() for d in DUOI_TEP) and len(chu) < 400:
+                hang.append(tr)
+        if not hang:
+            for a in page.locator("a[href]").all():
+                try:
+                    chu = (a.inner_text() or "").strip()
+                    if any(chu.lower().endswith(d) for d in DUOI_TEP):
+                        hang.append(a)
+                except Exception:
+                    pass
+        if not hang:
+            return ket
+        log(f"  đính kèm: thấy {len(hang)} tệp")
+        for i, tr in enumerate(hang[:DINH_KEM_TOI_DA], 1):
+            try:
+                chu = tr.inner_text().strip()
+            except Exception:
+                chu = f"tep-{i}"
+            m = re.search(r"([^\n\t|]+\.(?:pdf|docx?|xlsx?|pptx?|zip|rar|jpe?g|png|txt))", chu, re.I)
+            ten = (m.group(1).strip() if m else f"tep-{i}")
+            ten = re.sub(r"^\d+\.\s*", "", ten)          # "2. Dự thảo Thông tư.docx" -> bỏ số thứ tự
+            loai = ""
+            m2 = re.search(r"(Tệp[^\n\t|]*|Văn bản[^\n\t|]*)$", chu)
+            if m2:
+                loai = m2.group(1).strip()
+            b = None
+            # (1) link có href
+            try:
+                a = tr.locator("a[href]").first if tr.locator("a[href]").count() else None
+                href = (a.get_attribute("href") or "") if a else (tr.get_attribute("href") or "")
+            except Exception:
+                href = ""
+            if href and not href.startswith(("javascript", "#")):
+                b = tai_qua_chrome(page, urljoin(GOC_WEB, href))
+            # (2) bấm vào tên tệp: bắt download / phản hồi / tab mới
+            if not b:
+                bat = []
+                def _resp(r):
+                    try:
+                        if "get-attach" in r.url or "download" in r.url.lower() or \
+                                any(x in r.headers.get("content-type", "").lower() for x in ("pdf", "officedocument", "msword", "octet-stream", "zip")):
+                            bat.append(r)
+                    except Exception:
+                        pass
+                page.on("response", _resp)
+                ctx.on("response", _resp)
+                try:
+                    muc = tr.locator("text=" + ten.split(".")[0][:30]).first if tr.locator("text=" + ten.split(".")[0][:30]).count() else tr
+                    try:
+                        with page.expect_download(timeout=15000) as dl:
+                            muc.click()
+                        b = Path(dl.value.path()).read_bytes()
+                        log(f"    {ten}: tải qua download ({len(b)} bytes)")
+                    except Exception:
+                        page.wait_for_timeout(4000)
+                        for r in reversed(bat):
+                            try:
+                                bb = r.body()
+                                if bb and len(bb) > 200:
+                                    b = bytes(bb)
+                                    log(f"    {ten}: bắt từ phản hồi {r.url[:70]} ({len(b)} bytes)")
+                                    break
+                            except Exception:
+                                pass
+                        if not b:
+                            for pg in ctx.pages:
+                                if pg is not page and ("get-attach" in pg.url or "download" in pg.url.lower()):
+                                    b = tai_qua_chrome(page, pg.url)
+                                    try:
+                                        pg.close()
+                                    except Exception:
+                                        pass
+                                    if b:
+                                        log(f"    {ten}: lấy từ tab mới ({len(b)} bytes)")
+                                        break
+                finally:
+                    try:
+                        page.remove_listener("response", _resp)
+                        ctx.remove_listener("response", _resp)
+                    except Exception:
+                        pass
+                # trang có thể đã chuyển đi khi bấm -> quay lại trang chi tiết cho tệp kế tiếp
+                if page.url.rstrip("/") != vb["url_chi_tiet"].rstrip("/") and "detail" not in page.url:
+                    page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
+                    page.wait_for_timeout(2500)
+                    t2 = page.locator("text=/File đính kèm|Tệp đính kèm/i")
+                    if t2.count():
+                        try:
+                            t2.first.click(timeout=5000)
+                            page.wait_for_timeout(1200)
+                        except Exception:
+                            pass
+            if not b:
+                log(f"    {ten}: KHÔNG tải được (hàng: {chu[:80]!r})")
+                ket.append({"ten": ten, "loai": loai, "bytes": None})
+                continue
+            if len(b) > DINH_KEM_TOI_DA_MB * 1024 * 1024:
+                log(f"    {ten}: {len(b) // 1024 // 1024} MB, quá lớn - bỏ qua")
+                ket.append({"ten": ten, "loai": loai, "bytes": None})
+                continue
+            ket.append({"ten": ten, "loai": loai, "bytes": b})
+    except Exception as e:
+        log("  đính kèm lỗi:", repr(e))
+    return ket
+
+
+def dong_goi_ho_so(vb, ten_goc, pdf_chinh, dinh_kem, dau_md):
+    """Từ PDF chính + đính kèm -> danh sách (tên tệp, bytes) để ghi ra đĩa hoặc lên GitHub.
+    Văn bản chính: .md nếu có chữ, .pdf nếu scan. Mỗi đính kèm: tệp gốc + .md chữ (nếu trích được).
+    Trả (danh_sach, tên tệp chính)."""
+    ra = []
+    ten_chinh = ""
+    muc_dk = []
+    for i, dk in enumerate(dinh_kem, 1):
+        if not dk.get("bytes"):
+            muc_dk.append(f"- {i}. {dk['ten']} ({dk.get('loai') or 'không rõ'}) - *không tải được*")
+            continue
+        ten_dk = f"{ten_goc}__dk{i}-{_ten_tep_sach(dk['ten'])}"
+        ra.append((ten_dk, dk["bytes"]))
+        chu = trich_chu_tep(dk["ten"], dk["bytes"])
+        dong = f"- {i}. {dk['ten']} ({dk.get('loai') or 'tệp'}) -> `{ten_dk}`"
+        if len(chu) >= 200:
+            ten_md = ten_dk.rsplit(".", 1)[0] + ".md"
+            ra.append((ten_md, f"# Đính kèm {i} của {vb['so_ky_hieu']}: {dk['ten']}\n\n{chu}".encode()))
+            dong += f", chữ: `{ten_md}`"
+        muc_dk.append(dong)
+    if pdf_chinh:
+        chu = trich_chu_pdf(pdf_chinh)
+        if len(chu) >= 800:
+            ten_chinh = ten_goc + ".md"
+            than = list(dau_md)
+            if muc_dk:
+                than += ["", "## Tệp đính kèm trên Data360X", ""] + muc_dk
+            than += ["", "---", "", chu]
+            ra.append((ten_chinh, "\n".join(than).encode()))
+        else:
+            ten_chinh = ten_goc + ".pdf"
+            ra.append((ten_chinh, pdf_chinh))
+            if muc_dk:
+                ra.append((ten_goc + ".md", ("\n".join(dau_md) + "\n\n*(Văn bản chính là bản scan: xem "
+                           + ten_chinh + ")*\n\n## Tệp đính kèm trên Data360X\n\n" + "\n".join(muc_dk)).encode()))
+    elif muc_dk:
+        ten_chinh = ten_goc + ".md"
+        ra.append((ten_chinh, ("\n".join(dau_md) + "\n\n*(Không tải được PDF chính)*\n\n## Tệp đính kèm trên Data360X\n\n"
+                               + "\n".join(muc_dk)).encode()))
+    return ra, ten_chinh
+
+
 def _khop_so(a, b):
     """So số ký hiệu bỏ khoảng trắng và chữ hoa thường: '340/TTr-UBND' == '340 /TTR - UBND'."""
     lam = lambda x: re.sub(r"[\s.]", "", str(x or "")).upper()
@@ -945,6 +1174,9 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                         (luu_vao / f"{ten}.pdf").write_bytes(pdf)
                     else:
                         log("    không tải được PDF, chỉ ghi thông tin")
+                    for i, dk in enumerate(tai_dinh_kem(ctx, page, vb), 1):      # hồ sơ nhiều tệp (17/9/2026)
+                        if dk.get("bytes"):
+                            (luu_vao / f"{ten}__dk{i}-{_ten_tep_sach(dk['ten'])}").write_bytes(dk["bytes"])
                     (luu_vao / f"{ten}.json").write_text(
                         json.dumps(vb, ensure_ascii=False, indent=2), encoding="utf-8")
                     thay.append(vb["so_ky_hieu"])
@@ -1007,6 +1239,29 @@ def tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
     return rows
 
 
+def sua_vo_ma(chu):
+    """'lá»±a chá»n' -> 'lựa chọn': chuỗi UTF-8 bị đọc nhầm thành Windows-1252 (vụ 17/9/2026, Windows PowerShell
+    đọc script không BOM như ANSI rồi ghi lại thành UTF-8 hai lần). Chỉ sửa khi có dấu hiệu vỡ."""
+    if not chu or not re.search(r"[ÃÂá»Æ]", chu):
+        return chu
+    # Windows đọc từng byte theo cp1252; byte cp1252 không định nghĩa (0x81, 0x8D...) thành U+0081... -> mã lại
+    # từng ký tự: cp1252 trước, không được thì latin-1.
+    goc = bytearray()
+    try:
+        for c in chu:
+            try:
+                goc += c.encode("cp1252")
+            except UnicodeEncodeError:
+                goc += c.encode("latin-1")
+        thu = goc.decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return chu
+    if re.search(r"[ÃÂ]", thu):
+        return chu
+    log(f"  đã sửa chuỗi vỡ mã: {thu[:60]!r}")
+    return thu
+
+
 def _tach_yeu_cau(yeu_cau):
     """"5511/SCT-CN; 3226/QĐ-UBND; tiêu chí lựa chọn chủ đầu tư" -> ([số ký hiệu chuẩn hóa], [từ khóa không dấu]).
     Mục có dấu "/" là số ký hiệu (khớp đúng), còn lại là từ khóa (khớp trong trích yếu, không phân biệt dấu)."""
@@ -1038,6 +1293,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     phien = os.environ.get("DATA360X_PHIEN", "")
     luu_vao = Path(luu_vao)
     luu_vao.mkdir(parents=True, exist_ok=True)
+    yeu_cau = sua_vo_ma(yeu_cau)
     so, tu_khoa = _tach_yeu_cau(yeu_cau)
     tu_khoa_goc = [m.strip().strip('"\'') for m in re.split(r"[;\n]+", yeu_cau or "")
                    if m.strip().strip('"\'') and "/" not in m]
@@ -1063,9 +1319,10 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                 if not ok:
                     return 3
             chuoi_tim = list(so.values()) + tu_khoa_goc
+            da_co = set()      # khử trùng trên CẢ hai bảng (vụ 17/9: 5612/TTr-SCT bị ghi hai lần)
             for nguon in ("den", "di"):
                 # Gõ từng mục vào ô tìm kiếm của cổng; ô tìm không có thì lật trang trong khoảng ngày như cũ
-                rows, da_co = [], set()
+                rows = []
                 for chuoi in chuoi_tim:
                     kq = tim_tren_cong(page, nguon, chuoi)
                     if kq is None:
@@ -1097,29 +1354,24 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     except Exception as e:
                         log("    lỗi tải:", repr(e))
                         pdf = None
-                    tep = ""
-                    if pdf:
-                        chu = trich_chu_pdf(pdf)
-                        if len(chu) >= 800:
-                            dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
-                                   f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
-                                   f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
-                                   f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
-                                   f"- Lý do lấy: {ly_do}",
-                                   f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}", "",
-                                   "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
-                                   "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc.",
-                                   "", "---", "", chu]
-                            tep = f"{ten}.md"
-                            (luu_vao / tep).write_text("\n".join(dau), encoding="utf-8")
-                        else:
-                            tep = f"{ten}.pdf"
-                            (luu_vao / tep).write_bytes(pdf)
-                    else:
-                        log("    không tải được PDF, chỉ ghi thông tin")
-                    (luu_vao / f"{ten}.json").write_text(
-                        json.dumps({**vb, "ly_do": ly_do, "tep": tep}, ensure_ascii=False, indent=2), encoding="utf-8")
-                    thay.append({**vb, "ly_do": ly_do, "tep": tep})
+                    dinh_kem = tai_dinh_kem(ctx, page, vb)        # hồ sơ nhiều tệp (17/9/2026)
+                    dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                           f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
+                           f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
+                           f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
+                           f"- Lý do lấy: {ly_do}",
+                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}", "",
+                           "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
+                           "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
+                    goi, tep = dong_goi_ho_so(vb, ten, pdf, dinh_kem, dau)
+                    for ten_t, du_lieu in goi:
+                        (luu_vao / ten_t).write_bytes(du_lieu)
+                    if not pdf:
+                        log("    không tải được PDF chính" + (f", có {sum(1 for d in dinh_kem if d.get('bytes'))} đính kèm" if dinh_kem else ""))
+                    ghi_vb = {**vb, "ly_do": ly_do, "tep": tep,
+                              "dinh_kem": [{"ten": d["ten"], "loai": d.get("loai", ""), "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]}
+                    (luu_vao / f"{ten}.json").write_text(json.dumps(ghi_vb, ensure_ascii=False, indent=2), encoding="utf-8")
+                    thay.append(ghi_vb)
                     thieu_so.discard(khoa)
         finally:
             try:
@@ -1133,8 +1385,10 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     dong = [f"# Kết quả lấy văn bản theo yêu cầu - {datetime.now().strftime('%d/%m/%Y %H:%M')}", "",
             f"Yêu cầu: `{yeu_cau}`  |  quét từ {tu_ngay.strftime('%d/%m/%Y')}  |  thấy {len(thay)}", ""]
     for v in thay:
+        dk = v.get("dinh_kem") or []
         dong.append(f"- [{'đến' if v['nguon'] == 'den' else 'đi'}] **{v['so_ky_hieu']}** ngày {v['ngay_ban_hanh']} "
-                    f"- {v['trich_yeu']} ({v['ly_do']})" + (f" -> `{v['tep']}`" if v['tep'] else " *(không tải được PDF)*"))
+                    f"- {v['trich_yeu']} ({v['ly_do']})" + (f" -> `{v['tep']}`" if v['tep'] else " *(không tải được PDF)*")
+                    + (f" + {sum(1 for d in dk if d['tai_duoc'])}/{len(dk)} tệp đính kèm" if dk else ""))
     if thieu_so:
         dong += ["", "## Không thấy trong khoảng quét", ""] + [f"- {so[k]}" for k in thieu_so] + \
                 ["", "Có thể văn bản cũ hơn khoảng quét (tăng --ngay) hoặc số ký hiệu ghi khác trên Data360X."]
@@ -1381,6 +1635,7 @@ def main():
         if a.lay:
             # "@đường/dẫn.txt" = đọc yêu cầu từ tệp UTF-8 (workflow ghi ra, để chữ Việt không vỡ qua cmd Windows)
             yeu_cau = Path(a.lay[1:]).read_text(encoding="utf-8-sig") if a.lay.startswith("@") else a.lay
+            yeu_cau = yeu_cau or os.environ.get("YEU_CAU", "")      # workflow đưa qua biến môi trường
             return lay_theo_yeu_cau(yeu_cau, a.luu, so_ngay=a.ngay or 60, online=a.online)
         if a.tim:
             d = json.loads(Path(a.tim).read_text(encoding="utf-8"))
