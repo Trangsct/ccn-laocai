@@ -1168,16 +1168,29 @@ def tai_tu_url(ctx, url, mac_dinh="tai-lieu"):
             u = f"https://drive.google.com/uc?export=download&id={m.group(1)}&confirm=t"
         m2 = re.search(r"drive\.google\.com/drive/(?:u/\d+/)?folders/([\w-]+)", u)
         if m2:
-            r = ctx.request.get(u, timeout=120000)
+            # Trang thư mục Drive dựng bằng JS, HTML ban đầu không có tên tệp. Trang "embeddedfolderview" là
+            # HTML tĩnh: có link /file/d/<id>/view và tên tệp (vụ 9425/UBND-NC 17/9/2026: bản cũ thấy 0 tệp).
+            r = ctx.request.get(f"https://drive.google.com/embeddedfolderview?id={m2.group(1)}#list", timeout=120000)
             html = r.text() if r.ok else ""
-            ids = []
-            for mm in re.finditer(r'data-id="([\w-]{20,})"', html):
-                if mm.group(1) not in ids and mm.group(1) != m2.group(1):
-                    ids.append(mm.group(1))
-            log(f"  [QR] thư mục Google Drive: thấy {len(ids)} tệp")
-            for i, fid in enumerate(ids[:QR_TEP_TOI_DA], 1):
-                ra += tai_tu_url(ctx, f"https://drive.google.com/uc?export=download&id={fid}&confirm=t", f"{mac_dinh}-{i}")
-            if not ids:
+            import html as _html
+            ids = re.findall(r"https://drive\.google\.com/file/d/([\w-]+)/view", html)
+            ten_tep = [_html.unescape(t) for t in re.findall(r'class="flip-entry-title">([^<]+)<', html)]
+            thu_muc_con = [f for f in re.findall(r"https://drive\.google\.com/drive/folders/([\w-]+)", html) if f != m2.group(1)]
+            ids_u = []
+            for x in ids:
+                if x not in ids_u:
+                    ids_u.append(x)
+            log(f"  [QR] thư mục Google Drive: {len(ids_u)} tệp, {len(set(thu_muc_con))} thư mục con")
+            for i, fid in enumerate(ids_u[:QR_TEP_TOI_DA], 1):
+                ten = ten_tep[i - 1] if i - 1 < len(ten_tep) else f"{mac_dinh}-{i}"
+                kq = tai_tu_url(ctx, f"https://drive.google.com/uc?export=download&id={fid}&confirm=t", ten)
+                for d in kq:
+                    if d["ten"].startswith(mac_dinh) or "." not in d["ten"]:
+                        d["ten"] = ten
+                ra += kq
+            for j, fid in enumerate(list(dict.fromkeys(thu_muc_con))[:3], 1):      # thư mục con: một cấp
+                ra += tai_tu_url(ctx, f"https://drive.google.com/drive/folders/{fid}", f"{mac_dinh}-tm{j}")
+            if not ids_u and not thu_muc_con:
                 ra.append({"ten": f"{mac_dinh}-thu-muc-drive.txt", "loai": "QR", "bytes": (u + "\n").encode()})
             return ra
         r = ctx.request.get(u, timeout=180000)
@@ -1190,10 +1203,11 @@ def tai_tu_url(ctx, url, mac_dinh="tai-lieu"):
         if "text/html" in ct and not _la_pdf(b):
             html = b.decode("utf-8", errors="replace")
             # Google Drive hỏi xác nhận tải tệp lớn
-            m3 = re.search(r'action="([^"]+)"[^>]*>(?:(?!</form>).)*?name="confirm"', html, re.S)
-            if m3 and "drive" in u:
-                r2 = ctx.request.get(m3.group(1).replace("&amp;", "&") + "&confirm=t", timeout=180000)
-                if r2.ok:
+            m3 = re.search(r'action="([^"]+)"', html)
+            if m3 and "drive" in u and "confirm" in html:
+                tham = dict(re.findall(r'name="(\w+)"\s+value="([^"]*)"', html))
+                r2 = ctx.request.get(m3.group(1).replace("&amp;", "&"), params=tham or None, timeout=180000)
+                if r2.ok and "text/html" not in (r2.headers.get("content-type") or ""):
                     ra.append({"ten": _ten_tu_phan_hoi(r2, u, mac_dinh), "loai": "QR", "bytes": r2.body()})
                     return ra
             # trang web liệt kê tài liệu: lấy các link tệp
