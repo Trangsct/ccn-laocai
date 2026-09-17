@@ -1620,7 +1620,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     tu_ngay = date.today() - timedelta(days=so_ngay)
     log(f"Lấy theo yêu cầu, quét từ {tu_ngay.isoformat()}: số ký hiệu {list(so.values())}, từ khóa {tu_khoa}")
 
-    thay, thieu_so, dem_tk, bo_qua_tk, loi_chung = [], set(so.keys()), {}, {}, ""
+    thay, thieu_so, dem_tk, bo_qua_tk, loi_chung, ten_da_dung = [], set(so.keys()), {}, {}, "", set()
     with sync_playwright() as p:
         ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
@@ -1683,8 +1683,9 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                         page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
                         page.wait_for_timeout(2000)
                     ten = lam_sach_vn(vb["so_ky_hieu"]) or f"vb-{vb.get('id_data360x') or 'khong-so'}"
-                    if (luu_vao / f"{ten}.md").exists() or (luu_vao / f"{ten}.pdf").exists():
-                        ten += "-" + (vb.get("id_data360x") or nguon)      # hai văn bản trùng số
+                    if ten in ten_da_dung:                                  # hai văn bản trùng số trong CÙNG lượt
+                        ten += "-" + (vb.get("id_data360x") or nguon)      # (gọi lại cùng thư mục thì ghi đè, không nhân bản)
+                    ten_da_dung.add(ten)
                     try:
                         pdf = tai_pdf(ctx, page, vb)
                     except Exception as e:
