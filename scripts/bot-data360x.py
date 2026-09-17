@@ -541,6 +541,41 @@ def da_xu_ly_doc(repo, token):
 
 # ---------------------------------------------------------------- trình duyệt
 REQ = None     # request context bỏ qua lỗi chứng thư của csdlvb-backend (thiếu chứng thư trung gian); tạo trong mo_trinh_duyet
+HDR_BACKEND = {}   # Authorization (JWT) mà Chrome gửi tới csdlvb-backend - SPA giữ token ở localStorage, không ở cookie,
+                   # nên request riêng chỉ mang cookie bị 401 (lượt 17/9/2026: 48 lần get-attach đều trượt trong 1 giây)
+URL_BACKEND_DA_THAY = []   # đường dẫn backend đã thấy khi mở trang chi tiết (ghi log để soi API)
+
+
+def _bat_header_backend(req):
+    """page.on("request"): nhặt Authorization + header tùy biến Chrome gửi tới backend, dùng lại cho REQ."""
+    try:
+        u = req.url
+        if "csdlvb-backend" not in u:
+            return
+        duong = u.split("?")[0].split("/api/")[-1]
+        if duong not in URL_BACKEND_DA_THAY:
+            URL_BACKEND_DA_THAY.append(duong)
+        h = req.headers
+        for k, v in h.items():
+            kl = k.lower()
+            if kl in ("authorization", "token", "x-token", "x-access-token") or kl.startswith("x-auth"):
+                if HDR_BACKEND.get(k) != v:
+                    HDR_BACKEND[k] = v
+                    log(f"  đã bắt header {k} của backend ({len(v)} ký tự)")
+    except Exception:
+        pass
+
+
+def _gom_json_attach(resp):
+    """page.on("response"): gom phản hồi JSON của backend có nhắc tới attach (danh sách đính kèm)."""
+    try:
+        u = resp.url
+        if "json" in resp.headers.get("content-type", "").lower() and ("attach" in u.lower() or "document" in u.lower()):
+            chu = resp.text()
+            if "attach" in chu.lower():
+                DS_DINH_KEM_JSON.append(json.loads(chu))
+    except Exception:
+        pass
 
 
 def _tao_req(p, ctx):
@@ -561,11 +596,13 @@ def tai_bang_req(ctx, url):
         if r_ctx is None:
             continue
         try:
-            r = r_ctx.get(url, timeout=120000)
+            r = r_ctx.get(url, timeout=120000, headers=HDR_BACKEND or None)
             if r.ok:
                 b = r.body()
                 if b and len(b) > 200:
                     return b, _ten_tu_phan_hoi(r, url, "")
+            else:
+                log(f"    tải URL: HTTP {r.status} ({url[-60:]})")
         except Exception as e:
             log("    tải URL lỗi:", str(e)[:90])
     return None, ""
@@ -852,17 +889,13 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
             if "get-attach-by-id" in u or u.lower().split("?")[0].endswith(".pdf") \
                     or resp.headers.get("content-type", "").lower().startswith("application/pdf"):
                 bat_duoc.append(resp)
-            elif "json" in resp.headers.get("content-type", "").lower() and ("attach" in u.lower() or "document" in u.lower()):
-                try:
-                    chu = resp.text()
-                    if "attach" in chu.lower():
-                        DS_DINH_KEM_JSON.append(json.loads(chu))
-                except Exception:
-                    pass
+            else:
+                _gom_json_attach(resp)
         except Exception:
             pass
 
     page.on("response", _on_response)
+    page.on("request", _bat_header_backend)
     try:
         page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
         page.wait_for_timeout(5000)   # chờ iframe tải PDF
@@ -1103,13 +1136,19 @@ def tai_dinh_kem(ctx, page, vb):
     """
     ket = []
     try:
+        page.on("response", _gom_json_attach)
+        page.on("request", _bat_header_backend)
         tab = page.locator("text=/File đính kèm|Tệp đính kèm|Tài liệu đính kèm/i")
         if tab.count():
             try:
                 tab.first.click(timeout=5000)
-                page.wait_for_timeout(1500)
+                page.wait_for_timeout(2500)
             except Exception:
                 pass
+        if URL_BACKEND_DA_THAY:
+            log("  API backend đã thấy: " + ", ".join(URL_BACKEND_DA_THAY[:12]))
+        if not HDR_BACKEND:
+            log("  chưa bắt được Authorization của backend - request riêng có thể bị 401")
         # hàng nào có tên tệp (đuôi quen thuộc) thì coi là một tệp đính kèm
         hang = []
         for tr in page.locator("table tbody tr").all():
@@ -1167,7 +1206,7 @@ def tai_dinh_kem(ctx, page, vb):
                 chu = f"tep-{i}"
             m = re.search(r"([^\n\t|]+\.(?:pdf|docx?|xlsx?|pptx?|zip|rar|jpe?g|png|txt))", chu, re.I)
             ten = (m.group(1).strip() if m else f"tep-{i}")
-            ten = re.sub(r"^\d+\.\s*", "", ten)          # "2. Dự thảo Thông tư.docx" -> bỏ số thứ tự
+            ten = re.sub(r"^\d{1,2}\.\s+", "", ten)      # "2. Dự thảo Thông tư.docx" -> bỏ số thứ tự (giữ "15.9.2026-...")
             loai = ""
             m2 = re.search(r"(Tệp[^\n\t|]*|Văn bản[^\n\t|]*)$", chu)
             if m2:
@@ -1203,8 +1242,10 @@ def tai_dinh_kem(ctx, page, vb):
                         continue
                     da_thu.add(aid)
                     try:
-                        r = REQ.get(f"{goc_attach}?attachId={aid}", timeout=60000)
+                        r = REQ.get(f"{goc_attach}?attachId={aid}", timeout=60000, headers=HDR_BACKEND or None)
                         if not r.ok:
+                            if len(da_thu) <= 2:
+                                log(f"    quét lân cận attachId={aid}: HTTP {r.status}")
                             continue
                         ten_r = _ten_tu_phan_hoi(r, "", "")
                         if ten_r:
@@ -1213,7 +1254,9 @@ def tai_dinh_kem(ctx, page, vb):
                             b = r.body()
                             log(f"    {ten}: tìm thấy ở attachId {aid} ({len(b)} bytes)")
                             break
-                    except Exception:
+                    except Exception as e:
+                        if len(da_thu) <= 2:
+                            log(f"    quét lân cận attachId={aid} lỗi: {str(e)[:80]}")
                         continue
                 if not b:
                     for aid, (ten_r, bb) in ten_thay.items():
