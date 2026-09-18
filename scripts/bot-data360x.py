@@ -1514,10 +1514,19 @@ def dong_goi_ho_so(vb, ten_goc, pdf_chinh, dinh_kem, dau_md):
     return ra, ten_chinh
 
 
+def _chuan_so(x) -> str:
+    """Chuẩn hóa số ký hiệu để so khớp: bỏ mọi ký tự không phải chữ/số, hạ chữ hoa.
+
+    '7273/STC-G&CS' -> '7273STCGCS'. Cổng Data360X có lúc ghi ký hiệu thiếu/khác dấu ngăn
+    ('&', '-', khoảng trắng), vụ 18/9/2026: tìm thấy đúng dòng 7273 nhưng so khớp trượt nên
+    báo "không thấy".
+    """
+    return re.sub(r"[^0-9A-Za-zÀ-ỹ]+", "", str(x or "")).upper()
+
+
 def _khop_so(a, b):
     """So số ký hiệu bỏ khoảng trắng và chữ hoa thường: '340/TTr-UBND' == '340 /TTR - UBND'."""
-    lam = lambda x: re.sub(r"[\s.]", "", str(x or "")).upper()
-    return lam(a) == lam(b)
+    return _chuan_so(a) == _chuan_so(b)
 
 
 def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
@@ -1538,7 +1547,7 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
     ngay = [parse_ngay(v.get("ngay") or "") for v in can_tim]
     ngay = [n for n in ngay if n]
     tu_ngay = (min(ngay) if ngay else date.today() - timedelta(days=30)) - timedelta(days=so_ngay_lui)
-    can = {re.sub(r"[\s.]", "", v["so_ky_hieu"]).upper(): v for v in can_tim}
+    can = {_chuan_so(v["so_ky_hieu"]): v for v in can_tim}
     log(f"Tìm {len(can)} văn bản, quét từ {tu_ngay.isoformat()}: {', '.join(v['so_ky_hieu'] for v in can_tim)}")
 
     thay, thieu = [], list(can.keys())
@@ -1572,7 +1581,7 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                         break
                     rows.extend(kq)
                 for vb in rows:
-                    khoa = re.sub(r"[\s.]", "", vb["so_ky_hieu"]).upper()
+                    khoa = _chuan_so(vb["so_ky_hieu"])
                     if khoa not in can or khoa not in thieu:
                         continue
                     log(f"  thấy {vb['so_ky_hieu']} ({nguon}) - {vb['trich_yeu'][:60]}")
@@ -1715,7 +1724,7 @@ def _tach_yeu_cau(yeu_cau):
         if not muc:
             continue
         if "/" in muc:
-            so[re.sub(r"[\s.]", "", muc).upper()] = muc
+            so[_chuan_so(muc)] = muc
         else:
             gon = rut_gon_tu_khoa(muc)
             if gon != muc:
@@ -1782,12 +1791,15 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                         rows.extend(kq)
                         break
                     rows.extend(kq)
+                if so and rows and not any(_chuan_so(v["so_ky_hieu"]) in so for v in rows):
+                    log(f"  ({nguon}) không dòng nào khớp số ký hiệu; cổng ghi: "
+                        + ", ".join(dict.fromkeys(v["so_ky_hieu"] for v in rows[:8])))
                 for vb in rows:
                     dau = vb.get("id_data360x") or (vb["so_ky_hieu"] + vb["ngay_ban_hanh"])
                     if dau in da_co:
                         continue
                     da_co.add(dau)
-                    khoa = re.sub(r"[\s.]", "", vb["so_ky_hieu"]).upper()
+                    khoa = _chuan_so(vb["so_ky_hieu"])
                     ty = " " + bo_dau(vb["trich_yeu"]) + " "
                     ly_do = ("số " + so[khoa]) if khoa in so else next((f"từ khóa \"{t}\"" for t in tu_khoa if t in ty), None)
                     if not ly_do:
