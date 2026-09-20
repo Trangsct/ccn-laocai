@@ -346,7 +346,8 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
             tep = f" -> `{r['tep']}`" if r.get("tep") else (
                 " *(giấy phép cá biệt, đã vào cơ sở dữ liệu giấy phép)*" if la_giay_phep_ca_biet(r)
                 else " *(chưa tải được PDF)*")
-            dong.append(f"- [{huong.get(r['nguon'], r['nguon'])}] **{r['so_ky_hieu']}** "
+            dau_tl = "" if not isinstance(r, dict) else ("" if r.get("da_tra_loi") else "⚠️ CHƯA trả lời - ")
+            dong.append(f"- {dau_tl}[{huong.get(r['nguon'], r['nguon'])}] **{r['so_ky_hieu']}** "
                         f"ngày {r['ngay_ban_hanh']} - {r['trich_yeu']}{tep}")
         dong.append("")
     khac = [r for r in moi if not r["linh_vuc"]]
@@ -506,6 +507,33 @@ def gh_ghi(repo, path, noi_dung: bytes, msg, token, sha=None):
     return gh("PUT", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}", body, token)
 
 
+def thong_tin_may() -> dict:
+    """Máy nào đang chạy và nối mạng kiểu gì (Bạn chốt 20/9/2026: laptop dùng wifi, máy bàn dùng LAN).
+
+    Dùng để bản tin ghi rõ việc chạy ở máy nào, hai máy nối tiếp nhau khi Bạn di chuyển nhà - cơ quan.
+    """
+    import socket
+    ra = {"may": socket.gethostname(), "loai": "", "mang": ""}
+    if os.name != "nt":
+        return ra
+    try:
+        r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                            "$p=(Get-NetConnectionProfile | Select-Object -First 1);"
+                            "$b=(Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue);"
+                            "\"$($p.InterfaceAlias)|$(if($b){'laptop'}else{'may-ban'})\""],
+                           capture_output=True, timeout=25, text=True)
+        chu = (r.stdout or "").strip()
+        if "|" in chu:
+            giao_dien, loai = chu.split("|", 1)
+            ra["loai"] = loai.strip()
+            g = giao_dien.lower()
+            ra["mang"] = "wifi" if ("wi-fi" in g or "wireless" in g or "wlan" in g) else (
+                "lan" if "ethernet" in g else giao_dien.strip())
+    except Exception:
+        pass
+    return ra
+
+
 def ghi_nhip_tim(token, tong_quet, da_day, loi):
     """Ghi 'nhịp tim' mỗi lần bot chạy, kể cả khi không có văn bản mới.
 
@@ -514,9 +542,12 @@ def ghi_nhip_tim(token, tong_quet, da_day, loi):
     """
     import socket
 
+    may = thong_tin_may()
     noi_dung = {
         "lan_cuoi": datetime.now().isoformat(timespec="minutes"),
         "may": socket.gethostname(),
+        "loai_may": may.get("loai", ""),
+        "mang": may.get("mang", ""),
         "quet": tong_quet,
         "day": len(da_day),
         "loi": loi[:5],
@@ -545,6 +576,7 @@ HDR_BACKEND = {}   # Authorization (JWT) mà Chrome gửi tới csdlvb-backend -
                    # nên request riêng chỉ mang cookie bị 401 (lượt 17/9/2026: 48 lần get-attach đều trượt trong 1 giây)
 URL_BACKEND_DA_THAY = []   # đường dẫn backend đã thấy khi mở trang chi tiết (ghi log để soi API)
 URL_ATTACH_DA_THAY = []    # URL đầy đủ (cả query) mà Chrome dùng để tải tệp đính kèm - làm khuôn cho các tệp còn lại
+DS_TRA_LOI_JSON = []       # phản hồi JSON của API get-danh-sach-van-ban-tra-loi (biết việc đã xử lý chưa)
 
 
 def _bat_header_backend(req):
@@ -565,6 +597,19 @@ def _bat_header_backend(req):
                 if HDR_BACKEND.get(k) != v:
                     HDR_BACKEND[k] = v
                     log(f"  đã bắt header {k} của backend ({len(v)} ký tự)")
+    except Exception:
+        pass
+
+
+def _gom_json_tra_loi(resp):
+    """page.on("response"): gom danh sách VĂN BẢN TRẢ LỜI của một văn bản đến.
+
+    Bạn chốt 20/9/2026: việc ở mục "Chờ xử lý" mà CHƯA có văn bản đi trả lời thì mới phải soạn.
+    Cổng có sẵn API get-danh-sach-van-ban-tra-loi — dùng chính nó, không suy đoán theo trích yếu.
+    """
+    try:
+        if "van-ban-tra-loi" in resp.url or "vanbantraloi" in resp.url.lower():
+            DS_TRA_LOI_JSON.append(json.loads(resp.text()))
     except Exception:
         pass
 
@@ -886,6 +931,7 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
     bat_duoc = []
 
     DS_DINH_KEM_JSON.clear()
+    DS_TRA_LOI_JSON.clear()
 
     def _on_response(resp):
         try:
@@ -895,6 +941,7 @@ def tai_pdf(ctx, page, vb, soi_dir=None):
                 bat_duoc.append(resp)
             else:
                 _gom_json_attach(resp)
+                _gom_json_tra_loi(resp)
         except Exception:
             pass
 
@@ -1132,6 +1179,34 @@ def _nhat_attach(obj, ra):
     elif isinstance(obj, list):
         for v in obj:
             _nhat_attach(v, ra)
+
+
+def doc_van_ban_tra_loi() -> list[dict]:
+    """Trả [{"so_ky_hieu", "ngay", "trich_yeu"}] các văn bản ĐI trả lời cho văn bản đang mở."""
+    ra, da = [], set()
+
+    def _nhat(obj):
+        if isinstance(obj, dict):
+            khoa = {k.lower(): k for k in obj}
+            so = next((obj[khoa[k]] for k in ("documenT_CODE".lower(), "document_code", "socongvan",
+                                              "so_ky_hieu", "sokyhieu", "code") if k in khoa), None)
+            if so and isinstance(so, str) and "/" in so:
+                ty = next((obj[khoa[k]] for k in ("abstract", "trichyeu", "trich_yeu", "noidung")
+                           if k in khoa), "") or ""
+                ngay = next((obj[khoa[k]] for k in ("publisH_DATE".lower(), "publish_date", "ngayky",
+                                                    "ngay_ban_hanh", "datE_CREATE".lower()) if k in khoa), "") or ""
+                if so not in da:
+                    da.add(so)
+                    ra.append({"so_ky_hieu": so, "ngay": str(ngay)[:10], "trich_yeu": str(ty)[:200]})
+            for v in obj.values():
+                _nhat(v)
+        elif isinstance(obj, list):
+            for v in obj:
+                _nhat(v)
+
+    for j in DS_TRA_LOI_JSON:
+        _nhat(j)
+    return ra
 
 
 def tai_dinh_kem(ctx, page, vb):
@@ -1836,8 +1911,13 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     dinh_kem = tai_dinh_kem(ctx, page, vb)        # hồ sơ nhiều tệp (17/9/2026)
                     luong = doc_luong_xu_ly(page)                  # ai chủ trì, ai phối hợp (17/9/2026)
                     vai, nguoi_xl, han_xl = suy_vai_tro(luong)
+                    tra_loi = doc_van_ban_tra_loi()                # đã có văn bản đi trả lời chưa (20/9/2026)
                     dinh_kem += lay_theo_qr(ctx, vb, pdf, dinh_kem)   # tài liệu sau mã QR (17/9/2026)
-                    dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                    dong_tl = (["- **Đã có văn bản trả lời**: "
+                                + "; ".join(f"{t['so_ky_hieu']} ngày {t['ngay']}" for t in tra_loi)]
+                               if tra_loi else
+                               ["- **CHƯA có văn bản đi trả lời** - việc còn phải xử lý."])
+                    dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", ""] + dong_tl + [
                            f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
                            f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
                            f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
@@ -1852,6 +1932,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                         log("    không tải được PDF chính" + (f", có {sum(1 for d in dinh_kem if d.get('bytes'))} đính kèm" if dinh_kem else ""))
                     ghi_vb = {**vb, "ly_do": ly_do, "tep": tep, "luong_xu_ly": luong,
                               "vai_tro_phong": vai, "nguoi_xu_ly_chinh": nguoi_xl, "han_xu_ly": han_xl,
+                              "van_ban_tra_loi": tra_loi, "da_tra_loi": bool(tra_loi),
                               "dinh_kem": [{"ten": d["ten"], "loai": d.get("loai", ""), "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]}
                     (luu_vao / f"{ten}.json").write_text(json.dumps(ghi_vb, ensure_ascii=False, indent=2), encoding="utf-8")
                     thay.append(ghi_vb)
