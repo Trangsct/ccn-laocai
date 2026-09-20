@@ -87,9 +87,13 @@ foreach ($ct in @(@{ ten = 'git'; id = 'Git.Git' }, @{ ten = 'python'; id = 'Pyt
 function Nhat-Ma($chu) {
     # Ban dan kieu gi cung duoc: rieng ma, hay ca dong lenh ./config.cmd --url ... --token AXXXX
     # (vu 12/9/2026: dan ca dong nen config.cmd nhan --token la "./config.cmd", GitHub tra 404).
+    # (vu 20/9/2026: dan "token AVMZ..." - co chu 'token' lot vao ma).
     $chu = "$chu".Trim().Trim([char]34).Trim([char]39)
     if ($chu -match '--token\s+([A-Za-z0-9]+)') { return $Matches[1] }
-    if ($chu -match '([A-Z0-9]{25,})') { return $Matches[1] }
+    # Ma dang ky cua GitHub: chuoi CHU HOA + so, thuong 29 ky tu. Lay chuoi dai nhat trong cau.
+    $ung = [regex]::Matches($chu, '[A-Z0-9]{20,}') | ForEach-Object { $_.Value } |
+           Sort-Object Length -Descending
+    if ($ung.Count -gt 0) { return $ung[0] }
     return $chu
 }
 
@@ -130,12 +134,14 @@ $maDangKy = Lay-Ma-Dang-Ky $pat $false
 if (-not $maDangKy) { Loi 'Chua co ma dang ky. Dung lai.'; exit 1 }
 
 # --------------------------------------------------------------- 2. Tai runner
-Tieu-De '3/7  Tai bo runner ve may'
-New-Item -ItemType Directory -Force -Path $RunnerDir | Out-Null
-Set-Location $RunnerDir
-if (Test-Path (Join-Path $RunnerDir 'run.cmd')) {
-    Bao 'Da co san bo runner, khong tai lai.'
-} else {
+function Tai-Va-Giai-Nen-Runner {
+    # Tach thanh ham de dung lai duoc o buoc dang ky (khi phai cai lai tu dau).
+    New-Item -ItemType Directory -Force -Path $RunnerDir | Out-Null
+    Set-Location $RunnerDir
+    if (Test-Path (Join-Path $RunnerDir 'run.cmd')) {
+        Bao 'Da co san bo runner, khong tai lai.'
+        return
+    }
     $ban = $BanDuPhong
     try {
         $ban = ((Invoke-RestMethod -Uri 'https://api.github.com/repos/actions/runner/releases/latest' `
@@ -149,6 +155,9 @@ if (Test-Path (Join-Path $RunnerDir 'run.cmd')) {
     Remove-Item $zip -Force
     Tot "Da tai va giai nen runner $ban."
 }
+
+Tieu-De '3/7  Tai bo runner ve may'
+Tai-Va-Giai-Nen-Runner
 
 # --------------------------------------------------------------- 3. Go ban cu
 Tieu-De '4/7  Go dang ky cu (neu co)'
@@ -206,12 +215,30 @@ if ($noCu.Count -eq 0) {
 
 # --------------------------------------------------------------- 4. Dang ky
 Tieu-De '5/7  Dang ky may nay voi GitHub'
+Bao "Ma se dung: $maDangKy"
 Push-Location $RunnerDir      # config.cmd doc/ghi cau hinh theo thu muc dang dung
 for ($lan = 1; $lan -le 3; $lan++) {
     & "$RunnerDir\config.cmd" --unattended --url "https://github.com/$Repo" --token $maDangKy `
         --name $TenRunner --labels $Nhan --work _work --replace
     if ($LASTEXITCODE -eq 0) { break }
+    if ($lan -eq 2) {
+        # Cach cuoi (vu 20/9/2026): cau hinh cu con sot dau do trong thu muc runner -> doi ten ca
+        # thu muc roi giai nen ban moi. Khong mat gi vi runner chi la cong cu chay lenh.
+        Pop-Location
+        Bao 'Van bao "already configured" - doi ten thu muc runner cu va cai lai tu dau.'
+        foreach ($t in @($TaskChinh, $TaskCanh)) { & schtasks.exe /End /TN $t 2>$null | Out-Null }
+        Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 3
+        $cu = "$RunnerDir-cu-$(Get-Date -Format 'yyyyMMdd-HHmm')"
+        try { Rename-Item $RunnerDir $cu -Force } catch { Loi "Khong doi ten duoc: $_"; exit 1 }
+        Tot "Da chuyen thu muc cu sang: $cu (co the xoa sau)"
+        New-Item -ItemType Directory -Path $RunnerDir -Force | Out-Null
+        Tai-Va-Giai-Nen-Runner
+        Push-Location $RunnerDir
+    }
     if ($lan -eq 3) {
+        Pop-Location
         Loi 'Dang ky khong thanh cong sau 3 lan. Dong cua so va chay lai file nay.'
         exit 1
     }
