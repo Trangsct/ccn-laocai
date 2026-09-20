@@ -24,8 +24,13 @@ $Repo        = 'Trangsct/vlncn-laocai'
 $Root        = if (Test-Path 'D:\') { 'D:\du-an' } else { 'C:\du-an' }
 $RunnerDir   = Join-Path $Root 'actions-runner'
 $CauHinh     = Join-Path $Root 'bot-profile\config.json'
-$TenRunner   = 'may-so-cong-thuong'
-$Nhan        = 'windows,laocai'
+# Ban chot 20/9/2026: Ban dung HAI may (laptop rieng dung wifi, may ban co quan dung day mang LAN).
+# Moi may dang ky mot runner rieng, ten theo ten may, nhan them 'laptop' hoac 'may-ban' de co the
+# chi dinh dung may khi can; nhan chung 'laocai' de may nao dang bat thi may do nhan viec.
+$CoPin       = $null -ne (Get-CimInstance -ClassName Win32_Battery -ErrorAction SilentlyContinue)
+$LoaiMay     = if ($CoPin) { 'laptop' } else { 'may-ban' }
+$TenRunner   = "$env:COMPUTERNAME-$LoaiMay"
+$Nhan        = "windows,laocai,$LoaiMay"
 $TaskChinh   = 'Bot Data360X - Runner GitHub'
 $TaskCanh    = 'Bot Data360X - Runner GitHub (canh chung)'
 $BanDuPhong  = '2.328.0'   # dung khi khong hoi duoc ban moi nhat

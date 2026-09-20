@@ -507,6 +507,33 @@ def gh_ghi(repo, path, noi_dung: bytes, msg, token, sha=None):
     return gh("PUT", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}", body, token)
 
 
+def thong_tin_may() -> dict:
+    """Máy nào đang chạy và nối mạng kiểu gì (Bạn chốt 20/9/2026: laptop dùng wifi, máy bàn dùng LAN).
+
+    Dùng để bản tin ghi rõ việc chạy ở máy nào, hai máy nối tiếp nhau khi Bạn di chuyển nhà - cơ quan.
+    """
+    import socket
+    ra = {"may": socket.gethostname(), "loai": "", "mang": ""}
+    if os.name != "nt":
+        return ra
+    try:
+        r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                            "$p=(Get-NetConnectionProfile | Select-Object -First 1);"
+                            "$b=(Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue);"
+                            "\"$($p.InterfaceAlias)|$(if($b){'laptop'}else{'may-ban'})\""],
+                           capture_output=True, timeout=25, text=True)
+        chu = (r.stdout or "").strip()
+        if "|" in chu:
+            giao_dien, loai = chu.split("|", 1)
+            ra["loai"] = loai.strip()
+            g = giao_dien.lower()
+            ra["mang"] = "wifi" if ("wi-fi" in g or "wireless" in g or "wlan" in g) else (
+                "lan" if "ethernet" in g else giao_dien.strip())
+    except Exception:
+        pass
+    return ra
+
+
 def ghi_nhip_tim(token, tong_quet, da_day, loi):
     """Ghi 'nhịp tim' mỗi lần bot chạy, kể cả khi không có văn bản mới.
 
@@ -515,9 +542,12 @@ def ghi_nhip_tim(token, tong_quet, da_day, loi):
     """
     import socket
 
+    may = thong_tin_may()
     noi_dung = {
         "lan_cuoi": datetime.now().isoformat(timespec="minutes"),
         "may": socket.gethostname(),
+        "loai_may": may.get("loai", ""),
+        "mang": may.get("mang", ""),
         "quet": tong_quet,
         "day": len(da_day),
         "loi": loi[:5],
