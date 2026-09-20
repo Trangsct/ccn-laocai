@@ -168,27 +168,45 @@ if ($dangChay) {
     $dangChay | Stop-Process -Force -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 3
 }
-if (Test-Path (Join-Path $RunnerDir '.runner')) {
+# Tim dang ky cu o MOI cho co the, khong chi $RunnerDir: vu 20/9/2026 buoc nay bao "chua tung dang
+# ky" nhung config.cmd van bao "already configured" vi cau hinh nam o thu muc khac (C: hay D:).
+Bao "Thu muc runner lan nay: $RunnerDir"
+$noCu = @()
+foreach ($d in @($RunnerDir, 'C:\du-an\actions-runner', 'D:\du-an\actions-runner',
+                 (Join-Path $PWD 'actions-runner'), "$PWD")) {
+    if ($d -and (Test-Path (Join-Path $d '.runner')) -and ($noCu -notcontains $d)) { $noCu += $d }
+}
+if ($noCu.Count -eq 0) {
+    Bao 'Khong thay dang ky cu o bat ky thu muc nao - bo qua.'
+} else {
     $goBo = ''
     if ($pat) { try { $goBo = (Goi-Api POST "repos/$Repo/actions/runners/remove-token" $pat).token } catch { } }
-    # Loi o buoc go khong quan trong: xoa file .runner ben duoi la du de dang ky lai.
-    if ($goBo) { try { & "$RunnerDir\config.cmd" remove --token $goBo | Out-Null } catch { } }
-    Remove-Item (Join-Path $RunnerDir '.runner')      -Force -ErrorAction SilentlyContinue
-    Remove-Item (Join-Path $RunnerDir '.credentials') -Force -ErrorAction SilentlyContinue
-    Remove-Item (Join-Path $RunnerDir '.credentials_rsaparams') -Force -ErrorAction SilentlyContinue
-    if (Test-Path (Join-Path $RunnerDir '.runner')) {
-        Loi 'Van khong xoa duoc dang ky cu (file dang bi khoa).'
-        Bao 'Hay KHOI DONG LAI MAY roi bam dup lai file nay - khi do runner cu chua kip chay.'
-        pause
-        exit 1
+    foreach ($d in $noCu) {
+        Bao "Go dang ky cu tai: $d"
+        Push-Location $d
+        try {
+            if (Test-Path (Join-Path $d 'config.cmd')) {
+                if ($goBo) { try { & "$d\config.cmd" remove --token $goBo | Out-Null } catch { } }
+                # Khong co token go (Ban dan ma bang tay): --local go cau hinh ngay tren may.
+                try { & "$d\config.cmd" remove --local | Out-Null } catch { }
+            }
+        } finally { Pop-Location }
+        foreach ($f in @('.runner', '.credentials', '.credentials_rsaparams', '.env', '.path')) {
+            Remove-Item (Join-Path $d $f) -Force -ErrorAction SilentlyContinue
+        }
+        if (Test-Path (Join-Path $d '.runner')) {
+            Loi "Van khong xoa duoc dang ky cu tai $d (file dang bi khoa)."
+            Bao 'Hay KHOI DONG LAI MAY roi bam dup lai file nay - khi do runner cu chua kip chay.'
+            pause
+            exit 1
+        }
+        Tot "Da xoa dang ky cu tai $d"
     }
-    Tot 'Da xoa dang ky cu.'
-} else {
-    Bao 'May chua tung dang ky - bo qua.'
 }
 
 # --------------------------------------------------------------- 4. Dang ky
 Tieu-De '5/7  Dang ky may nay voi GitHub'
+Push-Location $RunnerDir      # config.cmd doc/ghi cau hinh theo thu muc dang dung
 for ($lan = 1; $lan -le 3; $lan++) {
     & "$RunnerDir\config.cmd" --unattended --url "https://github.com/$Repo" --token $maDangKy `
         --name $TenRunner --labels $Nhan --work _work --replace
@@ -203,6 +221,7 @@ for ($lan = 1; $lan -le 3; $lan++) {
     $maDangKy = Lay-Ma-Dang-Ky $pat $true
     if (-not $maDangKy) { Loi 'Chua co ma. Dung lai.'; exit 1 }
 }
+Pop-Location
 Tot "Da dang ky, ten may tren GitHub: $TenRunner"
 
 # --------------------------------------------------------------- 5. Dat lich
