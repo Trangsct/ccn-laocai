@@ -91,9 +91,11 @@ function Nhat-Ma($chu) {
     $chu = "$chu".Trim().Trim([char]34).Trim([char]39)
     if ($chu -match '--token\s+([A-Za-z0-9]+)') { return $Matches[1] }
     # Ma dang ky cua GitHub: chuoi CHU HOA + so, thuong 29 ky tu. Lay chuoi dai nhat trong cau.
-    $ung = [regex]::Matches($chu, '[A-Z0-9]{20,}') | ForEach-Object { $_.Value } |
-           Sort-Object Length -Descending
-    if ($ung.Count -gt 0) { return $ung[0] }
+    # @(...) BAT BUOC: mot ket qua thi PowerShell tra ve chuoi, $ung[0] se lay KY TU dau tien
+    # (vu 20/9/2026: "Ma se dung: A").
+    $ung = @([regex]::Matches($chu, '[A-Z0-9]{20,}') | ForEach-Object { $_.Value } |
+             Sort-Object Length -Descending)
+    if ($ung.Count -gt 0) { return [string]$ung[0] }
     return $chu
 }
 
@@ -168,14 +170,19 @@ if ($dv) {
 }
 # Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
 # "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
+# Tat han lich truoc khi dung: chi /End thi Task Scheduler bat lai runner ngay, file trong _diag
+# van bi khoa (vu 20/9/2026: "cannot access ... Runner_...-utc.log"). Buoc 6/7 se tao lai lich.
 foreach ($t in @($TaskChinh, $TaskCanh)) {
-    & schtasks.exe /End /TN $t 2>$null | Out-Null
+    & schtasks.exe /Change /TN $t /DISABLE 2>$null | Out-Null
+    & schtasks.exe /End    /TN $t          2>$null | Out-Null
 }
-$dangChay = Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue
-if ($dangChay) {
-    Bao 'Runner dang chay - dung lai de go dang ky cu.'
-    $dangChay | Stop-Process -Force -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 3
+& taskkill.exe /IM Runner.Listener.exe /F /T 2>$null | Out-Null
+& taskkill.exe /IM Runner.Worker.exe   /F /T 2>$null | Out-Null
+Start-Sleep -Seconds 3
+if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
+    Bao 'Runner cu van chua chiu dung - cho them 5 giay.'
+    Start-Sleep -Seconds 5
+    & taskkill.exe /IM Runner.Listener.exe /F /T 2>$null | Out-Null
 }
 # Tim dang ky cu o MOI cho co the, khong chi $RunnerDir: vu 20/9/2026 buoc nay bao "chua tung dang
 # ky" nhung config.cmd van bao "already configured" vi cau hinh nam o thu muc khac (C: hay D:).
