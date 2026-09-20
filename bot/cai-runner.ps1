@@ -157,6 +157,17 @@ if ($dv) {
     Bao 'Phat hien runner cai dang dich vu Windows - dang go (can quyen quan tri).'
     foreach ($d in $dv) { & sc.exe stop $d.Name | Out-Null; & sc.exe delete $d.Name | Out-Null }
 }
+# Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
+# "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
+foreach ($t in @($TaskChinh, $TaskCanh)) {
+    & schtasks.exe /End /TN $t 2>$null | Out-Null
+}
+$dangChay = Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue
+if ($dangChay) {
+    Bao 'Runner dang chay - dung lai de go dang ky cu.'
+    $dangChay | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 3
+}
 if (Test-Path (Join-Path $RunnerDir '.runner')) {
     $goBo = ''
     if ($pat) { try { $goBo = (Goi-Api POST "repos/$Repo/actions/runners/remove-token" $pat).token } catch { } }
@@ -165,7 +176,13 @@ if (Test-Path (Join-Path $RunnerDir '.runner')) {
     Remove-Item (Join-Path $RunnerDir '.runner')      -Force -ErrorAction SilentlyContinue
     Remove-Item (Join-Path $RunnerDir '.credentials') -Force -ErrorAction SilentlyContinue
     Remove-Item (Join-Path $RunnerDir '.credentials_rsaparams') -Force -ErrorAction SilentlyContinue
-    Bao 'Da xoa dang ky cu.'
+    if (Test-Path (Join-Path $RunnerDir '.runner')) {
+        Loi 'Van khong xoa duoc dang ky cu (file dang bi khoa).'
+        Bao 'Hay KHOI DONG LAI MAY roi bam dup lai file nay - khi do runner cu chua kip chay.'
+        pause
+        exit 1
+    }
+    Tot 'Da xoa dang ky cu.'
 } else {
     Bao 'May chua tung dang ky - bo qua.'
 }
