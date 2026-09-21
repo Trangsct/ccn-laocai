@@ -172,7 +172,7 @@ let CUM_CONG_NGHIEP = [
         id: 22, ten: "Cụm công nghiệp Thống Nhất 1", huyen: "bao-thang", xa: "Xã Gia Phú",
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2025, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty CP đầu tư và phát triển Công nghiệp Lào Cai",
-        haTang: "Đang thực hiện GPMB", quyetDinh: "QĐ số 298/QĐ-UBND", lat: 22.384579, lng: 104.044904
+        haTang: "Đã xong GPMB, đang xây dựng hạ tầng; đường kết nối IC18 đã phê duyệt dự án", quyetDinh: "QĐ số 298/QĐ-UBND", lat: 22.384579, lng: 104.044904
     },
     {
         id: 23, ten: "Cụm công nghiệp Bảo Minh", huyen: "bao-thang", xa: "N/A",
