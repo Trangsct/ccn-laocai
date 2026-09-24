@@ -179,6 +179,18 @@ let CUM_CONG_NGHIEP = [
         trangThai: "xay-dung", dienTich: 20, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Sản xuất đa ngành", moTa: "Mới ký quyết định",
         haTang: "Đang xây dựng", quyetDinh: "Quyết định thành lập mới", lat: 21.662266, lng: 104.916867
+    },
+    {
+        id: 24, ten: "Cụm công nghiệp Mông Sơn", huyen: "yen-binh", xa: "Xã Bảo Ái",
+        trangThai: "xay-dung", dienTich: 50, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty cổ phần Đầu tư xây dựng hạ tầng CRC",
+        haTang: "Mới thành lập, đang chuẩn bị đầu tư", quyetDinh: "QĐ số 3426/QĐ-UBND", lat: 21.86354, lng: 104.914722
+    },
+    {
+        id: 25, ten: "Cụm công nghiệp Yên Hợp 2", huyen: "van-yen", xa: "Xã Xuân Ái",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty cổ phần PH GREEN",
+        haTang: "Mới thành lập, đang chuẩn bị đầu tư", quyetDinh: "QĐ số 3427/QĐ-UBND", lat: 21.836726, lng: 104.727577
     }
 ];
 
@@ -203,14 +215,12 @@ let CCN_CHUA_DAU_TU = [
     { stt: 18, ten: "Cụm công nghiệp Phố Ràng 1", huyen: "bao-yen", xa: "Xã Bảo Yên", dienTich: 56, huongPhatTrien: "" },
     { stt: 19, ten: "Cụm công nghiệp Phố Ràng 2", huyen: "bao-yen", xa: "Xã Bảo Yên", dienTich: 75, huongPhatTrien: "" },
     { stt: 20, ten: "Cụm công nghiệp Quang Kim 1", huyen: "bat-xat", xa: "Xã Bát Xát", dienTich: 55, huongPhatTrien: "" },
-    { stt: 21, ten: "Cụm công nghiệp Mông Sơn", huyen: "yen-binh", xa: "Xã Bảo Ái", dienTich: 50, huongPhatTrien: "" },
     { stt: 22, ten: "Cụm công nghiệp Tân Nguyên", huyen: "yen-binh", xa: "Xã Bảo Ái", dienTich: 55, huongPhatTrien: "" },
     { stt: 23, ten: "Cụm công nghiệp An Bình", huyen: "van-yen", xa: "Xã Đông Cuông", dienTich: 50, huongPhatTrien: "" },
     { stt: 24, ten: "Cụm công nghiệp Ngòi A", huyen: "van-yen", xa: "Xã Mậu A", dienTich: 62, huongPhatTrien: "" },
     { stt: 25, ten: "Cụm công nghiệp Yên Hưng", huyen: "van-yen", xa: "Xã Mậu A", dienTich: 42, huongPhatTrien: "" },
     { stt: 26, ten: "Cụm công nghiệp Bản Phiệt 2", huyen: "tp-lao-cai", xa: "Phường Lào Cai", dienTich: 75, huongPhatTrien: "" },
     { stt: 27, ten: "Cụm công nghiệp Yên Hợp 1", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 63, huongPhatTrien: "" },
-    { stt: 28, ten: "Cụm công nghiệp Yên Hợp 2", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 75, huongPhatTrien: "" },
     { stt: 29, ten: "Cụm công nghiệp Văn Chấn", huyen: "van-chan", xa: "Xã Văn Chấn", dienTich: 75, huongPhatTrien: "" },
     { stt: 30, ten: "Cụm công nghiệp Châu Quế", huyen: "van-yen", xa: "Xã Châu Quế", dienTich: 75, huongPhatTrien: "" },
     { stt: 31, ten: "Cụm công nghiệp Phú Thịnh 5", huyen: "yen-binh", xa: "Phường Văn Phú", dienTich: 75, huongPhatTrien: "" },

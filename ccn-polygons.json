@@ -6108,8 +6108,12 @@
   "section": "CCN",
   "name": "Cụm công nghiệp Mông Sơn",
   "num_points": 9,
-  "area_ha": 51.7,
+  "area_ha": 50.9,
   "coords": [
+   [
+    21.863662,
+    104.9119509
+   ],
    [
     21.8637507,
     104.9122995
@@ -6119,7 +6123,7 @@
     104.912589
    ],
    [
-    21.867198,
+    21.8671982,
     104.9176435
    ],
    [
@@ -6127,19 +6131,15 @@
     104.9198258
    ],
    [
-    21.863662,
-    104.9119509
-   ],
-   [
-    21.864263,
-    104.9206986
+    21.864265,
+    104.9187464
    ],
    [
     21.8615423,
     104.918952
    ],
    [
-    21.8596518,
+    21.8596519,
     104.911076
    ],
    [
@@ -6147,12 +6147,11 @@
     104.9094148
    ]
   ],
-  "is_approx": true,
-  "trangThai": "quy-hoach",
-  "giaiDoan": "2025-2030",
+  "is_approx": false,
+  "trangThai": "xay-dung",
+  "giaiDoan": "Hiện hữu",
   "xa": "Xã Bảo Ái",
-  "source": "Bản đồ vị trí CCN Mông Sơn (báo cáo 4/2026, đã hiệu chỉnh đỉnh 6 nghi thiếu chữ số)",
-  "reason": "Đỉnh 6 nghi sai số, ranh có thể gồm 2 mảnh — cần hồ sơ gốc để chuẩn hóa."
+  "source": "Bảng tọa độ VN-2000 (KT 104°45') kèm QĐ 3426/QĐ-UBND ngày 23/9/2026 — 9 mốc, 02 khu 20 ha + 30 ha nối qua đường nội vùng; DT tính ≈50,9 ha"
  },
  {
   "section": "CCN",
@@ -6407,19 +6406,11 @@
   "section": "CCN",
   "name": "Cụm công nghiệp Yên Hợp 2",
   "num_points": 5,
-  "area_ha": 82.9,
+  "area_ha": 75.2,
   "coords": [
-   [
-    21.83512,
-    104.7230158
-   ],
    [
     21.837263,
     104.722702
-   ],
-   [
-    21.8493591,
-    104.7276242
    ],
    [
     21.842083,
@@ -6428,14 +6419,21 @@
    [
     21.837868,
     104.734223
+   ],
+   [
+    21.831295,
+    104.727627
+   ],
+   [
+    21.83512,
+    104.7230158
    ]
   ],
-  "is_approx": true,
-  "trangThai": "quy-hoach",
-  "giaiDoan": "2025-2030",
+  "is_approx": false,
+  "trangThai": "xay-dung",
+  "giaiDoan": "Hiện hữu",
   "xa": "Xã Xuân Ái",
-  "source": "Báo cáo địa phương (đã sắp lại thứ tự đỉnh theo góc)",
-  "reason": "DT tính sau khi sắp lại đỉnh ≈82,5 ha so 75 ha quy hoạch — cần bảng tọa độ gốc."
+  "source": "Bảng tọa độ VN-2000 (KT 104°45') kèm QĐ 3427/QĐ-UBND ngày 23/9/2026 — 5 mốc; DT tính ≈75,2 ha"
  },
  {
   "section": "CCN",
