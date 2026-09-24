@@ -2554,7 +2554,7 @@ function initChatbot() {
     function renderHistory() {
         msgsEl.innerHTML = '';
         if (history.length === 0) {
-            addMessage('bot', 'Xin chào! Tôi là **Trợ lý thông tin Khu, Cụm công nghiệp tỉnh Lào Cai**. Bạn cần biết gì về 21 Khu công nghiệp, 23 Cụm công nghiệp đã thành lập hoặc các Cụm công nghiệp quy hoạch trên địa bàn tỉnh?');
+            addMessage('bot', 'Xin chào! Tôi là **Trợ lý thông tin Khu, Cụm công nghiệp tỉnh Lào Cai**. Bạn cần biết gì về 21 Khu công nghiệp, 25 Cụm công nghiệp đã thành lập hoặc các Cụm công nghiệp quy hoạch trên địa bàn tỉnh?');
             renderSuggestions();
         } else {
             history.forEach(function (m) { addMessage(m.role === 'user' ? 'user' : 'bot', m.text); });

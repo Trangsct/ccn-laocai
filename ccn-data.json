@@ -480,6 +480,48 @@
       "lng": 104.916867,
       "quanLy": "Công ty CP Đầu tư Trung Chính Bảo Minh",
       "nhomQuanLy": "doanh-nghiep"
+    },
+    {
+      "id": 24,
+      "ten": "Cụm công nghiệp Mông Sơn",
+      "huyen": "yen-binh",
+      "xa": "Xã Bảo Ái, tỉnh Lào Cai",
+      "trangThai": "xay-dung",
+      "dienTich": 50,
+      "dienTichDaChoThue": 0,
+      "tyLeLapDay": 0,
+      "namThanhLap": 2026,
+      "soDoanhNghiep": 0,
+      "nganhNghe": "Chế biến nông, lâm, thủy sản; chế biến khoáng sản; sản xuất vật liệu xây dựng; sản xuất điện, nước; chế tạo, lắp ráp và sửa chữa cơ khí, điện tử; công nghiệp hỗ trợ; công nghiệp chế biến công nghệ cao; sản xuất hóa chất; sản xuất hàng tiêu dùng; sản xuất hàng thủ công mỹ nghệ",
+      "moTa": "Chủ đầu tư: Công ty cổ phần Đầu tư xây dựng hạ tầng CRC. Tổng mức đầu tư 496,651 tỷ đồng (vốn chủ sở hữu 15%, vốn vay ngân hàng 85%). Thành lập ngày 23/9/2026. Vị trí thôn Làng Mới, xã Bảo Ái, gồm 02 khu (20 ha và 30 ha) dọc bờ Tây hồ Thác Bà. Tiến độ đầu tư xây dựng hạ tầng kỹ thuật 24 tháng kể từ ngày được Nhà nước giao đất, cho thuê đất; đang triển khai các thủ tục sau thành lập (quy hoạch chi tiết 1/500, đất đai, môi trường, xây dựng).",
+      "haTang": "Mới thành lập, đang chuẩn bị đầu tư. Cơ cấu sử dụng đất dự kiến: đất công nghiệp 35 ha (70%), đất hạ tầng kỹ thuật 1,15 ha, đất cây xanh 7,6 ha, đất giao thông 6,25 ha. Hiện trạng chủ yếu là đất rừng sản xuất (rừng trồng) 36,94 ha và đất trồng lúa 4,74 ha. Đầu tư đồng bộ san nền, giao thông, cấp điện, cấp nước, thoát nước và trạm xử lý nước thải tập trung (hoàn thành trước khi tiếp nhận dự án thứ cấp). Thời hạn hoạt động của dự án 50 năm.",
+      "quyetDinh": "Quyết định thành lập số 3426/QĐ-UBND ngày 23/9/2026 của UBND tỉnh Lào Cai.",
+      "lat": 21.86354,
+      "lng": 104.914722,
+      "datCongNghiep": 35,
+      "quanLy": "Công ty CP Đầu tư xây dựng hạ tầng CRC",
+      "nhomQuanLy": "doanh-nghiep"
+    },
+    {
+      "id": 25,
+      "ten": "Cụm công nghiệp Yên Hợp 2",
+      "huyen": "van-yen",
+      "xa": "Xã Xuân Ái, tỉnh Lào Cai",
+      "trangThai": "xay-dung",
+      "dienTich": 75,
+      "dienTichDaChoThue": 0,
+      "tyLeLapDay": 0,
+      "namThanhLap": 2026,
+      "soDoanhNghiep": 0,
+      "nganhNghe": "Chế biến nông, lâm, thủy sản; chế biến khoáng sản; sản xuất vật liệu xây dựng; sản xuất điện, nước; chế tạo, lắp ráp và sửa chữa cơ khí, điện tử; công nghiệp hỗ trợ; công nghiệp chế biến công nghệ cao; sản xuất hóa chất; sản xuất hàng tiêu dùng; sản xuất hàng thủ công mỹ nghệ",
+      "moTa": "Chủ đầu tư: Công ty cổ phần PH GREEN. Tổng mức đầu tư 625,2 tỷ đồng (vốn chủ sở hữu 15%, vốn vay ngân hàng 85%). Thành lập ngày 23/9/2026. Phía Tây giáp đường cao tốc Nội Bài - Lào Cai, phía Đông giáp sông Hồng. Tiến độ đầu tư xây dựng hạ tầng kỹ thuật 23 tháng kể từ ngày có Quyết định thành lập; đang triển khai các thủ tục sau thành lập (quy hoạch chi tiết 1/500, đất đai, môi trường, xây dựng).",
+      "haTang": "Mới thành lập, đang chuẩn bị đầu tư. Cơ cấu sử dụng đất dự kiến: đất công nghiệp 52,5 ha (70%), đất hạ tầng kỹ thuật 1,5 ha, đất cây xanh - mặt nước 11,25 ha, đất giao thông 9,75 ha. Hiện trạng chủ yếu là đất rừng sản xuất 45,26 ha và đất trồng cây lâu năm 11,36 ha; có 1,13 ha đất nghĩa trang, nghĩa địa phải di chuyển mồ mả. Đầu tư đồng bộ san nền, giao thông, cấp nước, thoát nước, chiếu sáng và nhà máy xử lý nước thải tập trung (hoàn thành trước khi tiếp nhận dự án thứ cấp). Thời hạn hoạt động của dự án 50 năm.",
+      "quyetDinh": "Quyết định thành lập số 3427/QĐ-UBND ngày 23/9/2026 của UBND tỉnh Lào Cai.",
+      "lat": 21.836726,
+      "lng": 104.727577,
+      "datCongNghiep": 52.5,
+      "quanLy": "Công ty CP PH GREEN",
+      "nhomQuanLy": "doanh-nghiep"
     }
   ],
   "CCN_CHUA_DAU_TU": [
@@ -529,20 +571,6 @@
     },
     {
       "stt": 4,
-      "ten": "Cụm công nghiệp Mông Sơn",
-      "huyen": "yen-binh",
-      "xa": "Xã Bảo Ái, tỉnh Lào Cai (thôn Giang Sơn, Quyết Thắng, Trung Tâm, Làng Mới, Thủy Sơn, Núi Nì)",
-      "dienTich": 50,
-      "huongPhatTrien": "Giai đoạn 2026-2030. Quy mô 50 ha chia thành 2 khu (20 ha + 30 ha) tại xã Bảo Ái, tỉnh Lào Cai, nằm dọc bờ Tây hồ Thác Bà. Tiếp giáp: phía Đông và phía Nam giáp hồ Thác Bà (đồng thời phía Nam còn giáp quy hoạch đất thương mại - dịch vụ); phía Tây giáp đất nông nghiệp, nghĩa địa và khu dân cư; phía Bắc giáp đất nông nghiệp, khu dân cư, đất khoáng sản và quy hoạch đất sản xuất kinh doanh. Định hướng đa ngành, ưu tiên các ngành chế biến nông – lâm – thủy sản (thủy sản hồ Thác Bà, gỗ rừng trồng, măng tre, viên nén nhiên liệu), vật liệu xây dựng và công nghiệp hỗ trợ – tận dụng nguồn nguyên liệu phong phú và lợi thế giao thông đường thủy qua hồ Thác Bà.",
-      "coBaoCao": true,
-      "baoCao": "Hiện trạng sử dụng đất trong ranh giới 49,98 ha: đất rừng sản xuất 36,94 ha (73,9%); đất lúa 4,74 ha (9,5%); đất cơ sở dịch vụ về xã hội 3,17 ha (6,3%); đất ở nông thôn 1,57 ha (3,1%); đất trồng cây hàng năm 1,56 ha (3,1%); đất mặt nước chuyên dùng 1,22 ha (2,4%); đất chưa sử dụng 0,56 ha; đất trồng cây lâu năm 0,22 ha. Tọa độ VN-2000 (kinh tuyến trục 105°00') với 9 mốc ranh giới chính – đã có Bản đồ vị trí cụm công nghiệp do đơn vị tư vấn lập tháng 4/2026.",
-      "lat": 21.86354,
-      "lng": 104.914939,
-      "ghiChu": "Chủ đầu tư đề xuất: Công ty Cổ phần Đầu tư Xây dựng Hạ tầng CRC (mã số doanh nghiệp 5200966199, đăng ký lần đầu ngày 31/3/2026; trụ sở thôn Làng Mới, xã Bảo Ái). Đơn vị tư vấn lập hồ sơ thành lập: Công ty TNHH Năng lượng và Điện lực Tây Bắc (mã số 5200966576). Hợp đồng tư vấn số 10.04/2026/HĐTV ký tháng 4/2026, giá trị 420 triệu đồng, thời hạn thực hiện 03 tháng (chưa kể thời gian thẩm định, phê duyệt). Tiến độ dự kiến: Quý II/2026 hoàn thiện hồ sơ trình Sở Công Thương; Quý III/2026 UBND tỉnh ban hành Quyết định thành lập.",
-      "phanLoai": "dang-thanh-lap"
-    },
-    {
-      "stt": 5,
       "ten": "Cụm công nghiệp Tân Nguyên",
       "huyen": "yen-binh",
       "xa": "Xã Bảo Ái, tỉnh Lào Cai",
@@ -556,7 +584,7 @@
       "phanLoai": "dang-thanh-lap"
     },
     {
-      "stt": 6,
+      "stt": 5,
       "ten": "Cụm công nghiệp Bát Xát",
       "huyen": "bat-xat",
       "xa": "Thôn 9 + Thôn 10, xã Bát Xát, tỉnh Lào Cai",
@@ -570,7 +598,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 7,
+      "stt": 6,
       "ten": "Cụm công nghiệp Mường Khương",
       "huyen": "muong-khuong",
       "xa": "Xã Mường Khương",
@@ -584,7 +612,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 8,
+      "stt": 7,
       "ten": "Cụm công nghiệp Bản Phiệt 1",
       "huyen": "tp-lao-cai",
       "xa": "Tổ dân phố Làng Chung, Phường Lào Cai",
@@ -598,7 +626,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 9,
+      "stt": 8,
       "ten": "Cụm công nghiệp Bản Phiệt 2",
       "huyen": "tp-lao-cai",
       "xa": "Tổ dân phố Pạc Tà + Cốc Lầy, Phường Lào Cai",
@@ -612,7 +640,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 10,
+      "stt": 9,
       "ten": "Cụm công nghiệp Cam Đường 1",
       "huyen": "tp-lao-cai",
       "xa": "Tổ dân phố Đất Đèn + Tổ dân phố Tát, Phường Cam Đường, Thành phố Lào Cai",
@@ -626,7 +654,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 11,
+      "stt": 10,
       "ten": "Cụm công nghiệp Cam Đường 2",
       "huyen": "tp-lao-cai",
       "xa": "Tổ dân phố Thác, Phường Cam Đường, Thành phố Lào Cai",
@@ -640,7 +668,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 12,
+      "stt": 11,
       "ten": "Cụm công nghiệp Bảo Thắng (Thị trấn Phố Lu)",
       "huyen": "bao-thang",
       "xa": "Thôn Tân Thành, xã Bảo Thắng",
@@ -654,7 +682,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 13,
+      "stt": 12,
       "ten": "Cụm công nghiệp Trà Trẩu",
       "huyen": "bao-thang",
       "xa": "Thôn Trà Trẩu, xã Bảo Thắng",
@@ -668,7 +696,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 14,
+      "stt": 13,
       "ten": "Cụm công nghiệp Phố Ràng 1",
       "huyen": "bao-yen",
       "xa": "Thôn 9B, xã Bảo Yên",
@@ -682,7 +710,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 15,
+      "stt": 14,
       "ten": "Cụm công nghiệp Phố Ràng 2",
       "huyen": "bao-yen",
       "xa": "Thôn 9A, xã Bảo Yên",
@@ -696,7 +724,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 16,
+      "stt": 15,
       "ten": "Cụm công nghiệp Tân An",
       "huyen": "bao-yen",
       "xa": "Thôn Mai Hồng 1, xã Bảo Hà",
@@ -710,7 +738,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 17,
+      "stt": 16,
       "ten": "Cụm công nghiệp Bản Phung",
       "huyen": "van-ban",
       "xa": "Thôn Nậm Cọ, xã Văn Bàn",
@@ -724,7 +752,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 18,
+      "stt": 17,
       "ten": "Cụm công nghiệp Hòa Mạc",
       "huyen": "van-ban",
       "xa": "Xã Văn Bàn, tỉnh Lào Cai",
@@ -738,7 +766,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 19,
+      "stt": 18,
       "ten": "Cụm công nghiệp Tân Hợp",
       "huyen": "van-yen",
       "xa": "Xã Tân Hợp, tỉnh Lào Cai",
@@ -752,7 +780,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 20,
+      "stt": 19,
       "ten": "Cụm công nghiệp Ngòi A",
       "huyen": "van-yen",
       "xa": "Xã Mậu A, tỉnh Lào Cai",
@@ -766,7 +794,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 21,
+      "stt": 20,
       "ten": "Cụm công nghiệp Yên Hưng",
       "huyen": "van-yen",
       "xa": "Xã Mậu A, tỉnh Lào Cai",
@@ -780,7 +808,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 22,
+      "stt": 21,
       "ten": "Cụm công nghiệp An Thịnh",
       "huyen": "van-yen",
       "xa": "Xã Mậu A, tỉnh Lào Cai",
@@ -794,7 +822,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 23,
+      "stt": 22,
       "ten": "Cụm công nghiệp Tân Lĩnh",
       "huyen": "luc-yen",
       "xa": "Xã Tân Lĩnh, tỉnh Lào Cai",
@@ -808,7 +836,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 24,
+      "stt": 23,
       "ten": "Cụm công nghiệp Thượng Bằng La",
       "huyen": "van-chan",
       "xa": "Xã Thượng Bằng La, tỉnh Lào Cai",
@@ -822,7 +850,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 25,
+      "stt": 24,
       "ten": "Cụm công nghiệp Văn Chấn",
       "huyen": "van-chan",
       "xa": "Xã Văn Chấn, tỉnh Lào Cai",
@@ -836,7 +864,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 26,
+      "stt": 25,
       "ten": "Cụm công nghiệp An Bình",
       "huyen": "van-yen",
       "xa": "Xã Đông Cuông, tỉnh Lào Cai",
@@ -850,7 +878,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 27,
+      "stt": 26,
       "ten": "Cụm công nghiệp Châu Quế",
       "huyen": "van-yen",
       "xa": "Xã Châu Quế, tỉnh Lào Cai",
@@ -864,7 +892,7 @@
       "phanLoai": "dang-thanh-lap"
     },
     {
-      "stt": 28,
+      "stt": 27,
       "ten": "Cụm công nghiệp Yên Hợp 1",
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
@@ -878,7 +906,7 @@
       "phanLoai": "dang-nghien-cuu"
     },
     {
-      "stt": 29,
+      "stt": 28,
       "ten": "Cụm công nghiệp Xuân Ái (mở rộng)",
       "huyen": "van-yen",
       "xa": "Xã Xuân Ái, tỉnh Lào Cai",
@@ -892,7 +920,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 30,
+      "stt": 29,
       "ten": "Cụm công nghiệp Hợp Minh",
       "huyen": "khu-vuc-moi",
       "xa": "Phường Hợp Minh (TP Yên Bái cũ) và một phần xã Bảo Hưng, xã Minh Quân (huyện Trấn Yên cũ), tỉnh Lào Cai",
@@ -906,7 +934,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 31,
+      "stt": 30,
       "ten": "Cụm công nghiệp Bảo Hưng 2",
       "huyen": "khu-vuc-moi",
       "xa": "Phường Âu Lâu, tỉnh Lào Cai",
@@ -920,7 +948,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 32,
+      "stt": 31,
       "ten": "Cụm công nghiệp Phú Thịnh 5",
       "huyen": "khu-vuc-moi",
       "xa": "Tổ dân phố Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
@@ -933,7 +961,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 33,
+      "stt": 32,
       "ten": "Cụm công nghiệp Phú Thịnh 6",
       "huyen": "khu-vuc-moi",
       "xa": "Tổ dân phố Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
@@ -946,7 +974,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 34,
+      "stt": 33,
       "ten": "Cụm công nghiệp Quang Kim số 1",
       "huyen": "bat-xat",
       "xa": "Thôn Làng Hang, xã Bát Xát, tỉnh Lào Cai",
@@ -960,21 +988,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 35,
-      "ten": "Cụm công nghiệp Yên Hợp 2",
-      "huyen": "van-yen",
-      "xa": "Xã Xuân Ái, tỉnh Lào Cai",
-      "dienTich": 75,
-      "huongPhatTrien": "Giai đoạn 2026-2030. Quy mô khoảng 75 ha tại xã Xuân Ái, tỉnh Lào Cai (sáp nhập từ huyện Văn Yên cũ). Định hướng đa ngành, ưu tiên: chế biến khoáng sản; chế biến nông - lâm - thuỷ sản (quế, gỗ rừng trồng, ván ép, ván sàn, viên nén nhiên liệu, măng tre, thức ăn gia súc); công nghệ cao; vật liệu xây dựng (kính, tấm lợp, đá ốp lát, composite, gạch không nung, bê tông đúc sẵn, vật liệu cách âm/cách nhiệt); sản phẩm nhựa và nhôm; hoá chất công nghiệp; cơ khí chế tạo - công nghiệp hỗ trợ - điện tử.",
-      "coBaoCao": true,
-      "baoCao": "Cùng địa bàn xã Xuân Ái với Cụm công nghiệp Yên Hợp giai đoạn I (12 ha) đang hoạt động. Đề xuất mở rộng theo Quyết định số 525/QĐ-UBND ngày 25/02/2026 của UBND tỉnh Lào Cai về điều chỉnh Quy hoạch tỉnh thời kỳ 2021-2030.",
-      "lat": 21.840339,
-      "lng": 104.727577,
-      "ghiChu": "Tiến độ thành lập: Thông báo tiếp nhận hồ sơ số 30/TB-UBND ngày 17/4/2026 của UBND xã Xuân Ái; kết thúc tiếp nhận hồ sơ ngày 3/5/2026. Đến thời điểm chốt nhận, có 01 đơn vị đăng ký: Công ty cổ phần PH GREEN (địa chỉ MG2-16, tổ dân phố Nguyễn Thái Học 13, phường Yên Bái). UBND xã Xuân Ái đã trình Tờ trình số 101/TTr-UBND ngày 8/5/2026 lên UBND tỉnh Lào Cai và Sở Công Thương đề nghị thành lập.",
-      "phanLoai": "dang-thanh-lap"
-    },
-    {
-      "stt": 36,
+      "stt": 34,
       "ten": "Cụm công nghiệp Châu Quế Thượng",
       "huyen": "van-yen",
       "xa": "Xã Châu Quế, tỉnh Lào Cai",

@@ -2660,13 +2660,17 @@
   },
   "ccn-mong-son": {
     "ten": "Cụm công nghiệp Mông Sơn",
-    "type": "Cụm công nghiệp quy hoạch",
+    "type": "Cụm công nghiệp đã thành lập",
     "viTriMoTa": "Xã Bảo Ái, tỉnh Lào Cai",
     "dienTich": 50,
-    "gioiThieu": "<p><b>Cụm công nghiệp Mông Sơn</b> — xã Bảo Ái, diện tích 50 ha. Nhà đầu tư đề xuất làm chủ đầu tư hạ tầng: Công ty Cổ phần Đầu tư Xây dựng Hạ tầng CRC.</p><p><b>Cập nhật tình hình triển khai (Báo cáo Sở Công Thương tháng 6/2026):</b> đang trong quá trình thành lập — nhà đầu tư đã nộp hồ sơ đề nghị thành lập tại UBND xã Bảo Ái, đang niêm yết, lấy ý kiến công khai theo quy định.</p><p><b>Định hướng:</b> hoàn thiện hồ sơ, trình UBND tỉnh quyết định thành lập trong Quý III/2026.</p>",
+    "gioiThieu": "<p><b>Cụm công nghiệp Mông Sơn</b> — thôn Làng Mới, xã Bảo Ái, tỉnh Lào Cai, diện tích 50 ha gồm 02 khu (20 ha và 30 ha), phía Đông và phía Nam giáp hồ Thác Bà. Được Ủy ban nhân dân tỉnh thành lập tại <b>Quyết định số 3426/QĐ-UBND ngày 23/9/2026</b>, căn cứ Kết luận số 387-KL/TU ngày 21/9/2026 của Ban Thường vụ Tỉnh ủy.</p><p><b>Chủ đầu tư xây dựng, kinh doanh hạ tầng kỹ thuật:</b> Công ty cổ phần Đầu tư xây dựng hạ tầng CRC (mã số doanh nghiệp 5200966199, trụ sở thôn Làng Mới, xã Bảo Ái). Tổng mức đầu tư <b>496,651 tỷ đồng</b> (vốn chủ sở hữu và huy động hợp pháp 74,498 tỷ đồng - 15%; vốn vay ngân hàng 422,153 tỷ đồng - 85%).</p><p><b>Ngành nghề:</b> Chế biến nông, lâm, thủy sản; chế biến khoáng sản; sản xuất vật liệu xây dựng; sản xuất điện, nước; chế tạo, lắp ráp và sửa chữa cơ khí, điện tử; công nghiệp hỗ trợ; công nghiệp chế biến công nghệ cao; sản xuất hóa chất; sản xuất hàng tiêu dùng; sản xuất hàng thủ công mỹ nghệ.</p><p><b>Cơ cấu sử dụng đất dự kiến:</b> đất công nghiệp 35 ha (70%); đất hạ tầng kỹ thuật 1,15 ha; đất cây xanh 7,6 ha; đất giao thông 6,25 ha. Hiện trạng chủ yếu là đất rừng sản xuất (rừng trồng) 36,94 ha, đất trồng lúa 4,74 ha.</p><p><b>Tiến độ:</b> đầu tư xây dựng hạ tầng kỹ thuật trong 24 tháng kể từ ngày nhà đầu tư được Nhà nước giao đất, cho thuê đất; thời hạn hoạt động 50 năm. Chủ đầu tư phải hoàn thành trạm xử lý nước thải tập trung trước khi tiếp nhận dự án thứ cấp vào hoạt động.</p><p><b>Bước tiếp theo (từ 9/2026):</b> lập, phê duyệt quy hoạch chi tiết 1/500 (UBND xã Bảo Ái); thủ tục chuyển mục đích sử dụng rừng, đất trồng lúa; thu hồi đất, bồi thường, giải phóng mặt bằng; Giấy phép môi trường; thẩm định Báo cáo nghiên cứu khả thi; khởi công.</p>",
     "centerLat": 21.86354,
-    "centerLng": 104.914939,
+    "centerLng": 104.914722,
     "polygon": [
+      [
+        21.863662,
+        104.9119509
+      ],
       [
         21.8637507,
         104.9122995
@@ -2676,7 +2680,7 @@
         104.912589
       ],
       [
-        21.867198,
+        21.8671982,
         104.9176435
       ],
       [
@@ -2684,25 +2688,35 @@
         104.9198258
       ],
       [
-        21.863662,
-        104.9119509
-      ],
-      [
-        21.864263,
-        104.9206986
+        21.864265,
+        104.9187464
       ],
       [
         21.8615423,
         104.918952
       ],
       [
-        21.8596518,
+        21.8596519,
         104.911076
       ],
       [
         21.8614706,
         104.9094148
       ]
+    ],
+    "trangThai": "xay-dung",
+    "namThanhLap": 2026,
+    "vanBan": [
+      {
+        "ten": "Quyết định của Ủy ban nhân dân tỉnh Lào Cai về việc thành lập cụm công nghiệp Mông Sơn, xã Bảo Ái, tỉnh Lào Cai",
+        "ngay": "23/9/2026",
+        "file": "unit-files/ccn-mong-son/qd-3426-thanh-lap.pdf"
+      },
+      {
+        "ten": "Bản đồ vị trí, bảng tọa độ VN-2000 ranh giới Cụm công nghiệp Mông Sơn (kèm theo Quyết định số 3426/QĐ-UBND)",
+        "ngay": "23/9/2026",
+        "file": "unit-files/ccn-mong-son/ban-do-vi-tri.pdf"
+      }
     ]
   },
   "ccn-muong-khuong": {
@@ -4471,24 +4485,16 @@
   },
   "ccn-yen-hop-2": {
     "ten": "Cụm công nghiệp Yên Hợp 2",
-    "type": "Cụm công nghiệp quy hoạch",
+    "type": "Cụm công nghiệp đã thành lập",
     "viTriMoTa": "Xã Xuân Ái, tỉnh Lào Cai",
     "dienTich": 75,
-    "gioiThieu": "<p><b>Cụm công nghiệp Yên Hợp 2</b> — xã Xuân Ái, diện tích 75 ha (đất công nghiệp dự kiến 52,5 ha). Nhà đầu tư đề xuất làm chủ đầu tư hạ tầng: Công ty Cổ phần PH Green (tổng mức đầu tư dự kiến 516,25 tỷ đồng).</p><p><b>Cập nhật tình hình triển khai (Báo cáo Sở Công Thương tháng 6/2026):</b> đang trong quá trình thành lập — Sở Công Thương đã xin ý kiến các sở, ngành đối với hồ sơ đề nghị thành lập.</p><p><b>Định hướng:</b> tổng hợp ý kiến, hoàn thiện hồ sơ, trình UBND tỉnh quyết định thành lập trong Quý III/2026.</p>",
-    "centerLat": 21.840339,
+    "gioiThieu": "<p><b>Cụm công nghiệp Yên Hợp 2</b> — xã Xuân Ái, tỉnh Lào Cai, diện tích 75 ha; phía Tây giáp đường cao tốc Nội Bài - Lào Cai, phía Đông giáp sông Hồng. Được Ủy ban nhân dân tỉnh thành lập tại <b>Quyết định số 3427/QĐ-UBND ngày 23/9/2026</b>, căn cứ Kết luận số 388-KL/TU ngày 21/9/2026 của Ban Thường vụ Tỉnh ủy. Là dự án độc lập với Cụm công nghiệp Yên Hợp (12 ha) và Cụm công nghiệp Yên Hợp 1 cùng địa bàn xã Xuân Ái.</p><p><b>Chủ đầu tư xây dựng hạ tầng kỹ thuật:</b> Công ty cổ phần PH GREEN (mã số doanh nghiệp 5200965533, trụ sở MG2-16, tổ dân phố Nguyễn Thái Học 13, phường Yên Bái). Tổng mức đầu tư <b>625,2 tỷ đồng</b> (vốn chủ sở hữu và huy động hợp pháp 93,78 tỷ đồng - 15%; vốn vay ngân hàng 531,42 tỷ đồng - 85%).</p><p><b>Ngành nghề:</b> Chế biến nông, lâm, thủy sản; chế biến khoáng sản; sản xuất vật liệu xây dựng; sản xuất điện, nước; chế tạo, lắp ráp và sửa chữa cơ khí, điện tử; công nghiệp hỗ trợ; công nghiệp chế biến công nghệ cao; sản xuất hóa chất; sản xuất hàng tiêu dùng; sản xuất hàng thủ công mỹ nghệ.</p><p><b>Cơ cấu sử dụng đất dự kiến:</b> đất công nghiệp 52,5 ha (70%); đất hạ tầng kỹ thuật 1,5 ha; đất cây xanh - mặt nước 11,25 ha; đất giao thông 9,75 ha. Hiện trạng chủ yếu là đất rừng sản xuất 45,26 ha, đất trồng cây lâu năm 11,36 ha, đất ở nông thôn 6,82 ha, đất trồng lúa 5,32 ha; ranh giới, diện tích thực tế xác định theo hồ sơ bồi thường, giải phóng mặt bằng và quyết định cho thuê đất.</p><p><b>Tiến độ:</b> đầu tư xây dựng hạ tầng kỹ thuật trong 23 tháng kể từ ngày có Quyết định thành lập; thời hạn hoạt động 50 năm kể từ ngày được giao đất, cho thuê đất. Chủ đầu tư phải hoàn thành nhà máy xử lý nước thải tập trung trước khi tiếp nhận dự án thứ cấp vào hoạt động.</p><p><b>Bước tiếp theo (từ 9/2026):</b> lập, phê duyệt quy hoạch chi tiết 1/500 (UBND xã Xuân Ái); thủ tục chuyển mục đích sử dụng rừng, đất trồng lúa; thu hồi đất, bồi thường, di chuyển mồ mả, giải phóng mặt bằng; Giấy phép môi trường; thẩm định Báo cáo nghiên cứu khả thi; khởi công.</p>",
+    "centerLat": 21.836726,
     "centerLng": 104.727577,
     "polygon": [
       [
-        21.83512,
-        104.7230158
-      ],
-      [
         21.837263,
         104.722702
-      ],
-      [
-        21.8493591,
-        104.7276242
       ],
       [
         21.842083,
@@ -4497,7 +4503,29 @@
       [
         21.837868,
         104.734223
+      ],
+      [
+        21.831295,
+        104.727627
+      ],
+      [
+        21.83512,
+        104.7230158
       ]
+    ],
+    "trangThai": "xay-dung",
+    "namThanhLap": 2026,
+    "vanBan": [
+      {
+        "ten": "Quyết định của Ủy ban nhân dân tỉnh Lào Cai về việc thành lập cụm công nghiệp Yên Hợp 2, xã Xuân Ái, tỉnh Lào Cai",
+        "ngay": "23/9/2026",
+        "file": "unit-files/ccn-yen-hop-2/qd-3427-thanh-lap.pdf"
+      },
+      {
+        "ten": "Bản đồ vị trí, bảng tọa độ VN-2000 ranh giới Cụm công nghiệp Yên Hợp 2 (kèm theo Quyết định số 3427/QĐ-UBND)",
+        "ngay": "23/9/2026",
+        "file": "unit-files/ccn-yen-hop-2/ban-do-vi-tri.pdf"
+      }
     ]
   },
   "ccn-yen-hung": {

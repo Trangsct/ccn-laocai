@@ -6,7 +6,7 @@ File hướng dẫn cho Claude Code khi làm việc với dự án này.
 
 Cổng thông tin **Khu, Cụm công nghiệp tỉnh Lào Cai** — một website tĩnh do Sở Công Thương tỉnh Lào Cai duy trì, dùng để:
 
-- Tra cứu, hiển thị trên bản đồ 23 CCN đã thành lập + 35 CCN quy hoạch + 20 KCN quy hoạch 2030.
+- Tra cứu, hiển thị trên bản đồ 25 CCN đã thành lập + 33 CCN quy hoạch + 20 KCN quy hoạch 2030.
 - Hiển thị thống kê (Chart.js), tin tức, văn bản pháp luật (PDF), chi tiết từng CCN.
 - Cho cán bộ Sở chỉnh sửa dữ liệu qua **Netlify CMS** mà không cần biết code.
 
