@@ -1,7 +1,8 @@
 @echo off
 rem Tai ban moi nhat cua script va cac file .bat tu GitHub, TRU file dang chay (%1) va tru chinh file nay.
 rem Cac file khac se goi file nay o dau moi lan chay -> bo file tren may luon moi, khong phai tai tay.
-if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+set ROOT=C:\du-an
+for %%d in (D E F G) do if exist %%d:\du-an\ set ROOT=%%d:\du-an
 set BOT_DIR=%ROOT%\bot
 set API=https://api.github.com/repos/Trangsct/ccn-laocai/contents
 set TU=%~1

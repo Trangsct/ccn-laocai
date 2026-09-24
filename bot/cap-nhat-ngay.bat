@@ -5,7 +5,8 @@ set PYTHONIOENCODING=utf-8
 title CAP NHAT NGAY - Bot Data360X
 rem Bam dup vao file nay khi muon cap nhat ngay, khong cho den 18h.
 rem Bot dung lai phien dang nhap san co, quet van ban moi, tai PDF va day len GitHub.
-if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+set ROOT=C:\du-an
+for %%d in (D E F G) do if exist %%d:\du-an\ set ROOT=%%d:\du-an
 set BOT_DIR=%ROOT%\bot
 rem Tu cap nhat: tai ban moi cua moi file (tru file dang chay) truoc khi lam viec
 curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\tai-ban-moi.bat.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/tai-ban-moi.bat?ref=main"
