@@ -665,12 +665,16 @@ def tai_bang_req(ctx, url):
     return None, ""
 
 
-def mo_trinh_duyet(p, headless=False):
+def mo_trinh_duyet(p, headless=False, thu_nho=False):
+    """thu_nho=True: mở Chrome ở dạng thu nhỏ dưới thanh tác vụ (lượt giữ phiên mỗi giờ, không làm phiền)."""
     PROFILE.mkdir(parents=True, exist_ok=True)
+    args = ["--disable-blink-features=AutomationControlled"]
+    if thu_nho:
+        args.append("--start-minimized")
     ctx = p.chromium.launch_persistent_context(
         str(PROFILE), headless=headless, channel="chrome" if os.name == "nt" else None,
         viewport={"width": 1400, "height": 900}, locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh",
-        accept_downloads=True, args=["--disable-blink-features=AutomationControlled"],
+        accept_downloads=True, args=args,
     )
     _tao_req(p, ctx)
     return ctx
@@ -2120,9 +2124,12 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
 
 
 def giu_phien():
+    """Mở trang chủ Data360X bằng phiên đã có rồi đóng (~20 giây), để cổng không cắt phiên vì lâu không dùng.
+    Bạn chốt 24/9/2026: chạy MỖI GIỜ trong giờ làm việc (trước đó chỉ thứ Tư -> phiên hết gần như mỗi ngày),
+    cửa sổ Chrome thu nhỏ. Chỉ dùng lại phiên có sẵn; phiên hết thì báo để Bạn đăng nhập."""
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet(p, headless=False, thu_nho=True)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
