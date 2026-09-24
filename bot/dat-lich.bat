@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Dat lich Bot Data360X
-if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_DIR=%ROOT%\bot
 echo Dang ky 4 lich chay trong Windows Task Scheduler (can quyen Administrator):
 echo   - Bot Data360X - Chay chinh   : 18:00 hang ngay (ca T7, CN)

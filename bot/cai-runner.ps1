@@ -21,7 +21,7 @@ $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Repo        = 'Trangsct/vlncn-laocai'
-$Root        = if (Test-Path 'D:\') { 'D:\du-an' } else { 'C:\du-an' }
+$Root        = if (Test-Path 'D:\du-an') { 'D:\du-an' } else { 'C:\du-an' }   # chi dung o D khi thu muc da co (may co quan cam ghi goc o D)
 $RunnerDir   = Join-Path $Root 'actions-runner'
 $CauHinh     = Join-Path $Root 'bot-profile\config.json'
 # Ban chot 20/9/2026: Ban dung HAI may (laptop rieng dung wifi, may ban co quan dung day mang LAN).

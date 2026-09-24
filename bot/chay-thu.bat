@@ -3,8 +3,8 @@ chcp 65001 >nul
 rem Bao tieng Viet hien dung dau trong cua so nay (khong co dong nay Python in ra dau hoi)
 set PYTHONIOENCODING=utf-8
 title Chay thu Bot Data360X
-rem Tu chon o D neu co, khong thi o C
-if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+rem Dung D:\du-an neu thu muc DA CO san, khong thi C:\du-an (may co quan cam ghi vao goc o D - vu 24/9/2026)
+if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_HOME=%ROOT%\bot-profile
 set BOT_DIR=%ROOT%\bot
 rem Tu cap nhat: tai ban moi cua moi file (tru file dang chay) truoc khi lam viec

@@ -5,7 +5,7 @@ set PYTHONIOENCODING=utf-8
 title QUET BU 120 NGAY - Bot Data360X
 rem Chay bu cac van ban cu (mac dinh bot chi quet 3 ngay gan nhat).
 rem Dung khi can bo sung giay phep da ky truoc do, vi du GP van chuyen HHNH thang 6-7/2026.
-if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_DIR=%ROOT%\bot
 rem Tu cap nhat: tai ban moi cua moi file (tru file dang chay) truoc khi lam viec
 curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\tai-ban-moi.bat.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/tai-ban-moi.bat?ref=main"

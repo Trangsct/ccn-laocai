@@ -10,7 +10,7 @@ Cách chạy (các file .bat trong thư mục bot/ gọi sẵn):
   python bot-data360x.py --soi          như chạy chính nhưng KHÔNG đẩy lên GitHub; lưu HTML/ảnh vào logs/soi/
                                         để hoàn thiện selector (dùng khi trang đổi giao diện)
 
-Hồ sơ Chrome + cấu hình + log: D:\\du-an\\bot-profile  (đổi bằng biến môi trường BOT_HOME)
+Hồ sơ Chrome + cấu hình + log: D:\\du-an\\bot-profile nếu thư mục D:\\du-an đã có, không thì C:\\du-an\\bot-profile (đổi bằng biến môi trường BOT_HOME)
   config.json: {"github_token": "...", "telegram_token": "", "telegram_chat_id": ""}
   logs\\YYYY-MM-DD.log
 
@@ -35,7 +35,7 @@ from urllib.parse import urljoin
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-BOT_HOME = Path(os.environ.get("BOT_HOME") or (r"D:\du-an\bot-profile" if Path("D:\\").exists() else r"C:\du-an\bot-profile"))
+BOT_HOME = Path(os.environ.get("BOT_HOME") or (r"D:\du-an\bot-profile" if Path(r"D:\du-an").is_dir() else r"C:\du-an\bot-profile"))
 PROFILE = BOT_HOME / "chrome-profile"
 LOG_DIR = BOT_HOME / "logs"
 CONFIG = BOT_HOME / "config.json"
