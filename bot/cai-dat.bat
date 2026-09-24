@@ -4,8 +4,9 @@ rem Bao tieng Viet hien dung dau trong cua so nay (khong co dong nay Python in r
 set PYTHONIOENCODING=utf-8
 setlocal
 title Cai dat Bot Data360X
-rem Dung D:\du-an neu thu muc DA CO san, khong thi C:\du-an (may co quan cam ghi vao goc o D - vu 24/9/2026)
-if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+rem Dung thu muc du-an DA CO san tren o D/E/F/G (tao truoc khi cai), khong thi C:\du-an (may co quan: o D cam ghi, o D be - vu 24/9/2026)
+set ROOT=C:\du-an
+for %%d in (D E F G) do if exist %%d:\du-an\ set ROOT=%%d:\du-an
 set BOT_HOME=%ROOT%\bot-profile
 set BOT_DIR=%ROOT%\bot
 set RAW=https://raw.githubusercontent.com/Trangsct/ccn-laocai/main

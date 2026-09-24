@@ -7,7 +7,8 @@ rem   CHI CAN BAM DUP VAO FILE NAY. Khong can quyen Administrator.
 rem   Moi viec nang do cai-runner.ps1 lam; file .bat nay chi tai ban moi nhat
 rem   cua no ve roi goi, de may luon chay dung ban tren GitHub.
 rem ============================================================================
-if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+set ROOT=C:\du-an
+for %%d in (D E F G) do if exist %%d:\du-an\ set ROOT=%%d:\du-an
 set BOT_DIR=%ROOT%\bot
 if not exist "%BOT_DIR%" mkdir "%BOT_DIR%"
 

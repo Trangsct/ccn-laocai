@@ -10,7 +10,7 @@ Cách chạy (các file .bat trong thư mục bot/ gọi sẵn):
   python bot-data360x.py --soi          như chạy chính nhưng KHÔNG đẩy lên GitHub; lưu HTML/ảnh vào logs/soi/
                                         để hoàn thiện selector (dùng khi trang đổi giao diện)
 
-Hồ sơ Chrome + cấu hình + log: D:\\du-an\\bot-profile nếu thư mục D:\\du-an đã có, không thì C:\\du-an\\bot-profile (đổi bằng biến môi trường BOT_HOME)
+Hồ sơ Chrome + cấu hình + log: <ổ>:\\du-an\\bot-profile với thư mục du-an đã có sẵn trên ổ D/E/F/G, không thì C:\\du-an\\bot-profile (đổi bằng biến môi trường BOT_HOME)
   config.json: {"github_token": "...", "telegram_token": "", "telegram_chat_id": ""}
   logs\\YYYY-MM-DD.log
 
@@ -35,7 +35,15 @@ from urllib.parse import urljoin
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-BOT_HOME = Path(os.environ.get("BOT_HOME") or (r"D:\du-an\bot-profile" if Path(r"D:\du-an").is_dir() else r"C:\du-an\bot-profile"))
+def _goc_du_an() -> Path:
+    """Thư mục du-an ĐÃ CÓ sẵn trên ổ D/E/F/G (tạo trước khi cài), không thì C:\du-an (máy cơ quan: ổ D cấm ghi, ổ D bé)."""
+    goc = Path(r"C:\du-an")
+    for o in "DEFG":
+        if Path(f"{o}:\\du-an").is_dir():
+            goc = Path(f"{o}:\\du-an")
+    return goc
+
+BOT_HOME = Path(os.environ.get("BOT_HOME") or (_goc_du_an() / "bot-profile"))
 PROFILE = BOT_HOME / "chrome-profile"
 LOG_DIR = BOT_HOME / "logs"
 CONFIG = BOT_HOME / "config.json"

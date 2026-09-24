@@ -21,7 +21,8 @@ $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Repo        = 'Trangsct/vlncn-laocai'
-$Root        = if (Test-Path 'D:\du-an') { 'D:\du-an' } else { 'C:\du-an' }   # chi dung o D khi thu muc da co (may co quan cam ghi goc o D)
+$Root        = 'C:\du-an'   # dung thu muc du-an DA CO san tren o D/E/F/G, khong thi C:\du-an (may co quan: o D cam ghi, o D be)
+foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $Root = "$($o):\du-an" } }
 $RunnerDir   = Join-Path $Root 'actions-runner'
 $CauHinh     = Join-Path $Root 'bot-profile\config.json'
 # Ban chot 20/9/2026: Ban dung HAI may (laptop rieng dung wifi, may ban co quan dung day mang LAN).
@@ -188,7 +189,7 @@ if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
 # ky" nhung config.cmd van bao "already configured" vi cau hinh nam o thu muc khac (C: hay D:).
 Bao "Thu muc runner lan nay: $RunnerDir"
 $noCu = @()
-foreach ($d in @($RunnerDir, 'C:\du-an\actions-runner', 'D:\du-an\actions-runner',
+foreach ($d in @($RunnerDir, 'C:\du-an\actions-runner', 'D:\du-an\actions-runner', 'E:\du-an\actions-runner', 'F:\du-an\actions-runner',
                  (Join-Path $PWD 'actions-runner'), "$PWD")) {
     if ($d -and (Test-Path (Join-Path $d '.runner')) -and ($noCu -notcontains $d)) { $noCu += $d }
 }
