@@ -36,7 +36,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 def _goc_du_an() -> Path:
-    """Thư mục du-an ĐÃ CÓ sẵn trên ổ D/E/F/G (tạo trước khi cài), không thì C:\du-an (máy cơ quan: ổ D cấm ghi, ổ D bé)."""
+    r"""Thư mục du-an ĐÃ CÓ sẵn trên ổ D/E/F/G (tạo trước khi cài), không thì C:\du-an (máy cơ quan: ổ D cấm ghi, ổ D bé)."""
     goc = Path(r"C:\du-an")
     for o in "DEFG":
         if Path(f"{o}:\\du-an").is_dir():
