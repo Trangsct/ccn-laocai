@@ -13,14 +13,14 @@ do Phòng Công nghiệp soạn, hoặc GP-UBND ở Văn bản đến có "vật
    Repository access → Only select repositories → tích 4 repo `ccn-laocai`, `vlncn-laocai`,
    `vlncn-laocai-files`, `skill-sct`. Repository permissions → **Contents: Read and write**.
    Bấm Generate token, copy chuỗi `github_pat_...` (chỉ hiện 1 lần, để sẵn trong Notepad).
-2. Bot tự đặt vào `D:\du-an` nếu máy có ổ D, không thì `C:\du-an` (laptop thường chỉ có ổ C). Trong hướng dẫn, chỗ nào ghi `D:\du-an` thì trên máy chỉ có ổ C đọc là `C:\du-an`.
+2. Bot đặt vào `C:\du-an`; chỉ dùng `D:\du-an` khi thư mục đó **đã có sẵn** (muốn để ở ổ D thì tự tạo thư mục `D:\du-an` trước khi cài). Lý do: máy bàn cơ quan có ổ D nhưng cấm ghi vào gốc ổ D (vụ 24/9/2026, `Access to the path 'du-an' is denied`). Trong hướng dẫn, chỗ nào ghi `D:\du-an` thì trên máy dùng ổ C đọc là `C:\du-an`.
 
 ## B. Cài đặt (mỗi bước chỉ bấm)
 
 1. Mở **PowerShell** (Start → gõ PowerShell → Enter), dán lệnh sau rồi Enter để tải file cài:
 
    ```
-   $r = if (Test-Path D:\) {'D:\du-an'} else {'C:\du-an'}; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -o "$r\bot\cai-dat.bat" https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat; explorer "$r\bot"
+   $r = if (Test-Path D:\du-an) {'D:\du-an'} else {'C:\du-an'}; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -o "$r\bot\cai-dat.bat" https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat; explorer "$r\bot"
    ```
 
    Cửa sổ thư mục `du-an\bot` (ổ D hoặc C) mở ra, trong đó có `cai-dat.bat`.
@@ -132,7 +132,7 @@ trên máy, nên **hai máy không tải trùng nhau**: máy nào chạy trướ
 phiên đăng nhập, lại nặng. Cài mới sạch sẽ hơn và chỉ mất khoảng 10 phút:
 
 1. Trên máy mới, tải file cài đặt: mở https://raw.githubusercontent.com/Trangsct/ccn-laocai/main/bot/cai-dat.bat
-   → bấm chuột phải → *Lưu thành* → lưu vào thư mục `D:\du-an\bot` (chưa có thì tạo mới; máy không có ổ D thì dùng `C:\du-an\bot`).
+   → bấm chuột phải → *Lưu thành* → lưu vào thư mục `C:\du-an\bot` (chưa có thì tạo mới; muốn dùng ổ D thì tạo sẵn `D:\du-an` rồi lưu vào `D:\du-an\bot`).
 2. Bấm đúp `cai-dat.bat`. File tự cài Python, Playwright, Chromium, tải toàn bộ script và các file .bat.
 3. Khi máy hỏi token, dán chuỗi `github_pat_...` — mở `config.json` trên máy cũ (`D:\du-an\bot-profile\config.json`)
    bằng Notepad để chép, hoặc tạo token mới trên GitHub. Chạy xong phải thấy dòng **TOKEN DUNG DUOC**.

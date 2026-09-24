@@ -2,7 +2,7 @@
 chcp 65001 >nul
 set PYTHONIOENCODING=utf-8
 rem Dua phien dang nhap Data360X len GitHub de GitHub tu quet hang ngay, khong phu thuoc may nay nua.
-if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_DIR=%ROOT%\bot
 rem Tu cap nhat: tai ban moi cua moi file (tru file dang chay) truoc khi lam viec
 curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\tai-ban-moi.bat.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/tai-ban-moi.bat?ref=main"

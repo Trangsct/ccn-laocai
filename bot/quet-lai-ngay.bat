@@ -4,7 +4,7 @@ set PYTHONIOENCODING=utf-8
 title QUET LAI N NGAY - Bot Data360X
 rem Quet lai mot khoang ngay tu chon. Dung khi du an nghi vai hom, cap-nhat-ngay.bat (chi 3 ngay) bo sot.
 rem An toan: van ban da xu ly roi thi bot tu bo qua, khong tai trung, khong ghi trung.
-if exist D:\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
+if exist D:\du-an\ (set ROOT=D:\du-an) else (set ROOT=C:\du-an)
 set BOT_DIR=%ROOT%\bot
 rem Tu cap nhat: tai ban moi cua moi file (tru file dang chay) truoc khi lam viec
 curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\tai-ban-moi.bat.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/tai-ban-moi.bat?ref=main"
