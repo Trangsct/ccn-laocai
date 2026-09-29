@@ -43,3 +43,26 @@ jobs:
           if (Test-Path 'D:\du-an\actions-runner\.runner') { Write-Error 'Vẫn còn .runner cũ'; exit 1 }
           if (-not (Test-Path 'D:\du-an\actions-runner\run.cmd')) { Write-Error 'Chưa tải được bộ runner'; exit 1 }
           Write-Host 'OK: đã gỡ đăng ký cũ và tải bộ runner.'
+
+  cai-tay:
+    name: cai-tay.ps1 -ChayThu + tay.py --chay-thu (Windows PowerShell 5.1)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dựng D:\du-an như máy thật
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path 'D:\du-an' | Out-Null
+      - name: Chạy cai-tay.ps1 -ChayThu (lấy mã từ chính kho đang thử, không tải từ main)
+        shell: cmd
+        env:
+          TAY_NGUON: ${{ github.workspace }}
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File bot\cai-tay.ps1 -ChayThu
+      - name: Kiểm tra tệp đã đặt đúng chỗ
+        shell: pwsh
+        run: |
+          foreach ($f in 'D:\du-an\bot\tay.py', 'D:\du-an\bot\bot-data360x.py', 'D:\du-an\bot\tay-an.vbs', 'D:\du-an\bot-profile\tay-trang-thai.json') {
+            if (-not (Test-Path -LiteralPath $f)) { Write-Error "Thiếu $f"; exit 1 }
+          }
+          Get-Content 'D:\du-an\bot-profile\tay-trang-thai.json'
+          Get-ScheduledTask -TaskName 'TAY Data360X*' -ErrorAction SilentlyContinue | Select-Object TaskName, State
