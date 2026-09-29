@@ -84,7 +84,7 @@ Write-Host '============================================================'
 Write-Host '   CAI RUNNER GITHUB CHO MAY NAY'
 Write-Host "   Kho: $Repo"
 Write-Host "   Thu muc: $RunnerDir"
-Write-Host "   Ban cai: 29/9/2026-b (khong chet vi o dia E/F khong co)"
+Write-Host "   Ban cai: 30/9/2026 (giai nen bang tar, chay thu tren may ao Windows)"
 Write-Host '============================================================'
 
 # --------------------------------------------------------------- 0. Cong cu
@@ -176,7 +176,16 @@ function Tai-Va-Giai-Nen-Runner {
     Bao "Dang tai runner $ban (khoang 60 MB), vui long cho..."
     curl.exe -sSL --max-time 900 -o "$zip" "https://github.com/actions/runner/releases/download/v$ban/actions-runner-win-x64-$ban.zip"
     if (-not (Test-Path $zip) -or (Get-Item $zip).Length -lt 1MB) { Loi 'Khong tai duoc runner. Kiem tra mang roi chay lai.'; exit 1 }
-    Expand-Archive -Path $zip -DestinationPath $RunnerDir -Force
+    Bao "Giai nen ($(Get-Date -Format 'HH:mm:ss'))..."
+    # tar.exe (bsdtar) co san tren Windows 10+ va nhanh gap nhieu lan Expand-Archive cua PowerShell 5.1
+    # (bo runner hon 5.000 tep: Expand-Archive mat tren 10 phut - may ao Windows 29/9/2026 bi cat vi qua 20 phut).
+    $daGiaiNen = $false
+    if (Get-Command tar.exe -ErrorAction SilentlyContinue) {
+        & tar.exe -xf "$zip" -C "$RunnerDir"
+        if ($LASTEXITCODE -eq 0) { $daGiaiNen = $true } else { Bao 'tar.exe khong giai nen duoc, dung Expand-Archive.' }
+    }
+    if (-not $daGiaiNen) { Expand-Archive -Path $zip -DestinationPath $RunnerDir -Force }
+    Bao "Giai nen xong ($(Get-Date -Format 'HH:mm:ss'))."
     Remove-Item $zip -Force
     Tot "Da tai va giai nen runner $ban."
 }

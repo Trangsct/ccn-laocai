@@ -13,6 +13,10 @@ on:
     paths: ['bot/**']
   workflow_dispatch:
 
+concurrency:
+  group: thu-bo-cai-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cai-runner:
     name: cai-runner.ps1 -ChayThu (Windows PowerShell 5.1)
