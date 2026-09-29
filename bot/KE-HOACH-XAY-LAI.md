@@ -40,7 +40,7 @@ hằng ngày, không tốn dung lượng máy.
 - [x] Máy ảo Windows trên GitHub Actions chạy `cai-runner.ps1 -ChayThu` (bước 1–4) trước khi merge.
 - [x] Routine "Kiểm tra sức khỏe dây chuyền" mỗi sáng 07:41 thứ Hai–Bảy.
 - [x] Routine "Nâng cấp bộ plugin từ bản tin Data360X" 14:52 thứ Tư.
-- [ ] Rà 17 workflow của vlncn-laocai: đánh dấu cái nào sẽ tắt ở Giai đoạn 1.
+- [x] Rà 17 workflow của vlncn-laocai (bảng dưới), đánh dấu số phận từng cái.
 
 ### Giai đoạn 1 — "tay" mới (2 tuần)
 - [ ] `tay/tay.py` dưới 500 dòng: đăng nhập 1 lần (Chrome sẵn có của máy, không tải Chromium), giữ phiên,
@@ -56,3 +56,27 @@ hằng ngày, không tốn dung lượng máy.
 ### Giai đoạn 3 — nghiên cứu công việc (tháng thứ hai)
 - [ ] Nhật ký 4 tuần: văn bản đến/đi theo loại, việc được giao, thời gian phản hồi, dự thảo bị sửa ở đâu.
 - [ ] Bản đồ công việc; chọn 3 việc lặp nhiều nhất để tự động trước.
+
+## Rà 17 workflow của `vlncn-laocai` (30/9/2026)
+
+| Workflow | Chạy ở | Việc | Số phận |
+|---|---|---|---|
+| Quet Data360X (may co quan) | máy Lào Cai | quét 30 ngày thứ Tư 11:30 | **gộp vào tay v2** (yêu cầu `quet`) |
+| Giu phien Data360X (may co quan) | máy Lào Cai | mở trang chủ mỗi giờ | **tay v2 tự làm**, tắt sau khi tay v2 chạy |
+| Lay van ban theo yeu cau (may co quan) | máy Lào Cai | Claude sai bot lấy văn bản | **gộp vào tay v2** (yêu cầu `lay`) |
+| Tim van ban vien dan (may co quan) | máy Lào Cai | tìm văn bản dự thảo viện dẫn | **gộp vào tay v2** (yêu cầu `tim`) |
+| Viec cho xu ly (vOffice + Data360X) | máy Lào Cai | 07:30 T2–T6, danh sách việc + toàn văn | **gộp vào tay v2** (yêu cầu `voffice`) |
+| Viec tren vOffice (may co quan) | máy Lào Cai | 07:30 T2–T6, bản cũ của cái trên | **tắt ngay** (trùng, hai lượt cùng giờ tranh máy) |
+| Zalo (may co quan) | máy Lào Cai | đọc/gửi Zalo, bấm tay | giữ tạm, xem 4 tuần có dùng không |
+| Quet Data360X (online) | GitHub | quét bằng phiên xuất lên | **tắt ngay** (cổng timeout 29/9, chết hẳn) |
+| Doc inbox (Gemini) | GitHub | Gemini đọc PDF giấy phép | Giai đoạn 2 thay bằng Routine Claude |
+| Doc GP van chuyen HHNH | GitHub | Gemini đọc GP HHNH | Giai đoạn 2 thay bằng Routine Claude |
+| Thi diem doc GP VLNCN | GitHub | thí điểm | **tắt ngay** |
+| Thu Mistral OCR | GitHub | thí điểm | **tắt ngay** |
+| Dong bo tri thuc sang plugin | GitHub | sinh 2 reference từ CSDL web | giữ (cơ học, ổn) |
+| De xuat VBPL tu Data360X | GitHub | lọc VBPL công khai ra CSV | giữ (Routine thứ Tư dùng) |
+| Ban tin Telegram 18h30 | GitHub | bản tin Telegram thứ Tư | giữ; xem gộp vào Routine sức khỏe |
+| Soat du thao van ban | GitHub | soát .docx thả vào du-thao/ | giữ; Giai đoạn 2 xem chuyển sang Routine |
+
+Kết quả: 5 workflow trên máy Lào Cai gộp thành **một** tiến trình `tay`; 4 workflow tắt ngay; 4 chuyển sang Routine
+Claude ở Giai đoạn 2; 4 giữ. Từ 17 còn khoảng 6.
