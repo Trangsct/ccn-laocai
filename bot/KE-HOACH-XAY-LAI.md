@@ -43,10 +43,18 @@ hằng ngày, không tốn dung lượng máy.
 - [x] Rà 17 workflow của vlncn-laocai (bảng dưới), đánh dấu số phận từng cái.
 
 ### Giai đoạn 1 — "tay" mới (2 tuần)
-- [ ] `tay/tay.py` dưới 500 dòng: đăng nhập 1 lần (Chrome sẵn có của máy, không tải Chromium), giữ phiên,
-      kéo yêu cầu từ `vlncn-laocai/yeu-cau/*.json`, đẩy kết quả, nhịp tim, tự cập nhật từ main, log xoay vòng 14 ngày.
-- [ ] Một bộ cài duy nhất `cai-tay.bat`, đã qua máy ảo Windows; tổng dung lượng trên máy dưới 100 MB.
+- [x] `tay/tay.py` v0.1.1 (~380 dòng, 30/9/2026): Chrome sẵn có của máy, giữ phiên mỗi giờ, quét thứ Tư hoặc khi quá
+      7 ngày, kéo yêu cầu từ `vlncn-laocai/yeu-cau/*.json` (nhận bằng sha, hai máy không tranh), đẩy kết quả qua
+      Contents API (không git clone), nhịp tim `trang-thai/tay.json`, tự cập nhật từ main, log xoay 14 ngày.
+      Chưa làm: việc vOffice (`viec-cho-xu-ly`) — giữ workflow cũ tới v0.2.
+- [x] Bộ cài `bot/cai-tay.bat` + `cai-tay.ps1`: Python, `pip install playwright` (không tải Chromium), tải mã, token,
+      2 lịch Task Scheduler không cần Administrator. **Đã xanh trên máy ảo Windows** (workflow *Thu bo cai tren Windows*,
+      lượt 55f9503 ngày 29/9/2026); máy ảo cũng bắt được 1 lỗi thật (in tiếng Việt ra console cp1252) trước khi Bạn gặp.
+- [x] Hàng đợi `vlncn-laocai/yeu-cau/` + workflow `yeu-cau.yml` (ghi yêu cầu từ điện thoại); plugin `data360x-sct-vn` 1.1.0
+      biết ghi yêu cầu cho TAY (ref 05, `goi_bot.py --qua-tay`).
+- [ ] Cài TAY lên laptop (Bạn bấm `cai-tay.bat` một lần, xem HUONG-DAN-CAI-BOT.md mục đầu) và máy bàn cơ quan.
 - [ ] Chạy song song bot cũ 1 tuần, so kết quả; rồi tắt bot cũ, runner, lượt online và các workflow thừa.
+- [ ] TAY v0.2: việc vOffice (danh sách chờ xử lý + tải văn bản đến) để thay `viec-cho-xu-ly.yml`.
 
 ### Giai đoạn 2 — "não" đọc trực tiếp (2 tuần)
 - [ ] Routine sáng thứ Hai–Sáu: việc chờ xử lý trên vOffice + soạn dự thảo.

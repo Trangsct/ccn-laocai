@@ -2,9 +2,19 @@
 
 ## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
 
-> ⚠️ **Tạm dừng dùng `cai-laptop.bat` / `cai-runner.bat` (Bạn chốt 30/9/2026)** cho tới khi máy ảo Windows
-> (workflow *Thu bo cai tren Windows*) chạy xanh và Claude báo lại. Đêm 29/9 bộ cài lỗi 3 lần liên tiếp trên
-> laptop. Trong lúc chờ, cần văn bản thì nháy đúp **`quet-lai-ngay.bat`** (bot chạy thẳng, không cần runner).
+> ✅ **Từ 30/9/2026 dùng `cai-tay.bat` (đã qua máy ảo Windows)** thay cho `cai-laptop.bat`/`cai-runner.bat`.
+> TAY là một tiến trình ẩn tự kéo việc từ GitHub, không cần đăng ký runner. Cách cài, 2 thao tác:
+>
+> 1. Mở **PowerShell**, dán nguyên dòng sau rồi Enter (tải `cai-tay.bat` về `du-an\bot` và mở thư mục đó):
+>
+>    ```
+>    $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -H "Accept: application/vnd.github.raw" -o "$r\bot\cai-tay.bat" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/cai-tay.bat?ref=main"; explorer "$r\bot"
+>    ```
+> 2. Nháy đúp **`cai-tay.bat`**. Máy đã có `config.json` (token cũ của bot) thì không hỏi gì; chưa có thì dán token.
+>    Cuối cùng phải thấy **"TAY DANG CHAY"**. Chưa đăng nhập Data360X trên máy này thì nháy đúp `dang-nhap-lan-dau.bat` một lần.
+>
+> Kiểm tra sau 15 phút: kho `vlncn-laocai` có tệp `trang-thai/tay.json` ghi tên máy và giờ. Ra lệnh cho TAY: Actions →
+> **Yeu cau TAY (ghi vao hang doi)**. `cai-laptop.bat`/`cai-runner.bat` (đường runner) vẫn còn nhưng chỉ là dự phòng.
 > Kế hoạch xây lại: `bot/KE-HOACH-XAY-LAI.md`.
 
 Dùng khi đưa bot lên laptop cá nhân hoặc bất kỳ máy Windows mới nào (máy bàn cơ quan im từ 18/9/2026 nên
