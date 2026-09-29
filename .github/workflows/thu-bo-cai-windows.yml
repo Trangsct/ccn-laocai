@@ -1,0 +1,72 @@
+# CHẠY THỬ BỘ CÀI BOT TRÊN MÁY ẢO WINDOWS (Bạn chốt 30/9/2026, Giai đoạn 0 xây lại bộ công cụ)
+# Bài học 29/9/2026: hai lỗi liên tiếp của cai-runner.ps1 trên laptop đều thuộc loại "chạy thử một lần
+# là lộ", nhưng Claude không có Windows nên sửa mù, Bạn thành người chạy thử. Từ nay mọi file trong bot/
+# phải qua máy ảo Windows này (Windows PowerShell 5.1, ổ C và D, không có ổ E — giống laptop) trước khi
+# merge. Máy ảo KHÔNG đăng ký runner, không đăng nhập Data360X; chỉ đi hết các bước cơ học.
+name: Thu bo cai tren Windows
+
+on:
+  pull_request:
+    paths: ['bot/**', '.github/workflows/thu-bo-cai-windows.yml']
+  push:
+    branches: [main]
+    paths: ['bot/**']
+  workflow_dispatch:
+
+concurrency:
+  group: thu-bo-cai-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cai-runner:
+    name: cai-runner.ps1 -ChayThu (Windows PowerShell 5.1)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dựng thư mục du-an trên ổ D như máy thật, kèm dấu vết runner cũ để thử bước gỡ
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path 'D:\du-an\bot', 'D:\du-an\bot-profile', 'D:\du-an\actions-runner' | Out-Null
+          Set-Content -Path 'D:\du-an\actions-runner\.runner' -Value '{"agentName":"cu"}'
+          Copy-Item 'bot\cai-runner.ps1' 'D:\du-an\bot\cai-runner.ps1'
+          Get-ChildItem 'D:\du-an' -Recurse | Select-Object FullName
+
+      - name: Chạy cai-runner.ps1 -ChayThu bằng Windows PowerShell 5.1 (như trên laptop)
+        shell: pwsh
+        run: |
+          # Chạy có giới hạn 8 phút: treo thì bước này ĐỎ (log còn xem được), không để job bị hủy mất log.
+          $p = Start-Process -FilePath powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','D:\du-an\bot\cai-runner.ps1','-ChayThu' -PassThru -NoNewWindow
+          if (-not $p.WaitForExit(480000)) { $p.Kill(); Write-Error 'cai-runner.ps1 -ChayThu treo quá 8 phút'; exit 124 }
+          exit $p.ExitCode
+
+      - name: Kiểm tra kết quả bước gỡ đăng ký cũ
+        shell: pwsh
+        run: |
+          if (Test-Path 'D:\du-an\actions-runner\.runner') { Write-Error 'Vẫn còn .runner cũ'; exit 1 }
+          if (-not (Test-Path 'D:\du-an\actions-runner\run.cmd')) { Write-Error 'Chưa tải được bộ runner'; exit 1 }
+          Write-Host 'OK: đã gỡ đăng ký cũ và tải bộ runner.'
+
+  cai-tay:
+    name: cai-tay.ps1 -ChayThu + tay.py --chay-thu (Windows PowerShell 5.1)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dựng D:\du-an như máy thật
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path 'D:\du-an' | Out-Null
+      - name: Chạy cai-tay.ps1 -ChayThu (lấy mã từ chính kho đang thử, không tải từ main)
+        shell: cmd
+        env:
+          TAY_NGUON: ${{ github.workspace }}
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File bot\cai-tay.ps1 -ChayThu
+      - name: Kiểm tra tệp đã đặt đúng chỗ
+        shell: pwsh
+        run: |
+          foreach ($f in 'D:\du-an\bot\tay.py', 'D:\du-an\bot\bot-data360x.py', 'D:\du-an\bot\tay-an.vbs', 'D:\du-an\bot-profile\tay-trang-thai.json') {
+            if (-not (Test-Path -LiteralPath $f)) { Write-Error "Thiếu $f"; exit 1 }
+          }
+          Get-Content 'D:\du-an\bot-profile\tay-trang-thai.json'
+          Get-ScheduledTask -TaskName 'TAY Data360X*' -ErrorAction SilentlyContinue | Select-Object TaskName, State

@@ -172,6 +172,11 @@ quan** (cài bằng `bot/cai-runner.bat`). Máy tắt thì lệnh nằm chờ, b
 dang-nhap-lan-dau → cai-runner → quét 30 ngày (Bạn yêu cầu 29/9/2026, sau 11 ngày máy bàn cơ quan im lặng từ 18/9).
 Cách tải file đó về máy: mục đầu `bot/HUONG-DAN-CAI-BOT.md`.
 
+**Bạn chốt 30/9/2026 — xây lại bộ công cụ theo `bot/KE-HOACH-XAY-LAI.md`.** Ba điều bắt buộc từ nay:
+(1) mọi file trong `bot/` phải qua máy ảo Windows (`.github/workflows/thu-bo-cai-windows.yml`) trước khi
+merge, không đưa Bạn chạy thử; (2) máy ở Lào Cai chỉ là "tay" chép văn bản, mọi đọc hiểu do Claude Routine
+làm; (3) lượt quét online trên máy chủ GitHub đã chết hẳn (cổng Data360X timeout 29/9), không dùng lại.
+
 ## Lịch sử commit gần đây (để hiểu context)
 
 ```

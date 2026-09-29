@@ -17,6 +17,12 @@
 #  chay ngay trong phien dang nhap cua Ban, o che do an (khong hien cua so den).
 # ============================================================================
 
+# -ChayThu: chay tren may ao Windows cua GitHub Actions (workflow thu-bo-cai-windows.yml) de bat loi
+# TRUOC khi dua cho Ban: lam du buoc 1-4 (cong cu, tai runner, go dang ky cu) roi dung, KHONG dang ky
+# may ao voi GitHub, khong dat lich. Bai hoc 29/9/2026: hai loi lien tiep tren laptop deu la loai
+# "chay thu mot lan la lo" (taskkill bao khong thay tien trinh; Join-Path tren o E khong co).
+param([switch]$ChayThu)
+
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -78,7 +84,7 @@ Write-Host '============================================================'
 Write-Host '   CAI RUNNER GITHUB CHO MAY NAY'
 Write-Host "   Kho: $Repo"
 Write-Host "   Thu muc: $RunnerDir"
-Write-Host "   Ban cai: 29/9/2026-b (khong chet vi o dia E/F khong co)"
+Write-Host "   Ban cai: 30/9/2026-b (da qua may ao Windows)"
 Write-Host '============================================================'
 
 # --------------------------------------------------------------- 0. Cong cu
@@ -149,7 +155,7 @@ function Lay-Ma-Dang-Ky($pat, $imLang) {
 # --------------------------------------------------------------- 1. Ma dang ky
 Tieu-De '2/7  Xin ma dang ky runner'
 $pat = Lay-Pat
-$maDangKy = Lay-Ma-Dang-Ky $pat $false
+$maDangKy = if ($ChayThu) { Bao 'Chay thu: bo qua xin ma dang ky.'; 'CHAYTHU' } else { Lay-Ma-Dang-Ky $pat $false }
 if (-not $maDangKy) { Loi 'Chua co ma dang ky. Dung lai.'; exit 1 }
 
 # --------------------------------------------------------------- 2. Tai runner
@@ -170,7 +176,16 @@ function Tai-Va-Giai-Nen-Runner {
     Bao "Dang tai runner $ban (khoang 60 MB), vui long cho..."
     curl.exe -sSL --max-time 900 -o "$zip" "https://github.com/actions/runner/releases/download/v$ban/actions-runner-win-x64-$ban.zip"
     if (-not (Test-Path $zip) -or (Get-Item $zip).Length -lt 1MB) { Loi 'Khong tai duoc runner. Kiem tra mang roi chay lai.'; exit 1 }
-    Expand-Archive -Path $zip -DestinationPath $RunnerDir -Force
+    Bao "Giai nen ($(Get-Date -Format 'HH:mm:ss'))..."
+    # tar.exe (bsdtar) co san tren Windows 10+ va nhanh gap nhieu lan Expand-Archive cua PowerShell 5.1
+    # (bo runner hon 5.000 tep: Expand-Archive mat tren 10 phut - may ao Windows 29/9/2026 bi cat vi qua 20 phut).
+    $daGiaiNen = $false
+    if (Get-Command tar.exe -ErrorAction SilentlyContinue) {
+        & tar.exe -xf "$zip" -C "$RunnerDir"
+        if ($LASTEXITCODE -eq 0) { $daGiaiNen = $true } else { Bao 'tar.exe khong giai nen duoc, dung Expand-Archive.' }
+    }
+    if (-not $daGiaiNen) { Expand-Archive -Path $zip -DestinationPath $RunnerDir -Force }
+    Bao "Giai nen xong ($(Get-Date -Format 'HH:mm:ss'))."
     Remove-Item $zip -Force
     Tot "Da tai va giai nen runner $ban."
 }
@@ -180,25 +195,31 @@ Tai-Va-Giai-Nen-Runner
 
 # --------------------------------------------------------------- 3. Go ban cu
 Tieu-De '4/7  Go dang ky cu (neu co)'
-$dv = Get-Service -Name 'actions.runner.*' -ErrorAction SilentlyContinue
-if ($dv) {
-    Bao 'Phat hien runner cai dang dich vu Windows - dang go (can quyen quan tri).'
-    foreach ($d in $dv) { Chay-Im 'sc.exe' @('stop', $d.Name); Chay-Im 'sc.exe' @('delete', $d.Name) }
-}
-# Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
-# "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
-# Tat han lich truoc khi dung: chi /End thi Task Scheduler bat lai runner ngay, file trong _diag
-# van bi khoa (vu 20/9/2026: "cannot access ... Runner_...-utc.log"). Buoc 6/7 se tao lai lich.
-foreach ($t in @($TaskChinh, $TaskCanh)) {
-    Chay-Im 'schtasks.exe' @('/Change', '/TN', $t, '/DISABLE')
-    Chay-Im 'schtasks.exe' @('/End', '/TN', $t)
-}
-Dung-Runner
-Start-Sleep -Seconds 3
-if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
-    Bao 'Runner cu van chua chiu dung - cho them 5 giay.'
-    Start-Sleep -Seconds 5
+if ($ChayThu) {
+    # May ao GitHub Actions dang chay CHINH BANG Runner.Listener/Worker: dung chung la job tu chet
+    # (3 luot 29/9/2026 bi huy sau 20 phut vi the). Chay thu chi bo qua doan dung runner cu.
+    Bao 'Chay thu: khong dung runner dang chay tren may ao.'
+} else {
+    $dv = Get-Service -Name 'actions.runner.*' -ErrorAction SilentlyContinue
+    if ($dv) {
+        Bao 'Phat hien runner cai dang dich vu Windows - dang go (can quyen quan tri).'
+        foreach ($d in $dv) { Chay-Im 'sc.exe' @('stop', $d.Name); Chay-Im 'sc.exe' @('delete', $d.Name) }
+    }
+    # Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
+    # "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
+    # Tat han lich truoc khi dung: chi /End thi Task Scheduler bat lai runner ngay, file trong _diag
+    # van bi khoa (vu 20/9/2026: "cannot access ... Runner_...-utc.log"). Buoc 6/7 se tao lai lich.
+    foreach ($t in @($TaskChinh, $TaskCanh)) {
+        Chay-Im 'schtasks.exe' @('/Change', '/TN', $t, '/DISABLE')
+        Chay-Im 'schtasks.exe' @('/End', '/TN', $t)
+    }
     Dung-Runner
+    Start-Sleep -Seconds 3
+    if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
+        Bao 'Runner cu van chua chiu dung - cho them 5 giay.'
+        Start-Sleep -Seconds 5
+        Dung-Runner
+    }
 }
 # Tim dang ky cu o MOI cho co the, khong chi $RunnerDir: vu 20/9/2026 buoc nay bao "chua tung dang
 # ky" nhung config.cmd van bao "already configured" vi cau hinh nam o thu muc khac (C: hay D:).
@@ -236,6 +257,11 @@ if ($noCu.Count -eq 0) {
         }
         Tot "Da xoa dang ky cu tai $d"
     }
+}
+
+if ($ChayThu) {
+    Tot 'CHAY THU XONG: buoc 1-4 chay tron ven, khong dang ky may nay.'
+    exit 0
 }
 
 # --------------------------------------------------------------- 4. Dang ky
