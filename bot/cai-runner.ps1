@@ -41,6 +41,22 @@ function Bao($s)     { Write-Host "   $s" }
 function Loi($s)     { Write-Host "   $s" -ForegroundColor Red }
 function Tot($s)     { Write-Host "   $s" -ForegroundColor Green }
 
+function Chay-Im($Exe, [string[]]$ThamSo) {
+    # Chay lenh Windows (schtasks, sc...) va NUOT moi dong bao loi cua no.
+    # Vu 29/9/2026 tren laptop: $ErrorActionPreference='Stop' cong voi chuyen huong stderr bien dong
+    # "The process Runner.Worker.exe not found" cua taskkill thanh NativeCommandError -> script
+    # chet ngay buoc 4/7 SAU KHI da tat lich va dung runner cu, chua kip dang ky lai.
+    # Trong ham, $ErrorActionPreference la bien cuc bo nen khong anh huong phan con lai cua script.
+    $ErrorActionPreference = 'Continue'
+    try { & $Exe @ThamSo 2>&1 | Out-Null } catch { }
+}
+
+function Dung-Runner {
+    # Dung Runner.Listener/Worker dang chay (khong co thi thoi, khong bao loi).
+    Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue |
+        Stop-Process -Force -ErrorAction SilentlyContinue
+}
+
 function Lay-Pat {
     # Token GitHub Ban da nhap luc cai-dat.bat, nam trong config.json cua bot.
     if (-not (Test-Path $CauHinh)) { return '' }
@@ -62,7 +78,7 @@ Write-Host '============================================================'
 Write-Host '   CAI RUNNER GITHUB CHO MAY NAY'
 Write-Host "   Kho: $Repo"
 Write-Host "   Thu muc: $RunnerDir"
-Write-Host "   Ban cai: 12/9/2026-b (dan ca dong lenh cung nhan duoc ma)"
+Write-Host "   Ban cai: 29/9/2026 (lenh don dep Windows khong lam chet script)"
 Write-Host '============================================================'
 
 # --------------------------------------------------------------- 0. Cong cu
@@ -167,23 +183,22 @@ Tieu-De '4/7  Go dang ky cu (neu co)'
 $dv = Get-Service -Name 'actions.runner.*' -ErrorAction SilentlyContinue
 if ($dv) {
     Bao 'Phat hien runner cai dang dich vu Windows - dang go (can quyen quan tri).'
-    foreach ($d in $dv) { & sc.exe stop $d.Name | Out-Null; & sc.exe delete $d.Name | Out-Null }
+    foreach ($d in $dv) { Chay-Im 'sc.exe' @('stop', $d.Name); Chay-Im 'sc.exe' @('delete', $d.Name) }
 }
 # Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
 # "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
 # Tat han lich truoc khi dung: chi /End thi Task Scheduler bat lai runner ngay, file trong _diag
 # van bi khoa (vu 20/9/2026: "cannot access ... Runner_...-utc.log"). Buoc 6/7 se tao lai lich.
 foreach ($t in @($TaskChinh, $TaskCanh)) {
-    & schtasks.exe /Change /TN $t /DISABLE 2>$null | Out-Null
-    & schtasks.exe /End    /TN $t          2>$null | Out-Null
+    Chay-Im 'schtasks.exe' @('/Change', '/TN', $t, '/DISABLE')
+    Chay-Im 'schtasks.exe' @('/End', '/TN', $t)
 }
-& taskkill.exe /IM Runner.Listener.exe /F /T 2>$null | Out-Null
-& taskkill.exe /IM Runner.Worker.exe   /F /T 2>$null | Out-Null
+Dung-Runner
 Start-Sleep -Seconds 3
 if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
     Bao 'Runner cu van chua chiu dung - cho them 5 giay.'
     Start-Sleep -Seconds 5
-    & taskkill.exe /IM Runner.Listener.exe /F /T 2>$null | Out-Null
+    Dung-Runner
 }
 # Tim dang ky cu o MOI cho co the, khong chi $RunnerDir: vu 20/9/2026 buoc nay bao "chua tung dang
 # ky" nhung config.cmd van bao "already configured" vi cau hinh nam o thu muc khac (C: hay D:).
@@ -225,6 +240,7 @@ if ($noCu.Count -eq 0) {
 Tieu-De '5/7  Dang ky may nay voi GitHub'
 Bao "Ma se dung: $maDangKy"
 Push-Location $RunnerDir      # config.cmd doc/ghi cau hinh theo thu muc dang dung
+$ErrorActionPreference = 'Continue'   # config.cmd in canh bao ra stderr cung khong duoc lam chet script
 for ($lan = 1; $lan -le 3; $lan++) {
     & "$RunnerDir\config.cmd" --unattended --url "https://github.com/$Repo" --token $maDangKy `
         --name $TenRunner --labels $Nhan --work _work --replace
@@ -234,12 +250,12 @@ for ($lan = 1; $lan -le 3; $lan++) {
         # thu muc roi giai nen ban moi. Khong mat gi vi runner chi la cong cu chay lenh.
         Pop-Location
         Bao 'Van bao "already configured" - doi ten thu muc runner cu va cai lai tu dau.'
-        foreach ($t in @($TaskChinh, $TaskCanh)) { & schtasks.exe /End /TN $t 2>$null | Out-Null }
+        foreach ($t in @($TaskChinh, $TaskCanh)) { Chay-Im 'schtasks.exe' @('/End', '/TN', $t) }
         Get-Process -Name 'Runner.Listener', 'Runner.Worker' -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 3
         $cu = "$RunnerDir-cu-$(Get-Date -Format 'yyyyMMdd-HHmm')"
-        try { Rename-Item $RunnerDir $cu -Force } catch { Loi "Khong doi ten duoc: $_"; exit 1 }
+        try { Rename-Item $RunnerDir $cu -Force -ErrorAction Stop } catch { Loi "Khong doi ten duoc: $_"; exit 1 }
         Tot "Da chuyen thu muc cu sang: $cu (co the xoa sau)"
         New-Item -ItemType Directory -Path $RunnerDir -Force | Out-Null
         Tai-Va-Giai-Nen-Runner
@@ -257,6 +273,7 @@ for ($lan = 1; $lan -le 3; $lan++) {
     if (-not $maDangKy) { Loi 'Chua co ma. Dung lai.'; exit 1 }
 }
 Pop-Location
+$ErrorActionPreference = 'Stop'
 Tot "Da dang ky, ten may tren GitHub: $TenRunner"
 
 # --------------------------------------------------------------- 5. Dat lich
