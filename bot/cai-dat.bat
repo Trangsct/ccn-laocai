@@ -61,6 +61,8 @@ curl -sSL -o "%BOT_DIR%\tai-ban-moi.bat" "%RAW%/bot/tai-ban-moi.bat"
 curl -sSL -o "%BOT_DIR%\xuat-phien.bat" "%RAW%/bot/xuat-phien.bat"
 curl -sSL -o "%BOT_DIR%\cai-runner.bat" "%RAW%/bot/cai-runner.bat"
 curl -sSL -o "%BOT_DIR%\cai-runner.ps1" "%RAW%/bot/cai-runner.ps1"
+curl -sSL -o "%BOT_DIR%\cai-laptop.bat" "%RAW%/bot/cai-laptop.bat"
+curl -sSL -o "%BOT_DIR%\mo-chrome-cho-bot.bat" "%RAW%/bot/mo-chrome-cho-bot.bat"
 if not exist "%BOT_DIR%\bot-data360x.py" (
     echo   Khong tai duoc script. Kiem tra mang.
     pause
@@ -83,4 +85,5 @@ echo Cac file dat tai %BOT_DIR%
 echo   Neu tren ghi "TOKEN DUNG DUOC": chay tiep dang-nhap-lan-dau.bat.
 echo   Neu "TOKEN CHUA DUNG DUOC": chup man hinh gui Claude Code.
 echo.
-pause
+rem cai-laptop.bat goi file nay theo chuoi: dat KHONG_DUNG=1 de khong dung lai o day
+if not defined KHONG_DUNG pause

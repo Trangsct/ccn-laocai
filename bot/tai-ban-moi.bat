@@ -6,7 +6,7 @@ for %%d in (D E F G) do if exist %%d:\du-an\ set ROOT=%%d:\du-an
 set BOT_DIR=%ROOT%\bot
 set API=https://api.github.com/repos/Trangsct/ccn-laocai/contents
 set TU=%~1
-for %%F in (bot-data360x.py cai-dat.bat chay-bot.bat chay-thu.bat dang-nhap-lan-dau.bat dat-lich.bat bo-lich.bat cap-nhat-ngay.bat quet-lai-120-ngay.bat quet-lai-ngay.bat xuat-phien.bat cai-runner.bat cai-runner.ps1) do (
+for %%F in (bot-data360x.py cai-dat.bat chay-bot.bat chay-thu.bat dang-nhap-lan-dau.bat dat-lich.bat bo-lich.bat cap-nhat-ngay.bat quet-lai-120-ngay.bat quet-lai-ngay.bat xuat-phien.bat cai-runner.bat cai-runner.ps1 cai-laptop.bat mo-chrome-cho-bot.bat) do (
     if /I not "%%F"=="%TU%" (
         if /I "%%~xF"==".py" (call :tai "%%F" "scripts/%%F") else (call :tai "%%F" "bot/%%F")
     )

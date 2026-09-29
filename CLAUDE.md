@@ -168,6 +168,10 @@ thảo nội bộ, danh sách cán bộ, hồ sơ chưa ban hành vào đây. M�
 Cổng Data360X chỉ phục vụ máy trong nước đã đăng nhập, nên hai workflow trên chạy trên **runner tại máy cơ
 quan** (cài bằng `bot/cai-runner.bat`). Máy tắt thì lệnh nằm chờ, bật máy lên là chạy tiếp.
 
+Đưa bot lên **máy mới** (laptop cá nhân): `bot/cai-laptop.bat` — một cú bấm gọi lần lượt cai-dat →
+dang-nhap-lan-dau → cai-runner → quét 30 ngày (Bạn yêu cầu 29/9/2026, sau 11 ngày máy bàn cơ quan im lặng từ 18/9).
+Cách tải file đó về máy: mục đầu `bot/HUONG-DAN-CAI-BOT.md`.
+
 ## Lịch sử commit gần đây (để hiểu context)
 
 ```
