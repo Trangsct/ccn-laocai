@@ -84,7 +84,7 @@ Write-Host '============================================================'
 Write-Host '   CAI RUNNER GITHUB CHO MAY NAY'
 Write-Host "   Kho: $Repo"
 Write-Host "   Thu muc: $RunnerDir"
-Write-Host "   Ban cai: 30/9/2026 (giai nen bang tar, chay thu tren may ao Windows)"
+Write-Host "   Ban cai: 30/9/2026-b (da qua may ao Windows)"
 Write-Host '============================================================'
 
 # --------------------------------------------------------------- 0. Cong cu
@@ -195,25 +195,31 @@ Tai-Va-Giai-Nen-Runner
 
 # --------------------------------------------------------------- 3. Go ban cu
 Tieu-De '4/7  Go dang ky cu (neu co)'
-$dv = Get-Service -Name 'actions.runner.*' -ErrorAction SilentlyContinue
-if ($dv) {
-    Bao 'Phat hien runner cai dang dich vu Windows - dang go (can quyen quan tri).'
-    foreach ($d in $dv) { Chay-Im 'sc.exe' @('stop', $d.Name); Chay-Im 'sc.exe' @('delete', $d.Name) }
-}
-# Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
-# "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
-# Tat han lich truoc khi dung: chi /End thi Task Scheduler bat lai runner ngay, file trong _diag
-# van bi khoa (vu 20/9/2026: "cannot access ... Runner_...-utc.log"). Buoc 6/7 se tao lai lich.
-foreach ($t in @($TaskChinh, $TaskCanh)) {
-    Chay-Im 'schtasks.exe' @('/Change', '/TN', $t, '/DISABLE')
-    Chay-Im 'schtasks.exe' @('/End', '/TN', $t)
-}
-Dung-Runner
-Start-Sleep -Seconds 3
-if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
-    Bao 'Runner cu van chua chiu dung - cho them 5 giay.'
-    Start-Sleep -Seconds 5
+if ($ChayThu) {
+    # May ao GitHub Actions dang chay CHINH BANG Runner.Listener/Worker: dung chung la job tu chet
+    # (3 luot 29/9/2026 bi huy sau 20 phut vi the). Chay thu chi bo qua doan dung runner cu.
+    Bao 'Chay thu: khong dung runner dang chay tren may ao.'
+} else {
+    $dv = Get-Service -Name 'actions.runner.*' -ErrorAction SilentlyContinue
+    if ($dv) {
+        Bao 'Phat hien runner cai dang dich vu Windows - dang go (can quyen quan tri).'
+        foreach ($d in $dv) { Chay-Im 'sc.exe' @('stop', $d.Name); Chay-Im 'sc.exe' @('delete', $d.Name) }
+    }
+    # Runner dang chay thi file .runner bi KHOA, xoa khong duoc, config.cmd se bao
+    # "already configured" (vu 20/9/2026 khi doi ten runner theo may). Phai dung han truoc khi go.
+    # Tat han lich truoc khi dung: chi /End thi Task Scheduler bat lai runner ngay, file trong _diag
+    # van bi khoa (vu 20/9/2026: "cannot access ... Runner_...-utc.log"). Buoc 6/7 se tao lai lich.
+    foreach ($t in @($TaskChinh, $TaskCanh)) {
+        Chay-Im 'schtasks.exe' @('/Change', '/TN', $t, '/DISABLE')
+        Chay-Im 'schtasks.exe' @('/End', '/TN', $t)
+    }
     Dung-Runner
+    Start-Sleep -Seconds 3
+    if (Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue) {
+        Bao 'Runner cu van chua chiu dung - cho them 5 giay.'
+        Start-Sleep -Seconds 5
+        Dung-Runner
+    }
 }
 # Tim dang ky cu o MOI cho co the, khong chi $RunnerDir: vu 20/9/2026 buoc nay bao "chua tung dang
 # ky" nhung config.cmd van bao "already configured" vi cau hinh nam o thu muc khac (C: hay D:).

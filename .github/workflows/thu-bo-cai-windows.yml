@@ -34,8 +34,12 @@ jobs:
           Get-ChildItem 'D:\du-an' -Recurse | Select-Object FullName
 
       - name: Chạy cai-runner.ps1 -ChayThu bằng Windows PowerShell 5.1 (như trên laptop)
-        shell: cmd
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File D:\du-an\bot\cai-runner.ps1 -ChayThu
+        shell: pwsh
+        run: |
+          # Chạy có giới hạn 8 phút: treo thì bước này ĐỎ (log còn xem được), không để job bị hủy mất log.
+          $p = Start-Process -FilePath powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','D:\du-an\bot\cai-runner.ps1','-ChayThu' -PassThru -NoNewWindow
+          if (-not $p.WaitForExit(480000)) { $p.Kill(); Write-Error 'cai-runner.ps1 -ChayThu treo quá 8 phút'; exit 124 }
+          exit $p.ExitCode
 
       - name: Kiểm tra kết quả bước gỡ đăng ký cũ
         shell: pwsh
