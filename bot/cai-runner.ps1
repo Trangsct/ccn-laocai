@@ -78,7 +78,7 @@ Write-Host '============================================================'
 Write-Host '   CAI RUNNER GITHUB CHO MAY NAY'
 Write-Host "   Kho: $Repo"
 Write-Host "   Thu muc: $RunnerDir"
-Write-Host "   Ban cai: 29/9/2026 (lenh don dep Windows khong lam chet script)"
+Write-Host "   Ban cai: 29/9/2026-b (khong chet vi o dia E/F khong co)"
 Write-Host '============================================================'
 
 # --------------------------------------------------------------- 0. Cong cu
@@ -206,7 +206,9 @@ Bao "Thu muc runner lan nay: $RunnerDir"
 $noCu = @()
 foreach ($d in @($RunnerDir, 'C:\du-an\actions-runner', 'D:\du-an\actions-runner', 'E:\du-an\actions-runner', 'F:\du-an\actions-runner',
                  (Join-Path $PWD 'actions-runner'), "$PWD")) {
-    if ($d -and (Test-Path (Join-Path $d '.runner')) -and ($noCu -notcontains $d)) { $noCu += $d }
+    # Test-Path -LiteralPath chu KHONG Join-Path: o E/F khong ton tai thi Join-Path nem DriveNotFound
+    # (vu 29/9/2026 tren laptop, script chet o day).
+    if ($d -and (Test-Path -LiteralPath "$d\.runner" -ErrorAction SilentlyContinue) -and ($noCu -notcontains $d)) { $noCu += $d }
 }
 if ($noCu.Count -eq 0) {
     Bao 'Khong thay dang ky cu o bat ky thu muc nao - bo qua.'
