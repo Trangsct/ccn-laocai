@@ -2,6 +2,11 @@
 
 ## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
 
+> ⚠️ **Tạm dừng dùng `cai-laptop.bat` / `cai-runner.bat` (Bạn chốt 30/9/2026)** cho tới khi máy ảo Windows
+> (workflow *Thu bo cai tren Windows*) chạy xanh và Claude báo lại. Đêm 29/9 bộ cài lỗi 3 lần liên tiếp trên
+> laptop. Trong lúc chờ, cần văn bản thì nháy đúp **`quet-lai-ngay.bat`** (bot chạy thẳng, không cần runner).
+> Kế hoạch xây lại: `bot/KE-HOACH-XAY-LAI.md`.
+
 Dùng khi đưa bot lên laptop cá nhân hoặc bất kỳ máy Windows mới nào (máy bàn cơ quan im từ 18/9/2026 nên
 11 ngày không có bản tin; laptop cài xong là nhận việc thay). Chuẩn bị sẵn token GitHub `github_pat_...`
 (mục A bên dưới: Contents Read/Write cho 4 kho; thêm **Administration Read/Write** cho `vlncn-laocai` thì
