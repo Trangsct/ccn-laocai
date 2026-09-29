@@ -14,6 +14,7 @@
 param([switch]$ChayThu)
 
 $ErrorActionPreference = 'Continue'
+$env:PYTHONIOENCODING = 'utf-8'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Root = 'C:\du-an'
@@ -109,6 +110,7 @@ Set sh = CreateObject("WScript.Shell")
 Set wmi = GetObject("winmgmts:\\.\root\cimv2")
 If wmi.ExecQuery("SELECT * FROM Win32_Process WHERE Name='pythonw.exe' AND CommandLine LIKE '%tay.py%'").Count = 0 Then
   sh.CurrentDirectory = "$BotDir"
+  sh.Environment("Process")("PYTHONIOENCODING") = "utf-8"
   sh.Run "pythonw.exe ""$BotDir\tay.py""", 0, False
 End If
 "@ | Set-Content -LiteralPath $vbs -Encoding ASCII

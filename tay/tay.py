@@ -44,8 +44,16 @@ import traceback
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+# Console Windows mặc định cp1252 không in được tiếng Việt (máy ảo Windows 29/9/2026 bắt được);
+# pythonw không có console (stdout = None) thì bỏ qua.
+for _luong in (sys.stdout, sys.stderr):
+    try:
+        _luong.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.1 (30/9/2026)"
+PHIEN_BAN = "0.1.1 (30/9/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
