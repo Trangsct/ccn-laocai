@@ -17,6 +17,12 @@
 #  chay ngay trong phien dang nhap cua Ban, o che do an (khong hien cua so den).
 # ============================================================================
 
+# -ChayThu: chay tren may ao Windows cua GitHub Actions (workflow thu-bo-cai-windows.yml) de bat loi
+# TRUOC khi dua cho Ban: lam du buoc 1-4 (cong cu, tai runner, go dang ky cu) roi dung, KHONG dang ky
+# may ao voi GitHub, khong dat lich. Bai hoc 29/9/2026: hai loi lien tiep tren laptop deu la loai
+# "chay thu mot lan la lo" (taskkill bao khong thay tien trinh; Join-Path tren o E khong co).
+param([switch]$ChayThu)
+
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -149,7 +155,7 @@ function Lay-Ma-Dang-Ky($pat, $imLang) {
 # --------------------------------------------------------------- 1. Ma dang ky
 Tieu-De '2/7  Xin ma dang ky runner'
 $pat = Lay-Pat
-$maDangKy = Lay-Ma-Dang-Ky $pat $false
+$maDangKy = if ($ChayThu) { Bao 'Chay thu: bo qua xin ma dang ky.'; 'CHAYTHU' } else { Lay-Ma-Dang-Ky $pat $false }
 if (-not $maDangKy) { Loi 'Chua co ma dang ky. Dung lai.'; exit 1 }
 
 # --------------------------------------------------------------- 2. Tai runner
@@ -236,6 +242,11 @@ if ($noCu.Count -eq 0) {
         }
         Tot "Da xoa dang ky cu tai $d"
     }
+}
+
+if ($ChayThu) {
+    Tot 'CHAY THU XONG: buoc 1-4 chay tron ven, khong dang ky may nay.'
+    exit 0
 }
 
 # --------------------------------------------------------------- 4. Dang ky
