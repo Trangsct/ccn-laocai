@@ -13,4 +13,4 @@ echo Khi da thay trang chu Data360X, quay lai cua so nay va bam Enter.
 echo.
 python "%BOT_DIR%\bot-data360x.py" --dang-nhap
 echo.
-pause
+if not defined KHONG_DUNG pause

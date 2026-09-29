@@ -33,4 +33,4 @@ if not exist "%BOT_DIR%\cai-runner.ps1" (
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%BOT_DIR%\cai-runner.ps1"
 echo.
-pause
+if not defined KHONG_DUNG pause

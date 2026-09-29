@@ -1,5 +1,35 @@
 # Hướng dẫn cài Bot Data360X trên máy cơ quan (Windows)
 
+## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
+
+Dùng khi đưa bot lên laptop cá nhân hoặc bất kỳ máy Windows mới nào (máy bàn cơ quan im từ 18/9/2026 nên
+11 ngày không có bản tin; laptop cài xong là nhận việc thay). Chuẩn bị sẵn token GitHub `github_pat_...`
+(mục A bên dưới: Contents Read/Write cho 4 kho; thêm **Administration Read/Write** cho `vlncn-laocai` thì
+bước đăng ký runner không phải dán mã tay).
+
+1. Mở **PowerShell** (Start → gõ PowerShell → Enter), dán nguyên dòng sau rồi Enter:
+
+   ```
+   $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -H "Accept: application/vnd.github.raw" -o "$r\bot\cai-laptop.bat" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/cai-laptop.bat?ref=main"; explorer "$r\bot"
+   ```
+
+2. Trong cửa sổ thư mục vừa mở, **nháy đúp `cai-laptop.bat`**. Nó chạy lần lượt 4 việc, mỗi việc chỉ cần
+   Bạn làm đúng một thao tác khi được hỏi:
+   - tải bản mới nhất của bot và mọi file .bat;
+   - cài Python, Playwright, Chromium → **dán token** rồi Enter (máy tự kiểm tra token, phải thấy `TOKEN DUNG DUOC`);
+   - Chrome (hồ sơ riêng của bot) mở Data360X → **đăng nhập, nhập captcha**, thấy trang chủ thì quay lại cửa sổ đen bấm Enter;
+   - đăng ký máy với GitHub (tên `<TÊN MÁY>-laptop`, nhãn `windows,laocai,laptop`), đặt lịch runner tự bật
+     mỗi lần đăng nhập Windows → cuối cùng hỏi *quét 30 ngày ngay?* → **Enter**. Chrome tự mở để quét, đừng đóng.
+   - Nếu màn hình báo "Python vua duoc cai, DONG cua so nay" thì đóng và nháy đúp `cai-laptop.bat` lần nữa.
+
+3. Kiểm tra: https://github.com/Trangsct/vlncn-laocai/settings/actions/runners phải có dòng **Idle** màu xanh mang
+   tên máy; https://github.com/Trangsct/vlncn-laocai/actions phải thấy lượt *Quet Data360X (may co quan)* đang chạy,
+   xong thì kho `vlncn-laocai` có bản tin mới trong `theo-doi/bao-cao/`.
+
+Laptop đóng nắp / ngủ thì lệnh nằm chờ trên GitHub (tối đa 24 giờ), mở máy đăng nhập Windows là runner tự bật và chạy
+tiếp. Giữ phiên Data360X chạy mỗi giờ 07–17h thứ Hai–Bảy (Chrome thu nhỏ ~20 giây); phiên hết thì Windows và
+Telegram báo, Bạn nháy đúp `dang-nhap-lan-dau.bat`.
+
 Bot đọc Văn bản đến / Văn bản đi trên Data360X (csdlvb.laocai.gov.vn) lúc 18h hằng ngày, tải PDF của
 văn bản thuộc lĩnh vực theo dõi và đẩy vào thư mục `inbox/` của repo đích trên GitHub. Từ đó GitHub
 Actions đọc PDF bằng Gemini và cập nhật website. Bạn chỉ đăng nhập Data360X khi bot báo phiên hết hạn.
