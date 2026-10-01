@@ -86,8 +86,8 @@ let CUM_CONG_NGHIEP = [
     },
     {
         id: 8, ten: "Cụm công nghiệp Yên Thế", huyen: "luc-yen", xa: "Xã Lục Yên",
-        trangThai: "hoat-dong", dienTich: 39.97, dienTichDaChoThue: 11.26, tyLeLapDay: 40.24,
-        namThanhLap: 2006, soDoanhNghiep: 3, nganhNghe: "Đá hoa trắng, đá tự nhiên", moTa: "Chủ đầu tư: UBND Xã Lục Yên",
+        trangThai: "hoat-dong", dienTich: 39.97, dienTichDaChoThue: 23.78, tyLeLapDay: 59.5,
+        namThanhLap: 2006, soDoanhNghiep: 5, nganhNghe: "Đá cẩm thạch, đá hoa trắng", moTa: "Chủ đầu tư: UBND Xã Lục Yên",
         haTang: "Đang hoạt động", quyetDinh: "Số 346/QĐ-UBND", lat: 22.103201, lng: 104.777694
     },
     {
@@ -98,7 +98,7 @@ let CUM_CONG_NGHIEP = [
     },
     {
         id: 10, ten: "Cụm công nghiệp Hưng Khánh", huyen: "tran-yen", xa: "Xã Hưng Khánh",
-        trangThai: "hoat-dong", dienTich: 20, dienTichDaChoThue: 4.06, tyLeLapDay: 29.0,
+        trangThai: "hoat-dong", dienTich: 20, dienTichDaChoThue: 6.55, tyLeLapDay: 32.75,
         namThanhLap: 2008, soDoanhNghiep: 2, nganhNghe: "Chế biến ván ép, măng", moTa: "Chủ đầu tư: UBND Xã Hưng Khánh",
         haTang: "Đang hoạt động", quyetDinh: "Số 1584/QĐ-UBND", lat: 21.791, lng: 104.821
     },
@@ -135,13 +135,13 @@ let CUM_CONG_NGHIEP = [
     {
         id: 16, ten: "Cụm công nghiệp Bắc Văn Yên", huyen: "van-yen", xa: "Xã Đông Cuông",
         trangThai: "hoat-dong", dienTich: 55, dienTichDaChoThue: 33.9, tyLeLapDay: 88.05,
-        namThanhLap: 2017, soDoanhNghiep: 4, nganhNghe: "Sản xuất tinh bột sắn, tinh dầu quế", moTa: "Chủ đầu tư: UBND Xã Đông Cuông",
+        namThanhLap: 2017, soDoanhNghiep: 4, nganhNghe: "Chế biến sắn, tinh dầu quế, sinh khối", moTa: "Chủ đầu tư: UBND Xã Đông Cuông",
         haTang: "Đang hoạt động", quyetDinh: "Số 667/QĐ-UBND", lat: 21.932305, lng: 104.628188
     },
     {
         id: 17, ten: "Cụm công nghiệp Bắc Duyên Hải", huyen: "tp-lao-cai", xa: "Phường Lào Cai",
         trangThai: "hoat-dong", dienTich: 19.5, dienTichDaChoThue: 8.8, tyLeLapDay: 100,
-        namThanhLap: 2012, soDoanhNghiep: 91, nganhNghe: "Hỗ trợ cơ khí, sửa chữa ô tô", moTa: "Chủ đầu tư: UBND phường Lào Cai",
+        namThanhLap: 2012, soDoanhNghiep: 105, nganhNghe: "Hỗ trợ cơ khí, sửa chữa ô tô", moTa: "Chủ đầu tư: UBND phường Lào Cai",
         haTang: "Đang hoạt động", quyetDinh: "QĐ số 1023/QĐ-UBND", lat: 22.492, lng: 103.955
     },
     {
