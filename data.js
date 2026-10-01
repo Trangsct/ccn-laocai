@@ -141,7 +141,7 @@ let CUM_CONG_NGHIEP = [
     {
         id: 17, ten: "Cụm công nghiệp Bắc Duyên Hải", huyen: "tp-lao-cai", xa: "Phường Lào Cai",
         trangThai: "hoat-dong", dienTich: 19.5, dienTichDaChoThue: 8.8, tyLeLapDay: 100,
-        namThanhLap: 2012, soDoanhNghiep: 91, nganhNghe: "Hỗ trợ cơ khí, sửa chữa ô tô", moTa: "Chủ đầu tư: UBND phường Lào Cai",
+        namThanhLap: 2012, soDoanhNghiep: 105, nganhNghe: "Hỗ trợ cơ khí, sửa chữa ô tô", moTa: "Chủ đầu tư: UBND phường Lào Cai",
         haTang: "Đang hoạt động", quyetDinh: "QĐ số 1023/QĐ-UBND", lat: 22.492, lng: 103.955
     },
     {
