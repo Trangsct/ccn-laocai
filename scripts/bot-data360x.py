@@ -113,7 +113,7 @@ LOAI_VAN_BAN = [
 # TUYỆT ĐỐI không đẩy văn bản nội bộ sang skill-sct hay ccn-laocai: hai kho đó CÔNG KHAI ra Internet.
 REPO_TRI_THUC = "vlncn-laocai"
 THU_MUC_TRI_THUC = "theo-doi"
-TOI_DA_PDF_MOI_LUOT = 30       # chặn trần để một lượt quét bù 120 ngày không phình kho
+TOI_DA_PDF_MOI_LUOT = 60       # chặn trần để một lượt quét bù 120 ngày không phình kho (30 -> 60 từ 10/10/2026: một tuần ~90 tệp)
 LAY_TOI_DA_MOI_TU_KHOA = 12    # --lay: một từ khóa rộng ("quy chuẩn kỹ thuật quốc gia") không được kéo về hàng chục hồ sơ
 PDF_TOI_DA_MB = 12
 
@@ -290,7 +290,11 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
         ghi["gom_luc"] = date.today().isoformat()
         if dang_gom(vb):
             if da_tai >= toi_da:
+                # Vụ 10/10/2026: trước đây vẫn ghi vào da_gom nên "để lượt sau" không bao giờ tới (96 văn bản
+                # của ba lượt 12/9, 30/9, 10/10 bị kẹt, trong đó QĐ 3628/QĐ-UBND, QĐ 6320/QĐ-SCT). Nay bỏ qua
+                # hẳn - không vào mục lục, không đánh dấu - để lượt sau quét lại từ đầu.
                 loi.append(f"{vb['so_ky_hieu']}: đã chạm trần {toi_da} tệp/lượt, để lượt sau")
+                continue
             else:
                 # Data360X có văn bản để trống số ký hiệu (bản cam kết, phụ lục doanh nghiệp gửi lên):
                 # lấy tên theo mã văn bản trên cổng, nếu không sẽ ra tệp rỗng tên ".md" (vụ 12/9/2026).
