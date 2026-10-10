@@ -256,6 +256,16 @@ def _json_gh(repo, duong, token, mac_dinh):
         return mac_dinh, sha
 
 
+def _cung_van_ban_gh(duong, vb, danh_muc, token):
+    """True nếu chưa có tệp ở `duong` trên GitHub, hoặc tệp đó là của CHÍNH văn bản này (ghi đè được)."""
+    raw, _ = gh_doc(REPO_TRI_THUC, duong, token)
+    if raw is None:
+        return True
+    if any(m.get("tep") == duong and m.get("so_ky_hieu") == vb["so_ky_hieu"] for m in danh_muc):
+        return True
+    return raw[:400].decode("utf-8", "ignore").startswith(f"# {vb['so_ky_hieu']} -")
+
+
 def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT):
     """Xếp mọi văn bản đi + đến theo lĩnh vực plugin, tải PDF văn bản quy phạm/chỉ đạo, ghi bản tin.
 
@@ -311,10 +321,22 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                            "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
                            "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
                     ghi["vai_tro_phong"], ghi["nguoi_xu_ly_chinh"], ghi["han_xu_ly"] = vai, nguoi_xl, han_xl
-                    goi, ten_chinh = dong_goi_ho_so(vb, goc.rsplit("/", 1)[1], pdf, dinh_kem, dau)
+                    ten_goc = goc.rsplit("/", 1)[1]
                     thu_muc = goc.rsplit("/", 1)[0]
-                    for ten_t, du_lieu in goi:
-                        gh_ghi(REPO_TRI_THUC, f"{thu_muc}/{ten_t}", du_lieu, msg_vb, token)
+                    goi, ten_chinh = dong_goi_ho_so(vb, ten_goc, pdf, dinh_kem, dau)
+                    # Vụ 10/10/2026: tệp cùng tên đã có trên GitHub -> GitHub 422 "sha wasn't supplied", cả bước
+                    # gom dừng, không ra bản tin. Cùng văn bản (gom lại sau lượt hỏng) thì ghi đè; văn bản KHÁC
+                    # trùng tên thì thêm hậu tố mã Data360X/ngày để không đè mất.
+                    if ten_chinh and not _cung_van_ban_gh(f"{thu_muc}/{ten_chinh}", vb, danh_muc, token):
+                        ten_goc += "_" + (str(vb.get("id_data360x") or "") or lam_sach_vn(vb["ngay_ban_hanh"]))
+                        goi, ten_chinh = dong_goi_ho_so(vb, ten_goc, pdf, dinh_kem, dau)
+                    try:
+                        for ten_t, du_lieu in goi:
+                            gh_ghi_de(REPO_TRI_THUC, f"{thu_muc}/{ten_t}", du_lieu, msg_vb, token)
+                    except Exception as e:
+                        log(f"  [tri thức] lỗi ghi {vb['so_ky_hieu']}: {e!r}")
+                        loi.append(f"{vb['so_ky_hieu']}: lỗi ghi lên GitHub ({str(e)[:80]})")
+                        continue
                     duong = f"{thu_muc}/{ten_chinh}"
                     ghi["tep"] = duong
                     ghi["dinh_kem"] = [{"ten": d["ten"], "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]
@@ -505,6 +527,15 @@ def gh_doc(repo, path, token):
     r = gh("GET", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}?ref=main", token=token)
     if not r:
         return None, None
+    if r.get("encoding") == "none" or (not r.get("content") and r.get("size")):
+        # Tệp > 1 MB: Contents API trả content rỗng. Không tải bản thô thì danh-muc-<năm>.json (992 KB ngày
+        # 10/10/2026) bị đọc thành rỗng rồi ghi đè mất mục lục -> tải bản thô.
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}?ref=main",
+            headers={"Authorization": "Bearer " + token, "Accept": "application/vnd.github.raw",
+                     "X-GitHub-Api-Version": "2022-11-28"})
+        with urllib.request.urlopen(req, timeout=300) as rr:
+            return rr.read(), r["sha"]
     return base64.b64decode(r["content"]), r["sha"]
 
 
@@ -513,6 +544,19 @@ def gh_ghi(repo, path, noi_dung: bytes, msg, token, sha=None):
     if sha:
         body["sha"] = sha
     return gh("PUT", f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}", body, token)
+
+
+def gh_ghi_de(repo, path, noi_dung: bytes, msg, token):
+    """Ghi tệp; đã có tệp cùng đường dẫn (GitHub 422 vì thiếu sha) thì lấy sha rồi ghi đè."""
+    try:
+        return gh_ghi(repo, path, noi_dung, msg, token)
+    except RuntimeError as e:
+        if "422" not in str(e):
+            raise
+        _, sha = gh_doc(repo, path, token)
+        if not sha:
+            raise
+        return gh_ghi(repo, path, noi_dung, msg, token, sha)
 
 
 def thong_tin_may() -> dict:

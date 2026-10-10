@@ -17,7 +17,6 @@ export const config = { runtime: 'edge' };
 
 const MODELS = [
   'gemini-3.8-flash',        // bản cao nhất hiện tại (03/9/2026)
-  'gemini-3.7-flash',
   'gemini-2.5-flash',
   'gemini-2.5-flash-lite',   // lưới an toàn: hạn mức free cao nhất
 ];
