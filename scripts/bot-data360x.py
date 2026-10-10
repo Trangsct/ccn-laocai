@@ -2194,6 +2194,23 @@ def kiem_tra_token():
     return 0 if ok else 1
 
 
+def tat_quick_edit():
+    """Tắt QuickEdit của cửa sổ cmd: lỡ bấm chuột vào cửa sổ đen là Windows dừng bot tới khi nhấn Esc
+    (vụ 10/10/2026, Bạn bấm vào cửa sổ trong lúc quét lại 12 ngày). Không phải Windows hoặc lỗi thì bỏ qua."""
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        k32 = ctypes.windll.kernel32
+        h = k32.GetStdHandle(-10)                    # STD_INPUT_HANDLE
+        mode = ctypes.c_uint32()
+        if k32.GetConsoleMode(h, ctypes.byref(mode)):
+            # bỏ ENABLE_QUICK_EDIT_MODE (0x40), bật ENABLE_EXTENDED_FLAGS (0x80) để thay đổi có hiệu lực
+            k32.SetConsoleMode(h, (mode.value & ~0x40) | 0x80)
+    except Exception:
+        pass
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dang-nhap", action="store_true")
@@ -2214,6 +2231,7 @@ def main():
     ap.add_argument("--gom-toi-da", type=int, default=TOI_DA_PDF_MOI_LUOT,
                     help=f"tối đa bao nhiêu tệp tri thức tải về mỗi lượt (mặc định {TOI_DA_PDF_MOI_LUOT})")
     a = ap.parse_args()
+    tat_quick_edit()
     try:
         if a.kiem_tra_token:
             return kiem_tra_token()
