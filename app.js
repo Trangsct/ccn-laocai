@@ -2298,6 +2298,7 @@ function renderUnitDetail(slug, details, srcMatch, optionalName) {
     var hasDetails = details && (details.gioiThieu || details.polygon || details.kml ||
                                  details.video || details.anhDaiDien ||
                                  (details.banVeQuyHoach && details.banVeQuyHoach.length) ||
+                                 (details.banVeCad && details.banVeCad.length) ||
                                  (details.vanBan && details.vanBan.length));
 
     // Ảnh đại diện
@@ -2378,6 +2379,9 @@ function renderUnitDetail(slug, details, srcMatch, optionalName) {
         mapWrap.style.display = 'none';
     }
 
+    // Bản vẽ kỹ thuật CAD
+    renderUnitCad(details);
+
     // Văn bản pháp lý
     var docsWrap = document.getElementById('unit-docs-wrap');
     if (details && details.vanBan && details.vanBan.length) {
@@ -2438,7 +2442,20 @@ function renderUnitMap(details, srcMatch) {
         attribution: 'Esri'
     });
     streets.addTo(window.unitMap);
-    L.control.layers({ 'Bản đồ thường': streets, 'Vệ tinh': satellite }, null, { position: 'topright' }).addTo(window.unitMap);
+    // Lớp bản vẽ CAD (nếu có) — tải GeoJSON khi bật lần đầu
+    var cadOverlays = null;
+    window._unitCadLayers = {};
+    (details.banVeCad || []).forEach(function (bv) {
+        if (!bv.geojson) return;
+        var lop = makeCadLayer(bv);
+        window._unitCadLayers[bv.id] = lop;
+        cadOverlays = cadOverlays || {};
+        cadOverlays['<span style="display:inline-block;width:14px;height:3px;background:' + escapeHtml(bv.mau || '#0d47a1') +
+            ';vertical-align:middle;margin-right:4px;"></span>' + escapeHtml(bv.ten)] = lop;
+        if (bv.batSan) lop.addTo(window.unitMap);
+    });
+    L.control.layers({ 'Bản đồ thường': streets, 'Vệ tinh': satellite }, cadOverlays, { position: 'topright' }).addTo(window.unitMap);
+    window.unitMap.on('overlayadd overlayremove', syncCadButtons);
 
     // Vẽ polygon
     if (details.polygon && details.polygon.length >= 3) {
@@ -2450,6 +2467,95 @@ function renderUnitMap(details, srcMatch) {
     } else {
         L.marker(center).addTo(window.unitMap);
     }
+}
+
+// ============================================================
+// BẢN VẼ KỸ THUẬT CAD (trường banVeCad trong unit-details.json; ảnh + GeoJSON sinh bằng tools/cad_to_web.py)
+// ============================================================
+
+// Lớp Leaflet của một bản vẽ: nạp GeoJSON khi được bật lần đầu
+function makeCadLayer(bv) {
+    var lop = L.layerGroup();
+    var daNap = false;
+    lop.on('add', function () {
+        if (daNap) return;
+        daNap = true;
+        fetch(bv.geojson).then(function (r) { return r.json(); }).then(function (gj) {
+            L.geoJSON(gj, {
+                style: function () { return { color: bv.mau || '#0d47a1', weight: bv.netVe || 1.6, opacity: bv.netVe && bv.netVe < 1 ? 0.7 : 0.9 }; },
+                pointToLayer: function (f, latlng) {
+                    return L.circleMarker(latlng, { radius: 2, color: bv.mau || '#0d47a1', weight: 1, fillOpacity: 1 })
+                        .bindTooltip(escapeHtml(f.properties.chu || ''), { permanent: true, direction: 'right', className: 'cad-nhan' });
+                },
+                onEachFeature: function (f, layer) {
+                    if (f.geometry.type !== 'Point') layer.bindTooltip(escapeHtml(bv.ten) + (f.properties.layer ? '<br><small>Lớp: ' + escapeHtml(f.properties.layer) + '</small>' : ''), { sticky: true });
+                }
+            }).addTo(lop);
+        }).catch(function (err) {
+            daNap = false;
+            console.warn('[CAD] Không tải được ' + bv.geojson, err);
+        });
+    });
+    return lop;
+}
+
+// Đồng bộ trạng thái nút "Xem trên bản đồ" với lớp đang bật
+function syncCadButtons() {
+    document.querySelectorAll('#unit-cad-list [data-cad-toggle]').forEach(function (b) {
+        var lop = (window._unitCadLayers || {})[b.dataset.cadToggle];
+        var bat = !!(lop && window.unitMap && window.unitMap.hasLayer(lop));
+        b.classList.toggle('is-on', bat);
+        b.textContent = bat ? '🗺️ Đang hiện trên bản đồ' : '🗺️ Xem trên bản đồ';
+    });
+}
+
+function fmtKb(kb) {
+    return kb >= 1024 ? (kb / 1024).toFixed(1).replace('.', ',') + ' MB' : kb + ' KB';
+}
+
+function renderUnitCad(details) {
+    var wrap = document.getElementById('unit-cad-wrap');
+    var list = document.getElementById('unit-cad-list');
+    var dsBv = (details && details.banVeCad) || [];
+    if (!dsBv.length) { wrap.style.display = 'none'; return; }
+    var slides = dsBv.filter(function (b) { return b.anh; }).map(function (b) {
+        return { file: b.anh, ten: b.ten, quyetDinh: '', moTa: b.moTa || '' };
+    });
+    list.innerHTML = dsBv.map(function (b) {
+        var iSlide = slides.findIndex(function (s) { return s.file === b.anh; });
+        return '<div class="cad-card" style="border-top:4px solid ' + escapeHtml(b.mau || '#0d47a1') + ';">' +
+            (b.anh ? '<img src="' + escapeHtml(b.anh) + '" alt="' + escapeHtml(b.ten) + '" data-qh-idx="' + iSlide + '" loading="lazy">' : '') +
+            '<div class="cad-body">' +
+                '<div class="cad-title">' + escapeHtml(b.ten) + '</div>' +
+                (b.moTa ? '<div class="cad-desc">' + escapeHtml(b.moTa) + '</div>' : '') +
+                '<div class="cad-actions">' +
+                    (b.geojson ? '<button type="button" class="cad-btn" data-cad-toggle="' + escapeHtml(b.id) + '">🗺️ Xem trên bản đồ</button>' : '') +
+                    (b.tep || []).map(function (t) {
+                        return '<a class="cad-btn cad-dl" href="' + escapeHtml(t.file) + '" download>⬇️ ' + escapeHtml(t.ten) + (t.kb ? ' · ' + fmtKb(t.kb) : '') + '</a>';
+                    }).join('') +
+                '</div>' +
+            '</div></div>';
+    }).join('');
+    list.onclick = function (e) {
+        var img = e.target.closest('[data-qh-idx]');
+        if (img && +img.dataset.qhIdx >= 0) { openQhShow(slides, +img.dataset.qhIdx); return; }
+        var tg = e.target.closest('[data-cad-toggle]');
+        if (tg && window.unitMap) {
+            var lop = (window._unitCadLayers || {})[tg.dataset.cadToggle];
+            if (!lop) return;
+            if (window.unitMap.hasLayer(lop)) {
+                window.unitMap.removeLayer(lop);
+            } else {
+                lop.addTo(window.unitMap);
+                document.getElementById('unit-map-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            syncCadButtons();
+        }
+    };
+    document.getElementById('unit-cad-play').onclick = function () { openQhShow(slides, 0); };
+    wrap.style.display = '';
+    // Bản đồ dựng sau 80 ms — chờ rồi mới đồng bộ trạng thái nút
+    setTimeout(syncCadButtons, 200);
 }
 
 // Quay lại tab trước đó

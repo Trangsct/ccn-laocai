@@ -36,6 +36,25 @@
             "moTa": "Ghi chú ngắn (tùy chọn)",
             "file": "unit-files/kcn-tang-loong/quy-hoach-phan-khu.jpg"
           }
+        ],
+        "banVeCad": [
+          {
+            "id": "nut-giao",
+            "ten": "Tên bản vẽ CAD",
+            "moTa": "Mô tả ngắn",
+            "anh": "unit-files/.../ban-ve-cad/nut-giao.png (sinh bằng tools/cad_to_web.py)",
+            "geojson": "unit-files/.../ban-ve-cad/nut-giao.geojson",
+            "mau": "#ea580c",
+            "batSan": true,
+            "tep": [
+              {
+                "ten": "Tên tệp",
+                "file": "unit-files/.../ban-ve-cad/ten.dwg",
+                "kb": 170
+              }
+            ],
+            "netVe": 1.6
+          }
         ]
       }
     }
@@ -6767,6 +6786,78 @@
         "moTa": "Quy mô 300 ha, giáp Tỉnh lộ 152 và đường kết nối IC17 - Tỉnh lộ 152.",
         "file": "unit-files/kcn-phu-xuan/quy-hoach-phan-khu-qd-95-bql.jpg"
       }
+    ],
+    "banVeCad": [
+      {
+        "id": "nut-giao-ic17",
+        "ten": "Nút giao IC17 cao tốc Nội Bài - Lào Cai",
+        "moTa": "Mặt bằng nút giao IC17 cao tốc Nội Bài - Lào Cai và các tuyến đường liên khu vực kết nối (lòng đường, hè đường), nằm giữa Khu công nghiệp Phú Xuân và Khu công nghiệp Phú Xuân 1 - cửa ngõ giao thông của hai khu.",
+        "anh": "unit-files/kcn-phu-xuan/ban-ve-cad/nut-giao-ic17.png",
+        "geojson": "unit-files/kcn-phu-xuan/ban-ve-cad/nut-giao-ic17.geojson",
+        "mau": "#ea580c",
+        "batSan": true,
+        "tep": [
+          {
+            "ten": "NUT_GIAO_IC17.dwg",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/NUT_GIAO_IC17.dwg",
+            "kb": 168
+          }
+        ]
+      },
+      {
+        "id": "tram-110kv",
+        "ten": "Mặt bằng Trạm biến áp 110 kV và tuyến đường dây đấu nối",
+        "moTa": "Trạm biến áp 110 kV đặt ở rìa phía Bắc Khu công nghiệp Phú Xuân, rẽ nhánh từ vị trí cột VT22 của tuyến đường dây 110 kV chạy dọc phía Đông Bắc hai khu công nghiệp (các vị trí cột VT18 - VT28); có cổng vào trạm.",
+        "anh": "unit-files/kcn-phu-xuan/ban-ve-cad/tram-110kv.png",
+        "geojson": "unit-files/kcn-phu-xuan/ban-ve-cad/tram-110kv.geojson",
+        "mau": "#7c3aed",
+        "batSan": true,
+        "tep": [
+          {
+            "ten": "xref - tram 110kV.dwg",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/xref_-_tram_110kV.dwg",
+            "kb": 872
+          }
+        ]
+      },
+      {
+        "id": "cap-nuoc-tho",
+        "ten": "Vị trí công trình cấp nước thô cho Khu công nghiệp Phú Xuân",
+        "moTa": "Đập dâng (H = 3 m; L = 60 m), trạm bơm - trạm biến áp và tuyến ống HDPE 2-DN710 dài 1.800 m dẫn nước thô từ đập dâng về góc Tây Bắc Khu công nghiệp Phú Xuân 1.",
+        "anh": "unit-files/kcn-phu-xuan/ban-ve-cad/cap-nuoc-tho.png",
+        "geojson": "unit-files/kcn-phu-xuan/ban-ve-cad/cap-nuoc-tho.geojson",
+        "mau": "#0284c7",
+        "batSan": true,
+        "tep": [
+          {
+            "ten": "vi_tri_Cap_nuoc_tho_PHU_XUAN.dwg",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/vi_tri_Cap_nuoc_tho_PHU_XUAN.dwg",
+            "kb": 3437
+          }
+        ]
+      },
+      {
+        "id": "dia-hinh-phu-xuan",
+        "ten": "Bình đồ địa hình hiện trạng khu vực Khu công nghiệp Phú Xuân",
+        "moTa": "Bình đồ khảo sát địa hình hiện trạng phủ toàn bộ Khu công nghiệp Phú Xuân và phần phía Nam Khu công nghiệp Phú Xuân 1: nhà cửa, đường bê tông, đường nhựa, đường đất, đường mòn, mặt nước, ranh giới thực vật, mồ mả - nghĩa địa, đường điện 35 kV, đường sắt, cao tốc Nội Bài - Lào Cai. Bản vẽ tham chiếu (xref) dùng làm nền khi lập quy hoạch; có hai tệp: bản ghép (đầy đủ hơn) và bản gốc.",
+        "anh": "unit-files/kcn-phu-xuan/ban-ve-cad/dia-hinh-phu-xuan.png",
+        "geojson": "unit-files/kcn-phu-xuan/ban-ve-cad/dia-hinh-phu-xuan.geojson",
+        "mau": "#64748b",
+        "batSan": false,
+        "netVe": 0.6,
+        "tep": [
+          {
+            "ten": "Bản ghép (XRF._DIA_HINH_PHU_XUAN_GHEP.dwg)",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/XRF._DIA_HINH_PHU_XUAN_GHEP.dwg",
+            "kb": 10432
+          },
+          {
+            "ten": "Bản gốc (XRF._DIA_HINH_PHU_XUAN.dwg)",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/XRF._DIA_HINH_PHU_XUAN.dwg",
+            "kb": 6748
+          }
+        ]
+      }
     ]
   },
   "kcn-phu-xuan-1": {
@@ -6893,6 +6984,40 @@
         "quyetDinh": "Quyết định phê duyệt số 94/QĐ-BQL ngày 18/6/2026 của Ban Quản lý Khu kinh tế tỉnh Lào Cai",
         "moTa": "Nằm sát nút giao IC17 cao tốc Nội Bài - Lào Cai, dọc dự án tuyến đường kết nối IC17 - Tỉnh lộ 152.",
         "file": "unit-files/kcn-phu-xuan-1/quy-hoach-phan-khu-qd-94-bql.jpg"
+      }
+    ],
+    "banVeCad": [
+      {
+        "id": "nut-giao-ic17",
+        "ten": "Nút giao IC17 cao tốc Nội Bài - Lào Cai",
+        "moTa": "Mặt bằng nút giao IC17 cao tốc Nội Bài - Lào Cai và các tuyến đường liên khu vực kết nối (lòng đường, hè đường), nằm giữa Khu công nghiệp Phú Xuân và Khu công nghiệp Phú Xuân 1 - cửa ngõ giao thông của hai khu.",
+        "anh": "unit-files/kcn-phu-xuan/ban-ve-cad/nut-giao-ic17.png",
+        "geojson": "unit-files/kcn-phu-xuan/ban-ve-cad/nut-giao-ic17.geojson",
+        "mau": "#ea580c",
+        "batSan": true,
+        "tep": [
+          {
+            "ten": "NUT_GIAO_IC17.dwg",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/NUT_GIAO_IC17.dwg",
+            "kb": 168
+          }
+        ]
+      },
+      {
+        "id": "cap-nuoc-tho",
+        "ten": "Vị trí công trình cấp nước thô cho Khu công nghiệp Phú Xuân",
+        "moTa": "Đập dâng (H = 3 m; L = 60 m), trạm bơm - trạm biến áp và tuyến ống HDPE 2-DN710 dài 1.800 m dẫn nước thô từ đập dâng về góc Tây Bắc Khu công nghiệp Phú Xuân 1.",
+        "anh": "unit-files/kcn-phu-xuan/ban-ve-cad/cap-nuoc-tho.png",
+        "geojson": "unit-files/kcn-phu-xuan/ban-ve-cad/cap-nuoc-tho.geojson",
+        "mau": "#0284c7",
+        "batSan": true,
+        "tep": [
+          {
+            "ten": "vi_tri_Cap_nuoc_tho_PHU_XUAN.dwg",
+            "file": "unit-files/kcn-phu-xuan/ban-ve-cad/vi_tri_Cap_nuoc_tho_PHU_XUAN.dwg",
+            "kb": 3437
+          }
+        ]
       }
     ]
   },
