@@ -2,7 +2,7 @@
 // Chiến lược: Network-first cho HTML/JSON/JS/CSS (luôn lấy bản mới nhất),
 // Cache-first cho tài nguyên nặng ít đổi (ảnh, font, PDF).
 
-const CACHE_VERSION = 'ccn-laocai-v72';
+const CACHE_VERSION = 'ccn-laocai-v73';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -58,6 +58,8 @@ self.addEventListener('fetch', function (event) {
   // Bỏ qua endpoint API (Vercel Edge Function) và endpoint hệ thống Vercel (Analytics) — không cache
   if (url.pathname.startsWith('/api/')) return;
   if (url.pathname.startsWith('/_vercel/')) return;
+  // Tệp bản vẽ AutoCAD (.dwg, tới 10 MB) chỉ để tải về — không giữ trong bộ nhớ đệm của trình duyệt
+  if (url.pathname.toLowerCase().endsWith('.dwg')) return;
 
   const isHTML = req.mode === 'navigate' || req.destination === 'document';
   const isJSON = url.pathname.endsWith('.json');

@@ -291,6 +291,19 @@
                     </div>
                 </div>
 
+                <!-- Bản vẽ kỹ thuật CAD (DWG) — ảnh xem trước + tải DWG + lớp phủ trên bản đồ vị trí -->
+                <div id="unit-cad-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 6px;">
+                        <h2 style="font-size:1.2rem; color:#1e293b; margin:0; display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.4rem;">📏</span>
+                            <span>Bản vẽ kỹ thuật hạ tầng (CAD)</span>
+                        </h2>
+                        <button id="unit-cad-play" type="button" style="background:#0d47a1; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:inherit;">▶ Trình chiếu</button>
+                    </div>
+                    <div style="font-size:0.85rem; color:#64748b; line-height:1.5; margin-bottom:14px;">Tệp gốc AutoCAD (.dwg, hệ tọa độ VN-2000, kinh tuyến trục 104°45′). Bấm "Xem trên bản đồ" để bật/tắt lớp bản vẽ trên bản đồ vị trí ở trên.</div>
+                    <div id="unit-cad-list" class="cad-grid"></div>
+                </div>
+
                 <!-- Văn bản pháp lý -->
                 <div id="unit-docs-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
                     <h2 style="font-size:1.2rem; color:#1e293b; margin:0 0 14px; display:flex; align-items:center; gap:10px;">
