@@ -2297,6 +2297,7 @@ function renderUnitDetail(slug, details, srcMatch, optionalName) {
     // Có dữ liệu chi tiết không?
     var hasDetails = details && (details.gioiThieu || details.polygon || details.kml ||
                                  details.video || details.anhDaiDien ||
+                                 (details.banVeQuyHoach && details.banVeQuyHoach.length) ||
                                  (details.vanBan && details.vanBan.length));
 
     // Ảnh đại diện
@@ -2306,6 +2307,29 @@ function renderUnitDetail(slug, details, srcMatch, optionalName) {
         coverWrap.style.display = '';
     } else {
         coverWrap.style.display = 'none';
+    }
+
+    // Bản vẽ quy hoạch phân khu — bấm ảnh/nút để trình chiếu toàn màn hình
+    var qhWrap = document.getElementById('unit-qh-wrap');
+    var qhSlides = getQhSlides(details, ten);
+    if (qhSlides.length) {
+        document.getElementById('unit-qh-list').innerHTML = qhSlides.map(function (sl, i) {
+            return '<figure style="margin:0;">' +
+                '<img class="qh-detail-img" src="' + escapeHtml(sl.file) + '" alt="' + escapeHtml(sl.ten) + '" data-qh-idx="' + i + '" loading="lazy">' +
+                '<figcaption style="margin-top:8px; font-size:0.88rem; color:#475569; line-height:1.5;">' +
+                    '<b>' + escapeHtml(sl.ten) + '</b>' +
+                    (sl.quyetDinh ? '<br>' + escapeHtml(sl.quyetDinh) : '') +
+                    (sl.moTa ? '<br>' + escapeHtml(sl.moTa) : '') +
+                '</figcaption></figure>';
+        }).join('');
+        document.getElementById('unit-qh-list').onclick = function (e) {
+            var img = e.target.closest('[data-qh-idx]');
+            if (img) openQhShow(qhSlides, +img.dataset.qhIdx);
+        };
+        document.getElementById('unit-qh-play').onclick = function () { openQhShow(qhSlides, 0); };
+        qhWrap.style.display = '';
+    } else {
+        qhWrap.style.display = 'none';
     }
 
     // Video (hỗ trợ archive.org, YouTube, Vimeo qua URL embed)
@@ -2663,11 +2687,181 @@ function initChatbot() {
     }
 }
 
+// ============================================================
+// TRÌNH CHIẾU BẢN VẼ QUY HOẠCH PHÂN KHU
+// Nguồn: trường banVeQuyHoach [{ten, quyetDinh, moTa, file}] trong unit-details.json.
+// Thêm bản vẽ cho KCN/CCN khác chỉ cần thêm trường này — trang chủ và trang chi tiết tự hiện.
+// ============================================================
+
+// Gom bản vẽ của một đơn vị thành danh sách slide
+function getQhSlides(details, tenDonVi, slug) {
+    if (!details || !details.banVeQuyHoach || !details.banVeQuyHoach.length) return [];
+    return details.banVeQuyHoach.filter(function (b) { return b && b.file; }).map(function (b) {
+        return { file: b.file, ten: b.ten || tenDonVi || '', quyetDinh: b.quyetDinh || '', moTa: b.moTa || '',
+                 slug: slug || '', donVi: tenDonVi || details.ten || '' };
+    });
+}
+
+// Gom bản vẽ của mọi đơn vị (theo thứ tự trong unit-details.json)
+function getAllQhSlides() {
+    var all = [];
+    var data = window.UNIT_DETAILS || {};
+    Object.keys(data).forEach(function (slug) {
+        if (slug === '_schema') return;
+        all = all.concat(getQhSlides(data[slug], data[slug].ten, slug));
+    });
+    return all;
+}
+
+var _qhShow = { slides: [], idx: 0, timer: null, idleTimer: null };
+
+function openQhShow(slides, startIdx) {
+    if (!slides || !slides.length) return;
+    var box = document.getElementById('qh-show');
+    if (!box) return;
+    _qhShow.slides = slides;
+    _qhShow.idx = Math.max(0, Math.min(startIdx || 0, slides.length - 1));
+    box.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    renderQhSlide();
+    // Thử vào chế độ toàn màn hình thật (như PowerPoint); trình duyệt không cho thì vẫn phủ kín cửa sổ
+    var req = box.requestFullscreen || box.webkitRequestFullscreen;
+    if (req) { try { var pr = req.call(box); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {} }
+    qhWakeControls();
+}
+
+function closeQhShow() {
+    var box = document.getElementById('qh-show');
+    if (!box || box.style.display === 'none') return;
+    qhStopAuto();
+    box.style.display = 'none';
+    document.body.style.overflow = '';
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl) {
+        var ex = document.exitFullscreen || document.webkitExitFullscreen;
+        if (ex) { try { var pr = ex.call(document); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {} }
+    }
+}
+
+function renderQhSlide() {
+    var sl = _qhShow.slides[_qhShow.idx];
+    if (!sl) return;
+    var img = document.getElementById('qh-show-img');
+    img.src = sl.file;
+    img.alt = sl.ten;
+    document.getElementById('qh-show-count').textContent = (_qhShow.idx + 1) + ' / ' + _qhShow.slides.length;
+    document.getElementById('qh-show-cap').textContent = sl.ten + (sl.quyetDinh ? ' — ' + sl.quyetDinh : '');
+    var many = _qhShow.slides.length > 1;
+    document.querySelectorAll('#qh-show .qh-show-btn, #qh-show-auto').forEach(function (b) { b.style.display = many ? '' : 'none'; });
+    // Tải trước ảnh kế tiếp để chuyển slide không bị trắng
+    var next = _qhShow.slides[(_qhShow.idx + 1) % _qhShow.slides.length];
+    if (next && next !== sl) { var pre = new Image(); pre.src = next.file; }
+}
+
+function qhGo(step) {
+    var n = _qhShow.slides.length;
+    if (!n) return;
+    _qhShow.idx = (_qhShow.idx + step + n) % n;
+    renderQhSlide();
+}
+
+function qhStopAuto() {
+    if (_qhShow.timer) { clearInterval(_qhShow.timer); _qhShow.timer = null; }
+    var b = document.getElementById('qh-show-auto');
+    if (b) { b.classList.remove('is-on'); b.textContent = '⏵ Tự chạy'; }
+}
+
+function qhToggleAuto() {
+    if (_qhShow.timer) { qhStopAuto(); return; }
+    _qhShow.timer = setInterval(function () { qhGo(1); }, 10000);
+    var b = document.getElementById('qh-show-auto');
+    b.classList.add('is-on'); b.textContent = '⏸ Dừng tự chạy';
+}
+
+// Ẩn nút điều khiển sau 3 giây không động chuột để ảnh chiếu sạch
+function qhWakeControls() {
+    var box = document.getElementById('qh-show');
+    box.classList.remove('qh-idle');
+    clearTimeout(_qhShow.idleTimer);
+    _qhShow.idleTimer = setTimeout(function () { box.classList.add('qh-idle'); }, 3000);
+}
+
+function initQhShow() {
+    var box = document.getElementById('qh-show');
+    if (!box) return;
+    box.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-qh]');
+        if (!b) return;
+        var act = b.dataset.qh;
+        if (act === 'prev') qhGo(-1);
+        else if (act === 'next') qhGo(1);
+        else if (act === 'close') closeQhShow();
+        else if (act === 'auto') qhToggleAuto();
+        else if (act === 'fs') {
+            var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+            if (fsEl) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+            else { var req = box.requestFullscreen || box.webkitRequestFullscreen; if (req) req.call(box); }
+        }
+    });
+    box.addEventListener('mousemove', qhWakeControls);
+    document.addEventListener('keydown', function (e) {
+        if (box.style.display === 'none') return;
+        // Bút trình chiếu (presenter) gửi PageUp/PageDown
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); qhGo(1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') { e.preventDefault(); qhGo(-1); }
+        else if (e.key === 'Home') { _qhShow.idx = 0; renderQhSlide(); }
+        else if (e.key === 'End') { _qhShow.idx = _qhShow.slides.length - 1; renderQhSlide(); }
+        else if (e.key === 'Escape') closeQhShow();
+    });
+    // Thoát fullscreen bằng Esc của trình duyệt → đóng luôn lớp trình chiếu
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (ev) {
+        document.addEventListener(ev, function () {
+            if (!(document.fullscreenElement || document.webkitFullscreenElement)) closeQhShow();
+        });
+    });
+    // Vuốt trái/phải trên điện thoại
+    var x0 = null;
+    box.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    box.addEventListener('touchend', function (e) {
+        if (x0 === null) return;
+        var dx = e.changedTouches[0].clientX - x0;
+        if (Math.abs(dx) > 50) qhGo(dx < 0 ? 1 : -1);
+        x0 = null;
+    });
+}
+
+// Khối "Quy hoạch phân khu các Khu công nghiệp" trên trang chủ
+function renderHomeQh() {
+    var wrap = document.getElementById('home-qh-wrap');
+    var grid = document.getElementById('home-qh-grid');
+    if (!wrap || !grid) return;
+    var slides = getAllQhSlides();
+    if (!slides.length) { wrap.style.display = 'none'; return; }
+    grid.innerHTML = slides.map(function (sl, i) {
+        return '<div class="qh-card">' +
+            '<img src="' + escapeHtml(sl.file) + '" alt="' + escapeHtml(sl.ten) + '" data-qh-idx="' + i + '" loading="lazy">' +
+            '<div class="qh-card-body">' +
+                '<div class="qh-card-title">' + escapeHtml(sl.donVi) + '</div>' +
+                (sl.quyetDinh ? '<div class="qh-card-sub">' + escapeHtml(sl.quyetDinh) + '</div>' : '') +
+                (sl.slug ? '<button type="button" class="qh-card-link" data-slug="' + escapeHtml(sl.slug) + '" data-ten="' + escapeHtml(sl.donVi) + '">Xem chi tiết khu →</button>' : '') +
+            '</div></div>';
+    }).join('');
+    grid.onclick = function (e) {
+        var img = e.target.closest('[data-qh-idx]');
+        if (img) { openQhShow(slides, +img.dataset.qhIdx); return; }
+        var link = e.target.closest('[data-slug]');
+        if (link) openUnitDetail(link.dataset.slug, link.dataset.ten);
+    };
+    document.getElementById('home-qh-play').onclick = function () { openQhShow(slides, 0); };
+    wrap.style.display = '';
+}
+
 // Khởi tạo nút Quay lại
 document.addEventListener('DOMContentLoaded', function () {
     var backBtn = document.getElementById('unit-back-btn');
     if (backBtn) backBtn.addEventListener('click', closeUnitDetail);
-    loadUnitDetails();
+    initQhShow();
+    loadUnitDetails().then(renderHomeQh);
     initVisitorCounter();
     initChatbot();
 });
