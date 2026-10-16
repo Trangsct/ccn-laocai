@@ -243,6 +243,18 @@
                     <img id="unit-cover-img" alt="" style="width:100%; max-height:380px; object-fit:cover; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
                 </div>
 
+                <!-- Bản vẽ quy hoạch phân khu (nếu có) — bấm ảnh để trình chiếu toàn màn hình -->
+                <div id="unit-qh-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 14px;">
+                        <h2 style="font-size:1.2rem; color:#1e293b; margin:0; display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.4rem;">📐</span>
+                            <span>Quy hoạch phân khu</span>
+                        </h2>
+                        <button id="unit-qh-play" type="button" style="background:#0d47a1; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:inherit;">▶ Trình chiếu toàn màn hình</button>
+                    </div>
+                    <div id="unit-qh-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+                </div>
+
                 <!-- Video -->
                 <div id="unit-video-wrap" style="margin-top:20px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:24px; display:none;">
                     <h2 style="font-size:1.2rem; color:#1e293b; margin:0 0 14px; display:flex; align-items:center; gap:10px;">
@@ -322,6 +334,23 @@
                 </div>
 
                 <div style="padding:28px 16px;">
+
+                <!-- QUY HOẠCH PHÂN KHU CÁC KCN — sinh động từ trường banVeQuyHoach trong unit-details.json; nút Trình chiếu mở toàn màn hình -->
+                <div id="home-qh-wrap" style="margin:0 auto 32px; display:none;">
+                    <div style="background:#fff; border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid #0d47a1;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:1.5rem;">📐</span>
+                                <div>
+                                    <h3 style="color:#1e293b; font-size:1.25rem; margin:0; font-weight:700;">Quy hoạch phân khu các Khu công nghiệp</h3>
+                                    <div style="font-size:0.85rem; color:#64748b; margin-top:2px;">Ban Quản lý Khu kinh tế tỉnh Lào Cai phê duyệt · bấm ảnh hoặc nút Trình chiếu để xem toàn màn hình</div>
+                                </div>
+                            </div>
+                            <button id="home-qh-play" type="button" style="background:#0d47a1; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-weight:700; font-size:1rem; cursor:pointer; box-shadow:0 4px 12px rgba(13,71,161,0.3); font-family:inherit;">▶ Trình chiếu</button>
+                        </div>
+                        <div id="home-qh-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;"></div>
+                    </div>
+                </div>
 
                 <!-- VIDEO GIỚI THIỆU — archive.org, khối trắng riêng dưới hero -->
                 <div style="margin:0 auto 32px;">
@@ -2831,5 +2860,18 @@
       // nhưng không tự nhắc user nữa. Khi cần bật lại, restore từ git history.
     </script>
 
+<!-- === TRÌNH CHIẾU BẢN VẼ QUY HOẠCH (toàn màn hình) === -->
+<div id="qh-show" role="dialog" aria-modal="true" aria-label="Trình chiếu bản vẽ quy hoạch" style="display:none;">
+    <img id="qh-show-img" alt="">
+    <button type="button" class="qh-show-btn qh-show-prev" data-qh="prev" aria-label="Ảnh trước">‹</button>
+    <button type="button" class="qh-show-btn qh-show-next" data-qh="next" aria-label="Ảnh sau">›</button>
+    <div class="qh-show-top">
+        <span id="qh-show-count"></span>
+        <button type="button" class="qh-show-tool" data-qh="auto" id="qh-show-auto">⏵ Tự chạy</button>
+        <button type="button" class="qh-show-tool" data-qh="fs">⛶ Toàn màn hình</button>
+        <button type="button" class="qh-show-tool" data-qh="close" aria-label="Đóng">✕ Đóng</button>
+    </div>
+    <div class="qh-show-cap" id="qh-show-cap"></div>
+</div>
 </body>
 </html>
