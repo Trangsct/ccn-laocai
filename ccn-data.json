@@ -522,6 +522,26 @@
       "datCongNghiep": 52.5,
       "quanLy": "Công ty CP PH GREEN",
       "nhomQuanLy": "doanh-nghiep"
+    },
+    {
+      "id": 26,
+      "ten": "Cụm công nghiệp Xuân Ái",
+      "huyen": "van-yen",
+      "xa": "Xã Xuân Ái, tỉnh Lào Cai",
+      "trangThai": "xay-dung",
+      "dienTich": 75,
+      "dienTichDaChoThue": 0,
+      "tyLeLapDay": 0,
+      "namThanhLap": 2026,
+      "soDoanhNghiep": 0,
+      "nganhNghe": "Chế biến chuỗi lạnh nông sản, lâm sản, thủy sản; sản xuất thức ăn chăn nuôi, thủy sản và chế biến phụ phẩm nông nghiệp; lắp ráp hàng điện tử nhẹ và hàng tiêu dùng; lắp ráp CKD máy móc, phụ tùng ô tô; chế tạo, lắp ráp và sửa chữa cơ khí; công nghiệp chế biến công nghệ cao; dệt may, giầy dép và sản xuất hàng thủ công mỹ nghệ; may mặc kỹ thuật và phụ kiện thời trang xuất khẩu (không nhuộm, không giặt mài); sản xuất bao bì và in ấn; sản xuất mỹ phẩm và sản phẩm chăm sóc cá nhân; sản xuất thiết bị y tế, dụng cụ chính xác và bộ xét nghiệm chẩn đoán; sản xuất vật liệu xây dựng; phối trộn, đóng gói hóa phẩm hạ nguồn (không tổng hợp hóa học); sản xuất điện, nước; sản xuất hàng tiêu dùng; công nghiệp nặng, luyện kim màu, hóa chất; logistics ngoại quan và thương mại điện tử xuyên biên giới; các ngành, nghề khác phù hợp với quy hoạch và quy định của pháp luật",
+      "moTa": "Chủ đầu tư: Công ty cổ phần LAMSEN Industrial Lào Cai. Tổng mức đầu tư 815,596 tỷ đồng (vốn chủ sở hữu và vốn huy động hợp pháp 18,39%, vốn vay ngân hàng 81,61%). Thành lập ngày 17/10/2026. Vị trí thôn Quyết Hùng, xã Xuân Ái; phía Tây Bắc giáp đường ĐT.166 và khu dân cư hiện trạng, phía Tây Nam giáp rừng sản xuất và đường cao tốc Nội Bài - Lào Cai. Tiến độ đầu tư xây dựng hạ tầng kỹ thuật 39 tháng kể từ ngày có Quyết định thành lập; đang triển khai các thủ tục sau thành lập (quy hoạch chi tiết 1/500, đất đai, môi trường, xây dựng).",
+      "haTang": "Mới thành lập, đang chuẩn bị đầu tư. Cơ cấu sử dụng đất: đất công nghiệp, đất cây xanh, đất giao thông, đất hạ tầng kỹ thuật. Hiện trạng chủ yếu là đất rừng sản xuất, đất trồng lúa, đất trồng cây hàng năm, đất trồng cây lâu năm, đất nuôi trồng thủy sản, đất nghĩa địa, đất ở nông thôn, đất giao thông, đất kênh mương thủy lợi. Đầu tư đồng bộ san nền, giao thông, cấp nước, thoát nước mưa, thu gom và xử lý nước thải (nhà máy xử lý nước thải tập trung, hoàn thành trước khi tiếp nhận dự án thứ cấp), chiếu sáng, cây xanh, khu hành chính - dịch vụ - kỹ thuật theo QCVN 01:2021/BXD. Thời hạn hoạt động của dự án 50 năm.",
+      "quyetDinh": "Quyết định thành lập số 3865/QĐ-UBND ngày 17/10/2026 của UBND tỉnh Lào Cai.",
+      "lat": 21.817039,
+      "lng": 104.744535,
+      "quanLy": "Công ty CP LAMSEN Industrial Lào Cai",
+      "nhomQuanLy": "doanh-nghiep"
     }
   ],
   "CCN_CHUA_DAU_TU": [
@@ -907,20 +927,6 @@
     },
     {
       "stt": 28,
-      "ten": "Cụm công nghiệp Xuân Ái (mở rộng)",
-      "huyen": "van-yen",
-      "xa": "Xã Xuân Ái, tỉnh Lào Cai",
-      "dienTich": 75,
-      "huongPhatTrien": "Cụm công nghiệp chưa thành lập, được điều chỉnh tăng diện tích lên 75 ha trong kỳ điều chỉnh quy hoạch gần nhất; thuộc Danh mục thu hút, mời gọi nhà đầu tư hạ tầng giai đoạn 2026-2030, hiện chưa có nhà đầu tư.",
-      "coBaoCao": false,
-      "baoCao": "",
-      "lat": 21.9,
-      "lng": 104.638,
-      "ghiChu": "Cụm trong quy hoạch, chưa thành lập, chưa có nhà đầu tư hạ tầng. Tọa độ hiển thị là vị trí ước lượng mức xã, cần cập nhật chính xác.",
-      "phanLoai": "moi-goi"
-    },
-    {
-      "stt": 29,
       "ten": "Cụm công nghiệp Hợp Minh",
       "huyen": "khu-vuc-moi",
       "xa": "Phường Hợp Minh (TP Yên Bái cũ) và một phần xã Bảo Hưng, xã Minh Quân (huyện Trấn Yên cũ), tỉnh Lào Cai",
@@ -934,7 +940,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 30,
+      "stt": 29,
       "ten": "Cụm công nghiệp Bảo Hưng 2",
       "huyen": "khu-vuc-moi",
       "xa": "Phường Âu Lâu, tỉnh Lào Cai",
@@ -948,7 +954,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 31,
+      "stt": 30,
       "ten": "Cụm công nghiệp Phú Thịnh 5",
       "huyen": "khu-vuc-moi",
       "xa": "Tổ dân phố Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
@@ -961,7 +967,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 32,
+      "stt": 31,
       "ten": "Cụm công nghiệp Phú Thịnh 6",
       "huyen": "khu-vuc-moi",
       "xa": "Tổ dân phố Cầu Yên + Đồng Tiến + Trung Nghiêm, Phường Văn Phú",
@@ -974,7 +980,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 33,
+      "stt": 32,
       "ten": "Cụm công nghiệp Quang Kim số 1",
       "huyen": "bat-xat",
       "xa": "Thôn Làng Hang, xã Bát Xát, tỉnh Lào Cai",
@@ -988,7 +994,7 @@
       "phanLoai": "moi-goi"
     },
     {
-      "stt": 34,
+      "stt": 33,
       "ten": "Cụm công nghiệp Châu Quế Thượng",
       "huyen": "van-yen",
       "xa": "Xã Châu Quế, tỉnh Lào Cai",
