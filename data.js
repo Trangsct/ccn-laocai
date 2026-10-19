@@ -191,6 +191,12 @@ let CUM_CONG_NGHIEP = [
         trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
         namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty cổ phần PH GREEN",
         haTang: "Mới thành lập, đang chuẩn bị đầu tư", quyetDinh: "QĐ số 3427/QĐ-UBND", lat: 21.836726, lng: 104.727577
+    },
+    {
+        id: 26, ten: "Cụm công nghiệp Xuân Ái", huyen: "van-yen", xa: "Xã Xuân Ái",
+        trangThai: "xay-dung", dienTich: 75, dienTichDaChoThue: 0, tyLeLapDay: 0,
+        namThanhLap: 2026, soDoanhNghiep: 0, nganhNghe: "Đa ngành", moTa: "Công ty cổ phần LAMSEN Industrial Lào Cai",
+        haTang: "Mới thành lập, đang chuẩn bị đầu tư", quyetDinh: "QĐ số 3865/QĐ-UBND", lat: 21.817039, lng: 104.744535
     }
 ];
 
@@ -203,7 +209,6 @@ let CCN_CHUA_DAU_TU = [
     { stt: 6, ten: "Cụm công nghiệp Bảo Thắng (Phố Lu)", huyen: "bao-thang", xa: "Xã Bảo Thắng", dienTich: 40, huongPhatTrien: "Sau 2030 mở rộng lên thành 75ha" },
     { stt: 7, ten: "Cụm công nghiệp Bản Phung", huyen: "van-ban", xa: "Xã Văn Bàn", dienTich: 40, huongPhatTrien: "" },
     { stt: 8, ten: "Cụm công nghiệp Trà Trẩu", huyen: "bao-thang", xa: "Xã Bảo Thắng", dienTich: 35, huongPhatTrien: "Sau 2030 mở rộng lên thành 50ha" },
-    { stt: 9, ten: "Cụm công nghiệp Xuân Ái", huyen: "van-yen", xa: "Xã Xuân Ái", dienTich: 35, huongPhatTrien: "Tăng 40 ha" },
     { stt: 10, ten: "Cụm công nghiệp Tân Hợp", huyen: "van-yen", xa: "Xã Tân Hợp", dienTich: 40, huongPhatTrien: "Tăng 35 ha" },
     { stt: 11, ten: "Cụm công nghiệp Bát Xát", huyen: "bat-xat", xa: "Xã Bát Xát", dienTich: 53, huongPhatTrien: "Tăng 04 ha" },
     { stt: 12, ten: "Cụm công nghiệp Mường Khương", huyen: "muong-khuong", xa: "Xã Mường Khương", dienTich: 10, huongPhatTrien: "Tăng 20 ha" },
