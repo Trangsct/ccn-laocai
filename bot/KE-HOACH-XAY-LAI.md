@@ -33,6 +33,22 @@ hằng ngày, không tốn dung lượng máy.
 | Kênh báo động | Telegram (đã có trong config.json) | |
 | PDF gốc trong skill-sct | chuyển sang kho lưu trữ riêng ở Giai đoạn 2 | |
 
+## Chuyển sang EGOV (Bạn báo 21/10/2026)
+
+Từ **10/10/2026** văn bản đi, đến của Sở chuyển sang nền tảng chính quyền số **EGOV**
+(`https://egov1.laocai.gov.vn/home/default/1`), thay cho Data360X (`csdlvb.laocai.gov.vn`, lượt quét cuối 10/10/2026,
+bản tin cuối `theo-doi/bao-cao/2026-10-10.md`) và vOffice. Claude trên mây không vào được egov1 (cổng chặn máy
+ngoài nước, như Data360X), nên làm theo hai bước:
+
+- [x] **Bước 1 — soi:** `scripts/egov_soi.py` + `bot/soi-egov.bat` (21/10/2026). Chạy một lần trên máy ở Lào Cai:
+      Bạn đăng nhập EGOV, bot tự đi qua menu Văn bản đến/đi (chỉ theo liên kết, bỏ mọi chữ xóa/chuyển/ký/hoàn thành),
+      rồi Bạn tự bấm 10 phút; bot ghi trang, bảng, API (mẫu phản hồi cắt ngắn, mã phiên/mật khẩu/cookie đã che) lên
+      kho riêng tư `vlncn-laocai/theo-doi/egov/soi/<ngày-giờ>/`. Qua máy ảo Windows (job `soi-egov`).
+- [ ] Bạn chạy `soi-egov.bat` trên máy (dòng PowerShell ở đầu `HUONG-DAN-CAI-BOT.md`).
+- [ ] **Bước 2 — bot EGOV:** Claude đọc kết quả soi, viết phần đọc danh sách văn bản đến/đi, tải tệp đính kèm, việc
+      chờ xử lý trên EGOV; giữ nguyên đầu ra cũ (`theo-doi/danh-muc-<năm>.json`, `bao-cao/<ngày>.md`, `inbox/`) để các
+      plugin, Routine và web không phải đổi. Data360X giữ lại làm kho tra văn bản trước 10/10/2026.
+
 ## Lộ trình và trạng thái
 
 ### Giai đoạn 0 — cầm máu (tuần 30/9)
