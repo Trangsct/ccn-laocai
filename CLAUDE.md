@@ -172,6 +172,11 @@ quan** (cài bằng `bot/cai-runner.bat`). Máy tắt thì lệnh nằm chờ, b
 dang-nhap-lan-dau → cai-runner → quét 30 ngày (Bạn yêu cầu 29/9/2026, sau 11 ngày máy bàn cơ quan im lặng từ 18/9).
 Cách tải file đó về máy: mục đầu `bot/HUONG-DAN-CAI-BOT.md`.
 
+**Từ 10/10/2026 văn bản đi, đến nằm trên EGOV** (`egov1.laocai.gov.vn`, Bạn báo 21/10/2026), Data360X dừng ở
+lượt quét 10/10. Bot EGOV làm hai bước: soi cấu trúc trang (`scripts/egov_soi.py`, `bot/soi-egov.bat` → kết quả ở
+`vlncn-laocai/theo-doi/egov/soi/`), rồi viết bot thật từ kết quả soi, giữ nguyên đầu ra cũ. Chi tiết:
+`bot/KE-HOACH-XAY-LAI.md` mục "Chuyển sang EGOV".
+
 **Bạn chốt 30/9/2026 — xây lại bộ công cụ theo `bot/KE-HOACH-XAY-LAI.md`.** Ba điều bắt buộc từ nay:
 (1) mọi file trong `bot/` phải qua máy ảo Windows (`.github/workflows/thu-bo-cai-windows.yml`) trước khi
 merge, không đưa Bạn chạy thử; (2) máy ở Lào Cai chỉ là "tay" chép văn bản, mọi đọc hiểu do Claude Routine

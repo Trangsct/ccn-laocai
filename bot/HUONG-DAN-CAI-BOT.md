@@ -1,5 +1,19 @@
 # Hướng dẫn cài Bot Data360X trên máy cơ quan (Windows)
 
+## SOI EGOV — việc cần làm ngay (từ 21/10/2026)
+
+> Từ 10/10/2026 văn bản chuyển sang **EGOV** (egov1.laocai.gov.vn). Để Claude viết bot cho EGOV, cần chạy **một lần**
+> công cụ soi trên máy ở Lào Cai (laptop hoặc máy bàn đã từng chạy bot). Mở **PowerShell**, dán nguyên dòng sau rồi Enter:
+>
+> ```
+> $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -H "Accept: application/vnd.github.raw" -o "$r\bot\soi-egov.bat" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/soi-egov.bat?ref=main"; & "$r\bot\soi-egov.bat"
+> ```
+>
+> Chrome mở EGOV → Bạn đăng nhập như thường → bot tự đi qua menu 2–3 phút → cửa sổ đen hiện **PHA 2**: Bạn bấm
+> Văn bản đến → mở 1 văn bản → xem tệp đính kèm; tương tự Văn bản đi; mục Chờ xử lý; gõ thử một số ký hiệu vào ô tìm
+> kiếm. Xong bấm Enter ở cửa sổ đen (hoặc chờ 10 phút). Thấy **XONG** thì báo Claude "đã soi EGOV xong".
+> Bot chỉ đọc, không bấm Chuyển/Ký/Hoàn thành; mã phiên, mật khẩu, cookie được che trước khi đẩy lên kho riêng tư.
+
 ## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
 
 > ✅ **Từ 30/9/2026 dùng `cai-tay.bat` (đã qua máy ảo Windows)** thay cho `cai-laptop.bat`/`cai-runner.bat`.
