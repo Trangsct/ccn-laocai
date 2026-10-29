@@ -4,3 +4,8 @@
 *.log
 node_modules
 docs
+# mã bot, TAY chạy trên máy Lào Cai, không thuộc trang web
+bot
+scripts
+tay
+.github

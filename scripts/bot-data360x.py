@@ -285,6 +285,7 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
     da_gom, sha_gom = _json_gh(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/_da-gom.json", token, {})
 
     moi, da_tai, loi = [], 0, []
+    cho_ghi = {}                                   # đường dẫn -> bytes, đẩy MỘT commit cuối lượt
     for vb in sorted(van_ban, key=lambda v: (parse_ngay(v["ngay_ban_hanh"]) or date.min), reverse=True):
         khoa = f"{vb['so_ky_hieu']}|{vb['ngay_ban_hanh']}"
         if khoa in da_gom:
@@ -319,7 +320,6 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                 elif pdf and len(pdf) > PDF_TOI_DA_MB * 1024 * 1024 and len(trich_chu_pdf(pdf)) < 800:
                     loi.append(f"{vb['so_ky_hieu']}: bản scan {len(pdf) // 1024 // 1024} MB, quá lớn - chỉ ghi mục lục")
                 else:
-                    msg_vb = f"Theo dõi văn bản: {vb['so_ky_hieu']}"
                     dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
                            f"- Ngày ban hành: {vb['ngay_ban_hanh']}",
                            f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
@@ -339,13 +339,8 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                     if ten_chinh and not _cung_van_ban_gh(f"{thu_muc}/{ten_chinh}", vb, danh_muc, token):
                         ten_goc += "_" + (str(vb.get("id_data360x") or "") or lam_sach_vn(vb["ngay_ban_hanh"]))
                         goi, ten_chinh = dong_goi_ho_so(vb, ten_goc, pdf, dinh_kem, dau)
-                    try:
-                        for ten_t, du_lieu in goi:
-                            gh_ghi_de(REPO_TRI_THUC, f"{thu_muc}/{ten_t}", du_lieu, msg_vb, token)
-                    except Exception as e:
-                        log(f"  [tri thức] lỗi ghi {vb['so_ky_hieu']}: {e!r}")
-                        loi.append(f"{vb['so_ky_hieu']}: lỗi ghi lên GitHub ({str(e)[:80]})")
-                        continue
+                    for ten_t, du_lieu in goi:          # ghi một lần cuối lượt (gh_mot_commit)
+                        cho_ghi[f"{thu_muc}/{ten_t}"] = du_lieu
                     duong = f"{thu_muc}/{ten_chinh}"
                     ghi["tep"] = duong
                     ghi["dinh_kem"] = [{"ten": d["ten"], "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]
@@ -405,13 +400,19 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
         dong += ["## Chỗ máy chưa lấy được", ""] + [f"- {x}" for x in loi] + [""]
 
     duong_bt = f"{THU_MUC_TRI_THUC}/bao-cao/{date.today().isoformat()}.md"
-    _, sha_bt = gh_doc(REPO_TRI_THUC, duong_bt, token)
     msg = f"Theo dõi văn bản {date.today().strftime('%d/%m/%Y')}: {len(moi)} văn bản mới, tải {da_tai} tệp"
-    gh_ghi(REPO_TRI_THUC, duong_bt, "\n".join(dong).encode(), msg, token, sha_bt)
-    gh_ghi(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json",
-           json.dumps(danh_muc, ensure_ascii=False, indent=1).encode(), msg, token, sha_muc)
-    gh_ghi(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/_da-gom.json",
-           json.dumps(da_gom, ensure_ascii=False, indent=1).encode(), msg, token, sha_gom)
+    cho_ghi[duong_bt] = "\n".join(dong).encode()
+    cho_ghi[f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json"] = json.dumps(danh_muc, ensure_ascii=False, indent=1).encode()
+    cho_ghi[f"{THU_MUC_TRI_THUC}/_da-gom.json"] = json.dumps(da_gom, ensure_ascii=False, indent=1).encode()
+    try:
+        gh_mot_commit(REPO_TRI_THUC, cho_ghi, msg, token)
+    except Exception as e:
+        log("  [tri thức] một commit không được, ghi từng tệp:", str(e)[:120])
+        for duong, nd in cho_ghi.items():
+            try:
+                gh_ghi_de(REPO_TRI_THUC, duong, nd, msg, token)
+            except Exception as e2:
+                log(f"  [tri thức] lỗi ghi {duong}: {e2!r}"[:200])
     log(f"  [tri thức] {len(moi)} văn bản mới, tải {da_tai} tệp, bản tin: {duong_bt}")
     return len(moi)
 
@@ -3459,8 +3460,42 @@ def _egov_khao_sat_tren(ctx, page, thu_muc: Path):
     return buoc
 
 
+def gh_mot_commit(repo, tep: dict, msg, token, lan_thu=4):
+    """Ghi nhiều tệp {đường dẫn trong kho: bytes} trong MỘT commit (Git Data API: blob -> tree -> commit -> ref).
+    Vụ 29/10/2026: đẩy từng tệp tạo hàng trăm commit/lượt, mỗi commit kích hoạt Vercel (75% dung lượng 10 GB,
+    triển khai lỗi). Ref đổi giữa chừng (máy khác vừa đẩy) thì làm lại từ ref mới. Trả số tệp đã ghi."""
+    if not tep:
+        return 0
+    api = f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/git"
+    blob = {}
+    for duong, nd in tep.items():
+        r = gh("POST", f"{api}/blobs", {"content": base64.b64encode(nd).decode(), "encoding": "base64"}, token)
+        blob[duong] = r["sha"]
+    for lan in range(lan_thu):
+        ref = gh("GET", f"{api}/ref/heads/main", token=token)
+        cha = ref["object"]["sha"]
+        cay_cha = gh("GET", f"{api}/commits/{cha}", token=token)["tree"]["sha"]
+        cay = gh("POST", f"{api}/trees", {"base_tree": cay_cha, "tree": [
+            {"path": d, "mode": "100644", "type": "blob", "sha": sh} for d, sh in blob.items()]}, token)
+        cm = gh("POST", f"{api}/commits", {"message": msg, "tree": cay["sha"], "parents": [cha]}, token)
+        try:
+            gh("PATCH", f"{api}/refs/heads/main", {"sha": cm["sha"]}, token)
+            return len(blob)
+        except RuntimeError as e:
+            if "422" not in str(e) or lan == lan_thu - 1:
+                raise
+            time.sleep(2 + lan * 3)
+    return 0
+
+
 def _day_thu_muc(token, thu_muc: Path, duong_kho, msg, repo=REPO_TRI_THUC):
-    """Đẩy mọi tệp của một thư mục trên máy lên kho riêng tư qua Contents API (không cần git)."""
+    """Đẩy mọi tệp của một thư mục trên máy lên kho riêng tư trong MỘT commit; lỗi thì đẩy từng tệp như cũ."""
+    tep = {f"{duong_kho.rstrip('/')}/{f.relative_to(thu_muc).as_posix()}": f.read_bytes()
+           for f in sorted(thu_muc.rglob("*")) if f.is_file()}
+    try:
+        return gh_mot_commit(repo, tep, msg, token)
+    except Exception as e:
+        log("  đẩy một commit không được, đẩy từng tệp:", str(e)[:120])
     so = 0
     for f in sorted(thu_muc.rglob("*")):
         if f.is_file():
