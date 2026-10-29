@@ -1,5 +1,36 @@
 # Hướng dẫn cài Bot Data360X trên máy cơ quan (Windows)
 
+## BOT EGOV — việc cần làm ngay (từ 29/10/2026)
+
+> Từ 10/10/2026 văn bản đi, đến nằm trên **EGOV** (`egov1.laocai.gov.vn`). Từ 29/10/2026 bot đã đọc được EGOV: cổng mặc
+> định của `bot-data360x.py` là egov1 (Data360X chỉ còn là kho tra văn bản cũ). Trên máy ở Lào Cai đã từng chạy bot
+> (laptop hoặc máy bàn), làm **một lần**:
+>
+> 1. Mở **PowerShell**, dán nguyên dòng sau rồi Enter (tải bản mới nhất rồi mở cửa sổ quét lại):
+>
+>    ```
+>    $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -H "Accept: application/vnd.github.raw" -o "$r\bot\quet-lai-ngay.bat" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/quet-lai-ngay.bat?ref=main"; & "$r\bot\quet-lai-ngay.bat"
+>    ```
+> 2. Hỏi số ngày → gõ **30**, Enter. Chrome (hồ sơ riêng của bot) mở egov1; lần đầu sẽ là trang đăng nhập → **đăng nhập
+>    như thường** (nhập mã xác thực). Bot tự chạy tiếp, đừng đóng Chrome.
+> 3. Lần đầu bot tự **khảo sát** cổng (2–3 phút: Văn bản đến, Văn bản đi, một trang chi tiết, Quản lý nhiệm vụ) rồi mới
+>    quét. Thấy **XONG** thì báo Claude "đã chạy bot EGOV".
+> 4. **Cho chạy tự động hằng ngày** (Bạn yêu cầu 29/10/2026 — chỉ làm một lần, sau bước 3): mở PowerShell, dán dòng cài
+>    TAY ở mục dưới ("Cài lên máy mới…", ô ✅) rồi nháy đúp `cai-tay.bat`, cuối phải thấy **TAY DANG CHAY**. Từ đó máy
+>    tự làm, không cần bấm gì: giữ phiên egov1 mỗi giờ 07–17h (thứ Hai–Bảy); **07:30 thứ Hai–Sáu** lấy việc chờ xử lý
+>    kèm toàn văn; **16:30 thứ Hai–Sáu** quét 7 ngày ra bản tin (thứ Tư 11:30 quét 30 ngày). Claude trên mây đọc
+>    kết quả: 08:3x soạn dự thảo cho việc chờ xử lý, 19:3x nâng cấp các plugin từ bản tin trong ngày.
+>    Bạn chỉ phải đăng nhập lại khi Windows/Telegram báo phiên egov1 hết hạn (nháy đúp `dang-nhap-lan-dau.bat`).
+>
+> Bot làm gì: quét Văn bản đến + đi → mục lục và bản tin như cũ (`vlncn-laocai/theo-doi/`); văn bản đến có trạng thái
+> **Chưa / Chờ / Đang xử lý** → tải toàn văn + đính kèm vào `vlncn-laocai/theo-doi/viec-cho-xu-ly/<ngày>/` (thay vOffice).
+> Văn bản có **Độ mật** khác "Thường" không bao giờ được tải hay đẩy lên GitHub.
+>
+> Các tệp nháy đúp: `quet-lai-ngay.bat` (quét N ngày), `viec-cho-xu-ly.bat` (chỉ lấy việc chờ xử lý),
+> `khao-sat-egov.bat` (khảo sát lại khi cổng đổi giao diện), `dang-nhap-lan-dau.bat` (đăng nhập lại khi phiên hết).
+> Công cụ soi tương tác `soi-egov.bat` (Bạn tự bấm 10 phút) vẫn còn, chỉ dùng khi Claude cần xem thêm.
+> Muốn quay về Data360X: thêm `"he_thong": "data360x"` vào `bot-profile\config.json`.
+
 ## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
 
 > ✅ **Từ 30/9/2026 dùng `cai-tay.bat` (đã qua máy ảo Windows)** thay cho `cai-laptop.bat`/`cai-runner.bat`.

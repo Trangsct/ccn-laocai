@@ -7,7 +7,7 @@ name: Thu bo cai tren Windows
 
 on:
   pull_request:
-    paths: ['bot/**', '.github/workflows/thu-bo-cai-windows.yml']
+    paths: ['bot/**', 'scripts/egov_soi.py', '.github/workflows/thu-bo-cai-windows.yml']
   push:
     branches: [main]
     paths: ['bot/**']
@@ -70,3 +70,32 @@ jobs:
           }
           Get-Content 'D:\du-an\bot-profile\tay-trang-thai.json'
           Get-ScheduledTask -TaskName 'TAY Data360X*' -ErrorAction SilentlyContinue | Select-Object TaskName, State
+
+  soi-egov:
+    name: soi-egov.bat + egov_soi.py --chay-thu (cmd, Python Windows)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Dựng D:\du-an như máy thật
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path 'D:\du-an' | Out-Null
+      - name: Chạy soi-egov.bat (chép mã từ kho đang thử, egov_soi.py --chay-thu, không dừng ở pause)
+        shell: cmd
+        env:
+          SOI_NGUON: ${{ github.workspace }}
+          SOI_THAM_SO: --chay-thu
+          SOI_KHONG_DUNG: '1'
+        run: |
+          call bot\soi-egov.bat > soi.log 2>&1
+          type soi.log
+          findstr /C:"CHAY THU egov_soi.py: OK" soi.log || exit /b 1
+          findstr /C:"XONG." soi.log || exit /b 1
+          if not exist D:\du-an\bot\egov_soi.py exit /b 1
+          if not exist D:\du-an\bot\bot-data360x.py exit /b 1
+      - name: Nạp được egov_soi.py cùng bot-data360x.py (không thiếu thư viện chuẩn)
+        shell: cmd
+        run: python -c "import importlib.util as u; s=u.spec_from_file_location('e', r'D:\du-an\bot\egov_soi.py'); m=u.module_from_spec(s); s.loader.exec_module(m); print('nap egov_soi OK', m.TRANG_CHU)"
