@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-KHÂU 1 - Bot thu thập văn bản từ Data360X (https://csdlvb.laocai.gov.vn), chạy trên máy Windows ở cơ quan.
+KHÂU 1 - Bot thu thập văn bản, chạy trên máy Windows ở Lào Cai.
+Từ 29/10/2026 cổng mặc định là egov1 (https://egov1.laocai.gov.vn - trang quản lý văn bản mới Bạn chuyển sang);
+Data360X (https://csdlvb.laocai.gov.vn) vẫn dùng được bằng config.json "he_thong": "data360x" hoặc --he-thong data360x.
 
 Cách chạy (các file .bat trong thư mục bot/ gọi sẵn):
-  python bot-data360x.py --dang-nhap    mở Chrome hồ sơ riêng tại Data360X để cán bộ đăng nhập lần đầu
+  python bot-data360x.py --dang-nhap    mở Chrome hồ sơ riêng tại cổng (egov1/Data360X) để cán bộ đăng nhập lần đầu
   python bot-data360x.py --giu-phien    chỉ mở trang chủ rồi đóng, giữ phiên SSO (07h, 12h, 15h)
   python bot-data360x.py                chạy chính (18h): quét Văn bản đến + Văn bản đi 3 ngày gần nhất,
                                         lọc văn bản theo dõi, tải PDF, đẩy lên inbox/ của repo đích
   python bot-data360x.py --soi          như chạy chính nhưng KHÔNG đẩy lên GitHub; lưu HTML/ảnh vào logs/soi/
                                         để hoàn thiện selector (dùng khi trang đổi giao diện)
+  python bot-data360x.py --khao-sat     (egov1) đi một vòng cổng, ghi HTML/ảnh/API lên vlncn-laocai/theo-doi/egov/soi/
+  python bot-data360x.py --viec         (egov1) việc Chưa/Chờ/Đang xử lý trong Văn bản đến: tải toàn văn, đẩy lên
+                                        vlncn-laocai/theo-doi/viec-cho-xu-ly/<ngày>/ (thay vOffice)
 
 Hồ sơ Chrome + cấu hình + log: <ổ>:\\du-an\\bot-profile với thư mục du-an đã có sẵn trên ổ D/E/F/G, không thì C:\\du-an\\bot-profile (đổi bằng biến môi trường BOT_HOME)
   config.json: {"github_token": "...", "telegram_token": "", "telegram_chat_id": ""}
@@ -320,7 +325,7 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                            f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
                            f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
                            f"- Lĩnh vực: {', '.join(ghi['linh_vuc'])}",
-                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl) + [
+                           f"- Bản gốc trên {TEN_HE_THONG}: {vb.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl) + [
                            "",
                            "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
                            "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
@@ -358,7 +363,7 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
     # --- bản tin cho Claude đọc đầu phiên
     ten_lv = {lv["ma"]: lv["ten"] for lv in LINH_VUC}
     huong = {"den": "đến", "di": "đi"}
-    dong = [f"# Văn bản mới trên Data360X - {date.today().strftime('%d/%m/%Y')}", "",
+    dong = [f"# Văn bản mới trên {TEN_HE_THONG} - {date.today().strftime('%d/%m/%Y')}", "",
             f"Quét từ ngày {tu_ngay.strftime('%d/%m/%Y')}: {len(van_ban)} văn bản đi + đến, "
             f"trong đó {len(moi)} văn bản lần đầu ghi nhận, tải về {da_tai} tệp.", "",
             "Cách dùng: Claude đọc mục nào thì mở tệp PDF tương ứng trong `theo-doi/`, đối chiếu plugin "
@@ -850,15 +855,15 @@ def cho_dang_nhap(ctx, page, p=None):
     Trả (ok, ctx, page): Chrome bị đóng giữa chừng (vụ 16/9/2026 - lượt quét thứ Tư chết sau 17 giây vì
     TargetClosedError) thì mở lại cửa sổ và chờ tiếp thay vì đổ cả lượt chạy; vì thế ctx/page có thể là mới.
     """
-    thong_bao_windows("Bot cần bạn đăng nhập lại Data360X", "Đăng nhập trong cửa sổ Chrome vừa mở, bot sẽ tự chạy tiếp.")
-    telegram("Bot Data360X: phiên đăng nhập hết hạn. Hãy đăng nhập lại trong cửa sổ Chrome trên máy cơ quan.")
+    thong_bao_windows(f"Bot cần bạn đăng nhập lại {TEN_HE_THONG}", "Đăng nhập trong cửa sổ Chrome vừa mở, bot sẽ tự chạy tiếp.")
+    telegram(f"Bot {TEN_HE_THONG}: phiên đăng nhập hết hạn. Hãy đăng nhập lại trong cửa sổ Chrome trên máy cơ quan.")
     for lan in range(SO_LAN_CHO_DANG_NHAP):
         log(f"Chờ đăng nhập, lần {lan + 1}/{SO_LAN_CHO_DANG_NHAP} (tối đa {CHO_DANG_NHAP_PHUT} phút)")
         het = time.time() + CHO_DANG_NHAP_PHUT * 60
         while time.time() < het:
             try:
                 page.wait_for_timeout(10000)
-                if not can_dang_nhap(page) and "csdlvb.laocai.gov.vn" in page.url:
+                if not can_dang_nhap(page) and GOC_WEB.split("//")[1] in page.url:
                     log("Đã đăng nhập, chạy tiếp.")
                     return True, ctx, page
             except Exception as e:
@@ -1633,7 +1638,7 @@ def dong_goi_ho_so(vb, ten_goc, pdf_chinh, dinh_kem, dau_md):
             ten_chinh = ten_goc + ".md"
             than = list(dau_md)
             if muc_dk:
-                than += ["", "## Tệp đính kèm trên Data360X", ""] + muc_dk
+                than += ["", f"## Tệp đính kèm trên {TEN_HE_THONG}", ""] + muc_dk
             than += ["", "---", "", chu]
             ra.append((ten_chinh, "\n".join(than).encode()))
         else:
@@ -1641,10 +1646,10 @@ def dong_goi_ho_so(vb, ten_goc, pdf_chinh, dinh_kem, dau_md):
             ra.append((ten_chinh, pdf_chinh))
             if muc_dk:
                 ra.append((ten_goc + ".md", ("\n".join(dau_md) + "\n\n*(Văn bản chính là bản scan: xem "
-                           + ten_chinh + ")*\n\n## Tệp đính kèm trên Data360X\n\n" + "\n".join(muc_dk)).encode()))
+                           + ten_chinh + f")*\n\n## Tệp đính kèm trên {TEN_HE_THONG}\n\n" + "\n".join(muc_dk)).encode()))
     elif muc_dk:
         ten_chinh = ten_goc + ".md"
-        ra.append((ten_chinh, ("\n".join(dau_md) + "\n\n*(Không tải được PDF chính)*\n\n## Tệp đính kèm trên Data360X\n\n"
+        ra.append((ten_chinh, ("\n".join(dau_md) + f"\n\n*(Không tải được PDF chính)*\n\n## Tệp đính kèm trên {TEN_HE_THONG}\n\n"
                                + "\n".join(muc_dk)).encode()))
     return ra, ten_chinh
 
@@ -1982,7 +1987,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                            f"- Nguồn: văn bản {'đến' if nguon == 'den' else 'đi'}"
                            f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
                            f"- Lý do lấy: {ly_do}",
-                           f"- Bản gốc trên Data360X: {vb.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl) + ["",
+                           f"- Bản gốc trên {TEN_HE_THONG}: {vb.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl) + ["",
                            "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
                            "không nằm trong lớp text - lấy theo hai dòng trên, hoặc mở bản gốc."]
                     goi, tep = dong_goi_ho_so(vb, ten, pdf, dinh_kem, dau)
@@ -2020,8 +2025,8 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     + (f" — Phòng {v['vai_tro_phong']}" + (f", xử lý chính: {v['nguoi_xu_ly_chinh']}" if v.get('nguoi_xu_ly_chinh') else "")
                        + (f", hạn {v['han_xu_ly']}" if v.get('han_xu_ly') else "") if v.get('vai_tro_phong') and v['vai_tro_phong'] != 'không có' else ""))
     if thieu_so:
-        dong += ["", "## Không thấy trên Data360X", ""] + [f"- {so[k]}" for k in thieu_so] + \
-                ["", "Có thể số ký hiệu ghi khác trên Data360X (thử chỉ phần số), hoặc văn bản chưa được cập nhật lên cổng."]
+        dong += ["", f"## Không thấy trên {TEN_HE_THONG}", ""] + [f"- {so[k]}" for k in thieu_so] + \
+                ["", f"Có thể số ký hiệu ghi khác trên {TEN_HE_THONG} (thử chỉ phần số), hoặc văn bản chưa được cập nhật lên cổng."]
     if bo_qua_tk:
         dong += ["", "## Từ khóa quá rộng", ""] + \
                 [f"- {k}: đã lấy {LAY_TOI_DA_MOI_TU_KHOA} văn bản mới nhất, bỏ qua {v} văn bản khác. "
@@ -2057,6 +2062,7 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
         soi_dir.mkdir(parents=True, exist_ok=True)
     tu_ngay = date.today() - timedelta(days=so_ngay or (SO_NGAY_QUET_SOI if soi else SO_NGAY_QUET))
     tong_quet, da_day, loi, phien_moi, tri_thuc_moi = 0, [], [], None, 0
+    viec_tom = ""
 
     with sync_playwright() as p:
         ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
@@ -2071,8 +2077,15 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
                 page.bring_to_front()
                 ok, ctx, page = cho_dang_nhap(ctx, page, p)
                 if not ok:
-                    telegram("Bot Data360X: không đăng nhập được sau 90 phút, bỏ lượt chạy hôm nay.")
+                    telegram(f"Bot {TEN_HE_THONG}: không đăng nhập được sau 90 phút, bỏ lượt chạy hôm nay.")
                     return 3
+            if HE_THONG == "egov" and not soi and token and not EGOV_DA_KHAO_SAT.exists():
+                # Lần đầu chạy trên cổng mới: ghi lại cấu trúc cổng lên kho riêng tư để Claude hoàn thiện bộ đọc
+                log("Lần đầu chạy trên egov1: khảo sát cổng trước khi quét...")
+                try:
+                    _egov_khao_sat_va_day(ctx, page, token)
+                except Exception as e:
+                    log("  khảo sát lỗi (vẫn quét tiếp):", repr(e))
             van_ban = []
             for nguon in ("den", "di"):
                 rows = quet_danh_sach(page, nguon, tu_ngay, soi_dir)
@@ -2142,6 +2155,21 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
                 except Exception as e:
                     log("  [tri thức] lỗi:", repr(e))
                     loi.append(f"gom tri thức: {e!r}")
+
+            # egov1: việc Chưa/Chờ/Đang xử lý trong Văn bản đến (thay vOffice, Bạn chuyển 29/10/2026).
+            # Việc có thể nhận từ trước khoảng quét hằng ngày (3 ngày) nên đọc lại tối thiểu 30 ngày.
+            if HE_THONG == "egov" and not soi and token:
+                log("Việc chờ xử lý trên egov1...")
+                try:
+                    den = [v for v in van_ban if v["nguon"] == "den"]
+                    if (date.today() - tu_ngay).days < 30:
+                        den = quet_danh_sach(page, "den", date.today() - timedelta(days=30)) or den
+                    tong_viec, moi_viec = _egov_lay_viec(
+                        ctx, page, den, BOT_HOME / "ket-qua" / "viec" / date.today().isoformat(), token)
+                    viec_tom = f"; {tong_viec} việc chờ xử lý (tải mới {moi_viec}) -> {THU_MUC_VIEC}/"
+                except Exception as e:
+                    log("  [việc] lỗi:", repr(e))
+                    loi.append(f"việc chờ xử lý: {e!r}")
         finally:
             try:
                 if online:
@@ -2153,10 +2181,11 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
             except Exception:
                 pass
 
-    tom_tat = (f"Bot Data360X {date.today().isoformat()}: quét {tong_quet} văn bản, "
+    tom_tat = (f"Bot {TEN_HE_THONG} {date.today().isoformat()}: quét {tong_quet} văn bản, "
                f"đẩy {len(da_day)} file"
                + (f", theo dõi thêm {tri_thuc_moi} văn bản cho plugin" if tri_thuc_moi else "")
                + (": " + "; ".join(da_day) if da_day else "")
+               + viec_tom
                + (f". Lỗi {len(loi)}: " + "; ".join(loi) if loi else ""))
     log(tom_tat)
     if not soi:
@@ -2172,7 +2201,7 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
 
 
 def giu_phien():
-    """Mở trang chủ Data360X bằng phiên đã có rồi đóng (~20 giây), để cổng không cắt phiên vì lâu không dùng.
+    """Mở trang chủ cổng (egov1 hoặc Data360X) bằng phiên đã có rồi đóng (~20 giây), để cổng không cắt phiên.
     Bạn chốt 24/9/2026: chạy MỖI GIỜ trong giờ làm việc (trước đó chỉ thứ Tư -> phiên hết gần như mỗi ngày),
     cửa sổ Chrome thu nhỏ. Chỉ dùng lại phiên có sẵn; phiên hết thì báo để Bạn đăng nhập."""
     from playwright.sync_api import sync_playwright
@@ -2184,8 +2213,8 @@ def giu_phien():
             page.wait_for_timeout(5000)
             if can_dang_nhap(page):
                 log("Giữ phiên: phiên đã hết, cần đăng nhập lại.")
-                thong_bao_windows("Bot Data360X", "Phiên Data360X đã hết hạn. Mở dang-nhap-lan-dau.bat để đăng nhập lại.")
-                telegram("Bot Data360X: phiên đăng nhập đã hết hạn (phát hiện lúc giữ phiên). Hãy đăng nhập lại trên máy cơ quan.")
+                thong_bao_windows(f"Bot {TEN_HE_THONG}", f"Phiên {TEN_HE_THONG} đã hết hạn. Mở dang-nhap-lan-dau.bat để đăng nhập lại.")
+                telegram(f"Bot {TEN_HE_THONG}: phiên đăng nhập đã hết hạn (phát hiện lúc giữ phiên). Hãy đăng nhập lại trên máy cơ quan.")
                 return 3
             log("Giữ phiên: OK")
         finally:
@@ -2199,8 +2228,8 @@ def dang_nhap_lan_dau():
         ctx = mo_trinh_duyet(p, headless=False)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
-        print("\nHãy đăng nhập Data360X trong cửa sổ Chrome vừa mở (nhập captcha như thường).")
-        print("Khi thấy trang chủ Data360X hiện ra, quay lại cửa sổ này và bấm Enter để lưu phiên.")
+        print(f"\nHãy đăng nhập {TEN_HE_THONG} ({GOC_WEB}) trong cửa sổ Chrome vừa mở (nhập mã xác thực như thường).")
+        print(f"Khi thấy danh sách văn bản / trang chủ {TEN_HE_THONG} hiện ra, quay lại cửa sổ này và bấm Enter để lưu phiên.")
         try:
             input()
         except EOFError:
@@ -2259,6 +2288,963 @@ def tat_quick_edit():
         pass
 
 
+# ---------------------------------------------------------------- HỆ THỐNG MỚI egov1.laocai.gov.vn (Bạn chuyển 29/10/2026)
+# Từ 29/10/2026 Bạn làm việc trên "trang quản lý tài liệu mới" egov1.laocai.gov.vn (menu Trang chủ, Quản lý nhiệm vụ,
+# Văn bản đến, Văn bản đi, Lịch đơn vị, Họp không giấy). Danh sách Văn bản đến (/document/xem-den-index?type=all) là
+# bảng có tiêu đề cột: STT, Cấp độ, Trích yếu, Số ký hiệu, Ngày Ban Hành, Ngày Nhận, Trạng thái, Cơ quan ban hành,
+# Người Ký, Độ mật, Nguồn văn bản - đọc từ ảnh chụp màn hình Bạn gửi, không đoán.
+#
+# Máy chủ Claude ở nước ngoài KHÔNG vào được cổng này, nên phần chưa thấy tận mắt (đường dẫn Văn bản đi, trang chi
+# tiết, cách cổng phát tệp) bot tự dò: nhận cột theo TIÊU ĐỀ, tìm trang Văn bản đi bằng cách bấm menu như người dùng,
+# thử mọi cách tải tệp. Lần chạy đầu tiên bot tự KHẢO SÁT (HTML, ảnh, danh sách API của cổng) rồi đẩy lên kho riêng
+# tư vlncn-laocai/theo-doi/egov/soi/ để Claude hoàn thiện bộ đọc; lệnh tay: --khao-sat.
+#
+# Văn bản có Độ mật khác "Thường" KHÔNG bao giờ được tải hay ghi lên GitHub (chỉ đếm số lượng trong log).
+# Data360X vẫn dùng được: config.json "he_thong": "data360x" hoặc biến môi trường BOT_HE_THONG=data360x.
+EGOV_GOC = "https://egov1.laocai.gov.vn"
+EGOV_DS_DEN = EGOV_GOC + "/document/xem-den-index?type=all"
+EGOV_MENU = {"den": "Văn bản đến", "di": "Văn bản đi"}
+EGOV_TRANG_DA_DO = BOT_HOME / "egov-trang.json"      # đường dẫn danh sách đã dò được, lần sau vào thẳng
+EGOV_DA_KHAO_SAT = BOT_HOME / "egov-khao-sat.json"   # có tệp này thì lần quét sau không khảo sát lại
+EGOV_TRANG_TOI_DA = 60          # lưới an toàn: 60 trang x 100 dòng
+EGOV_SO_DONG = 100              # muốn bảng hiện bao nhiêu dòng mỗi trang (cổng mặc định 10)
+EGOV_VIEC_TOI_DA = 30           # mỗi lượt tải toàn văn tối đa bao nhiêu việc chờ xử lý
+THU_MUC_VIEC = "theo-doi/viec-cho-xu-ly"
+
+# (khóa, các cụm mở đầu tiêu đề cột - viết không dấu). Thứ tự quan trọng: "ngay nhan" trước "ngay".
+EGOV_COT = [
+    ("so", ("so ky hieu", "so/ky hieu", "so hieu", "ky hieu", "so van ban")),
+    ("ngay_nhan", ("ngay nhan", "ngay den")),
+    ("ngay", ("ngay ban hanh", "ngay ky", "ngay van ban", "ngay phat hanh")),
+    ("trich_yeu", ("trich yeu",)),
+    ("don_vi", ("co quan ban hanh", "don vi ban hanh", "noi ban hanh", "noi gui", "don vi soan thao",
+                "don vi soan", "phong soan thao", "phong ban soan thao", "don vi")),
+    ("nguoi_ky", ("nguoi ky",)),
+    ("trang_thai", ("trang thai", "tinh trang")),
+    ("do_mat", ("do mat",)),
+    ("do_khan", ("cap do", "do khan")),
+    ("loai", ("loai van ban", "the loai")),
+    ("nguon_vb", ("nguon van ban",)),
+    ("han", ("han xu ly", "thoi han")),
+]
+
+_EGOV_TEP = {"khoa": None, "chinh": None, "khac": []}   # tệp của trang chi tiết đang mở (tai_pdf -> tai_dinh_kem)
+
+# Đọc bảng danh sách bằng một lượt JS (nhanh hơn đọc từng ô). Bảng DataTables có thể tách tiêu đề và thân ra hai
+# <table> (scrollX) - khi đó lấy thân ở khối .dataTables_scrollBody cùng wrapper.
+_JS_DOC_BANG = r"""() => {
+  const norm = s => (s || '').replace(/\s+/g, ' ').trim();
+  const thay = el => !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+  for (const t of document.querySelectorAll('table')) {
+    if (!thay(t)) continue;
+    let heads = null;
+    for (const r of (t.tHead ? Array.from(t.tHead.rows) : [])) {
+      const hs = Array.from(r.cells).map(c => norm(c.innerText));
+      if (hs.some(h => /trích yếu/i.test(h))) { heads = hs; break; }
+    }
+    if (!heads) continue;
+    let body = t.tBodies[0];
+    if (!body || !body.rows.length) {
+      const wrap = t.closest('.dataTables_wrapper, .dt-container');
+      const kia = wrap && wrap.querySelector('.dataTables_scrollBody table tbody, .dt-scroll-body table tbody');
+      if (kia) body = kia;
+    }
+    const rows = [];
+    let trong = false;
+    for (const tr of (body ? Array.from(body.rows) : [])) {
+      const cells = Array.from(tr.cells);
+      if (cells.length < 3) {
+        if (/không có|không tìm thấy|no data|no matching|empty|trống/i.test(norm(tr.innerText))) trong = true;
+        continue;
+      }
+      rows.push({
+        o: cells.map(c => norm(c.innerText)),
+        href: cells.map(c => Array.from(c.querySelectorAll('a[href]'))
+          .filter(a => { const h = a.getAttribute('href') || ''; return h && h !== '#' && !/^(javascript|mailto):/i.test(h); })
+          .map(a => a.href)),
+        bam: cells.map(c => { const e = c.querySelector('[onclick]'); return e ? e.getAttribute('onclick') : ''; }),
+        tr: Object.assign({onclick: tr.getAttribute('onclick') || '', id: tr.id || ''}, tr.dataset),
+      });
+    }
+    return {heads, rows, trong, url: location.href};
+  }
+  return null;
+}"""
+
+_JS_DAT_SO_DONG = r"""(n) => {
+  try {
+    const $ = window.jQuery || window.$;
+    if ($ && $.fn && $.fn.dataTable) {
+      const api = $.fn.dataTable.tables({visible: true, api: true});
+      if (api && api.context && api.context.length) {
+        if (api.page.len() >= n) return 'da-du';
+        api.page.len(n).draw(false);
+        return 'datatables';
+      }
+    }
+  } catch (e) {}
+  const ds = Array.from(document.querySelectorAll('select'));
+  for (let i = 0; i < ds.length; i++) {
+    const so = Array.from(ds[i].options).map(o => parseInt(o.text, 10));
+    if (!so.includes(10) || so.filter(x => !isNaN(x)).length < 2) continue;
+    let tot = null;
+    for (const o of ds[i].options) {
+      const x = parseInt(o.text, 10);
+      if (!isNaN(x) && x <= 200 && (tot === null || x > parseInt(tot.text, 10))) tot = o;
+    }
+    if (tot) return {chon: i, gia_tri: tot.value};
+  }
+  return null;
+}"""
+
+_JS_TRANG_SAU = r"""() => {
+  const tat = el => el.classList.contains('disabled') || (el.closest('li') && el.closest('li').classList.contains('disabled'))
+    || el.disabled || el.getAttribute('aria-disabled') === 'true';
+  try {
+    const $ = window.jQuery || window.$;
+    if ($ && $.fn && $.fn.dataTable) {
+      const api = $.fn.dataTable.tables({visible: true, api: true});
+      if (api && api.context && api.context.length) {
+        const i = api.page.info();
+        if (i.page >= i.pages - 1) return 'het';
+        api.page('next').draw('page');
+        return 'datatables';
+      }
+    }
+  } catch (e) {}
+  const chon = ['.dataTables_paginate .next', '.dt-paging-button.next', 'li.next', 'li.page-item.next',
+    '[aria-label="Next"]', '[aria-label="Trang sau"]', '[title="Trang sau"]', '[title="Next"]'];
+  for (const s of chon) {
+    for (const el of document.querySelectorAll(s)) {
+      if (!el.offsetParent) continue;
+      if (tat(el)) return 'het';
+      (el.querySelector('a,button') || el).click();
+      return 'bam';
+    }
+  }
+  for (const el of document.querySelectorAll('.pagination a, .pagination button, [class*=paginat] a, [class*=paginat] button')) {
+    const t = (el.innerText || '').trim();
+    if (['›', '»', '>', 'Sau', 'Tiếp', 'Next', 'Trang sau'].includes(t)) {
+      if (tat(el)) return 'het';
+      el.click();
+      return 'bam';
+    }
+  }
+  return null;
+}"""
+
+# Ứng viên tệp trên trang chi tiết: link có đuôi tệp / từ khóa tải, khung xem PDF, tên tệp không có link (bấm mới tải)
+_JS_TEP = r"""() => {
+  const duoi = /\.(pdf|docx?|xlsx?|pptx?|zip|rar|jpe?g|png|txt)(\?|$|#)/i;
+  const tk = /(download|tai-?xuong|taifile|getfile|get-file|viewfile|view-file|attach|dinh-?kem|\/files?\/|uploads?\/)/i;
+  const ra = [], ten_le = [];
+  const them = (url, ten, kieu) => { if (url && !ra.some(x => x.url === url)) ra.push({url, ten: (ten || '').replace(/\s+/g, ' ').trim().slice(0, 200), kieu}); };
+  for (const a of document.querySelectorAll('a[href]')) {
+    const h = a.getAttribute('href') || '';
+    if (!h || h === '#' || /^(javascript|mailto):/i.test(h)) continue;
+    const ten = a.innerText || a.getAttribute('title') || a.getAttribute('download') || '';
+    if (duoi.test(h) || tk.test(h) || duoi.test(ten) || a.hasAttribute('download')) them(a.href, ten, 'lien-ket');
+  }
+  for (const el of document.querySelectorAll('iframe[src], embed[src], object[data]')) {
+    let s = el.getAttribute('src') || el.getAttribute('data') || '';
+    if (!s || s.startsWith('about:')) continue;
+    const m = s.match(/[?&]file=([^&]+)/);
+    if (m) s = decodeURIComponent(m[1]);
+    try { them(new URL(s, location.href).href, el.getAttribute('title') || '', 'khung-xem'); } catch (e) {}
+  }
+  for (const el of document.querySelectorAll('a, span, td, div, li, button, p, label')) {
+    if (el.children.length > 2) continue;
+    const t = (el.innerText || '').trim();
+    if (t.length < 200 && /\.(pdf|docx?|xlsx?)$/i.test(t) && !ten_le.includes(t)) ten_le.push(t);
+  }
+  return {lien_ket: ra, ten_le};
+}"""
+
+_JS_FETCH = r"""async (u) => {
+  try {
+    const r = await fetch(u, {credentials: 'include'});
+    const ct = r.headers.get('content-type') || '', cd = r.headers.get('content-disposition') || '';
+    if (!r.ok) return {status: r.status, ct, cd};
+    const a = new Uint8Array(await r.arrayBuffer());
+    let s = '';
+    for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000));
+    return {status: r.status, ct, cd, b64: btoa(s)};
+  } catch (e) { return {loi: String(e)}; }
+}"""
+
+
+def _egov_anh_xa_cot(heads):
+    """Tiêu đề cột -> {khóa: chỉ số}. Hàm thuần (máy ảo Windows thử được, xem tay.py --chay-thu)."""
+    idx = {}
+    for i, h in enumerate(bo_dau(x) for x in heads):
+        for khoa, cum in EGOV_COT:
+            if khoa not in idx and any(h.startswith(c) for c in cum):
+                idx[khoa] = i
+                break
+    return idx
+
+
+def _egov_la_mat(vb):
+    """Độ mật khác 'Thường' (Mật, Tối mật, Tuyệt mật...) -> không bao giờ tải, không ghi lên GitHub."""
+    m = bo_dau(vb.get("do_mat", ""))
+    return bool(m) and m not in ("thuong", "binh thuong", "khong mat", "khong", "-")
+
+
+def _egov_ngay(vb):
+    """Ngày dùng để cắt khoảng quét: văn bản đến lấy Ngày nhận, không có thì Ngày ban hành."""
+    return parse_ngay(vb.get("ngay_nhan", "")) or parse_ngay(vb.get("ngay_ban_hanh", ""))
+
+
+def _egov_dong_thanh_vb(hang, idx, nguon):
+    o = hang["o"]
+    lay = lambda k: o[idx[k]] if k in idx and idx[k] < len(o) else ""
+    href = hang.get("href") or [[] for _ in o]
+    url = ""
+    for k in ("trich_yeu", "so"):
+        if k in idx and idx[k] < len(href) and href[idx[k]]:
+            url = href[idx[k]][0]
+            break
+    if not url:
+        url = next((h[0] for h in href if h), "")
+    if not url:      # dòng không có link: thử nhặt đường dẫn trong onclick của ô hoặc của dòng
+        for s in list(hang.get("bam") or []) + [(hang.get("tr") or {}).get("onclick", "")]:
+            m = re.search(r"""['"](/[^'"\s]+)['"]""", s or "")
+            if m:
+                url = urljoin(EGOV_GOC, m.group(1))
+                break
+    m = re.search(r"[?&](?:id|documentId|docId|vanBanId|idVanBan)=([\w-]+)", url or "", flags=re.I) \
+        or re.search(r"/(\d{3,})(?:[/?#]|$)", url or "")
+    ma = m.group(1) if m else str((hang.get("tr") or {}).get("id", "") or "")
+    return {
+        "so_ky_hieu": lay("so"), "ngay_ban_hanh": lay("ngay"), "ngay_nhan": lay("ngay_nhan"),
+        "trich_yeu": lay("trich_yeu"), "don_vi": lay("don_vi"), "nguoi_ky": lay("nguoi_ky"), "loai": lay("loai"),
+        "trang_thai": lay("trang_thai"), "do_mat": lay("do_mat"), "do_khan": lay("do_khan"), "han": lay("han"),
+        "nguon": nguon, "id_data360x": ma, "url_chi_tiet": url, "he_thong": "egov",
+    }
+
+
+def _egov_doc_bang(page):
+    try:
+        return page.evaluate(_JS_DOC_BANG)
+    except Exception:
+        return None
+
+
+def _egov_cho_bang(page, giay=45):
+    """Chờ bảng có tiêu đề 'Trích yếu' và có dòng (hoặc báo trống). Trả kết quả _JS_DOC_BANG hoặc None."""
+    bat_dau = time.time()
+    kq = None
+    while time.time() - bat_dau < giay:
+        kq = _egov_doc_bang(page)
+        if kq and (kq["rows"] or kq.get("trong")):
+            page.wait_for_timeout(700)
+            return _egov_doc_bang(page) or kq
+        if kq and time.time() - bat_dau > 15:      # có bảng nhưng 15 giây chưa có dòng: coi như trống
+            return kq
+        page.wait_for_timeout(1000)
+    return kq
+
+
+def _egov_chu_ky(kq):
+    """Dấu nhận biết trang bảng hiện tại để biết đã sang trang mới chưa."""
+    if not kq:
+        return ""
+    return f"{len(kq['rows'])}|" + "|".join(" ".join(r["o"])[:80] for r in kq["rows"][:3])
+
+
+def _egov_cho_doi(page, cu, giay=20):
+    bat_dau = time.time()
+    while time.time() - bat_dau < giay:
+        page.wait_for_timeout(800)
+        kq = _egov_doc_bang(page)
+        if kq and _egov_chu_ky(kq) != cu and (kq["rows"] or kq.get("trong")):
+            page.wait_for_timeout(600)
+            return _egov_doc_bang(page) or kq
+    return None
+
+
+def _egov_trang_da_do():
+    try:
+        return json.loads(EGOV_TRANG_DA_DO.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _egov_bam(page, nhan):
+    """Bấm phần tử nhìn thấy được có chữ ĐÚNG bằng nhan (không bấm nhầm 'Tra cứu văn bản đến')."""
+    try:
+        el = page.get_by_text(nhan, exact=True)
+        for i in range(min(el.count(), 6)):
+            if el.nth(i).is_visible():
+                el.nth(i).click(timeout=8000)
+                page.wait_for_timeout(2500)
+                return True
+    except Exception as e:
+        log(f"  không bấm được '{nhan}':", str(e)[:100])
+    return False
+
+
+def _egov_bam_menu(page, nguon):
+    """Vào danh sách văn bản như người dùng: menu 'Văn bản đến/đi' rồi tab 'Danh sách văn bản' (nếu có)."""
+    if EGOV_GOC.split("//")[1] not in page.url:
+        page.goto(EGOV_DS_DEN, wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(2500)
+    if not _egov_bam(page, EGOV_MENU[nguon]):
+        return False
+    _egov_bam(page, "Danh sách văn bản")
+    return True
+
+
+def _egov_mo_danh_sach(page, nguon):
+    """Mở trang danh sách. Trả kết quả đọc bảng; None nếu bị đưa về trang đăng nhập; False nếu không tìm thấy."""
+    da_do = _egov_trang_da_do()
+    ung_vien = []
+    if da_do.get(nguon):
+        ung_vien.append(("url", da_do[nguon]))
+    if nguon == "den":
+        ung_vien.append(("url", EGOV_DS_DEN))
+    ung_vien.append(("menu", None))
+    if nguon == "di":       # đoán theo mẫu đường dẫn Văn bản đến, chỉ thử sau khi bấm menu không được
+        ung_vien.append(("url", EGOV_DS_DEN.replace("xem-den-index", "xem-di-index")))
+    for kieu, url in ung_vien:
+        try:
+            if kieu == "url":
+                page.goto(url, wait_until="domcontentloaded", timeout=90000)
+            elif not _egov_bam_menu(page, nguon):
+                continue
+            if can_dang_nhap(page):
+                return None
+            kq = _egov_cho_bang(page, 30)
+            if kq and kq.get("heads"):
+                if da_do.get(nguon) != page.url:
+                    da_do[nguon] = page.url
+                    try:
+                        EGOV_TRANG_DA_DO.parent.mkdir(parents=True, exist_ok=True)
+                        EGOV_TRANG_DA_DO.write_text(json.dumps(da_do, ensure_ascii=False, indent=2), encoding="utf-8")
+                    except Exception:
+                        pass
+                    log(f"  ({nguon}) danh sách ở {page.url}")
+                return kq
+            log(f"  ({nguon}) {kieu} {url or ''}: không thấy bảng có cột Trích yếu (URL {page.url})")
+        except Exception as e:
+            log(f"  ({nguon}) {kieu} {url or ''} lỗi:", str(e)[:150])
+    return False
+
+
+def _egov_dat_so_dong(page, kq):
+    """Đặt bảng hiện EGOV_SO_DONG dòng/trang cho nhanh (mặc định 10). Trả kết quả đọc bảng sau khi đổi."""
+    cu = _egov_chu_ky(kq)
+    try:
+        r = page.evaluate(_JS_DAT_SO_DONG, EGOV_SO_DONG)
+        if isinstance(r, dict):
+            page.locator("select").nth(r["chon"]).select_option(r["gia_tri"])
+        if r and r != "da-du":
+            return _egov_cho_doi(page, cu, 20) or _egov_doc_bang(page) or kq
+    except Exception as e:
+        log("  không đổi được số dòng mỗi trang:", str(e)[:100])
+    return kq
+
+
+def _egov_doc_cac_trang(page, nguon, kq, dung=None, toi_da=EGOV_TRANG_TOI_DA):
+    """Đọc bảng qua các trang. dung(rows_trang) trả True thì dừng sau trang đó. Bỏ văn bản mật."""
+    idx = _egov_anh_xa_cot(kq["heads"])
+    if "trich_yeu" not in idx or "so" not in idx:
+        log(f"  ({nguon}) không nhận ra cột bảng: {kq['heads']}")
+        return []
+    tat_ca, da_thay, mat, trang = [], set(), 0, 1
+    while True:
+        rows = []
+        for h in kq["rows"]:
+            vb = _egov_dong_thanh_vb(h, idx, nguon)
+            if _egov_la_mat(vb):
+                mat += 1
+                continue
+            khoa = f"{vb['so_ky_hieu']}|{vb['ngay_ban_hanh']}|{vb['trich_yeu'][:60]}"
+            if khoa in da_thay:
+                continue
+            da_thay.add(khoa)
+            rows.append(vb)
+        tat_ca.extend(rows)
+        log(f"  {nguon}: trang {trang}, {len(kq['rows'])} dòng")
+        if not kq["rows"] or trang >= toi_da or (dung and dung(rows)):
+            break
+        cu = _egov_chu_ky(kq)
+        try:
+            r = page.evaluate(_JS_TRANG_SAU)
+        except Exception:
+            r = None
+        if r in (None, "het"):
+            break
+        moi = _egov_cho_doi(page, cu)
+        if not moi:
+            log(f"  {nguon}: bấm trang sau nhưng bảng không đổi - dừng")
+            break
+        kq, trang = moi, trang + 1
+    if mat:
+        log(f"  {nguon}: bỏ {mat} văn bản có độ mật (không tải, không ghi)")
+    return tat_ca
+
+
+def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None):
+    """Thay quet_danh_sach của Data360X. Trả danh sách văn bản từ tu_ngay; None nếu phải đăng nhập lại."""
+    kq = _egov_mo_danh_sach(page, nguon)
+    if kq is None:
+        return None
+    if kq is False:
+        log(f"  KHÔNG tìm thấy danh sách văn bản {'đến' if nguon == 'den' else 'đi'} trên egov1 - "
+            "cần khảo sát lại (python bot-data360x.py --khao-sat)")
+        telegram(f"Bot egov1: không tìm thấy danh sách văn bản {'đến' if nguon == 'den' else 'đi'}. "
+                 "Chạy khao-sat-egov.bat rồi báo Claude.")
+        return []
+    kq = _egov_dat_so_dong(page, kq)
+    if soi_dir:
+        (soi_dir / f"danh-sach-{nguon}.html").write_text(page.content(), encoding="utf-8")
+        page.screenshot(path=str(soi_dir / f"danh-sach-{nguon}.png"), full_page=True)
+
+    def _du_cu(rows):
+        ngay = [n for n in (_egov_ngay(r) for r in rows) if n]
+        return bool(ngay) and max(ngay) < tu_ngay      # cả trang đã cũ hơn khoảng quét
+
+    rows = _egov_doc_cac_trang(page, nguon, kq, dung=_du_cu)
+    if not rows and kq.get("rows"):
+        log(f"  [chẩn đoán] tiêu đề cột: {kq['heads']}")
+    return [r for r in rows if _egov_ngay(r) and _egov_ngay(r) >= tu_ngay]
+
+
+def _egov_go_tim(page, chuoi):
+    """Gõ chuỗi vào ô tìm kiếm của bảng. Trả True nếu gõ được."""
+    kq = _egov_doc_bang(page)
+    cu = _egov_chu_ky(kq)
+    o = None
+    for sel in (".dataTables_filter input", ".dt-search input", "input[type='search']"):
+        el = page.locator(sel)
+        if el.count() and el.first.is_visible():
+            o = el.first
+            break
+    if o is None:
+        el = page.get_by_placeholder(re.compile(r"tìm|search|ký hiệu|trích yếu", re.I))
+        if el.count():
+            o = el.first
+    if o is None and kq:      # ô lọc ngay dưới tiêu đề cột "Số ký hiệu"
+        idx = _egov_anh_xa_cot(kq["heads"])
+        if "so" in idx:
+            el = page.locator(f"thead tr:nth-child(2) th:nth-child({idx['so'] + 1}) input")
+            if el.count():
+                o = el.first
+    if o is None:
+        return False
+    o.fill("")
+    o.fill(chuoi)
+    o.press("Enter")
+    _egov_cho_doi(page, cu, 10)
+    return True
+
+
+def _egov_tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
+    """Thay tim_tren_cong của Data360X: gõ số ký hiệu / từ khóa vào ô tìm của bảng rồi đọc kết quả."""
+    kq = _egov_mo_danh_sach(page, nguon)
+    if not kq:
+        return None
+    if not _egov_go_tim(page, chuoi):
+        log(f"  ({nguon}) không thấy ô tìm kiếm - lật trang như cũ")
+        return None
+    kq = _egov_doc_bang(page) or kq
+    rows = _egov_doc_cac_trang(page, nguon, kq, toi_da=toi_da_trang)
+    log(f"  ({nguon}) tìm '{chuoi}': {len(rows)} dòng")
+    return rows
+
+
+def _egov_can_dang_nhap(page):
+    u = page.url.lower()
+    if any(k in u for k in ("login", "dang-nhap", "dangnhap", "signin", "sso", "/auth", "/account")):
+        return True
+    if u.startswith("http") and EGOV_GOC.split("//")[1] not in u:     # bị chuyển sang cổng khác (SSO)
+        return True
+    try:
+        return page.locator("input[type='password']:visible").count() > 0
+    except Exception:
+        return False
+
+
+def _egov_khoa(vb):
+    return f"{vb.get('nguon')}|{vb.get('so_ky_hieu')}|{vb.get('ngay_ban_hanh')}|{vb.get('url_chi_tiet')}"
+
+
+def _egov_mo_chi_tiet(ctx, page, vb):
+    """Mở trang chi tiết của văn bản. Không có đường dẫn thì tìm trên danh sách rồi bấm vào trích yếu."""
+    if vb.get("url_chi_tiet"):
+        page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(3500)
+        return not can_dang_nhap(page)
+    if not _egov_mo_danh_sach(page, vb["nguon"]):
+        return False
+    _egov_go_tim(page, vb["so_ky_hieu"] or vb["trich_yeu"][:40])
+    hang = page.locator("table tbody tr", has_text=vb["so_ky_hieu"] or vb["trich_yeu"][:40]).first
+    if not hang.count():
+        log(f"  không thấy dòng {vb['so_ky_hieu']} trên danh sách để mở chi tiết")
+        return False
+    so_tab, cu = len(ctx.pages), page.url
+    dich = hang.get_by_text(vb["trich_yeu"][:30]) if vb.get("trich_yeu") else hang.locator("td").nth(2)
+    (dich.first if dich.count() else hang).click(timeout=10000)
+    page.wait_for_timeout(3500)
+    if len(ctx.pages) > so_tab:           # mở ra tab mới: lấy đường dẫn rồi mở ngay trong tab đang dùng
+        moi = ctx.pages[-1]
+        try:
+            moi.wait_for_load_state("domcontentloaded", timeout=30000)
+        except Exception:
+            pass
+        u = moi.url
+        moi.close()
+        if u and not u.startswith("about:"):
+            page.goto(u, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(3000)
+    if page.url != cu:
+        vb["url_chi_tiet"] = page.url
+    return True
+
+
+def _ten_tu_cd(cd, url, mac_dinh):
+    m = re.search(r"filename\*=(?:UTF-8|utf-8)''([^;]+)", cd or "") or re.search(r'filename="?([^";]+)"?', cd or "")
+    if m:
+        from urllib.parse import unquote
+        return unquote(m.group(1)).strip()
+    duoi = url.split("?")[0].rstrip("/").rsplit("/", 1)[-1]
+    return duoi if "." in duoi[-6:] else mac_dinh
+
+
+def _egov_fetch(page, url):
+    """Cho chính Chrome (đang đăng nhập) tải URL. Trả (bytes|None, tên tệp theo content-disposition|'')."""
+    try:
+        r = page.evaluate(_JS_FETCH, url)
+    except Exception as e:
+        log("    Chrome fetch lỗi:", str(e)[:100])
+        return None, ""
+    if not r or not r.get("b64"):
+        return None, ""
+    b = base64.b64decode(r["b64"])
+    if (r.get("ct") or "").lower().startswith("text/html") or b[:200].lstrip().lower().startswith((b"<!doctype", b"<html")):
+        return None, ""      # trang xem, không phải tệp
+    return b, _ten_tu_cd(r.get("cd", ""), url, "")
+
+
+def _egov_mo_va_tai_tep(ctx, page, vb, soi_dir=None):
+    """Mở trang chi tiết, tải MỌI tệp (văn bản chính + đính kèm) một lần, cất vào _EGOV_TEP."""
+    import hashlib
+    _EGOV_TEP.update(khoa=_egov_khoa(vb), chinh=None, khac=[])
+    bat = []
+
+    def _on(resp):
+        try:
+            ct = (resp.headers.get("content-type") or "").lower()
+            cd = resp.headers.get("content-disposition") or ""
+            if "pdf" in ct or "octet-stream" in ct or "msword" in ct or "officedocument" in ct or "attachment" in cd.lower():
+                bat.append(resp)
+        except Exception:
+            pass
+
+    page.on("response", _on)
+    tep, da = [], set()
+
+    def _them(ten, b, nguon_tep):
+        if not b or len(b) < 200:
+            return
+        if len(b) > DINH_KEM_TOI_DA_MB * 1024 * 1024:
+            log(f"    {ten}: {len(b) // 1024 // 1024} MB, quá lớn - bỏ qua")
+            return
+        h = hashlib.sha1(b).hexdigest()
+        if h in da:
+            return
+        da.add(h)
+        if _la_pdf(b) and not ten.lower().endswith(".pdf"):
+            ten = (ten or "van-ban") + ".pdf"
+        tep.append({"ten": ten or f"tep-{len(tep) + 1}", "bytes": b, "nguon_tep": nguon_tep})
+
+    try:
+        if not _egov_mo_chi_tiet(ctx, page, vb):
+            return
+        for nhan in ("File đính kèm", "Tệp đính kèm", "Tài liệu đính kèm", "Văn bản đính kèm", "Đính kèm"):
+            if _egov_bam(page, nhan):
+                break
+        if soi_dir:
+            ten_soi = lam_sach(vb["so_ky_hieu"] or "khong-so")
+            (soi_dir / f"chi-tiet-{ten_soi}.html").write_text(page.content(), encoding="utf-8")
+            page.screenshot(path=str(soi_dir / f"chi-tiet-{ten_soi}.png"), full_page=True)
+        for resp in bat:
+            try:
+                _them(_ten_tu_cd(resp.headers.get("content-disposition", ""), resp.url, ""), resp.body(), "khung-xem")
+            except Exception:
+                pass
+        ds = page.evaluate(_JS_TEP) or {"lien_ket": [], "ten_le": []}
+        for c in ds["lien_ket"][:DINH_KEM_TOI_DA]:
+            b, ten_cd = _egov_fetch(page, c["url"])
+            if not b:
+                try:
+                    r = ctx.request.get(c["url"], timeout=120000)
+                    if r.ok and not (r.headers.get("content-type") or "").lower().startswith("text/html"):
+                        b, ten_cd = r.body(), _ten_tu_cd(r.headers.get("content-disposition", ""), c["url"], "")
+                except Exception:
+                    pass
+            ten = c["ten"] if re.search(r"\.\w{2,4}$", c["ten"] or "") else (ten_cd or c["ten"])
+            _them(ten, b, c["kieu"])
+        # tên tệp hiện trên trang mà chưa tải được: bấm vào, bắt tệp tải xuống hoặc tab xem mở ra
+        co_ten = {bo_dau(t["ten"]) for t in tep}
+        for ten in ds["ten_le"][:DINH_KEM_TOI_DA]:
+            if bo_dau(ten) in co_ten:
+                continue
+            el = page.get_by_text(ten, exact=True)
+            if not el.count():
+                continue
+            so_tab = len(ctx.pages)
+            try:
+                with page.expect_download(timeout=15000) as dl:
+                    el.first.click(timeout=8000)
+                _them(ten, Path(dl.value.path()).read_bytes(), "bam-tai")
+            except Exception:
+                if len(ctx.pages) > so_tab:
+                    moi = ctx.pages[-1]
+                    try:
+                        moi.wait_for_load_state("domcontentloaded", timeout=20000)
+                        b, _ = _egov_fetch(page, moi.url)
+                        _them(ten, b, "bam-mo-tab")
+                    except Exception:
+                        pass
+                    finally:
+                        moi.close()
+        if not tep:
+            log(f"  {vb['so_ky_hieu']}: không thấy tệp nào trên trang chi tiết ({page.url})")
+        pdf = [t for t in tep if _la_pdf(t["bytes"])]
+        chinh = next((t for t in pdf if t["nguon_tep"] == "khung-xem"), None) or (pdf[0] if pdf else None)
+        _EGOV_TEP["chinh"] = chinh["bytes"] if chinh else None
+        _EGOV_TEP["khac"] = [{"ten": t["ten"], "loai": "đính kèm", "bytes": t["bytes"]} for t in tep if t is not chinh]
+        log(f"  {vb['so_ky_hieu']}: {len(tep)} tệp" + (f", văn bản chính {chinh['ten']}" if chinh else ", không có PDF"))
+    finally:
+        page.remove_listener("response", _on)
+
+
+def _egov_tai_pdf(ctx, page, vb, soi_dir=None):
+    """Thay tai_pdf của Data360X: trả bytes PDF văn bản chính (hoặc None)."""
+    _egov_mo_va_tai_tep(ctx, page, vb, soi_dir)
+    return _EGOV_TEP["chinh"]
+
+
+def _egov_tai_dinh_kem(ctx, page, vb):
+    """Thay tai_dinh_kem của Data360X: các tệp còn lại của trang chi tiết vừa mở bằng tai_pdf."""
+    if _EGOV_TEP["khoa"] != _egov_khoa(vb):
+        _egov_mo_va_tai_tep(ctx, page, vb)
+    return list(_EGOV_TEP["khac"])
+
+
+# ---------------------------------------------------------------- KHẢO SÁT CỔNG (lần đầu, hoặc khi cổng đổi giao diện)
+_KHOA_NHAY_CAM = re.compile(r"(token|password|passwd|matkhau|mat_khau|secret|authorization|cookie|captcha|otp)", re.I)
+
+
+def _che(chu):
+    """Che giá trị nhạy cảm trong query string / form / JSON trước khi ghi ra tệp."""
+    chu = re.sub(r"((?:access_|refresh_)?token|password|passwd|matkhau|secret|captcha|otp|key)=([^&\s]+)",
+                 r"\1=…", str(chu or ""), flags=re.I)
+    chu = re.sub(r'("(?:[^"]*(?:token|password|matkhau|secret|captcha|otp|session|cookie|jwt)[^"]*)"\s*:\s*)"[^"]*"',
+                 r'\1"…"', chu, flags=re.I)
+    chu = re.sub(r"eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}", "eyJ…", chu)      # JWT
+    return re.sub(r"\b[A-Za-z0-9+/_-]{48,}={0,2}\b", lambda m: m.group(0)[:6] + "…", chu)     # chuỗi mã dài
+
+
+def _hinh_json(o, sau=0):
+    """Hình dạng của JSON (khóa, kiểu, độ dài mảng) để biết API trả gì mà không chép nguyên nội dung."""
+    if sau > 4:
+        return "…"
+    if isinstance(o, dict):
+        return {k: ("…" if _KHOA_NHAY_CAM.search(k) else _hinh_json(v, sau + 1)) for k, v in list(o.items())[:40]}
+    if isinstance(o, list):
+        return [f"{len(o)} phần tử", _hinh_json(o[0], sau + 1)] if o else []
+    if isinstance(o, str):
+        return f"str: {o[:60]}"
+    return type(o).__name__
+
+
+_JS_LIEN_KET = r"""() => Array.from(document.querySelectorAll('a[href], [onclick], [routerlink], [ng-click]'))
+  .map(a => ({chu: (a.innerText || a.getAttribute('title') || '').replace(/\s+/g, ' ').trim().slice(0, 60),
+              href: a.getAttribute('href') || a.getAttribute('routerlink') || '',
+              bam: (a.getAttribute('onclick') || a.getAttribute('ng-click') || '').slice(0, 120)}))
+  .filter(x => x.chu && (x.href || x.bam)).slice(0, 250)"""
+
+
+def _egov_khao_sat_tren(ctx, page, thu_muc: Path):
+    """Đi qua Văn bản đến, Văn bản đi, một trang chi tiết, Quản lý nhiệm vụ; ghi HTML, ảnh, bảng, liên kết,
+    danh sách lời gọi API (đã che token) vào thu_muc. Trả danh sách bước đã đi."""
+    thu_muc.mkdir(parents=True, exist_ok=True)
+    mang, buoc = [], []
+
+    def _req(r):
+        try:
+            if r.resource_type in ("xhr", "fetch", "document"):
+                mang.append({"kieu": r.resource_type, "method": r.method, "url": _che(r.url)[:400],
+                             "gui": _che(r.post_data or "")[:600], "_url_goc": r.url})
+        except Exception:
+            pass
+
+    def _resp(r):
+        try:
+            m = next((x for x in reversed(mang) if x["_url_goc"] == r.url and "status" not in x), None)
+            if m is None:
+                return
+            ct = (r.headers.get("content-type") or "").lower()
+            m.update(status=r.status, ct=ct[:60])
+            if "json" in ct:
+                d = r.json()
+                m["hinh"] = _hinh_json(d)
+                m["mau"] = _che(json.dumps(d, ensure_ascii=False))[:1500]
+        except Exception:
+            pass
+
+    def chup(ten):
+        try:
+            page.wait_for_timeout(2000)
+            (thu_muc / f"{ten}.html").write_text(page.content(), encoding="utf-8")
+            page.screenshot(path=str(thu_muc / f"{ten}.png"), full_page=True)
+            bang = _egov_doc_bang(page)
+            if bang:
+                bang = {**bang, "rows": bang["rows"][:5], "cot_nhan_ra": _egov_anh_xa_cot(bang["heads"])}
+            (thu_muc / f"{ten}.json").write_text(json.dumps(
+                {"url": page.url, "tieu_de": page.title(), "bang": bang, "lien_ket": page.evaluate(_JS_LIEN_KET),
+                 "tep": page.evaluate(_JS_TEP)}, ensure_ascii=False, indent=1), encoding="utf-8")
+            buoc.append({"ten": ten, "url": page.url, "co_bang": bool(bang and bang.get("heads"))})
+            log(f"  khảo sát: {ten} -> {page.url}")
+        except Exception as e:
+            buoc.append({"ten": ten, "loi": repr(e)[:200]})
+            log(f"  khảo sát {ten} lỗi:", repr(e)[:150])
+
+    page.on("request", _req)
+    page.on("response", _resp)
+    try:
+        try:
+            EGOV_TRANG_DA_DO.unlink()          # dò lại từ đầu
+        except Exception:
+            pass
+        kq = _egov_mo_danh_sach(page, "den")
+        chup("1-van-ban-den")
+        dau = None
+        if kq and kq.get("rows"):
+            idx = _egov_anh_xa_cot(kq["heads"])
+            dau = next((_egov_dong_thanh_vb(h, idx, "den") for h in kq["rows"]
+                        if not _egov_la_mat(_egov_dong_thanh_vb(h, idx, "den"))), None)
+        if _egov_mo_danh_sach(page, "di"):
+            chup("2-van-ban-di")
+        if dau:
+            try:
+                if _egov_mo_chi_tiet(ctx, page, dau):
+                    for nhan in ("File đính kèm", "Tệp đính kèm", "Đính kèm"):
+                        if _egov_bam(page, nhan):
+                            break
+                    chup("3-chi-tiet-van-ban-den")
+            except Exception as e:
+                log("  khảo sát chi tiết lỗi:", repr(e)[:150])
+        try:
+            page.goto(EGOV_DS_DEN, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(2000)
+            if _egov_bam(page, "Quản lý nhiệm vụ"):
+                chup("4-quan-ly-nhiem-vu")
+        except Exception as e:
+            log("  khảo sát nhiệm vụ lỗi:", repr(e)[:150])
+    finally:
+        page.remove_listener("request", _req)
+        page.remove_listener("response", _resp)
+        for m in mang:
+            m.pop("_url_goc", None)
+        (thu_muc / "api.json").write_text(json.dumps(mang, ensure_ascii=False, indent=1), encoding="utf-8")
+        tom = [f"# Khảo sát egov1.laocai.gov.vn - {datetime.now().strftime('%d/%m/%Y %H:%M')}", "",
+               f"Máy: {thong_tin_may().get('may', '')}. Bot tự đi qua các trang dưới đây; mỗi bước có .html, .png và "
+               ".json (bảng, cột nhận ra, liên kết, ứng viên tệp). `api.json`: lời gọi API của cổng (đã che token).", ""]
+        tom += [f"- {b['ten']}: " + (b.get("url", "") + (" (có bảng)" if b.get("co_bang") else " (KHÔNG thấy bảng)")
+                                     if "loi" not in b else "lỗi " + b["loi"]) for b in buoc]
+        tom += ["", f"Lời gọi API ghi được: {len(mang)}"]
+        (thu_muc / "README.md").write_text("\n".join(tom) + "\n", encoding="utf-8")
+    return buoc
+
+
+def _day_thu_muc(token, thu_muc: Path, duong_kho, msg, repo=REPO_TRI_THUC):
+    """Đẩy mọi tệp của một thư mục trên máy lên kho riêng tư qua Contents API (không cần git)."""
+    so = 0
+    for f in sorted(thu_muc.rglob("*")):
+        if f.is_file():
+            try:
+                gh_ghi_de(repo, f"{duong_kho.rstrip('/')}/{f.relative_to(thu_muc).as_posix()}", f.read_bytes(), msg, token)
+                so += 1
+            except Exception as e:
+                log(f"  không đẩy được {f.name}:", str(e)[:120])
+    return so
+
+
+def _egov_khao_sat_va_day(ctx, page, token):
+    ts = datetime.now().strftime("%Y-%m-%d_%H%M")
+    thu_muc = LOG_DIR / "khao-sat" / ts
+    buoc = _egov_khao_sat_tren(ctx, page, thu_muc)
+    duong = f"{THU_MUC_TRI_THUC}/egov/soi/{ts}-bot"
+    so = _day_thu_muc(token, thu_muc, duong, f"Khảo sát egov1 {ts}") if token else 0
+    EGOV_DA_KHAO_SAT.parent.mkdir(parents=True, exist_ok=True)
+    EGOV_DA_KHAO_SAT.write_text(json.dumps({"luc": ts, "buoc": buoc, "kho": duong if so else ""},
+                                           ensure_ascii=False, indent=2), encoding="utf-8")
+    log(f"Khảo sát xong: {len(buoc)} bước" + (f", đã đẩy {so} tệp lên vlncn-laocai/{duong}" if so
+                                              else f", lưu trên máy ở {thu_muc}"))
+    return duong if so else str(thu_muc)
+
+
+def _mo_cong_san_sang(p, ctx=None):
+    """Mở Chrome hồ sơ bot ở trang chủ hệ thống đang dùng; phiên hết thì chờ Bạn đăng nhập. Trả (ctx, page) hoặc None."""
+    ctx = ctx or mo_trinh_duyet(p, headless=False)
+    page = ctx.pages[0] if ctx.pages else ctx.new_page()
+    page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+    page.wait_for_timeout(3000)
+    if can_dang_nhap(page):
+        page.bring_to_front()
+        ok, ctx, page = cho_dang_nhap(ctx, page, p)
+        if not ok:
+            ctx.close()
+            return None
+    return ctx, page
+
+
+def khao_sat():
+    """--khao-sat: đi một vòng cổng egov1, ghi lại cấu trúc để Claude hoàn thiện bộ đọc."""
+    from playwright.sync_api import sync_playwright
+    token = doc_config().get("github_token", "")
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            return 3
+        ctx, page = mo
+        try:
+            noi = _egov_khao_sat_va_day(ctx, page, token)
+        finally:
+            ctx.close()
+    telegram(f"Bot egov1: đã khảo sát cổng, kết quả ở {noi}. Báo Claude đọc để hoàn thiện bộ đọc.")
+    return 0
+
+
+# ---------------------------------------------------------------- VIỆC CHỜ XỬ LÝ trên egov1 (thay vOffice)
+def _la_viec_cho(vb):
+    """Trạng thái 'Chưa xử lý' / 'Chờ xử lý' / 'Đang xử lý' trong Văn bản đến = việc của Bạn còn mở."""
+    tt = bo_dau(vb.get("trang_thai", ""))
+    return tt.startswith(("chua", "cho ", "cho xu", "dang"))
+
+
+def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIEC_TOI_DA, day_len=True):
+    """Từ danh sách Văn bản đến đã quét: lọc việc còn mở, tải toàn văn + đính kèm của việc CHƯA lấy lần nào,
+    ghi luu_vao/README.md (bảng mọi việc còn mở) + danh-sach.json, rồi đẩy lên theo-doi/viec-cho-xu-ly/<ngày>/."""
+    luu_vao.mkdir(parents=True, exist_ok=True)
+    viec = [v for v in van_ban_den if _la_viec_cho(v)]
+    da_lay, sha_da = (_json_gh(REPO_TRI_THUC, f"{THU_MUC_VIEC}/_da-lay.json", token, {}) if token else ({}, None))
+    ngay = date.today().isoformat()
+    moi = 0
+    for v in viec:
+        khoa = f"{v['so_ky_hieu']}|{v['ngay_ban_hanh']}"
+        if khoa in da_lay:
+            v["tep"] = da_lay[khoa]
+            continue
+        if moi >= toi_da:
+            v["tep"] = ""
+            continue
+        ten_goc = lam_sach_vn(v["so_ky_hieu"]) or f"vb-{v.get('id_data360x') or moi + 1}"
+        try:
+            pdf = _egov_tai_pdf(ctx, page, v)
+            dinh_kem = _egov_tai_dinh_kem(ctx, page, v)
+            luong = doc_luong_xu_ly(page)
+        except Exception as e:
+            log(f"  [việc] lỗi mở {v['so_ky_hieu']}: {e!r}")
+            pdf, dinh_kem, luong = None, [], []
+        vai, nguoi_xl, han_xl = suy_vai_tro(luong)
+        dau = [f"# {v['so_ky_hieu']} - {v['trich_yeu']}", "",
+               f"- Ngày ban hành: {v['ngay_ban_hanh']} | Ngày nhận: {v.get('ngay_nhan', '')} | "
+               f"Trạng thái trên egov1: {v.get('trang_thai', '')} | Cấp độ: {v.get('do_khan', '')}",
+               f"- Cơ quan ban hành: {v.get('don_vi', '')} | Người ký: {v.get('nguoi_ky', '')}",
+               f"- Bản gốc trên egov1: {v.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl)
+        goi, ten_chinh = dong_goi_ho_so(v, ten_goc, pdf, dinh_kem, dau)
+        if not goi:
+            (luu_vao / f"{ten_goc}.md").write_text("\n".join(dau) + "\n\n*(Không tải được tệp nào)*\n", encoding="utf-8")
+            ten_chinh = f"{ten_goc}.md"
+        for ten_t, du_lieu in goi:
+            (luu_vao / ten_t).write_bytes(du_lieu)
+        v["tep"] = f"{THU_MUC_VIEC}/{ngay}/{ten_chinh}"
+        da_lay[khoa] = v["tep"]
+        moi += 1
+    dong = [f"# Việc chờ xử lý trên egov1 - {date.today().strftime('%d/%m/%Y')}", "",
+            f"Văn bản đến có trạng thái Chưa/Chờ/Đang xử lý: **{len(viec)}** việc; lần này tải toàn văn {moi} việc mới.",
+            "Claude: việc nào CHƯA có văn bản đi trả lời thì đọc toàn văn và soạn dự thảo; đã trả lời thì chỉ ghi nhận.", "",
+            "| # | Số ký hiệu | Ngày nhận | Trạng thái | Cấp độ | Cơ quan ban hành | Trích yếu | Toàn văn |",
+            "|---|---|---|---|---|---|---|---|"]
+    for i, v in enumerate(sorted(viec, key=lambda x: _egov_ngay(x) or date.min, reverse=True), 1):
+        tep = f"`{v['tep']}`" if v.get("tep") else "*(để lượt sau)*"
+        dong.append(f"| {i} | {v['so_ky_hieu']} | {v.get('ngay_nhan', '')} | {v.get('trang_thai', '')} | "
+                    f"{v.get('do_khan', '')} | {v.get('don_vi', '')} | {v['trich_yeu'].replace('|', '/')} | {tep} |")
+    (luu_vao / "README.md").write_text("\n".join(dong) + "\n", encoding="utf-8")
+    (luu_vao / "danh-sach.json").write_text(json.dumps(viec, ensure_ascii=False, indent=1), encoding="utf-8")
+    log(f"[việc] {len(viec)} việc còn mở, tải mới {moi} việc -> {luu_vao}")
+    if day_len and token:
+        so = _day_thu_muc(token, luu_vao, f"{THU_MUC_VIEC}/{ngay}", f"Việc chờ xử lý egov1 {ngay}: {len(viec)} việc")
+        try:
+            gh_ghi(REPO_TRI_THUC, f"{THU_MUC_VIEC}/_da-lay.json",
+                   json.dumps(da_lay, ensure_ascii=False, indent=1).encode(), f"Việc chờ xử lý egov1 {ngay}", token, sha_da)
+        except Exception as e:
+            log("  [việc] không ghi được _da-lay.json:", repr(e)[:120])
+        log(f"[việc] đã đẩy {so} tệp lên vlncn-laocai/{THU_MUC_VIEC}/{ngay}/")
+    return len(viec), moi
+
+
+def viec_cho_xu_ly(luu_vao=None, so_ngay=30, toi_da=EGOV_VIEC_TOI_DA, day_len=True):
+    """--viec: lấy việc chờ xử lý trên egov1 (thay vOffice), tải toàn văn, đẩy lên kho riêng tư."""
+    from playwright.sync_api import sync_playwright
+    if HE_THONG != "egov":
+        log("Việc chờ xử lý chỉ có trên egov1 (config he_thong đang là", HE_THONG, ")")
+        return 2
+    token = doc_config().get("github_token", "")
+    luu_vao = Path(luu_vao or (BOT_HOME / "ket-qua" / "viec" / date.today().isoformat()))
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            return 3
+        ctx, page = mo
+        try:
+            den = _egov_quet_danh_sach(page, "den", date.today() - timedelta(days=so_ngay))
+            if den is None:
+                return 3
+            tong, moi = _egov_lay_viec(ctx, page, den, luu_vao, token, toi_da, day_len)
+        finally:
+            ctx.close()
+    telegram(f"Bot egov1: {tong} việc chờ xử lý, tải mới {moi} việc.")
+    return 0
+
+
+HE_THONG = "data360x"
+TEN_HE_THONG = "Data360X"
+
+
+def chon_he_thong(ten=None):
+    """Chọn cổng bot làm việc. Mặc định egov1 (từ 29/10/2026); 'data360x' giữ nguyên bộ đọc cũ.
+    Gán lại các hàm theo cổng ở cấp module nên mọi nơi gọi (chay_chinh, lay_theo_yeu_cau, tim_van_ban, tay.py)
+    tự dùng bộ đọc đúng mà không phải sửa từng chỗ."""
+    global HE_THONG, TEN_HE_THONG, GOC_WEB, TRANG_CHU, TRANG
+    global quet_danh_sach, tai_pdf, tai_dinh_kem, tim_tren_cong, can_dang_nhap
+    try:
+        cfg_ten = doc_config().get("he_thong", "")
+    except Exception:
+        cfg_ten = ""
+    ten = (ten or os.environ.get("BOT_HE_THONG") or cfg_ten or "egov").strip().lower()
+    if ten.startswith("data360"):
+        HE_THONG, TEN_HE_THONG = "data360x", "Data360X"
+        GOC_WEB, TRANG_CHU, TRANG = _D360["GOC_WEB"], _D360["TRANG_CHU"], _D360["TRANG"]
+        quet_danh_sach, tai_pdf, tai_dinh_kem, tim_tren_cong, can_dang_nhap = _D360["ham"]
+    else:
+        HE_THONG, TEN_HE_THONG = "egov", "egov1"
+        GOC_WEB, TRANG_CHU = EGOV_GOC, EGOV_DS_DEN
+        TRANG = {"den": EGOV_DS_DEN, "di": _egov_trang_da_do().get("di", "")}
+        quet_danh_sach, tai_pdf, tai_dinh_kem = _egov_quet_danh_sach, _egov_tai_pdf, _egov_tai_dinh_kem
+        tim_tren_cong, can_dang_nhap = _egov_tim_tren_cong, _egov_can_dang_nhap
+    return HE_THONG
+
+
+_D360 = {"GOC_WEB": GOC_WEB, "TRANG_CHU": TRANG_CHU, "TRANG": dict(TRANG),
+         "ham": (quet_danh_sach, tai_pdf, tai_dinh_kem, tim_tren_cong, can_dang_nhap)}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dang-nhap", action="store_true")
@@ -2276,10 +3262,19 @@ def main():
                          '(mục có "/" là số ký hiệu, còn lại là từ khóa trong trích yếu; quét --ngay ngày, mặc định 60)')
     ap.add_argument("--khong-gom", action="store_true",
                     help="chỉ lấy giấy phép, bỏ bước gom tri thức cho các plugin")
+    ap.add_argument("--he-thong", choices=["egov", "data360x"],
+                    help="cổng làm việc (mặc định egov1 từ 29/10/2026; hoặc config.json he_thong)")
+    ap.add_argument("--khao-sat", action="store_true",
+                    help="(egov1) đi một vòng cổng, ghi HTML/ảnh/API lên kho riêng tư để hoàn thiện bộ đọc")
+    ap.add_argument("--viec", action="store_true",
+                    help="(egov1) lấy việc Chưa/Chờ/Đang xử lý trong Văn bản đến, tải toàn văn, đẩy lên kho riêng tư")
     ap.add_argument("--gom-toi-da", type=int, default=TOI_DA_PDF_MOI_LUOT,
                     help=f"tối đa bao nhiêu tệp tri thức tải về mỗi lượt (mặc định {TOI_DA_PDF_MOI_LUOT})")
     a = ap.parse_args()
     tat_quick_edit()
+    if a.he_thong:
+        chon_he_thong(a.he_thong)
+    log(f"Cổng làm việc: {TEN_HE_THONG} ({GOC_WEB})")
     try:
         if a.kiem_tra_token:
             return kiem_tra_token()
@@ -2289,6 +3284,10 @@ def main():
             return giu_phien()
         if a.xuat_phien:
             return xuat_phien()
+        if a.khao_sat:
+            return khao_sat()
+        if a.viec:
+            return viec_cho_xu_ly(None if a.luu == "kem-theo" else a.luu, so_ngay=a.ngay or 30)
         if a.lay:
             # "@đường/dẫn.txt" = đọc yêu cầu từ tệp UTF-8 (workflow ghi ra, để chữ Việt không vỡ qua cmd Windows)
             yeu_cau = Path(a.lay[1:]).read_text(encoding="utf-8-sig") if a.lay.startswith("@") else a.lay
@@ -2303,9 +3302,11 @@ def main():
                           gom=not a.khong_gom, gom_toi_da=a.gom_toi_da)
     except Exception as e:
         log("LỖI:", repr(e))
-        telegram(f"Bot Data360X lỗi: {e!r}")
+        telegram(f"Bot {TEN_HE_THONG} lỗi: {e!r}")
         return 1
 
+
+chon_he_thong()
 
 if __name__ == "__main__":
     sys.exit(main())

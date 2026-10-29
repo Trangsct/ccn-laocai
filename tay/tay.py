@@ -7,9 +7,14 @@ ngoài) và 5 workflow chạy trên máy. TAY tự kéo việc từ GitHub, khô
 
 Vòng lặp mỗi CHU_KY phút:
   1. tự cập nhật: tay.py và bot-data360x.py trên main đổi thì tải về rồi khởi động lại chính mình
-  2. việc theo lịch (giờ Việt Nam, tính trên máy):
-       - giữ phiên Data360X mỗi giờ 07-17h thứ Hai-Bảy (Chrome thu nhỏ ~20 giây)
+  2. việc theo lịch (giờ Việt Nam, tính trên máy). Cổng mặc định egov1.laocai.gov.vn từ 29/10/2026
+     (Data360X nếu config.json "he_thong": "data360x"):
+       - giữ phiên mỗi giờ 07-17h thứ Hai-Bảy (Chrome thu nhỏ ~20 giây)
+       - việc chờ xử lý (egov1) mỗi ngày thứ Hai-Sáu từ 07:30: Văn bản đến Chưa/Chờ/Đang xử lý -> toàn văn
+         vào theo-doi/viec-cho-xu-ly/<ngày>/ (thay vOffice)
        - quét 30 ngày thứ Tư từ 11:30, hoặc bất cứ lúc nào trong giờ làm việc nếu đã quá 7 ngày chưa quét
+       - quét 7 ngày mỗi ngày thứ Hai-Sáu từ 16:30 (Bạn yêu cầu 29/10/2026: "tự động cập nhật các thông tin mới
+         nhất vào các plugin") -> bản tin hằng ngày cho Routine Claude nâng cấp plugin buổi tối
   3. hàng đợi yêu cầu: kho riêng tư vlncn-laocai, thư mục yeu-cau/*.json, trang_thai "cho" -> nhận (ghi
      "dang" bằng sha cũ, hai máy không tranh nhau) -> làm -> đẩy kết quả -> ghi "xong"/"loi"
   4. nhịp tim trang-thai/tay.json (nhiều nhất mỗi giờ một lần, và ngay sau mỗi việc)
@@ -18,6 +23,8 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "lay",  "yeu_cau": "5511/SCT-CN; tiêu chí lựa chọn chủ đầu tư", "ngay": 60, "luu": "theo-doi/yeu-cau/<ten>"}
   {"loai": "tim",  "ho_so": "<thư mục trong du-thao/>"}          # tìm văn bản viện dẫn của dự thảo
   {"loai": "quet", "ngay": 30}
+  {"loai": "viec", "ngay": 30}                                     # việc chờ xử lý trên egov1
+  {"loai": "khao-sat"}                                             # ghi cấu trúc egov1 lên theo-doi/egov/soi/
   {"loai": "giu-phien"}
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
 trang_thai, may, luc, tom_tat.
@@ -53,7 +60,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.1.1 (30/9/2026)"
+PHIEN_BAN = "0.2.0 (29/10/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -152,12 +159,19 @@ def viec_theo_lich(bay_gio: datetime, tt: dict) -> list:
         gp = tt.get("giu_phien_luc")
         if not gp or gp[:13] != bay_gio.strftime("%Y-%m-%dT%H"):      # mỗi giờ một lần
             ra.append(("giu-phien", {}))
+        hom_nay = bay_gio.strftime("%Y-%m-%d")
+        if bay_gio.weekday() <= 4 and (bay_gio.hour, bay_gio.minute) >= (7, 30) \
+                and (tt.get("viec_luc") or "")[:10] != hom_nay:
+            ra.append(("viec", {"ngay": 30}))
         quet = tt.get("quet_luc")
         qua_han = (not quet) or (bay_gio - datetime.fromisoformat(quet)).days >= QUET_QUA_HAN_NGAY
         thu_tu = bay_gio.weekday() == 2 and (bay_gio.hour, bay_gio.minute) >= (11, 30) \
             and (not quet or quet[:10] != bay_gio.strftime("%Y-%m-%d"))
         if thu_tu or qua_han:
             ra.append(("quet", {"ngay": 30}))
+        elif bay_gio.weekday() <= 4 and (bay_gio.hour, bay_gio.minute) >= (16, 30) \
+                and (not quet or quet[:10] != hom_nay):
+            ra.append(("quet", {"ngay": 7}))
     return ra
 
 
@@ -229,6 +243,17 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         if ma == 0:
             ghi_trang_thai(quet_luc=datetime.now().isoformat(timespec="minutes"))
         return f"quét {yc.get('ngay') or 30} ngày, mã {ma}"
+    if loai == "viec":
+        if getattr(botd, "HE_THONG", "") != "egov":
+            ghi_trang_thai(viec_luc=datetime.now().isoformat(timespec="minutes"))
+            return "bỏ qua: việc chờ xử lý chỉ có trên egov1"
+        luu_may = BOT_HOME / "ket-qua" / "viec" / date.today().isoformat()
+        ma = botd.viec_cho_xu_ly(str(luu_may), so_ngay=int(yc.get("ngay") or 30))
+        if ma == 0:
+            ghi_trang_thai(viec_luc=datetime.now().isoformat(timespec="minutes"))
+        return f"việc chờ xử lý egov1: mã {ma}, kết quả ở theo-doi/viec-cho-xu-ly/{date.today().isoformat()}/"
+    if loai == "khao-sat":
+        return f"khảo sát egov1: mã {botd.khao_sat()}, kết quả ở theo-doi/egov/soi/"
     if loai == "lay":
         ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
         luu_kho = yc.get("luu") or f"theo-doi/yeu-cau/{ten}"
@@ -298,7 +323,8 @@ def nhip_tim(botd, gh: GitHub, may: str, ep=False):
     thong_tin = botd.thong_tin_may()
     noi_dung = {"may": may, "loai_may": thong_tin.get("loai", ""), "mang": thong_tin.get("mang", ""),
                 "luc": datetime.now().isoformat(timespec="minutes"), "phien_ban": PHIEN_BAN,
-                "giu_phien_luc": tt.get("giu_phien_luc"), "quet_luc": tt.get("quet_luc")}
+                "giu_phien_luc": tt.get("giu_phien_luc"), "quet_luc": tt.get("quet_luc"),
+                "viec_luc": tt.get("viec_luc"), "cong": getattr(botd, "TEN_HE_THONG", "")}
     try:
         _, sha = gh.doc(KHO_VIEC, "trang-thai/tay.json")
         gh.ghi(KHO_VIEC, "trang-thai/tay.json", json.dumps(noi_dung, ensure_ascii=False, indent=2).encode(),
@@ -328,23 +354,43 @@ def chay_thu(botd):
     """Máy ảo Windows: mọi thứ trừ Chrome và GitHub. Thất bại thì exit 1 để CI đỏ."""
     print("tay", PHIEN_BAN, "| bot:", getattr(botd, "GOC_WEB", "?"), "| ROOT:", ROOT)
     for ham in ("chay_chinh", "giu_phien", "lay_theo_yeu_cau", "tim_van_ban", "gh", "gh_doc", "gh_ghi",
-                "telegram", "thong_tin_may"):
+                "telegram", "thong_tin_may", "viec_cho_xu_ly", "khao_sat", "chon_he_thong"):
         assert hasattr(botd, ham), f"bot thiếu hàm {ham}"
+    assert botd.HE_THONG == "egov", botd.HE_THONG      # cổng mặc định từ 29/10/2026
     t = datetime(2026, 9, 30, 11, 35)       # thứ Tư 11:35
     v = [l for l, _ in viec_theo_lich(t, {})]
-    assert v == ["giu-phien", "quet"], v
-    v = [l for l, _ in viec_theo_lich(t, {"giu_phien_luc": "2026-09-30T11:02", "quet_luc": "2026-09-30T11:31"})]
+    assert v == ["giu-phien", "viec", "quet"], v
+    v = [l for l, _ in viec_theo_lich(t, {"giu_phien_luc": "2026-09-30T11:02", "quet_luc": "2026-09-30T11:31",
+                                           "viec_luc": "2026-09-30T07:31"})]
     assert v == [], v
+    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 3, 9, 0), {"quet_luc": "2026-10-01T11:31"})]
+    assert v == ["giu-phien"], v              # thứ Bảy: giữ phiên, không lấy việc
+    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 2, 7, 10), {"quet_luc": "2026-10-01T11:31"})]
+    assert v == ["giu-phien"], v              # trước 07:30 chưa lấy việc
     v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 4, 22, 0), {})]    # Chủ nhật đêm: không làm gì
     assert v == [], v
     v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 2, 9, 0), {"quet_luc": "2026-09-20T11:31"})]
-    assert v == ["giu-phien", "quet"], v      # quá 7 ngày chưa quét -> quét bù
+    assert v == ["giu-phien", "viec", "quet"], v      # quá 7 ngày chưa quét -> quét bù
+    v = viec_theo_lich(datetime(2026, 10, 2, 16, 40), {"quet_luc": "2026-10-01T11:31", "viec_luc": "2026-10-02T07:31",
+                                                       "giu_phien_luc": "2026-10-02T16:05"})
+    assert v == [("quet", {"ngay": 7})], v            # chiều thứ Sáu: quét 7 ngày cho bản tin hằng ngày
+    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 2, 17, 5), {"quet_luc": "2026-10-02T16:41",
+                                                                    "viec_luc": "2026-10-02T07:31",
+                                                                    "giu_phien_luc": "2026-10-02T17:01"})]
+    assert v == [], v                                  # đã quét chiều nay thì thôi
+    # bộ đọc egov1: nhận cột theo tiêu đề đúng như ảnh chụp danh sách Văn bản đến (29/10/2026)
+    cot = botd._egov_anh_xa_cot(["STT", "Cấp độ", "Trích yếu", "Số ký hiệu", "Ngày Ban Hành", "Ngày Nhận",
+                                 "Trạng thái", "Cơ quan ban hành", "Người Ký", "Độ mật", "Nguồn văn bản", ""])
+    assert cot == {"do_khan": 1, "trich_yeu": 2, "so": 3, "ngay": 4, "ngay_nhan": 5, "trang_thai": 6,
+                   "don_vi": 7, "nguoi_ky": 8, "do_mat": 9, "nguon_vb": 10}, cot
+    assert botd._egov_la_mat({"do_mat": "Mật"}) and not botd._egov_la_mat({"do_mat": "thường"})
+    assert botd._la_viec_cho({"trang_thai": "Chưa xử lý"}) and not botd._la_viec_cho({"trang_thai": "Đã xử lý"})
     yc = {"loai": "lay", "yeu_cau": "5511/SCT-CN; tiêu chí lựa chọn chủ đầu tư", "ngay": 60}
     so, tu_khoa = botd._tach_yeu_cau(yc["yeu_cau"])
     assert so and tu_khoa, (so, tu_khoa)
     ghi_trang_thai(chay_thu_luc=datetime.now().isoformat(timespec="minutes"))
     don_log()
-    print("CHAY THU OK: nạp bot, lịch, phân tích yêu cầu, ghi trạng thái, dọn log.")
+    print("CHAY THU OK: nạp bot, cổng egov1, lịch, phân tích yêu cầu, ghi trạng thái, dọn log.")
     return 0
 
 

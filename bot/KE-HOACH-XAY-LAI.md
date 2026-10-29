@@ -44,10 +44,17 @@ ngoài nước, như Data360X), nên làm theo hai bước:
       Bạn đăng nhập EGOV, bot tự đi qua menu Văn bản đến/đi (chỉ theo liên kết, bỏ mọi chữ xóa/chuyển/ký/hoàn thành),
       rồi Bạn tự bấm 10 phút; bot ghi trang, bảng, API (mẫu phản hồi cắt ngắn, mã phiên/mật khẩu/cookie đã che) lên
       kho riêng tư `vlncn-laocai/theo-doi/egov/soi/<ngày-giờ>/`. Qua máy ảo Windows (job `soi-egov`).
-- [ ] Bạn chạy `soi-egov.bat` trên máy (dòng PowerShell ở đầu `HUONG-DAN-CAI-BOT.md`).
-- [ ] **Bước 2 — bot EGOV:** Claude đọc kết quả soi, viết phần đọc danh sách văn bản đến/đi, tải tệp đính kèm, việc
-      chờ xử lý trên EGOV; giữ nguyên đầu ra cũ (`theo-doi/danh-muc-<năm>.json`, `bao-cao/<ngày>.md`, `inbox/`) để các
-      plugin, Routine và web không phải đổi. Data360X giữ lại làm kho tra văn bản trước 10/10/2026.
+- [x] **Bước 2 — bot EGOV (29/10/2026, chưa có kết quả soi):** Bạn gửi ảnh chụp danh sách Văn bản đến
+      (`/document/xem-den-index?type=all`, 11 cột: Cấp độ, Trích yếu, Số ký hiệu, Ngày Ban Hành, Ngày Nhận, Trạng thái,
+      Cơ quan ban hành, Người Ký, Độ mật, Nguồn văn bản). `bot-data360x.py` thêm bộ đọc egov1 và chọn egov1 làm cổng mặc
+      định (`chon_he_thong`; `"he_thong": "data360x"` để quay lại). Phần chưa thấy tận mắt thì bot tự dò: nhận cột theo
+      tiêu đề, bấm menu "Văn bản đi" như người dùng, đặt 100 dòng/trang (DataTables hoặc ô chọn), lật trang, tải tệp qua
+      Chrome (link, khung xem PDF, bấm tên tệp). Bỏ hẳn văn bản có Độ mật khác "Thường". Đầu ra giữ nguyên
+      (`danh-muc-<năm>.json`, `bao-cao/<ngày>.md`, `inbox/`) + mới `theo-doi/viec-cho-xu-ly/<ngày>/` (thay vOffice).
+      Lượt đầu tự khảo sát cổng (`--khao-sat`) lên `theo-doi/egov/soi/<ngày-giờ>-bot/`. Đã chạy thử trên cổng giả dựng
+      theo ảnh chụp (Chromium): quét 2 danh sách, tìm theo số, tải PDF + đính kèm, việc chờ xử lý, phát hiện trang đăng nhập.
+- [ ] Bạn chạy `quet-lai-ngay.bat` (30 ngày) trên máy — dòng PowerShell ở đầu `HUONG-DAN-CAI-BOT.md`.
+- [ ] Claude đọc kết quả khảo sát đầu tiên, chỉnh bộ đọc nếu cổng thật khác cổng giả (đường dẫn chi tiết, cách phát tệp).
 
 ## Lộ trình và trạng thái
 
@@ -70,7 +77,8 @@ ngoài nước, như Data360X), nên làm theo hai bước:
       biết ghi yêu cầu cho TAY (ref 05, `goi_bot.py --qua-tay`).
 - [ ] Cài TAY lên laptop (Bạn bấm `cai-tay.bat` một lần, xem HUONG-DAN-CAI-BOT.md mục đầu) và máy bàn cơ quan.
 - [ ] Chạy song song bot cũ 1 tuần, so kết quả; rồi tắt bot cũ, runner, lượt online và các workflow thừa.
-- [ ] TAY v0.2: việc vOffice (danh sách chờ xử lý + tải văn bản đến) để thay `viec-cho-xu-ly.yml`.
+- [x] TAY v0.2 (29/10/2026): việc chờ xử lý lấy trên **egov1** thay vOffice — lịch 07:30 thứ Hai–Sáu, yêu cầu
+      `{"loai": "viec"}` và `{"loai": "khao-sat"}`; nhịp tim ghi cổng đang dùng.
 
 ### Giai đoạn 2 — "não" đọc trực tiếp (2 tuần)
 - [ ] Routine sáng thứ Hai–Sáu: việc chờ xử lý trên vOffice + soạn dự thảo.

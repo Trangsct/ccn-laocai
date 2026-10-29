@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 set PYTHONIOENCODING=utf-8
-title QUET LAI N NGAY - Bot Data360X
+title QUET LAI N NGAY - Bot egov1
 rem Quet lai mot khoang ngay tu chon. Dung khi du an nghi vai hom, cap-nhat-ngay.bat (chi 3 ngay) bo sot.
 rem An toan: van ban da xu ly roi thi bot tu bo qua, khong tai trung, khong ghi trung.
 set ROOT=C:\du-an
@@ -33,8 +33,8 @@ python "%BOT_DIR%\bot-data360x.py" --ngay %NGAY%
 echo.
 echo ============================================================
 echo   XONG. Van ban moi da day len GitHub.
-echo   Gemini va Mistral se doc noi dung trong vai phut, sau do
-echo   du lieu len trang: https://vlncn-laocai.vercel.app
+echo   Ban tin: vlncn-laocai/theo-doi/bao-cao/ ; viec cho xu ly:
+echo   vlncn-laocai/theo-doi/viec-cho-xu-ly/
 echo ============================================================
 echo.
 pause
