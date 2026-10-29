@@ -30,6 +30,19 @@
 > `khao-sat-egov.bat` (khảo sát lại khi cổng đổi giao diện), `dang-nhap-lan-dau.bat` (đăng nhập lại khi phiên hết).
 > Công cụ soi tương tác `soi-egov.bat` (Bạn tự bấm 10 phút) vẫn còn, chỉ dùng khi Claude cần xem thêm.
 > Muốn quay về Data360X: thêm `"he_thong": "data360x"` vào `bot-profile\config.json`.
+>
+> **Lượt chạy đầu 29/10/2026 09:00** (Bạn gửi ảnh): bot vào được egov1, đọc 54 văn bản đến trong 30 ngày, nhưng GitHub trả
+> 401 vì mã trong `config.json` đã hết hạn → chưa đẩy được gì. Đổi mã: mở PowerShell, dán dòng dưới, Enter, rồi dán mã
+> `github_pat_…` mới (Contents Read/Write cho 4 kho `ccn-laocai`, `vlncn-laocai`, `vlncn-laocai-files`, `skill-sct`):
+>
+>    ```
+>    $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; $c="$r\bot-profile\config.json"; $j=Get-Content $c -Raw | ConvertFrom-Json; $j.github_token=Read-Host 'Dan token moi'; $j | ConvertTo-Json | Set-Content $c -Encoding UTF8; python "$r\bot\bot-data360x.py" --kiem-tra-token
+>    ```
+>
+> **Cổng egov1 rất chậm** (Bạn báo 29/10/2026): bot chờ hộp "Đang tải dữ liệu…" tắt (tới 90 giây mỗi lần), đặt 100 dòng/trang,
+> và bấm **Xuất Excel** để lấy cả danh sách một lần thay vì lật từng trang; chỉ mở trang chi tiết của văn bản cần tải.
+> Ngoài văn bản, bot chép **Quản lý nhiệm vụ** (11 ô đếm, bảng Tổng quan nhiệm vụ UBND tỉnh giao / nội bộ, danh sách sau
+> khi bấm ô Chờ xử lý / Đang thực hiện / Đến hạn / Đã quá hạn) vào `theo-doi/viec-cho-xu-ly/<ngày>/nhiem-vu.md`.
 
 ## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
 
