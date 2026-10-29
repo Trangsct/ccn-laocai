@@ -34,7 +34,11 @@ echo.
 echo ============================================================
 echo   BUOC 3/3: cai TAY de may tu chay hang ngay
 echo ============================================================
-if not defined BAT_DAU_CHAY_THU call "%BOT_DIR%\cai-tay.bat"
+rem cai-tay.bat khong nam trong danh sach tai-ban-moi truoc ngay 29/10/2026 (vu 29/10: "is not recognized") -> tai thang
+curl -sSL --max-time 60 -H "Accept: application/vnd.github.raw" -o "%BOT_DIR%\cai-tay.bat.new" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/cai-tay.bat?ref=main"
+if exist "%BOT_DIR%\cai-tay.bat.new" move /y "%BOT_DIR%\cai-tay.bat.new" "%BOT_DIR%\cai-tay.bat" >nul
+if not exist "%BOT_DIR%\cai-tay.bat" echo   KHONG tai duoc cai-tay.bat - kiem tra mang roi bam dup bat-dau.bat lai.
+if not defined BAT_DAU_CHAY_THU if exist "%BOT_DIR%\cai-tay.bat" call "%BOT_DIR%\cai-tay.bat"
 
 echo.
 echo ============================================================
