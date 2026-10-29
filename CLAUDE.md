@@ -134,6 +134,9 @@ Khi muốn maintainability lâu dài: tách `app.js` thành các module nhỏ (m
 
 ## Quy trình làm việc mỗi phiên (Bạn chốt 04/9/2026)
 
+**Bạn chốt 29/10/2026: PR của kho này LUÔN merge ngay, không hỏi lại** ("luôn merge không cần hỏi lại tôi") — với điều
+kiện máy ảo Windows (`thu-bo-cai-windows.yml`) và các kiểm tra khác đã xanh, không xung đột. Cùng quy tắc với skill-sct.
+
 Bạn mở phiên chat mới với Claude Code và giao việc. Nguyên tắc:
 
 1. **Việc nào làm được ngay thì làm ngay**, không hỏi lại, không chờ.
