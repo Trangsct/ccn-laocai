@@ -180,6 +180,9 @@ lượt quét 10/10. Bot EGOV làm hai bước: soi cấu trúc trang (`scripts/
 để quay lại): quét Văn bản đến/đi như cũ, thêm việc Chưa/Chờ/Đang xử lý → `vlncn-laocai/theo-doi/viec-cho-xu-ly/<ngày>/`
 (thay vOffice), lượt đầu tự khảo sát cổng lên `theo-doi/egov/soi/<ngày-giờ>-bot/`. Văn bản có Độ mật khác "Thường"
 không bao giờ tải, không đẩy lên GitHub. Sửa bộ đọc theo kết quả khảo sát: các hàm `_egov_*` trong `bot-data360x.py`.
+Đường dẫn thật (ảnh Bạn gửi 29/10/2026): Văn bản đến `/document/xem-den-index?type=all`, Văn bản đi
+`/document/xem-di-index?type=data360`, chi tiết `/document/xem-den-xem?documentId=…`, Quản lý nhiệm vụ `/work/unit/main/1`,
+Tổng quan `/home/default/1`. Cổng lag: chờ "Đang tải dữ liệu…", 100 dòng/trang, Xuất Excel; nhiệm vụ → `nhiem-vu.md`.
 
 **Bạn chốt 30/9/2026 — xây lại bộ công cụ theo `bot/KE-HOACH-XAY-LAI.md`.** Ba điều bắt buộc từ nay:
 (1) mọi file trong `bot/` phải qua máy ảo Windows (`.github/workflows/thu-bo-cai-windows.yml`) trước khi
