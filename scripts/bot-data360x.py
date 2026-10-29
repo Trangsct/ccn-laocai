@@ -382,9 +382,11 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
             dong.append(f"*Liệt kê 40 văn bản mới nhất; đủ {len(nhom)} văn bản xem `danh-muc-{nam}.json`.*")
             dong.append("")
         for r in nhom[:40]:
+            # Nhãn đúng với lý do (vụ 29/10/2026: mọi công văn trao đổi đều bị ghi "chưa tải được PDF" dù bot không hề thử)
             tep = f" -> `{r['tep']}`" if r.get("tep") else (
                 " *(giấy phép cá biệt, đã vào cơ sở dữ liệu giấy phép)*" if la_giay_phep_ca_biet(r)
-                else " *(chưa tải được PDF)*")
+                else " *(chưa tải được PDF)*" if dang_gom(r)
+                else " *(công văn trao đổi, chỉ ghi mục lục - cần bản gốc thì sai bot lấy)*")
             dau_tl = "" if not isinstance(r, dict) else ("" if r.get("da_tra_loi") else "⚠️ CHƯA trả lời - ")
             dong.append(f"- {dau_tl}[{huong.get(r['nguon'], r['nguon'])}] **{r['so_ky_hieu']}** "
                         f"ngày {r['ngay_ban_hanh']} - {r['trich_yeu']}{tep}")
