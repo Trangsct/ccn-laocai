@@ -10,11 +10,11 @@ Vòng lặp mỗi CHU_KY phút:
   2. việc theo lịch (giờ Việt Nam, tính trên máy). Cổng mặc định egov1.laocai.gov.vn từ 29/10/2026
      (Data360X nếu config.json "he_thong": "data360x"):
        - giữ phiên mỗi giờ 07-17h thứ Hai-Bảy (Chrome thu nhỏ ~20 giây)
-       - việc chờ xử lý (egov1) mỗi ngày thứ Hai-Sáu từ 07:30: Văn bản đến Chưa/Chờ/Đang xử lý -> toàn văn
-         vào theo-doi/viec-cho-xu-ly/<ngày>/ (thay vOffice)
+       - SÁNG SỚM 05:50 thứ Hai-Sáu (Bạn yêu cầu 29/10/2026: "7h30 có bản tin, máy chạy trong đêm"): việc chờ xử lý
+         (Văn bản đến Chưa/Chờ/Đang xử lý -> toàn văn vào theo-doi/viec-cho-xu-ly/<ngày>/, thay vOffice) rồi quét 7 ngày;
+         Routine Claude 07:03 đọc và ra bản tin trước 07:30. Máy phải bật qua đêm (TAY chạy ẩn).
        - quét 30 ngày thứ Tư từ 11:30, hoặc bất cứ lúc nào trong giờ làm việc nếu đã quá 7 ngày chưa quét
-       - quét 7 ngày mỗi ngày thứ Hai-Sáu từ 16:30 (Bạn yêu cầu 29/10/2026: "tự động cập nhật các thông tin mới
-         nhất vào các plugin") -> bản tin hằng ngày cho Routine Claude nâng cấp plugin buổi tối
+       - quét 7 ngày mỗi chiều thứ Hai-Sáu từ 16:30 -> Routine Claude 21:07 nâng cấp plugin
   3. hàng đợi yêu cầu: kho riêng tư vlncn-laocai, thư mục yeu-cau/*.json, trang_thai "cho" -> nhận (ghi
      "dang" bằng sha cũ, hai máy không tranh nhau) -> làm -> đẩy kết quả -> ghi "xong"/"loi"
   4. nhịp tim trang-thai/tay.json (nhiều nhất mỗi giờ một lần, và ngay sau mỗi việc)
@@ -60,7 +60,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.2.0 (29/10/2026)"
+PHIEN_BAN = "0.3.0 (29/10/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -154,24 +154,28 @@ def sha_git(duong: Path) -> str:
 def viec_theo_lich(bay_gio: datetime, tt: dict) -> list:
     """Quyết định thuần túy (không mở gì) để thử được trên máy ảo: trả về danh sách việc cần làm lúc này."""
     ra = []
-    gio_lam = bay_gio.weekday() <= 5 and 7 <= bay_gio.hour <= 17      # thứ Hai (0) .. thứ Bảy (5)
+    hom_nay = bay_gio.strftime("%Y-%m-%d")
+    gio_phut = (bay_gio.hour, bay_gio.minute)
+    ngay_lam = bay_gio.weekday() <= 4                                  # thứ Hai (0) .. thứ Sáu (4)
+    gio_lam = bay_gio.weekday() <= 5 and 7 <= bay_gio.hour <= 17       # giữ phiên, quét bù: cả thứ Bảy
+    quet = tt.get("quet_luc")
+    quet30 = tt.get("quet30_luc")
     if gio_lam:
         gp = tt.get("giu_phien_luc")
         if not gp or gp[:13] != bay_gio.strftime("%Y-%m-%dT%H"):      # mỗi giờ một lần
             ra.append(("giu-phien", {}))
-        hom_nay = bay_gio.strftime("%Y-%m-%d")
-        if bay_gio.weekday() <= 4 and (bay_gio.hour, bay_gio.minute) >= (7, 30) \
-                and (tt.get("viec_luc") or "")[:10] != hom_nay:
-            ra.append(("viec", {"ngay": 30}))
-        quet = tt.get("quet_luc")
+    # sáng sớm: việc chờ xử lý rồi quét 7 ngày, cho bản tin 07:30 (máy bật qua đêm)
+    if ngay_lam and gio_phut >= (5, 50) and (tt.get("viec_luc") or "")[:10] != hom_nay:
+        ra.append(("viec", {"ngay": 30}))
+    if ngay_lam and gio_phut >= (5, 50) and (not quet or quet[:10] != hom_nay):
+        ra.append(("quet", {"ngay": 7}))
+    if gio_lam:
         qua_han = (not quet) or (bay_gio - datetime.fromisoformat(quet)).days >= QUET_QUA_HAN_NGAY
-        thu_tu = bay_gio.weekday() == 2 and (bay_gio.hour, bay_gio.minute) >= (11, 30) \
-            and (not quet or quet[:10] != bay_gio.strftime("%Y-%m-%d"))
-        if thu_tu or qua_han:
+        thu_tu = bay_gio.weekday() == 2 and gio_phut >= (11, 30) and (not quet30 or quet30[:10] != hom_nay)
+        if (thu_tu or qua_han) and not any(l == "quet" for l, _ in ra):
             ra.append(("quet", {"ngay": 30}))
-        elif bay_gio.weekday() <= 4 and (bay_gio.hour, bay_gio.minute) >= (16, 30) \
-                and (not quet or quet[:10] != hom_nay):
-            ra.append(("quet", {"ngay": 7}))
+        elif ngay_lam and gio_phut >= (16, 30) and quet and quet[:10] == hom_nay and int(quet[11:13]) < 12:
+            ra.append(("quet", {"ngay": 7}))                            # lượt chiều, sau lượt sáng
     return ra
 
 
@@ -241,7 +245,8 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
     if loai == "quet":
         ma = botd.chay_chinh(so_ngay=int(yc.get("ngay") or 30))
         if ma == 0:
-            ghi_trang_thai(quet_luc=datetime.now().isoformat(timespec="minutes"))
+            luc = datetime.now().isoformat(timespec="minutes")
+            ghi_trang_thai(quet_luc=luc, **({"quet30_luc": luc} if int(yc.get("ngay") or 30) >= 30 else {}))
         return f"quét {yc.get('ngay') or 30} ngày, mã {ma}"
     if loai == "viec":
         if getattr(botd, "HE_THONG", "") != "egov":
@@ -357,27 +362,26 @@ def chay_thu(botd):
                 "telegram", "thong_tin_may", "viec_cho_xu_ly", "khao_sat", "chon_he_thong"):
         assert hasattr(botd, ham), f"bot thiếu hàm {ham}"
     assert botd.HE_THONG == "egov", botd.HE_THONG      # cổng mặc định từ 29/10/2026
-    t = datetime(2026, 9, 30, 11, 35)       # thứ Tư 11:35
-    v = [l for l, _ in viec_theo_lich(t, {})]
-    assert v == ["giu-phien", "viec", "quet"], v
-    v = [l for l, _ in viec_theo_lich(t, {"giu_phien_luc": "2026-09-30T11:02", "quet_luc": "2026-09-30T11:31",
-                                           "viec_luc": "2026-09-30T07:31"})]
-    assert v == [], v
-    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 3, 9, 0), {"quet_luc": "2026-10-01T11:31"})]
-    assert v == ["giu-phien"], v              # thứ Bảy: giữ phiên, không lấy việc
-    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 2, 7, 10), {"quet_luc": "2026-10-01T11:31"})]
-    assert v == ["giu-phien"], v              # trước 07:30 chưa lấy việc
-    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 4, 22, 0), {})]    # Chủ nhật đêm: không làm gì
-    assert v == [], v
-    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 2, 9, 0), {"quet_luc": "2026-09-20T11:31"})]
-    assert v == ["giu-phien", "viec", "quet"], v      # quá 7 ngày chưa quét -> quét bù
-    v = viec_theo_lich(datetime(2026, 10, 2, 16, 40), {"quet_luc": "2026-10-01T11:31", "viec_luc": "2026-10-02T07:31",
+    L = lambda t, tt: [l for l, _ in viec_theo_lich(t, tt)]
+    assert L(datetime(2026, 9, 30, 11, 35), {}) == ["giu-phien", "viec", "quet"]        # thứ Tư, chưa làm gì
+    v = viec_theo_lich(datetime(2026, 9, 30, 11, 35), {})
+    assert [y for _, y in v if _ == "quet"] == [{"ngay": 7}], v                             # không xếp 2 lượt quét
+    assert L(datetime(2026, 9, 30, 11, 35), {"giu_phien_luc": "2026-09-30T11:02", "quet_luc": "2026-09-30T05:52",
+                                             "viec_luc": "2026-09-30T05:51"}) == ["quet"]   # thứ Tư: lượt 30 ngày
+    assert L(datetime(2026, 9, 30, 11, 35), {"giu_phien_luc": "2026-09-30T11:02", "quet_luc": "2026-09-30T11:40",
+                                             "quet30_luc": "2026-09-30T11:40", "viec_luc": "2026-09-30T05:51"}) == []
+    assert L(datetime(2026, 10, 2, 5, 55), {"quet_luc": "2026-10-01T16:31", "viec_luc": "2026-10-01T05:51"}) \
+        == ["viec", "quet"]                                                                  # 05:55: việc + quét sáng
+    assert L(datetime(2026, 10, 2, 5, 40), {"quet_luc": "2026-10-01T16:31", "viec_luc": "2026-10-01T05:51"}) == []
+    assert L(datetime(2026, 10, 3, 9, 0), {"quet_luc": "2026-10-02T16:31"}) == ["giu-phien"]   # thứ Bảy: chỉ giữ phiên
+    assert L(datetime(2026, 10, 4, 22, 0), {}) == []                                       # Chủ nhật đêm: không làm gì
+    assert L(datetime(2026, 10, 2, 9, 0), {"quet_luc": "2026-09-20T11:31", "viec_luc": "2026-10-02T05:51"}) \
+        == ["giu-phien", "quet"]                                                            # quá 7 ngày -> quét (7 ngày sáng)
+    v = viec_theo_lich(datetime(2026, 10, 2, 16, 40), {"quet_luc": "2026-10-02T05:52", "viec_luc": "2026-10-02T05:51",
                                                        "giu_phien_luc": "2026-10-02T16:05"})
-    assert v == [("quet", {"ngay": 7})], v            # chiều thứ Sáu: quét 7 ngày cho bản tin hằng ngày
-    v = [l for l, _ in viec_theo_lich(datetime(2026, 10, 2, 17, 5), {"quet_luc": "2026-10-02T16:41",
-                                                                    "viec_luc": "2026-10-02T07:31",
-                                                                    "giu_phien_luc": "2026-10-02T17:01"})]
-    assert v == [], v                                  # đã quét chiều nay thì thôi
+    assert v == [("quet", {"ngay": 7})], v                                                  # chiều: quét 7 ngày lần 2
+    assert L(datetime(2026, 10, 2, 17, 5), {"quet_luc": "2026-10-02T16:41", "viec_luc": "2026-10-02T05:51",
+                                            "giu_phien_luc": "2026-10-02T17:01"}) == []    # đã quét chiều thì thôi
     # bộ đọc egov1: nhận cột theo tiêu đề đúng như ảnh chụp danh sách Văn bản đến (29/10/2026)
     cot = botd._egov_anh_xa_cot(["STT", "Cấp độ", "Trích yếu", "Số ký hiệu", "Ngày Ban Hành", "Ngày Nhận",
                                  "Trạng thái", "Cơ quan ban hành", "Người Ký", "Độ mật", "Nguồn văn bản", ""])

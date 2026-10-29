@@ -17,9 +17,11 @@
 >    quét. Thấy **XONG** thì báo Claude "đã chạy bot EGOV".
 > 4. **Cho chạy tự động hằng ngày** (Bạn yêu cầu 29/10/2026 — chỉ làm một lần, sau bước 3): mở PowerShell, dán dòng cài
 >    TAY ở mục dưới ("Cài lên máy mới…", ô ✅) rồi nháy đúp `cai-tay.bat`, cuối phải thấy **TAY DANG CHAY**. Từ đó máy
->    tự làm, không cần bấm gì: giữ phiên egov1 mỗi giờ 07–17h (thứ Hai–Bảy); **07:30 thứ Hai–Sáu** lấy việc chờ xử lý
->    kèm toàn văn; **16:30 thứ Hai–Sáu** quét 7 ngày ra bản tin (thứ Tư 11:30 quét 30 ngày). Claude trên mây đọc
->    kết quả: 08:3x soạn dự thảo cho việc chờ xử lý, 19:3x nâng cấp các plugin từ bản tin trong ngày.
+>    tự làm, không cần bấm gì — **để máy bật qua đêm** (Bạn yêu cầu 29/10/2026: 7h30 có bản tin): **05:50 thứ Hai–Sáu**
+>    lấy việc chờ xử lý + nhiệm vụ rồi quét 7 ngày → Claude trên mây 07:03 ra bản tin việc của Bạn/Phòng/Sở (xong trước
+>    07:30, đẩy về điện thoại); giữ phiên mỗi giờ 07–17h; **16:30** quét 7 ngày lần nữa → Claude 21:07 nâng cấp plugin;
+>    thứ Tư 11:30 quét 30 ngày. Phần vào egov1 KHÔNG chạy được trên đám mây (cổng chặn máy chủ nước ngoài) nên máy ở
+>    Lào Cai phải bật; tắt máy thì sáng hôm sau Claude dùng dữ liệu của lượt 16:30 hôm trước.
 >    Bạn chỉ phải đăng nhập lại khi Windows/Telegram báo phiên egov1 hết hạn (nháy đúp `dang-nhap-lan-dau.bat`).
 >
 > Bot làm gì: quét Văn bản đến + đi → mục lục và bản tin như cũ (`vlncn-laocai/theo-doi/`); văn bản đến có trạng thái
