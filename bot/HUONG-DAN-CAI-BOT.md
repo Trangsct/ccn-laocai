@@ -1,50 +1,30 @@
 # Hướng dẫn cài Bot Data360X trên máy cơ quan (Windows)
 
-## BOT EGOV — việc cần làm ngay (từ 29/10/2026)
+## BẮT ĐẦU — chỉ một việc (Bạn yêu cầu 29/10/2026: hướng dẫn nhiều bước khó hiểu)
 
-> Từ 10/10/2026 văn bản đi, đến nằm trên **EGOV** (`egov1.laocai.gov.vn`). Từ 29/10/2026 bot đã đọc được EGOV: cổng mặc
-> định của `bot-data360x.py` là egov1 (Data360X chỉ còn là kho tra văn bản cũ). Trên máy ở Lào Cai đã từng chạy bot
-> (laptop hoặc máy bàn), làm **một lần**:
->
-> 1. Mở **PowerShell**, dán nguyên dòng sau rồi Enter (tải bản mới nhất rồi mở cửa sổ quét lại):
->
->    ```
->    $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; mkdir "$r\bot" -Force | Out-Null; curl.exe -sSL -H "Accept: application/vnd.github.raw" -o "$r\bot\quet-lai-ngay.bat" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/quet-lai-ngay.bat?ref=main"; & "$r\bot\quet-lai-ngay.bat"
->    ```
-> 2. Hỏi số ngày → gõ **30**, Enter. Chrome (hồ sơ riêng của bot) mở egov1; lần đầu sẽ là trang đăng nhập → **đăng nhập
->    như thường** (nhập mã xác thực). Bot tự chạy tiếp, đừng đóng Chrome.
-> 3. Lần đầu bot tự **khảo sát** cổng (2–3 phút: Văn bản đến, Văn bản đi, một trang chi tiết, Quản lý nhiệm vụ) rồi mới
->    quét. Thấy **XONG** thì báo Claude "đã chạy bot EGOV".
-> 4. **Cho chạy tự động hằng ngày** (Bạn yêu cầu 29/10/2026 — chỉ làm một lần, sau bước 3): mở PowerShell, dán dòng cài
->    TAY ở mục dưới ("Cài lên máy mới…", ô ✅) rồi nháy đúp `cai-tay.bat`, cuối phải thấy **TAY DANG CHAY**. Từ đó máy
->    tự làm, không cần bấm gì — **để máy bật qua đêm** (Bạn yêu cầu 29/10/2026: 7h30 có bản tin): **05:50 thứ Hai–Sáu**
->    lấy việc chờ xử lý + nhiệm vụ rồi quét 7 ngày → Claude trên mây 07:03 ra bản tin việc của Bạn/Phòng/Sở (xong trước
->    07:30, đẩy về điện thoại); giữ phiên mỗi giờ 07–17h; **16:30** quét 7 ngày lần nữa → Claude 21:07 nâng cấp plugin;
->    thứ Tư 11:30 quét 30 ngày. Phần vào egov1 KHÔNG chạy được trên đám mây (cổng chặn máy chủ nước ngoài) nên máy ở
->    Lào Cai phải bật; tắt máy thì sáng hôm sau Claude dùng dữ liệu của lượt 16:30 hôm trước.
->    Bạn chỉ phải đăng nhập lại khi Windows/Telegram báo phiên egov1 hết hạn (nháy đúp `dang-nhap-lan-dau.bat`).
->
-> Bot làm gì: quét Văn bản đến + đi → mục lục và bản tin như cũ (`vlncn-laocai/theo-doi/`); văn bản đến có trạng thái
-> **Chưa / Chờ / Đang xử lý** → tải toàn văn + đính kèm vào `vlncn-laocai/theo-doi/viec-cho-xu-ly/<ngày>/` (thay vOffice).
-> Văn bản có **Độ mật** khác "Thường" không bao giờ được tải hay đẩy lên GitHub.
->
-> Các tệp nháy đúp: `quet-lai-ngay.bat` (quét N ngày), `viec-cho-xu-ly.bat` (chỉ lấy việc chờ xử lý),
-> `khao-sat-egov.bat` (khảo sát lại khi cổng đổi giao diện), `dang-nhap-lan-dau.bat` (đăng nhập lại khi phiên hết).
-> Công cụ soi tương tác `soi-egov.bat` (Bạn tự bấm 10 phút) vẫn còn, chỉ dùng khi Claude cần xem thêm.
-> Muốn quay về Data360X: thêm `"he_thong": "data360x"` vào `bot-profile\config.json`.
->
-> **Lượt chạy đầu 29/10/2026 09:00** (Bạn gửi ảnh): bot vào được egov1, đọc 54 văn bản đến trong 30 ngày, nhưng GitHub trả
-> 401 vì mã trong `config.json` đã hết hạn → chưa đẩy được gì. Đổi mã: mở PowerShell, dán dòng dưới, Enter, rồi dán mã
-> `github_pat_…` mới (Contents Read/Write cho 4 kho `ccn-laocai`, `vlncn-laocai`, `vlncn-laocai-files`, `skill-sct`):
->
->    ```
->    $r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; $c="$r\bot-profile\config.json"; $j=Get-Content $c -Raw | ConvertFrom-Json; $j.github_token=Read-Host 'Dan token moi'; $j | ConvertTo-Json | Set-Content $c -Encoding UTF8; python "$r\bot\bot-data360x.py" --kiem-tra-token
->    ```
->
-> **Cổng egov1 rất chậm** (Bạn báo 29/10/2026): bot chờ hộp "Đang tải dữ liệu…" tắt (tới 90 giây mỗi lần), đặt 100 dòng/trang,
-> và bấm **Xuất Excel** để lấy cả danh sách một lần thay vì lật từng trang; chỉ mở trang chi tiết của văn bản cần tải.
-> Ngoài văn bản, bot chép **Quản lý nhiệm vụ** (11 ô đếm, bảng Tổng quan nhiệm vụ UBND tỉnh giao / nội bộ, danh sách sau
-> khi bấm ô Chờ xử lý / Đang thực hiện / Đến hạn / Đã quá hạn) vào `theo-doi/viec-cho-xu-ly/<ngày>/nhiem-vu.md`.
+Mở **PowerShell**, dán dòng dưới, bấm **Enter**:
+
+```
+$r='C:\du-an'; foreach ($o in 'D','E','F','G') { if (Test-Path "$($o):\du-an") { $r="$($o):\du-an" } }; curl.exe -sSL -H "Accept: application/vnd.github.raw" -o "$r\bot\bat-dau.bat" "https://api.github.com/repos/Trangsct/ccn-laocai/contents/bot/bat-dau.bat?ref=main"; & "$r\bot\bat-dau.bat"
+```
+
+Rồi **để máy tự làm** (30–60 phút, đừng đóng Chrome). Hiện trang đăng nhập egov1 thì đăng nhập như thường. Thấy chữ
+**XONG** là hết việc. Từ hôm sau mỗi sáng trước 07:30 bản tin về điện thoại. Chỉ cần **để máy bật qua đêm**.
+
+Lần sau muốn làm lại từ đầu: nháy đúp `bat-dau.bat` trong thư mục `du-an\bot`.
+
+<details><summary>Chi tiết kỹ thuật (Claude đọc, Bạn không cần)</summary>
+
+`bat-dau.bat` = tải bản mới → `bot-data360x.py --he-thong egov --ngay 30` (lượt đầu tự khảo sát cổng nếu chưa có lượt
+khảo sát nào đẩy được lên kho; quét tab Tra cứu văn bản đến/đi; việc chờ xử lý + `nhiem-vu.md`) → `cai-tay.bat`.
+Lịch TAY 0.3.0: 05:50 thứ Hai–Sáu việc + quét 7 ngày; giữ phiên mỗi giờ 07–17h; 16:30 quét 7 ngày; thứ Tư 11:30 quét
+30 ngày. Routine Claude: 07:03 bản tin + dự thảo, 07:41 kiểm tra sức khỏe, 21:07 nâng cấp plugin. Cổng egov1 chặn máy
+chủ nước ngoài nên phần vào cổng chỉ chạy trên máy ở Lào Cai. Các tệp lẻ (`quet-lai-ngay.bat`, `viec-cho-xu-ly.bat`,
+`khao-sat-egov.bat`, `dang-nhap-lan-dau.bat`) vẫn còn để dùng riêng khi cần. Đổi mã GitHub: dòng PowerShell
+`$c="$r\bot-profile\config.json"; … Read-Host 'Dan token moi' …` (xem lịch sử tệp này ngày 29/10/2026).
+Quay về Data360X: `"he_thong": "data360x"` trong `bot-profile\config.json`.
+
+</details>
 
 ## Cài lên máy mới bằng MỘT cú bấm — `cai-laptop.bat` (từ 29/9/2026)
 
