@@ -83,5 +83,6 @@
   "github": {
     "silent": true,
     "autoJobCancelation": true
-  }
+  },
+  "ignoreCommand": "git rev-parse -q --verify HEAD^ >/dev/null || exit 1; git diff --quiet HEAD^ HEAD -- . ':(exclude)bot' ':(exclude)scripts' ':(exclude)tay' ':(exclude)docs' ':(exclude).github' ':(exclude).claude' ':(exclude)*.md' ':(exclude)CLAUDE.md'"
 }
