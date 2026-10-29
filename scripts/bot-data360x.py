@@ -2162,8 +2162,8 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
                 log("Việc chờ xử lý trên egov1...")
                 try:
                     den = [v for v in van_ban if v["nguon"] == "den"]
-                    if (date.today() - tu_ngay).days < 30:
-                        den = quet_danh_sach(page, "den", date.today() - timedelta(days=30)) or den
+                    den = _egov_quet_danh_sach(page, "den", date.today() - timedelta(days=max(30, (date.today() - tu_ngay).days)),
+                                               tra_cuu=False) or den
                     tong_viec, moi_viec = _egov_lay_viec(
                         ctx, page, den, BOT_HOME / "ket-qua" / "viec" / date.today().isoformat(), token)
                     viec_tom = f"; {tong_viec} việc chờ xử lý (tải mới {moi_viec}) -> {THU_MUC_VIEC}/"
@@ -2310,7 +2310,9 @@ EGOV_MENU = {"den": "Văn bản đến", "di": "Văn bản đi"}
 EGOV_CHO_LAG_GIAY = 90          # cổng rất chậm (Bạn báo 29/10/2026): chờ "Đang tải dữ liệu..." tắt tới 90 giây
 EGOV_TRANG_DA_DO = BOT_HOME / "egov-trang.json"      # đường dẫn danh sách đã dò được, lần sau vào thẳng
 EGOV_DA_KHAO_SAT = BOT_HOME / "egov-khao-sat.json"   # có tệp này thì lần quét sau không khảo sát lại
-EGOV_TRANG_TOI_DA = 60          # lưới an toàn: 60 trang x 100 dòng
+EGOV_TRANG_TOI_DA = 150         # lưới an toàn: 150 trang (10 dòng/trang khi không đổi được số dòng = 1.500 văn bản)
+EGOV_TAB_TRA_CUU = {"den": "Tra cứu văn bản đến", "di": "Tra cứu văn bản đi"}   # tab thấy TẤT CẢ văn bản của Sở (Bạn chỉ 29/10/2026)
+EGOV_TAB_CUA_TOI = {"den": "Danh sách văn bản", "di": "Chờ xử lý"}            # tab chỉ văn bản giao cho Bạn
 EGOV_SO_DONG = 100              # muốn bảng hiện bao nhiêu dòng mỗi trang (cổng mặc định 10)
 EGOV_VIEC_TOI_DA = 30           # mỗi lượt tải toàn văn tối đa bao nhiêu việc chờ xử lý
 THU_MUC_VIEC = "theo-doi/viec-cho-xu-ly"
@@ -2643,8 +2645,9 @@ def _egov_bam_menu(page, nguon):
     return True
 
 
-def _egov_mo_danh_sach(page, nguon):
-    """Mở trang danh sách. Trả kết quả đọc bảng; None nếu bị đưa về trang đăng nhập; False nếu không tìm thấy."""
+def _egov_mo_danh_sach(page, nguon, tra_cuu=True):
+    """Mở trang danh sách rồi bấm tab "Tra cứu văn bản …" (tất cả văn bản của Sở) hay "Danh sách văn bản" (phần giao cho
+    Bạn). Trả kết quả đọc bảng; None nếu bị đưa về trang đăng nhập; False nếu không tìm thấy."""
     da_do = _egov_trang_da_do()
     ung_vien = []
     if da_do.get(nguon):
@@ -2662,6 +2665,9 @@ def _egov_mo_danh_sach(page, nguon):
                 continue
             if can_dang_nhap(page):
                 return None
+            tab = (EGOV_TAB_TRA_CUU if tra_cuu else EGOV_TAB_CUA_TOI)[nguon]
+            if _egov_bam(page, tab):
+                log(f"  ({nguon}) đã bấm tab '{tab}'")
             kq = _egov_cho_bang(page)
             if kq and kq.get("heads"):
                 if da_do.get(nguon) != page.url:
@@ -2711,6 +2717,7 @@ def _egov_doc_cac_trang(page, nguon, kq, dung=None, toi_da=EGOV_TRANG_TOI_DA):
         log(f"  ({nguon}) không nhận ra cột bảng: {kq['heads']}")
         return []
     tat_ca, da_thay, mat, trang = [], set(), 0, 1
+    tong = _egov_tong_so(page)
     while True:
         rows = []
         for h in kq["rows"]:
@@ -2724,7 +2731,10 @@ def _egov_doc_cac_trang(page, nguon, kq, dung=None, toi_da=EGOV_TRANG_TOI_DA):
             da_thay.add(khoa)
             rows.append(vb)
         tat_ca.extend(rows)
-        log(f"  {nguon}: trang {trang}, {len(kq['rows'])} dòng")
+        ngay_cuoi = next((r.get("ngay_nhan") or r.get("ngay_ban_hanh") for r in reversed(rows)), "")
+        log(f"  {nguon}: trang {trang}, {len(kq['rows'])} dòng, đã đọc {len(tat_ca)}"
+            + (f"/{tong}" if tong else "") + (f", tới ngày {ngay_cuoi}" if ngay_cuoi else "")
+            + (" - dừng khi gặp ngày cũ hơn khoảng quét" if trang == 1 and dung else ""))
         if not kq["rows"] or trang >= toi_da or (dung and dung(rows)):
             break
         cu = _egov_chu_ky(kq)
@@ -2805,9 +2815,10 @@ def _egov_xuat_excel(page, nguon):
     return []
 
 
-def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None):
-    """Thay quet_danh_sach của Data360X. Trả danh sách văn bản từ tu_ngay; None nếu phải đăng nhập lại."""
-    kq = _egov_mo_danh_sach(page, nguon)
+def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None, tra_cuu=True):
+    """Thay quet_danh_sach của Data360X. tra_cuu=True: tab Tra cứu (mọi văn bản của Sở, để gom tri thức);
+    False: tab Danh sách văn bản (phần giao cho Bạn, để lấy việc chờ xử lý). Trả danh sách từ tu_ngay; None nếu phải đăng nhập."""
+    kq = _egov_mo_danh_sach(page, nguon, tra_cuu)
     if kq is None:
         return None
     if kq is False:
@@ -2880,7 +2891,7 @@ def _egov_go_tim(page, chuoi):
 
 def _egov_tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
     """Thay tim_tren_cong của Data360X: gõ số ký hiệu / từ khóa vào ô tìm của bảng rồi đọc kết quả."""
-    kq = _egov_mo_danh_sach(page, nguon)
+    kq = _egov_mo_danh_sach(page, nguon, tra_cuu=True)
     if not kq:
         return None
     if not _egov_go_tim(page, chuoi):
@@ -3465,7 +3476,7 @@ def viec_cho_xu_ly(luu_vao=None, so_ngay=30, toi_da=EGOV_VIEC_TOI_DA, day_len=Tr
             return 3
         ctx, page = mo
         try:
-            den = _egov_quet_danh_sach(page, "den", date.today() - timedelta(days=so_ngay))
+            den = _egov_quet_danh_sach(page, "den", date.today() - timedelta(days=so_ngay), tra_cuu=False)
             if den is None:
                 return 3
             tong, moi = _egov_lay_viec(ctx, page, den, luu_vao, token, toi_da, day_len)
