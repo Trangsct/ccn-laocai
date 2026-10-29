@@ -2081,7 +2081,7 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
                 if not ok:
                     telegram(f"Bot {TEN_HE_THONG}: không đăng nhập được sau 90 phút, bỏ lượt chạy hôm nay.")
                     return 3
-            if HE_THONG == "egov" and not soi and token and not EGOV_DA_KHAO_SAT.exists():
+            if HE_THONG == "egov" and not soi and token and not _egov_da_khao_sat_len_kho():
                 # Lần đầu chạy trên cổng mới: ghi lại cấu trúc cổng lên kho riêng tư để Claude hoàn thiện bộ đọc
                 log("Lần đầu chạy trên egov1: khảo sát cổng trước khi quét...")
                 try:
@@ -3282,6 +3282,15 @@ def _egov_khao_sat_va_day(ctx, page, token):
     log(f"Khảo sát xong: {len(buoc)} bước" + (f", đã đẩy {so} tệp lên vlncn-laocai/{duong}" if so
                                               else f", lưu trên máy ở {thu_muc}"))
     return duong if so else str(thu_muc)
+
+
+def _egov_da_khao_sat_len_kho():
+    """Đã có lượt khảo sát ĐẨY ĐƯỢC lên kho chưa (vụ 29/10/2026: lượt đầu khảo sát xong nhưng GitHub 401, kết quả chỉ
+    nằm trên máy - lượt sau phải khảo sát lại)."""
+    try:
+        return bool(json.loads(EGOV_DA_KHAO_SAT.read_text(encoding="utf-8")).get("kho", "").startswith("theo-doi/"))
+    except Exception:
+        return False
 
 
 def _mo_cong_san_sang(p, ctx=None):
