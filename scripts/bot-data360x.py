@@ -3010,12 +3010,47 @@ def _egov_mo_va_tai_tep(ctx, page, vb, soi_dir=None):
             ten = (ten or "van-ban") + ".pdf"
         tep.append({"ten": ten or f"tep-{len(tep) + 1}", "bytes": b, "nguon_tep": nguon_tep})
 
+    def _them_zip(ten, b, nguon_tep):
+        """Cổng gửi một .zip chứa mọi đính kèm (nút "Tải xuống tất cả các file đính kèm", ảnh 29/10/2026): bung từng tệp."""
+        import io
+        import zipfile
+        try:
+            with zipfile.ZipFile(io.BytesIO(b)) as z:
+                so = 0
+                for m in z.infolist():
+                    if m.is_dir() or m.file_size < 200 or m.file_size > DINH_KEM_TOI_DA_MB * 1024 * 1024:
+                        continue
+                    _them(Path(m.filename).name, z.read(m), nguon_tep)
+                    so += 1
+                log(f"  tải tất cả đính kèm: {ten} -> {so} tệp")
+                return so
+        except zipfile.BadZipFile:
+            return 0
+
     try:
         if not _egov_mo_chi_tiet(ctx, page, vb):
             return
         for nhan in ("File đính kèm", "Tệp đính kèm", "Tài liệu đính kèm", "Văn bản đính kèm", "Đính kèm"):
             if _egov_bam(page, nhan):
                 break
+        # Ưu tiên nút "Tải xuống tất cả các file đính kèm" (một lần tải, cổng lag đỡ nhiều lượt)
+        for sel in ("[title*='Tải xuống tất cả']", "[aria-label*='Tải xuống tất cả']", "[data-original-title*='Tải xuống tất cả']",
+                    "button:has-text('Tải xuống tất cả')", "a:has-text('Tải xuống tất cả')", "[title*='tất cả các file']"):
+            nut = page.locator(sel)
+            if not nut.count() or not nut.first.is_visible():
+                continue
+            try:
+                with page.expect_download(timeout=EGOV_CHO_LAG_GIAY * 1000) as dl:
+                    nut.first.click(timeout=8000)
+                b = Path(dl.value.path()).read_bytes()
+                ten = dl.value.suggested_filename or "dinh-kem.zip"
+                if b[:2] == b"PK" and (ten.lower().endswith(".zip") or not ten.lower().endswith((".docx", ".xlsx", ".pptx"))):
+                    if _them_zip(ten, b, "tai-tat-ca"):
+                        break
+                _them(ten, b, "tai-tat-ca")
+                break
+            except Exception as e:
+                log("  nút tải tất cả:", str(e)[:100])
         if soi_dir:
             ten_soi = lam_sach(vb["so_ky_hieu"] or "khong-so")
             (soi_dir / f"chi-tiet-{ten_soi}.html").write_text(page.content(), encoding="utf-8")
@@ -3399,7 +3434,9 @@ _JS_MOI_BANG = r"""() => {
   }
   return ra;
 }"""
-O_DEM_MO = ("Chờ xử lý", "Đang thực hiện", "Đến hạn", "Đã quá hạn", "Trả lại")   # ô bấm thử để lấy danh sách
+# Ô bấm thử để lấy danh sách. KHÔNG có "Trả lại": trùng tên nút thao tác hồ sơ ở trang chi tiết nhiệm vụ (ảnh 29/10/2026:
+# Giao xử lý / Trình duyệt / Trả lại / Dự thảo văn bản đi / Cập nhật tiến độ) - bot không bao giờ được bấm các nút đó.
+O_DEM_MO = ("Chờ xử lý", "Đang thực hiện", "Đến hạn", "Đã quá hạn")
 
 
 def _egov_nhiem_vu(page) -> dict:
