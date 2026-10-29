@@ -36,7 +36,7 @@ import time
 import unicodedata
 import urllib.request
 import urllib.error
-from urllib.parse import urljoin
+from urllib.parse import parse_qs, parse_qsl, urlencode, urljoin, urlparse
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -2622,18 +2622,30 @@ def _egov_trang_da_do():
         return {}
 
 
-def _egov_bam(page, nhan):
-    """Bấm phần tử nhìn thấy được có chữ ĐÚNG bằng nhan (không bấm nhầm 'Tra cứu văn bản đến')."""
-    try:
-        el = page.get_by_text(nhan, exact=True)
+def _egov_bam(page, nhan, cho_giay=0):
+    """Bấm phần tử nhìn thấy được có chữ ĐÚNG bằng nhan (không bấm nhầm 'Tra cứu văn bản đến').
+    cho_giay > 0: chờ phần tử hiện ra (trang Angular vẽ tab sau khi tải - vụ 29/10/2026: bấm ngay sau goto thì chưa có tab)."""
+    het = time.time() + cho_giay
+
+    def _bam(el):
         for i in range(min(el.count(), 6)):
             if el.nth(i).is_visible():
                 el.nth(i).click(timeout=8000)
                 page.wait_for_timeout(2500)
                 return True
+        return False
+
+    try:
+        # Ưu tiên tab thật (li.topbar-tab) và chờ nó hiện; chữ trùng ở chỗ khác (menu, liên kết) chỉ bấm khi hết giờ chờ
+        while True:
+            if _bam(page.locator(f"li.topbar-tab:has(span.topbar-tab__label:text-is('{nhan}'))")):
+                return True
+            if time.time() >= het:
+                return _bam(page.get_by_text(nhan, exact=True))
+            page.wait_for_timeout(1000)
     except Exception as e:
         log(f"  không bấm được '{nhan}':", str(e)[:100])
-    return False
+        return False
 
 
 def _egov_bam_menu(page, nguon):
@@ -2647,9 +2659,172 @@ def _egov_bam_menu(page, nguon):
     return True
 
 
+# ---------------------------------------------------------------- API JSON của egov1 (khảo sát 29/10/2026 14:36)
+# Giao diện chỉ là lớp vỏ: danh sách, chi tiết, nhiệm vụ đều lấy từ egov-gateway.laocai.gov.vn trả JSON, ví dụ
+#   /ioffice/Ajax/IworkHandler.ashx?page=1&length=10&type=xemden&...      -> {"value": {"total", "data": [{sohieu, trichyeu,
+#        ngaybanhanh, ngaynhan, tinhtrang, cqbh, nguoiky, domat, capdo, vaitro, nguoixulychinh, macongvan, files...}]}}
+#   /ioffice/Ajax/IworkHandler.ashx?type=xemden_chitiet&documentId=<macongvan>&t=0 -> {"value": {ButPhe, LinhVuc, ...}}
+#   /ioffice/Ajax/IworkHandler.ashx?type=get_quyen_nhac_viec             -> số đếm vb_den_chua_xu_ly, ...
+#   /work/api/works/reminds/v1?workCreateType=0                            -> [{code: waiting|doing|..., count}]
+#   /work/api/works/v1?page=1&length=10&type=waiting                       -> {"data": [nhiệm vụ]}
+#   /work/api/works/report/works-sumary?isHighestCompany=false             -> nhiệm vụ UBND tỉnh giao / nội bộ của Sở
+# Bot để Chrome tự gọi (nhận header xác thực), rồi gọi lại đúng URL đó với length lớn: một lượt thay vì lật 10 dòng/trang
+# trên giao diện lag. API không trả thì quay về đọc bảng như cũ.
+EGOV_GATEWAY = "https://egov-gateway.laocai.gov.vn"
+EGOV_API_DONG = 200
+_EGOV_API = {"hdr": {}, "url": {}, "moi": None}
+NHAN_NHIEM_VU = {"waiting": "Chờ xử lý", "doing": "Đang thực hiện", "awaitApproval": "Chờ duyệt",
+                 "awaitToApproval": "Chờ phê duyệt", "dueDate": "Đến hạn", "outOfDate": "Quá hạn", "refuse": "Trả lại",
+                 "cooperate": "Phối hợp", "incharge": "Phụ trách", "view": "Để biết", "finish": "Đã hoàn thành",
+                 "sendDraft": "Dự thảo đã gửi", "draftNotHasMission": "Dự thảo chưa tạo nhiệm vụ"}
+NV_LAY_DANH_SACH = ("outOfDate", "dueDate", "waiting", "doing", "awaitApproval", "refuse")
+
+
+def _egov_nghe_api(page):
+    """Gắn một lần cho mỗi trang: nhặt header xác thực Chrome gửi tới gateway và URL API danh sách vừa gọi."""
+    if getattr(page, "_egov_nghe", False):
+        return
+    page._egov_nghe = True
+
+    def _req(r):
+        try:
+            u = r.url
+            if EGOV_GATEWAY.split("//")[1] not in u:
+                return
+            for k, v in r.headers.items():
+                if k.lower() in ("authorization", "token", "x-access-token", "x-auth-token", "userid", "x-user-id",
+                                 "companyid", "x-company-id", "accesstoken"):
+                    _EGOV_API["hdr"][k] = v
+            if "length=" in u or "pagesize=" in u.lower():
+                q = parse_qs(urlparse(u).query)
+                loai = (q.get("type") or [""])[0]
+                _EGOV_API["url"][loai] = u
+                _EGOV_API["moi"] = (loai, u)
+        except Exception:
+            pass
+
+    page.on("request", _req)
+
+
+def _egov_api(page, url, nhan=""):
+    """GET qua request context của Chrome (cùng cookie) + header xác thực đã nhặt. Trả JSON hoặc None."""
+    try:
+        r = page.request.get(url, headers=_EGOV_API["hdr"] or None, timeout=EGOV_CHO_LAG_GIAY * 1000)
+        if not r.ok:
+            log(f"  API {nhan} HTTP {r.status}")
+            return None
+        return r.json()
+    except Exception as e:
+        log(f"  API {nhan} lỗi:", str(e)[:120])
+        return None
+
+
+def _doi_tham_so(url, **kv):
+    q = dict(parse_qsl(urlparse(url).query, keep_blank_values=True))
+    for k, v in kv.items():
+        for k0 in list(q):
+            if k0.lower() == k.lower():
+                q[k0] = str(v)
+    return url.split("?")[0] + "?" + urlencode(q)
+
+
+def _lay(d, *khoa):
+    """Giá trị đầu tiên có trong dict theo danh sách khóa (không phân biệt hoa thường)."""
+    thuong = {str(k).lower(): v for k, v in d.items()}
+    for k in khoa:
+        v = thuong.get(k.lower())
+        if v not in (None, ""):
+            return v
+    return ""
+
+
+def _ngay_vn(x):
+    """'2026-10-28T00:00:00' -> '28/10/2026'; giữ nguyên nếu đã dạng dd/mm/yyyy."""
+    x = str(x or "")
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})", x)
+    return f"{m.group(3)}/{m.group(2)}/{m.group(1)}" if m else x[:10]
+
+
+def _egov_json_vb(d, nguon):
+    """Một phần tử JSON danh sách -> dict văn bản như bộ đọc bảng (tên khóa của cổng ghi ở đầu mục này)."""
+    mcv = str(_lay(d, "macongvan", "documentId", "id", "guid"))
+    ty = re.sub(r"\s+", " ", str(_lay(d, "trichyeu", "abridgment", "trich_yeu", "noidung"))).strip()
+    url = (f"{EGOV_GOC}/document/xem-den-xem?documentId={mcv}&t=0&hxl=" if nguon == "den" and mcv
+           else str(_lay(d, "url", "link")))
+    return {
+        "so_ky_hieu": str(_lay(d, "sohieu", "symbol", "sokyhieu", "so_ky_hieu", "kyhieu")).strip(),
+        "ngay_ban_hanh": _ngay_vn(_lay(d, "ngaybanhanh", "publishTime", "ngayky")),
+        "ngay_nhan": _ngay_vn(_lay(d, "ngaynhan", "ngayden")), "trich_yeu": ty,
+        "don_vi": str(_lay(d, "cqbh", "coquanbanhanh", "documentSentCompany", "donvisoanthao", "phongban", "publishBy")),
+        "nguoi_ky": str(_lay(d, "nguoiky", "signer")), "loai": str(_lay(d, "loaivanban", "tenloai")),
+        "trang_thai": str(_lay(d, "tinhtrang", "trangthai")), "do_mat": str(_lay(d, "domat")),
+        "do_khan": str(_lay(d, "capdo", "dokhan")), "han": str(_lay(d, "hxl", "hanxuly")),
+        "vai_tro": str(_lay(d, "vaitro")), "nguoi_xu_ly_chinh": str(_lay(d, "nguoixulychinh")),
+        "so_den": str(_lay(d, "soden", "number")), "da_xem": _lay(d, "xem"),
+        "nguon": nguon, "id_data360x": mcv, "url_chi_tiet": url, "he_thong": "egov",
+    }
+
+
+def _egov_api_danh_sach(page, nguon, tu_ngay, mau_url):
+    """Gọi lại API danh sách với EGOV_API_DONG dòng/lượt cho tới khi gặp ngày cũ hơn tu_ngay. None nếu API không dùng được."""
+    ra, da, mat, trang = [], set(), 0, 1
+    while trang <= 50:
+        u = _doi_tham_so(mau_url, length=EGOV_API_DONG, pageSize=EGOV_API_DONG, page=trang, pageIndex=trang,
+                         skip=(trang - 1) * EGOV_API_DONG)
+        j = _egov_api(page, u, f"danh sách {nguon}")
+        v = (j or {}).get("value", j) if isinstance(j, dict) else None
+        if isinstance(v, dict) and v.get("success") is False:
+            log(f"  ({nguon}) API cổng báo lỗi: {str(v.get('message'))[:120]}")
+            return None if trang == 1 else ra
+        data = (v or {}).get("data") if isinstance(v, dict) else None
+        if not isinstance(data, list):
+            return None if trang == 1 else ra
+        tong = (v or {}).get("total") or (v or {}).get("recordsTotal") or 0
+        moi = 0
+        for d in data:
+            if not isinstance(d, dict):
+                continue
+            vb = _egov_json_vb(d, nguon)
+            if _egov_la_mat(vb):
+                mat += 1
+                continue
+            khoa = vb["id_data360x"] or f"{vb['so_ky_hieu']}|{vb['ngay_ban_hanh']}"
+            if khoa in da:
+                continue
+            da.add(khoa)
+            ra.append(vb)
+            moi += 1
+        ngay = [n for n in (_egov_ngay(r) for r in ra[-moi:] if moi) if n] if moi else []
+        log(f"  ({nguon}) API trang {trang}: {len(data)} dòng, đã đọc {len(ra)}/{tong}"
+            + (f", tới ngày {min(ngay).strftime('%d/%m/%Y')}" if ngay else ""))
+        if not data or moi == 0 or (tong and len(ra) + mat >= tong) or (ngay and max(ngay) < tu_ngay):
+            break
+        trang += 1
+    if mat:
+        log(f"  ({nguon}) bỏ {mat} văn bản có độ mật (không tải, không ghi)")
+    return ra
+
+
+def _egov_api_chi_tiet(page, vb):
+    """Bút phê / chỉ đạo, lĩnh vực, loại văn bản của văn bản đến (API xemden_chitiet). {} nếu không lấy được."""
+    if vb.get("nguon") != "den" or not vb.get("id_data360x"):
+        return {}
+    j = _egov_api(page, f"{EGOV_GATEWAY}/ioffice/Ajax/IworkHandler.ashx?type=xemden_chitiet"
+                        f"&documentId={vb['id_data360x']}&t=0", "chi tiết")
+    v = (j or {}).get("value") if isinstance(j, dict) else None
+    if not isinstance(v, dict):
+        return {}
+    but_phe = re.sub(r"<br\s*/?>|</br>", "\n", str(v.get("ButPhe") or ""))
+    but_phe = re.sub(r"<[^>]+>", "", but_phe).replace("&nbsp;", " ")
+    but_phe = "\n".join(x.strip() for x in but_phe.splitlines() if x.strip())
+    return {"but_phe": but_phe, "linh_vuc_cong": str(v.get("LinhVuc") or "").strip(),
+            "loai": str(v.get("LoaiVanBan") or "").strip(), "ma_dinh_danh": str(v.get("MaDinhDanh") or "")}
+
+
 def _egov_mo_danh_sach(page, nguon, tra_cuu=True):
     """Mở trang danh sách rồi bấm tab "Tra cứu văn bản …" (tất cả văn bản của Sở) hay "Danh sách văn bản" (phần giao cho
     Bạn). Trả kết quả đọc bảng; None nếu bị đưa về trang đăng nhập; False nếu không tìm thấy."""
+    _egov_nghe_api(page)
     da_do = _egov_trang_da_do()
     ung_vien = []
     if da_do.get(nguon):
@@ -2668,8 +2843,11 @@ def _egov_mo_danh_sach(page, nguon, tra_cuu=True):
             if can_dang_nhap(page):
                 return None
             tab = (EGOV_TAB_TRA_CUU if tra_cuu else EGOV_TAB_CUA_TOI)[nguon]
-            if _egov_bam(page, tab):
+            _EGOV_API["moi"] = None                     # URL API danh sách bắt được SAU lúc bấm tab
+            if _egov_bam(page, tab, cho_giay=30):
                 log(f"  ({nguon}) đã bấm tab '{tab}'")
+            else:
+                log(f"  ({nguon}) không thấy tab '{tab}' - đọc tab đang mở")
             kq = _egov_cho_bang(page)
             if kq and kq.get("heads"):
                 if da_do.get(nguon) != page.url:
@@ -2829,10 +3007,28 @@ def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None, tra_cuu=True):
         telegram(f"Bot egov1: không tìm thấy danh sách văn bản {'đến' if nguon == 'den' else 'đi'}. "
                  "Chạy khao-sat-egov.bat rồi báo Claude.")
         return []
-    kq = _egov_dat_so_dong(page, kq)
     if soi_dir:
         (soi_dir / f"danh-sach-{nguon}.html").write_text(page.content(), encoding="utf-8")
         page.screenshot(path=str(soi_dir / f"danh-sach-{nguon}.png"), full_page=True)
+    # Ưu tiên API JSON mà chính trang vừa gọi (nhanh, đủ trường, không lật trang trên giao diện lag)
+    moi = _EGOV_API.get("moi")
+    if moi:
+        log(f"  ({nguon}) API danh sách: type={moi[0]}")
+        tu_api = _egov_api_danh_sach(page, nguon, tu_ngay, moi[1])
+        if tu_api:
+            return [r for r in tu_api if _egov_ngay(r) and _egov_ngay(r) >= tu_ngay]
+        if tu_api is None and nguon == "di" and tra_cuu:
+            # data360_outgoing_documents_list báo lỗi (29/10/2026) -> tab "Đã phát hành"
+            _EGOV_API["moi"] = None
+            if _egov_bam(page, "Đã phát hành", cho_giay=15):
+                log("  (di) Tra cứu không trả dữ liệu - đọc tab 'Đã phát hành'")
+                kq = _egov_cho_bang(page) or kq
+                moi = _EGOV_API.get("moi")
+                if moi:
+                    tu_api = _egov_api_danh_sach(page, nguon, tu_ngay, moi[1])
+                    if tu_api:
+                        return [r for r in tu_api if _egov_ngay(r) and _egov_ngay(r) >= tu_ngay]
+    kq = _egov_dat_so_dong(page, kq)
     tong = _egov_tong_so(page)
     if tong is not None:
         log(f"  ({nguon}) cổng báo tổng số {tong} bản ghi")
@@ -2896,6 +3092,12 @@ def _egov_tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
     kq = _egov_mo_danh_sach(page, nguon, tra_cuu=True)
     if not kq:
         return None
+    moi = _EGOV_API.get("moi")
+    if moi and "term=" in moi[1]:          # API có tham số term: tìm thẳng, không gõ vào ô tìm trên giao diện lag
+        rows = _egov_api_danh_sach(page, nguon, date(2000, 1, 1), _doi_tham_so(moi[1], term=chuoi))
+        if rows is not None:
+            log(f"  ({nguon}) API tìm '{chuoi}': {len(rows)} dòng")
+            return rows
     if not _egov_go_tim(page, chuoi):
         log(f"  ({nguon}) không thấy ô tìm kiếm - lật trang như cũ")
         return None
@@ -3357,11 +3559,16 @@ def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIE
             log(f"  [việc] lỗi mở {v['so_ky_hieu']}: {e!r}")
             pdf, dinh_kem, luong = None, [], []
         vai, nguoi_xl, han_xl = suy_vai_tro(luong)
+        ct = _egov_api_chi_tiet(page, v)
+        v.update({k: ct[k] for k in ("but_phe", "linh_vuc_cong") if ct.get(k)})
         dau = [f"# {v['so_ky_hieu']} - {v['trich_yeu']}", "",
+               f"- Vai trò của Bạn: **{v.get('vai_tro') or 'chưa rõ'}** | Người xử lý chính: {v.get('nguoi_xu_ly_chinh', '')}",
                f"- Ngày ban hành: {v['ngay_ban_hanh']} | Ngày nhận: {v.get('ngay_nhan', '')} | "
                f"Trạng thái trên egov1: {v.get('trang_thai', '')} | Cấp độ: {v.get('do_khan', '')}",
                f"- Cơ quan ban hành: {v.get('don_vi', '')} | Người ký: {v.get('nguoi_ky', '')}",
-               f"- Bản gốc trên egov1: {v.get('url_chi_tiet', '')}"] + dong_luong_md(luong, vai, nguoi_xl, han_xl)
+               f"- Bản gốc trên egov1: {v.get('url_chi_tiet', '')}"] + (
+                   ["", "## Bút phê / chỉ đạo của lãnh đạo (egov1)", "", ct["but_phe"], ""] if ct.get("but_phe") else []
+               ) + dong_luong_md(luong, vai, nguoi_xl, han_xl)
         goi, ten_chinh = dong_goi_ho_so(v, ten_goc, pdf, dinh_kem, dau)
         if not goi:
             (luu_vao / f"{ten_goc}.md").write_text("\n".join(dau) + "\n\n*(Không tải được tệp nào)*\n", encoding="utf-8")
@@ -3374,11 +3581,13 @@ def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIE
     dong = [f"# Việc chờ xử lý trên egov1 - {date.today().strftime('%d/%m/%Y')}", "",
             f"Văn bản đến có trạng thái Chưa/Chờ/Đang xử lý: **{len(viec)}** việc; lần này tải toàn văn {moi} việc mới.",
             "Claude: việc nào CHƯA có văn bản đi trả lời thì đọc toàn văn và soạn dự thảo; đã trả lời thì chỉ ghi nhận.", "",
-            "| # | Số ký hiệu | Ngày nhận | Trạng thái | Cấp độ | Cơ quan ban hành | Trích yếu | Toàn văn |",
-            "|---|---|---|---|---|---|---|---|"]
-    for i, v in enumerate(sorted(viec, key=lambda x: _egov_ngay(x) or date.min, reverse=True), 1):
+            "| # | Số ký hiệu | Ngày nhận | Trạng thái | Vai trò | Người XLC | Cấp độ | Cơ quan ban hành | Trích yếu | Toàn văn |",
+            "|---|---|---|---|---|---|---|---|---|---|"]
+    uu = lambda x: (0 if "xu ly chinh" in bo_dau(x.get("vai_tro", "")) else 1 if "phoi hop" in bo_dau(x.get("vai_tro", "")) else 2)
+    for i, v in enumerate(sorted(sorted(viec, key=lambda x: _egov_ngay(x) or date.min, reverse=True), key=uu), 1):
         tep = f"`{v['tep']}`" if v.get("tep") else "*(để lượt sau)*"
         dong.append(f"| {i} | {v['so_ky_hieu']} | {v.get('ngay_nhan', '')} | {v.get('trang_thai', '')} | "
+                    f"{v.get('vai_tro', '')} | {v.get('nguoi_xu_ly_chinh', '')} | "
                     f"{v.get('do_khan', '')} | {v.get('don_vi', '')} | {v['trich_yeu'].replace('|', '/')} | {tep} |")
     try:
         nv = _egov_nhiem_vu(page)
@@ -3386,7 +3595,8 @@ def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIE
         (luu_vao / "nhiem-vu.json").write_text(json.dumps(nv, ensure_ascii=False, indent=1), encoding="utf-8")
         o = {bo_dau(x["nhan"]): x["so"] for x in nv["o_dem"]}
         dong.insert(3, f"Quản lý nhiệm vụ: chờ xử lý {o.get('cho xu ly', '?')}, đang thực hiện {o.get('dang thuc hien', '?')}, "
-                       f"đến hạn {o.get('den han', '?')}, đã quá hạn {o.get('da qua han', '?')} - chi tiết `nhiem-vu.md`.")
+                       f"đến hạn {o.get('den han', '?')}, quá hạn {o.get('qua han', o.get('da qua han', '?'))}, "
+                       f"chờ duyệt {o.get('cho duyet', '?')} - chi tiết `nhiem-vu.md`.")
     except Exception as e:
         log("  [nhiệm vụ] không ghi được:", repr(e)[:120])
     (luu_vao / "README.md").write_text("\n".join(dong) + "\n", encoding="utf-8")
@@ -3448,9 +3658,63 @@ _JS_MOI_BANG = r"""() => {
 O_DEM_MO = ("Chờ xử lý", "Đang thực hiện", "Đến hạn", "Đã quá hạn")
 
 
+def _egov_nhiem_vu_api(page, kq):
+    """Nhiệm vụ qua API (sạch hơn đọc ô đếm trên giao diện). Ghi vào kq, trả True nếu lấy được số đếm."""
+    j = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/reminds/v1?workCreateType=0", "số đếm nhiệm vụ")
+    if not isinstance(j, list):
+        return False
+    kq["o_dem"] = [{"nhan": NHAN_NHIEM_VU.get(x.get("code"), x.get("code")), "so": x.get("count") or 0, "ma": x.get("code")}
+                   for x in j if isinstance(x, dict)]
+    s = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/report/works-sumary?isHighestCompany=false", "nhiệm vụ của Sở")
+    if isinstance(s, dict) and isinstance(s.get("value"), list):
+        kq["tong_quan"] = [{"heads": ["Loại nhiệm vụ", "Tổng số", "Đang làm", "Đang làm - còn hạn", "Đang làm - quá hạn",
+                                      "Đã hoàn thành", "Hoàn thành đúng hạn", "Hoàn thành quá hạn"],
+                            "rows": [[str(x.get("title", "")), str(x.get("total", "")), str(x.get("workingTotal", "")),
+                                      str(x.get("workingInTimeTotal", "")), str(x.get("workingOutTimeTotal", "")),
+                                      str(x.get("completeTotal", "")), str(x.get("completeInTimeTotal", "")),
+                                      str(x.get("completeOutTimeTotal", ""))] for x in s["value"]]}]
+    q = _egov_api(page, f"{EGOV_GATEWAY}/ioffice/Ajax/IworkHandler.ashx?type=get_quyen_nhac_viec", "số đếm văn bản")
+    if isinstance(q, dict) and isinstance(q.get("value"), dict):
+        kq["dem_van_ban"] = {k: v for k, v in q["value"].items() if isinstance(v, int) and k.startswith("vb_")}
+    dem = {o["ma"]: o["so"] for o in kq["o_dem"]}
+    for ma in NV_LAY_DANH_SACH:
+        if not dem.get(ma):
+            continue
+        d = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/v1?page=1&length=100&term=&archiveSearch=false&type={ma}"
+                            f"&isLoading=true&defer=true&skip=0", f"nhiệm vụ {ma}")
+        ds = (d or {}).get("data") if isinstance(d, dict) else None
+        if not isinstance(ds, list):
+            continue
+        dong = []
+        for x in ds:
+            vb = (x.get("documentApis") or [{}])[0] if isinstance(x.get("documentApis"), list) else {}
+            nguoi = [f"{u.get('fullName', '')} ({u.get('followRoleName', '')})" for u in (x.get("userApis") or [])
+                     if isinstance(u, dict)][:4]
+            ten = _lay(x, "content", "name", "title", "workName")
+            han = _lay(x, "endDate", "deadline", "dueDate", "expiredDate", "toDate", "endTime")
+            dong.append([re.sub(r"\s+", " ", str(ten or vb.get("abridgment", "")))[:200], _ngay_vn(han),
+                         f"{vb.get('symbol', '')} - {vb.get('documentSentCompany', '')}".strip(" -"),
+                         "; ".join(nguoi)])
+        if dong:
+            kq["danh_sach"][NHAN_NHIEM_VU.get(ma, ma)] = [{"heads": ["Nhiệm vụ", "Hạn", "Văn bản", "Người tham gia"],
+                                                            "rows": dong}]
+            log(f"  [nhiệm vụ] {NHAN_NHIEM_VU.get(ma, ma)}: {len(dong)} nhiệm vụ")
+    return True
+
+
 def _egov_nhiem_vu(page) -> dict:
     """Trả {"o_dem": [...], "tong_quan": [bảng], "danh_sach": {nhãn: [bảng]}, "luc": ...}."""
     kq = {"luc": datetime.now().isoformat(timespec="minutes"), "o_dem": [], "tong_quan": [], "danh_sach": {}}
+    _egov_nghe_api(page)
+    try:
+        page.goto(EGOV_NHIEM_VU, wait_until="domcontentloaded", timeout=90000)
+        _egov_bam(page, "Chờ xử lý", cho_giay=0)       # không bấm gì; chỉ chờ trang gọi API để nhận header
+        page.wait_for_timeout(6000)
+        if _egov_nhiem_vu_api(page, kq):
+            log("  [nhiệm vụ] qua API: " + ", ".join(f"{o['nhan']} {o['so']}" for o in kq["o_dem"] if o["so"]))
+            return kq
+    except Exception as e:
+        log("  [nhiệm vụ] API lỗi, đọc giao diện:", repr(e)[:120])
     try:
         page.goto(EGOV_TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
         page.wait_for_timeout(4000)
@@ -3504,6 +3768,10 @@ def _nhiem_vu_md(nv) -> str:
         for b in bangs:
             dong += ["", "| " + " | ".join(b["heads"]) + " |", "|" + "---|" * len(b["heads"])]
             dong += ["| " + " | ".join(x.replace("|", "/") for x in r) + " |" for r in b["rows"]]
+        dong.append("")
+    if nv.get("dem_van_ban"):
+        dong += ["## Số đếm văn bản (egov1)", "", "| Mục | Số |", "|---|---|"]
+        dong += [f"| {k[3:].replace('_', ' ')} | {v} |" for k, v in nv["dem_van_ban"].items() if v]
         dong.append("")
     if not nv["o_dem"] and not nv["tong_quan"]:
         dong.append("*(Không đọc được ô đếm hay bảng nào - xem khảo sát theo-doi/egov/soi/)*")
