@@ -2675,7 +2675,7 @@ def _egov_bam_menu(page, nguon):
 EGOV_GATEWAY = "https://egov-gateway.laocai.gov.vn"
 EGOV_API_DONG = 200
 EGOV_API_TRANG_TOI_DA = 400     # 400 trang x 200 dòng: đủ cả lượt quét 395 ngày (dừng sớm khi gặp ngày cũ hơn khoảng quét)
-_EGOV_API = {"hdr": {}, "url": {}, "moi": None}
+_EGOV_API = {"hdr": {}, "url": {}, "moi": None, "resp": []}   # resp: phản hồi JSON của gateway vừa bắt (tìm API danh sách)
 NHAN_NHIEM_VU = {"waiting": "Chờ xử lý", "doing": "Đang thực hiện", "awaitApproval": "Chờ duyệt",
                  "awaitToApproval": "Chờ phê duyệt", "dueDate": "Đến hạn", "outOfDate": "Quá hạn", "refuse": "Trả lại",
                  "cooperate": "Phối hợp", "incharge": "Phụ trách", "view": "Để biết", "finish": "Đã hoàn thành",
@@ -2706,7 +2706,119 @@ def _egov_nghe_api(page):
         except Exception:
             pass
 
+    def _resp(r):
+        try:
+            if EGOV_GATEWAY.split("//")[1] in r.url and "json" in (r.headers.get("content-type") or "").lower():
+                _EGOV_API["resp"].append(r)
+                del _EGOV_API["resp"][:-80]
+        except Exception:
+            pass
+
     page.on("request", _req)
+    page.on("response", _resp)
+
+
+_KHOA_VB = ("sohieu", "trichyeu", "symbol", "abridgment", "sokyhieu", "kyhieu")
+
+
+def _tim_ds_vb(j, sau=0):
+    """Tìm trong JSON mảng các văn bản (phần tử có khóa số hiệu / trích yếu). Trả (mảng, tổng số) hoặc (None, 0)."""
+    if sau > 4:
+        return None, 0
+    if isinstance(j, list):
+        if j and isinstance(j[0], dict) and any(str(k).lower() in _KHOA_VB for k in j[0]):
+            return j, 0
+        return None, 0
+    if isinstance(j, dict):
+        for v in j.values():
+            ds, tong_trong = _tim_ds_vb(v, sau + 1)
+            if ds is not None:
+                if tong_trong:
+                    return ds, tong_trong
+                tong = next((j[k] for k in j if str(k).lower() in ("total", "recordstotal", "totalcount", "totalrecords",
+                                                                    "totalrecord", "recordsfiltered", "count")
+                             and isinstance(j[k], int)), 0)
+                return ds, tong
+    return None, 0
+
+
+def _egov_tim_api_ds():
+    """Trong các phản hồi gateway vừa bắt (mới nhất trước), lời gọi nào trả danh sách văn bản -> mẫu để gọi lại
+    {"url", "method", "body", "ct"}. Vụ 30/10/2026: tab Tra cứu không gọi API dạng GET ...length=..., bot đọc giao diện
+    10 dòng/trang và dừng ở 1.500 văn bản; nay nhận ra API theo NỘI DUNG phản hồi, kể cả POST."""
+    for r in reversed(_EGOV_API["resp"]):
+        try:
+            ds, _ = _tim_ds_vb(r.json())
+        except Exception:
+            continue
+        if ds:
+            q = r.request
+            return {"url": r.url, "method": q.method, "body": q.post_data or "",
+                    "ct": (q.headers.get("content-type") or "")}
+    return None
+
+
+def _doi_trang_body(body, ct, trang, dong):
+    """Đổi tham số phân trang trong thân POST (JSON hoặc form). Khóa 0-gốc (giá trị ban đầu 0) giữ 0-gốc."""
+    ten_trang = ("page", "pageindex", "pagenumber", "currentpage", "pageno")
+    ten_dong = ("length", "pagesize", "limit", "size", "rows", "perpage", "recordsperpage", "take")
+    ten_bo = ("skip", "start", "offset")
+
+    def _gan(k, v0):
+        kl = str(k).lower()
+        if kl in ten_trang:
+            return (trang - 1) if str(v0) == "0" else trang
+        if kl in ten_dong:
+            return dong
+        if kl in ten_bo:
+            return (trang - 1) * dong
+        return None
+
+    if "json" in ct.lower() or body.strip().startswith(("{", "[")):
+        try:
+            d = json.loads(body)
+        except Exception:
+            return body
+
+        def _di(o):
+            if isinstance(o, dict):
+                for k, v in o.items():
+                    moi = _gan(k, v) if not isinstance(v, (dict, list)) else None
+                    if moi is not None:
+                        o[k] = moi
+                    else:
+                        _di(v)
+            elif isinstance(o, list):
+                for x in o:
+                    _di(x)
+        _di(d)
+        return json.dumps(d, ensure_ascii=False)
+    q = parse_qsl(body, keep_blank_values=True)
+    return urlencode([(k, str(_gan(k, v)) if _gan(k, v) is not None else v) for k, v in q])
+
+
+def _egov_ghi_chan_doan(nguon, ly_do):
+    """Đẩy lên kho riêng tư danh sách lời gọi gateway của tab vừa mở (đã che mã) để Claude sửa bộ đọc."""
+    try:
+        token = doc_config().get("github_token", "")
+        if not token:
+            return
+        ds = []
+        for r in _EGOV_API["resp"][-40:]:
+            try:
+                hinh = _hinh_json(r.json())
+            except Exception:
+                hinh = None
+            q = r.request
+            ds.append({"method": q.method, "url": _che(r.url), "body": _che(q.post_data or "")[:1500],
+                       "status": r.status, "hinh": hinh})
+        ts = datetime.now().strftime("%Y-%m-%d_%H%M")
+        gh_mot_commit(REPO_TRI_THUC, {f"{THU_MUC_TRI_THUC}/egov/soi/{ts}-tra-cuu-{nguon}.json":
+                                      json.dumps({"ly_do": ly_do, "goi": ds}, ensure_ascii=False, indent=1).encode()},
+                      f"Chẩn đoán tab Tra cứu {nguon} egov1: {ly_do}"[:120], token)
+        log(f"  ({nguon}) đã đẩy chẩn đoán lời gọi API lên theo-doi/egov/soi/{ts}-tra-cuu-{nguon}.json")
+    except Exception as e:
+        log("  không đẩy được chẩn đoán:", str(e)[:120])
 
 
 def _egov_api(page, url, nhan=""):
@@ -2771,11 +2883,27 @@ def _egov_json_vb(d, nguon):
 def _egov_api_danh_sach(page, nguon, tu_ngay, mau_url):
     """Gọi lại API danh sách với EGOV_API_DONG dòng/lượt cho tới khi gặp ngày cũ hơn tu_ngay. None nếu API không dùng được."""
     ra, da, mat, trang = [], set(), 0, 1
+    mau = mau_url if isinstance(mau_url, dict) else {"url": mau_url, "method": "GET", "body": "", "ct": ""}
     while trang <= EGOV_API_TRANG_TOI_DA:
-        u = _doi_tham_so(mau_url, length=EGOV_API_DONG, pageSize=EGOV_API_DONG, page=trang, pageIndex=trang,
-                         skip=(trang - 1) * EGOV_API_DONG)
-        j = _egov_api(page, u, f"danh sách {nguon}")
+        u = _doi_tham_so(mau["url"], length=EGOV_API_DONG, pageSize=EGOV_API_DONG, page=trang, pageIndex=trang,
+                         skip=(trang - 1) * EGOV_API_DONG, start=(trang - 1) * EGOV_API_DONG)
+        if mau["method"].upper() == "POST":
+            hdr = dict(_EGOV_API["hdr"])
+            if mau["ct"]:
+                hdr["content-type"] = mau["ct"]
+            try:
+                r = page.request.post(u, headers=hdr or None, timeout=EGOV_CHO_LAG_GIAY * 1000,
+                                      data=_doi_trang_body(mau["body"], mau["ct"], trang, EGOV_API_DONG))
+                j = r.json() if r.ok else None
+            except Exception as e:
+                log(f"  API danh sách {nguon} (POST) lỗi:", str(e)[:120])
+                j = None
+        else:
+            j = _egov_api(page, u, f"danh sách {nguon}")
+        ds_vb, tong_vb = _tim_ds_vb(j) if j is not None else (None, 0)
         v = (j or {}).get("value", j) if isinstance(j, dict) else None
+        if ds_vb is not None and not (isinstance(v, dict) and isinstance(v.get("data"), list)):
+            v = {"data": ds_vb, "total": tong_vb}            # API trả dạng khác {value: {data, total}}
         if isinstance(v, dict) and v.get("success") is False:
             log(f"  ({nguon}) API cổng báo lỗi: {str(v.get('message'))[:120]}")
             return None if trang == 1 else ra
@@ -2846,7 +2974,7 @@ def _egov_mo_danh_sach(page, nguon, tra_cuu=True):
             if can_dang_nhap(page):
                 return None
             tab = (EGOV_TAB_TRA_CUU if tra_cuu else EGOV_TAB_CUA_TOI)[nguon]
-            _EGOV_API["moi"] = None                     # URL API danh sách bắt được SAU lúc bấm tab
+            _EGOV_API["moi"] = None; _EGOV_API["resp"] = []                     # URL API danh sách bắt được SAU lúc bấm tab
             if _egov_bam(page, tab, cho_giay=30):
                 log(f"  ({nguon}) đã bấm tab '{tab}'")
             else:
@@ -3013,7 +3141,14 @@ def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None, tra_cuu=True):
     if soi_dir:
         (soi_dir / f"danh-sach-{nguon}.html").write_text(page.content(), encoding="utf-8")
         page.screenshot(path=str(soi_dir / f"danh-sach-{nguon}.png"), full_page=True)
-    # Ưu tiên API JSON mà chính trang vừa gọi (nhanh, đủ trường, không lật trang trên giao diện lag)
+    # Ưu tiên API JSON mà chính trang vừa gọi (nhanh, đủ trường, không lật trang trên giao diện lag).
+    # Nhận theo nội dung phản hồi trước (bắt được cả POST của tab Tra cứu), rồi mới theo URL có length=.
+    mau_nd = _egov_tim_api_ds()
+    if mau_nd:
+        log(f"  ({nguon}) API danh sách theo nội dung: {mau_nd['method']} {mau_nd['url'].split('?')[0]}")
+        tu_api = _egov_api_danh_sach(page, nguon, tu_ngay, mau_nd)
+        if tu_api:
+            return [r for r in tu_api if _egov_ngay(r) and _egov_ngay(r) >= tu_ngay]
     moi = _EGOV_API.get("moi")
     if moi:
         log(f"  ({nguon}) API danh sách: type={moi[0]}")
@@ -3022,7 +3157,7 @@ def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None, tra_cuu=True):
             return [r for r in tu_api if _egov_ngay(r) and _egov_ngay(r) >= tu_ngay]
         if tu_api is None and nguon == "di" and tra_cuu:
             # data360_outgoing_documents_list báo lỗi (29/10/2026) -> tab "Đã phát hành"
-            _EGOV_API["moi"] = None
+            _EGOV_API["moi"] = None; _EGOV_API["resp"] = []
             if _egov_bam(page, "Đã phát hành", cho_giay=15):
                 log("  (di) Tra cứu không trả dữ liệu - đọc tab 'Đã phát hành'")
                 kq = _egov_cho_bang(page) or kq
@@ -3031,6 +3166,8 @@ def _egov_quet_danh_sach(page, nguon, tu_ngay, soi_dir=None, tra_cuu=True):
                     tu_api = _egov_api_danh_sach(page, nguon, tu_ngay, moi[1])
                     if tu_api:
                         return [r for r in tu_api if _egov_ngay(r) and _egov_ngay(r) >= tu_ngay]
+    if tra_cuu and (date.today() - tu_ngay).days > 31:
+        _egov_ghi_chan_doan(nguon, f"không dùng được API, đọc giao diện (quét từ {tu_ngay.strftime('%d/%m/%Y')})")
     kq = _egov_dat_so_dong(page, kq)
     tong = _egov_tong_so(page)
     if tong is not None:
@@ -3851,6 +3988,7 @@ LAY_LUI_MOI_COMMIT = 40         # đẩy một commit sau mỗi 40 văn bản (h
 LAY_LUI_LIET_KE_LAI_NGAY = 7    # danh sách Tra cứu đọc lại sau 7 ngày (văn bản mới đã có lượt quét ngày lo)
 LAY_LUI_TRANG_API = 400         # 400 trang x 200 dòng = 80.000 dòng mỗi chiều đến/đi
 LAY_LUI_CHUA_DOC_NGAY = 30      # văn bản đến CHƯA ĐỌC nhận trong 30 ngày gần đây: không mở (giữ dấu chưa đọc cho Bạn)
+LAY_LUI_BO_DOC = 2               # tăng khi sửa bộ đọc danh sách -> danh sách lưu trên máy đọc lại ngay (30/10/2026: API POST)
 LAY_LUI_DIA_TRONG_GB = 20       # ổ còn dưới 20 GB thì không cất tệp gốc nữa, chỉ lấy chữ
 
 
@@ -3885,7 +4023,7 @@ def _lay_lui_liet_ke(page, tu_ngay) -> dict:
     ra = {}
     try:
         for nguon in ("den", "di"):
-            _EGOV_API["moi"] = None
+            _EGOV_API["moi"] = None; _EGOV_API["resp"] = []
             ds = _egov_quet_danh_sach(page, nguon, tu_ngay, tra_cuu=True)
             if ds is None:
                 return {}
@@ -3962,7 +4100,7 @@ def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
             ds = tt.get("danh_sach") or {}
             luc = tt.get("liet_ke_luc", "")
             if not ds or not luc or (datetime.now() - datetime.fromisoformat(luc)).days >= LAY_LUI_LIET_KE_LAI_NGAY \
-                    or tt.get("tu_ngay") != tu_ngay.isoformat():
+                    or tt.get("tu_ngay") != tu_ngay.isoformat() or tt.get("bo_doc") != LAY_LUI_BO_DOC:
                 ds = _lay_lui_liet_ke(page, tu_ngay)
                 if not ds:
                     log("[bê văn bản cũ] không đọc được danh sách Tra cứu - dừng")
@@ -3970,7 +4108,7 @@ def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
                 for kk in [kk for kk, v in xong.items() if str(v).startswith("loi")]:
                     xong.pop(kk)                    # danh sách mới: thử lại các văn bản lần trước không tải được
                 tt.update(danh_sach=ds, liet_ke_luc=datetime.now().isoformat(timespec="minutes"),
-                          tu_ngay=tu_ngay.isoformat())
+                          tu_ngay=tu_ngay.isoformat(), bo_doc=LAY_LUI_BO_DOC)
                 tt_tep.write_text(json.dumps(tt, ensure_ascii=False), encoding="utf-8")
                 # Đẩy NGAY mục lục đầy đủ (số, ngày, trích yếu... chưa có toàn văn) để mọi phiên chat thống kê, tra
                 # được cả năm mà không phải chờ bot mở từng văn bản (vụ 30/10/2026: rà soát VTVL cần 12 tháng).
