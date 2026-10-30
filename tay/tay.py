@@ -62,7 +62,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.1 (30/10/2026)"
+PHIEN_BAN = "0.4.2 (30/10/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -283,7 +283,9 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         return f"khảo sát egov1: mã {botd.khao_sat()}, kết quả ở theo-doi/egov/soi/"
     if loai == "lay-lui":
         bay_gio = datetime.now()
-        ghi_trang_thai(lay_lui_luc=dem_cua(bay_gio))           # mỗi đêm một lượt, lỗi cũng không thử lại cả đêm
+        theo_lich = "loai" not in yc                            # yêu cầu trong hàng đợi (ban ngày) không tính lượt đêm
+        if theo_lich:
+            ghi_trang_thai(lay_lui_luc=dem_cua(bay_gio))       # mỗi đêm một lượt, lỗi cũng không thử lại cả đêm
         gio = min(gio_con_lai_dem(bay_gio), float(yc.get("gio") or 24))
         if gio < 0.5:
             return "bê văn bản cũ: còn dưới 30 phút trước 05:30, để đêm sau"
@@ -303,7 +305,8 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         ma = botd.lay_lui(tu, so_gio=gio, moi_vong=moi_vong)
         if nhuong["co"]:
             xu_ly_hang_doi(botd, gh, socket.gethostname())
-            ghi_trang_thai(lay_lui_luc="")                     # vòng sau (10 phút) làm tiếp lượt đêm
+            if theo_lich:
+                ghi_trang_thai(lay_lui_luc="")                 # vòng sau (10 phút) làm tiếp lượt đêm
             return f"bê văn bản cũ: tạm dừng để làm yêu cầu trong hàng đợi (mã {ma}), vòng sau làm tiếp"
         return f"bê văn bản cũ egov1: mã {ma} (tối đa {gio:.1f} giờ), nhật ký trên máy {BOT_HOME / 'lay-lui.json'}"
     if loai == "lay":
