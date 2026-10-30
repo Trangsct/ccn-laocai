@@ -62,7 +62,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.0 (30/10/2026)"
+PHIEN_BAN = "0.4.1 (30/10/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -288,7 +288,23 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         if gio < 0.5:
             return "bê văn bản cũ: còn dưới 30 phút trước 05:30, để đêm sau"
         tu = botd.parse_ngay(yc.get("tu_ngay") or "")
-        ma = botd.lay_lui(tu, so_gio=gio, moi_vong=lambda: KHOA.touch() if KHOA.exists() else None)
+        nhuong = {"luc": time.time(), "co": False}
+
+        def moi_vong():
+            """Làm mới khóa; cứ 10 phút xem hàng đợi: có yêu cầu "cho" thì dừng lượt đêm để làm yêu cầu trước."""
+            if KHOA.exists():
+                KHOA.touch()
+            if gh is None or time.time() - nhuong["luc"] < CHU_KY_PHUT * 60:
+                return False
+            nhuong["luc"] = time.time()
+            nhuong["co"] = co_yeu_cau_cho(gh)
+            return nhuong["co"]
+
+        ma = botd.lay_lui(tu, so_gio=gio, moi_vong=moi_vong)
+        if nhuong["co"]:
+            xu_ly_hang_doi(botd, gh, socket.gethostname())
+            ghi_trang_thai(lay_lui_luc="")                     # vòng sau (10 phút) làm tiếp lượt đêm
+            return f"bê văn bản cũ: tạm dừng để làm yêu cầu trong hàng đợi (mã {ma}), vòng sau làm tiếp"
         return f"bê văn bản cũ egov1: mã {ma} (tối đa {gio:.1f} giờ), nhật ký trên máy {BOT_HOME / 'lay-lui.json'}"
     if loai == "lay":
         ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
@@ -311,6 +327,19 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
                             f"Soat du thao: tai van ban vien dan cua {ho_so}")
         return f"tìm văn bản viện dẫn: mã {ma}, đẩy {so} tệp"
     raise RuntimeError(f"không biết loại việc '{loai}'")
+
+
+def co_yeu_cau_cho(gh: GitHub) -> bool:
+    """Hàng đợi yeu-cau/ có tệp nào đang "cho" không (lượt bê văn bản cũ dài nhiều giờ dùng để nhường)."""
+    try:
+        for muc in gh.liet_ke(KHO_VIEC, "yeu-cau"):
+            if muc.get("type") == "file" and muc["name"].endswith(".json"):
+                raw, _ = gh.doc(KHO_VIEC, muc["path"])
+                if raw and json.loads(raw).get("trang_thai", "cho") == "cho":
+                    return True
+    except Exception as e:
+        log("Không đọc được hàng đợi:", repr(e)[:150])
+    return False
 
 
 def xu_ly_hang_doi(botd, gh: GitHub, may: str, chay_thu=False) -> int:

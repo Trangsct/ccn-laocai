@@ -2674,7 +2674,7 @@ def _egov_bam_menu(page, nguon):
 # trên giao diện lag. API không trả thì quay về đọc bảng như cũ.
 EGOV_GATEWAY = "https://egov-gateway.laocai.gov.vn"
 EGOV_API_DONG = 200
-EGOV_API_TRANG_TOI_DA = 50      # quét ngày: 50 trang x 200 dòng; --lay-lui nâng lên LAY_LUI_TRANG_API
+EGOV_API_TRANG_TOI_DA = 400     # 400 trang x 200 dòng: đủ cả lượt quét 395 ngày (dừng sớm khi gặp ngày cũ hơn khoảng quét)
 _EGOV_API = {"hdr": {}, "url": {}, "moi": None}
 NHAN_NHIEM_VU = {"waiting": "Chờ xử lý", "doing": "Đang thực hiện", "awaitApproval": "Chờ duyệt",
                  "awaitToApproval": "Chờ phê duyệt", "dueDate": "Đến hạn", "outOfDate": "Quá hạn", "refuse": "Trả lại",
@@ -3922,7 +3922,7 @@ def _lay_lui_day(cho_ghi: dict, muc_moi: dict, token, ghi_chu) -> int:
 
 def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
     """--lay-lui: bê văn bản cũ trên egov1 vào kho riêng tư (chữ) + máy (tệp gốc). Chạy nhiều đêm, nhớ chỗ đã làm.
-    moi_vong: hàm gọi sau mỗi văn bản (TAY làm mới tệp khóa trong lượt dài nhiều giờ)."""
+    moi_vong: hàm gọi trước mỗi văn bản; trả True thì dừng sớm (TAY nhường cho yêu cầu Bạn/Claude vừa gửi)."""
     from playwright.sync_api import sync_playwright
     if HE_THONG != "egov":
         log("Bê văn bản cũ chỉ chạy trên egov1 (config he_thong đang là", HE_THONG, ")")
@@ -3972,6 +3972,22 @@ def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
                 tt.update(danh_sach=ds, liet_ke_luc=datetime.now().isoformat(timespec="minutes"),
                           tu_ngay=tu_ngay.isoformat())
                 tt_tep.write_text(json.dumps(tt, ensure_ascii=False), encoding="utf-8")
+                # Đẩy NGAY mục lục đầy đủ (số, ngày, trích yếu... chưa có toàn văn) để mọi phiên chat thống kê, tra
+                # được cả năm mà không phải chờ bot mở từng văn bản (vụ 30/10/2026: rà soát VTVL cần 12 tháng).
+                muc_ds = {}
+                for vbs in ds.values():
+                    for vb in vbs:
+                        n = (parse_ngay(vb.get("ngay_ban_hanh")) or _egov_ngay(vb) or date.today()).year
+                        muc_ds.setdefault(n, {})[_lay_lui_khoa(vb)] = {
+                            **{x: vb.get(x, "") for x in ("so_ky_hieu", "ngay_ban_hanh", "ngay_nhan", "trich_yeu",
+                                                          "don_vi", "nguoi_ky", "loai", "nguon", "url_chi_tiet",
+                                                          "trang_thai", "vai_tro", "nguoi_xu_ly_chinh")},
+                            "linh_vuc": xep_linh_vuc(vb), "gom_luc": date.today().isoformat()}
+                try:
+                    _lay_lui_day({}, muc_ds, token, f"mục lục {sum(len(v) for v in muc_ds.values())} văn bản từ "
+                                                    f"{tu_ngay.strftime('%d/%m/%Y')}")
+                except Exception as e:
+                    log("  [bê văn bản cũ] đẩy mục lục lỗi:", str(e)[:150])
             han_chua_doc = date.today() - timedelta(days=LAY_LUI_CHUA_DOC_NGAY)
             hang = []
             for nguon, vbs in ds.items():
@@ -3990,8 +4006,9 @@ def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
             for vb in hang:
                 if time.time() > het_luc or (toi_da and da_lam >= toi_da):
                     break
-                if moi_vong:
-                    moi_vong()
+                if moi_vong and moi_vong():
+                    log("[bê văn bản cũ] có yêu cầu mới trong hàng đợi - dừng để TAY làm yêu cầu đó, lát nữa làm tiếp")
+                    break
                 da_lam += 1
                 k = _lay_lui_khoa(vb)
                 nam = (parse_ngay(vb.get("ngay_ban_hanh")) or _egov_ngay(vb) or date.today()).year
