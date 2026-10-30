@@ -30,6 +30,7 @@ import base64
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -2673,6 +2674,7 @@ def _egov_bam_menu(page, nguon):
 # trên giao diện lag. API không trả thì quay về đọc bảng như cũ.
 EGOV_GATEWAY = "https://egov-gateway.laocai.gov.vn"
 EGOV_API_DONG = 200
+EGOV_API_TRANG_TOI_DA = 50      # quét ngày: 50 trang x 200 dòng; --lay-lui nâng lên LAY_LUI_TRANG_API
 _EGOV_API = {"hdr": {}, "url": {}, "moi": None}
 NHAN_NHIEM_VU = {"waiting": "Chờ xử lý", "doing": "Đang thực hiện", "awaitApproval": "Chờ duyệt",
                  "awaitToApproval": "Chờ phê duyệt", "dueDate": "Đến hạn", "outOfDate": "Quá hạn", "refuse": "Trả lại",
@@ -2769,7 +2771,7 @@ def _egov_json_vb(d, nguon):
 def _egov_api_danh_sach(page, nguon, tu_ngay, mau_url):
     """Gọi lại API danh sách với EGOV_API_DONG dòng/lượt cho tới khi gặp ngày cũ hơn tu_ngay. None nếu API không dùng được."""
     ra, da, mat, trang = [], set(), 0, 1
-    while trang <= 50:
+    while trang <= EGOV_API_TRANG_TOI_DA:
         u = _doi_tham_so(mau_url, length=EGOV_API_DONG, pageSize=EGOV_API_DONG, page=trang, pageIndex=trang,
                          skip=(trang - 1) * EGOV_API_DONG)
         j = _egov_api(page, u, f"danh sách {nguon}")
@@ -3837,6 +3839,244 @@ def viec_cho_xu_ly(luu_vao=None, so_ngay=30, toi_da=EGOV_VIEC_TOI_DA, day_len=Tr
     return 0
 
 
+# ---------------------------------------------------------------- BÊ VĂN BẢN CŨ (Bạn yêu cầu 30/10/2026)
+# "Tôi muốn bê hết văn bản cũ sang kho mới": kho kho-van-ban-sct (28/9/2026) chưa từng được tạo, danh mục thời
+# Data360X có 3.334 văn bản nhưng chỉ 226 văn bản có toàn văn. Chế độ --lay-lui chạy ĐÊM (TAY gọi 22:15), đi lùi
+# trong tab Tra cứu của egov1 (cổng đã chuyển cả văn bản thời Data360X sang), mở từng văn bản chưa có toàn văn,
+# lấy CHỮ đẩy lên kho riêng tư (theo-doi/<năm ban hành>/<số>.md + danh-muc-<năm>.json) để plugin van-ban-sct-vn
+# mang vào mọi phiên chat. Tệp gốc (PDF, Word...) KHÔNG đẩy lên GitHub (vài chục GB, vượt sức kho) mà cất trên máy.
+LAY_LUI_TU_NGAY = date(2025, 1, 1)
+LAY_LUI_GIO = 6.5               # mặc định chạy tối đa 6,5 giờ/lượt (22:15 -> 04:45, trước lượt việc 05:50)
+LAY_LUI_MOI_COMMIT = 40         # đẩy một commit sau mỗi 40 văn bản (hoặc 30 phút) - không làm Vercel/Actions quá tải
+LAY_LUI_LIET_KE_LAI_NGAY = 7    # danh sách Tra cứu đọc lại sau 7 ngày (văn bản mới đã có lượt quét ngày lo)
+LAY_LUI_TRANG_API = 400         # 400 trang x 200 dòng = 80.000 dòng mỗi chiều đến/đi
+LAY_LUI_CHUA_DOC_NGAY = 30      # văn bản đến CHƯA ĐỌC nhận trong 30 ngày gần đây: không mở (giữ dấu chưa đọc cho Bạn)
+LAY_LUI_DIA_TRONG_GB = 20       # ổ còn dưới 20 GB thì không cất tệp gốc nữa, chỉ lấy chữ
+
+
+def _lay_lui_kho_goc() -> Path:
+    """Nơi cất tệp gốc trên máy: config "kho_tep_goc", không thì OneDrive "Kho van ban SCT" (Bạn chốt 28/9/2026),
+    không thì <du-an>/kho-van-ban."""
+    cfg = doc_config().get("kho_tep_goc", "")
+    if cfg:
+        return Path(cfg)
+    for od in (os.environ.get("OneDrive"), os.environ.get("OneDriveConsumer"), str(Path.home() / "OneDrive")):
+        if od and Path(od).is_dir():
+            return Path(od) / "Kho van ban SCT"
+    return BOT_HOME.parent / "kho-van-ban"
+
+
+def _lay_lui_khoa(vb):
+    return f"{vb.get('so_ky_hieu', '')}|{vb.get('ngay_ban_hanh', '')}"
+
+
+def _lay_lui_doc_trang_thai(tep: Path) -> dict:
+    try:
+        d = json.loads(tep.read_text(encoding="utf-8"))
+        return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+def _lay_lui_liet_ke(page, tu_ngay) -> dict:
+    """Đọc toàn bộ danh sách Tra cứu đến/đi từ tu_ngay (API 200 dòng/lượt, tối đa LAY_LUI_TRANG_API trang)."""
+    global EGOV_API_TRANG_TOI_DA
+    cu, EGOV_API_TRANG_TOI_DA = EGOV_API_TRANG_TOI_DA, LAY_LUI_TRANG_API
+    ra = {}
+    try:
+        for nguon in ("den", "di"):
+            _EGOV_API["moi"] = None
+            ds = _egov_quet_danh_sach(page, nguon, tu_ngay, tra_cuu=True)
+            if ds is None:
+                return {}
+            ra[nguon] = [{k: v for k, v in vb.items() if k != "bytes"} for vb in ds]
+            log(f"  [bê văn bản cũ] danh sách {'đến' if nguon == 'den' else 'đi'}: {len(ds)} văn bản từ "
+                f"{tu_ngay.strftime('%d/%m/%Y')}")
+    finally:
+        EGOV_API_TRANG_TOI_DA = cu
+    return ra
+
+
+def _lay_lui_day(cho_ghi: dict, muc_moi: dict, token, ghi_chu) -> int:
+    """Một commit: các .md + danh-muc-<năm>.json (đọc LẠI bản mới nhất trên GitHub rồi trộn, để không đè mục lượt
+    quét ngày vừa ghi)."""
+    if not cho_ghi and not muc_moi:
+        return 0
+    tep = dict(cho_ghi)
+    for nam, muc in muc_moi.items():
+        duong = f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json"
+        dm, _ = _json_gh(REPO_TRI_THUC, duong, token, [])
+        vi_tri = {_lay_lui_khoa(m): i for i, m in enumerate(dm)}
+        for m in muc.values():
+            i = vi_tri.get(_lay_lui_khoa(m))
+            if i is None:
+                dm.append(m)
+            elif not dm[i].get("tep"):
+                dm[i].update({k: v for k, v in m.items() if v not in ("", None, [])})
+        tep[duong] = json.dumps(dm, ensure_ascii=False, indent=1).encode()
+    so = gh_mot_commit(REPO_TRI_THUC, tep, f"Bê văn bản cũ egov1: {ghi_chu}", token)
+    cho_ghi.clear()
+    muc_moi.clear()
+    return so
+
+
+def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
+    """--lay-lui: bê văn bản cũ trên egov1 vào kho riêng tư (chữ) + máy (tệp gốc). Chạy nhiều đêm, nhớ chỗ đã làm.
+    moi_vong: hàm gọi sau mỗi văn bản (TAY làm mới tệp khóa trong lượt dài nhiều giờ)."""
+    from playwright.sync_api import sync_playwright
+    if HE_THONG != "egov":
+        log("Bê văn bản cũ chỉ chạy trên egov1 (config he_thong đang là", HE_THONG, ")")
+        return 2
+    tu_ngay = tu_ngay or LAY_LUI_TU_NGAY
+    het_luc = time.time() + so_gio * 3600
+    token = doc_config().get("github_token", "")
+    if not token:
+        log("Chưa có github_token trong config.json")
+        return 2
+    tt_tep = BOT_HOME / "lay-lui.json"
+    tt = _lay_lui_doc_trang_thai(tt_tep)
+    xong = tt.setdefault("xong", {})               # khóa -> đường dẫn .md | "mat" | "loi: ..."
+    kho_goc = _lay_lui_kho_goc()
+    try:
+        cat_goc = shutil.disk_usage(kho_goc.anchor or str(kho_goc)).free > LAY_LUI_DIA_TRONG_GB * 1024 ** 3
+    except Exception:
+        cat_goc = False
+    log(f"[bê văn bản cũ] từ {tu_ngay.strftime('%d/%m/%Y')}, tối đa {so_gio} giờ; tệp gốc "
+        + (f"cất ở {kho_goc}" if cat_goc else "KHÔNG cất (ổ gần đầy hoặc không ghi được) - chỉ lấy chữ"))
+    # Văn bản đã có toàn văn trên kho (lượt quét ngày, lượt trước) thì bỏ qua
+    co_tep, ten_da_dung = set(), set()
+    for nam in range(tu_ngay.year, date.today().year + 1):
+        dm, _ = _json_gh(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json", token, [])
+        for m in dm:
+            if m.get("tep"):
+                co_tep.add(_lay_lui_khoa(m))
+                ten_da_dung.add(m["tep"].rsplit(".", 1)[0])
+    da_lam = moi = loi = 0
+    hang = []
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            return 3
+        ctx, page = mo
+        try:
+            ds = tt.get("danh_sach") or {}
+            luc = tt.get("liet_ke_luc", "")
+            if not ds or not luc or (datetime.now() - datetime.fromisoformat(luc)).days >= LAY_LUI_LIET_KE_LAI_NGAY \
+                    or tt.get("tu_ngay") != tu_ngay.isoformat():
+                ds = _lay_lui_liet_ke(page, tu_ngay)
+                if not ds:
+                    log("[bê văn bản cũ] không đọc được danh sách Tra cứu - dừng")
+                    return 3
+                for kk in [kk for kk, v in xong.items() if str(v).startswith("loi")]:
+                    xong.pop(kk)                    # danh sách mới: thử lại các văn bản lần trước không tải được
+                tt.update(danh_sach=ds, liet_ke_luc=datetime.now().isoformat(timespec="minutes"),
+                          tu_ngay=tu_ngay.isoformat())
+                tt_tep.write_text(json.dumps(tt, ensure_ascii=False), encoding="utf-8")
+            han_chua_doc = date.today() - timedelta(days=LAY_LUI_CHUA_DOC_NGAY)
+            hang = []
+            for nguon, vbs in ds.items():
+                for vb in vbs:
+                    k = _lay_lui_khoa(vb)
+                    if k in co_tep or k in xong or _egov_la_mat(vb):
+                        continue
+                    if nguon == "den" and str(vb.get("da_xem")) == "0" and (_egov_ngay(vb) or date.min) >= han_chua_doc:
+                        continue
+                    hang.append(vb)
+            # Văn bản thuộc lĩnh vực của Bạn trước, rồi mới tới văn bản khác; trong mỗi nhóm mới trước cũ sau
+            hang.sort(key=lambda v: (not xep_linh_vuc(v), -((_egov_ngay(v) or date.min).toordinal())))
+            log(f"[bê văn bản cũ] còn {len(hang)} văn bản chưa có toàn văn "
+                f"({sum(1 for v in hang if xep_linh_vuc(v))} thuộc lĩnh vực của Bạn); đã xong các lượt trước: {len(xong)}")
+            cho_ghi, muc_moi, lan_day = {}, {}, time.time()
+            for vb in hang:
+                if time.time() > het_luc or (toi_da and da_lam >= toi_da):
+                    break
+                if moi_vong:
+                    moi_vong()
+                da_lam += 1
+                k = _lay_lui_khoa(vb)
+                nam = (parse_ngay(vb.get("ngay_ban_hanh")) or _egov_ngay(vb) or date.today()).year
+                ten_goc = lam_sach_vn(vb["so_ky_hieu"]) or f"vb-{vb.get('id_data360x') or 'khong-so'}"
+                thu_muc = f"{THU_MUC_TRI_THUC}/{nam}"
+                if f"{thu_muc}/{ten_goc}" in ten_da_dung:      # trùng tên với văn bản khác: thêm mã/ngày
+                    ten_goc += "_" + (str(vb.get("id_data360x") or "")[:12] or lam_sach_vn(vb["ngay_ban_hanh"]))
+                try:
+                    pdf = tai_pdf(ctx, page, vb)
+                    dinh_kem = tai_dinh_kem(ctx, page, vb)
+                except Exception as e:
+                    log(f"  [bê văn bản cũ] lỗi mở {vb['so_ky_hieu']}: {e!r}"[:200])
+                    pdf, dinh_kem = None, []
+                if can_dang_nhap(page):
+                    log("[bê văn bản cũ] phiên egov1 hết - dừng, lượt sau làm tiếp")
+                    da_lam -= 1
+                    break
+                if not pdf and not any(d.get("bytes") for d in dinh_kem):
+                    xong[k] = "loi: không tải được tệp"
+                    loi += 1
+                    continue
+                ct = _egov_api_chi_tiet(page, vb)
+                linh_vuc = xep_linh_vuc(vb)
+                dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                       f"- Ngày ban hành: {vb['ngay_ban_hanh']}"
+                       + (f" | Ngày nhận: {vb['ngay_nhan']}" if vb.get("ngay_nhan") else ""),
+                       f"- Nguồn: văn bản {'đến' if vb['nguon'] == 'den' else 'đi'}"
+                       f" | Đơn vị: {vb.get('don_vi', '')} | Người ký: {vb.get('nguoi_ky', '')}",
+                       f"- Lĩnh vực: {', '.join(linh_vuc)}",
+                       f"- Bản gốc trên {TEN_HE_THONG}: {vb.get('url_chi_tiet', '')}"]
+                if ct.get("but_phe"):
+                    dau += ["", "## Bút phê, chỉ đạo trên egov1", ""] + [f"> {x}" for x in ct["but_phe"].splitlines()]
+                dau += ["", "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
+                        "không nằm trong lớp text - lấy theo các dòng trên, hoặc mở bản gốc."]
+                goi, ten_chinh = dong_goi_ho_so(vb, ten_goc, pdf, dinh_kem, dau)
+                md = [(t, b) for t, b in goi if t.lower().endswith(".md")]
+                if not any(t == ten_goc + ".md" for t, _ in md):      # bản scan không chữ: vẫn có trang mục lục
+                    md.append((ten_goc + ".md", ("\n".join(dau) + "\n\n*(Bản scan, không có lớp chữ. Tệp gốc: "
+                               + (f"{kho_goc}\\{nam}\\{ten_chinh}" if cat_goc else "mở trên egov1") + ")*\n").encode()))
+                for t, b in md:
+                    cho_ghi[f"{thu_muc}/{t}"] = b
+                if cat_goc:
+                    try:
+                        (kho_goc / str(nam)).mkdir(parents=True, exist_ok=True)
+                        for t, b in goi:
+                            if not t.lower().endswith(".md"):
+                                (kho_goc / str(nam) / t).write_bytes(b)
+                    except Exception as e:
+                        log("  [bê văn bản cũ] không cất được tệp gốc:", str(e)[:120])
+                duong = f"{thu_muc}/{ten_goc}.md"
+                ten_da_dung.add(f"{thu_muc}/{ten_goc}")
+                muc_moi.setdefault(nam, {})[k] = {
+                    **{x: vb.get(x, "") for x in ("so_ky_hieu", "ngay_ban_hanh", "trich_yeu", "don_vi", "nguoi_ky",
+                                                  "loai", "nguon", "url_chi_tiet")},
+                    "loai": vb.get("loai") or ct.get("loai", ""), "linh_vuc": linh_vuc,
+                    "gom_luc": date.today().isoformat(), "tep": duong, "lay_lui": True}
+                xong[k] = duong
+                moi += 1
+                if moi % LAY_LUI_MOI_COMMIT == 0 or time.time() - lan_day > 1800:
+                    try:
+                        _lay_lui_day(cho_ghi, muc_moi, token, f"+{moi} văn bản (tới {vb['ngay_ban_hanh']})")
+                        lan_day = time.time()
+                        tt_tep.write_text(json.dumps(tt, ensure_ascii=False), encoding="utf-8")
+                    except Exception as e:
+                        log("  [bê văn bản cũ] đẩy lên GitHub lỗi, giữ lại đẩy lần sau:", str(e)[:150])
+                if da_lam % 10 == 0:
+                    log(f"  [bê văn bản cũ] {da_lam}/{len(hang)}: mới {moi}, lỗi {loi}")
+            # Lượt đẩy cuối (kể cả phần còn lại khi dừng vì hết giờ hay hết phiên)
+            try:
+                _lay_lui_day(cho_ghi, muc_moi, token, f"tổng {moi} văn bản lượt {date.today().strftime('%d/%m/%Y')}")
+            except Exception as e:
+                log("  [bê văn bản cũ] đẩy lên GitHub lỗi:", str(e)[:150])
+                for kk in [kk for kk, v in xong.items() if v in cho_ghi]:
+                    xong.pop(kk, None)              # chưa lên kho thì lượt sau làm lại
+        finally:
+            tt_tep.write_text(json.dumps(tt, ensure_ascii=False), encoding="utf-8")
+            ctx.close()
+    con = max(0, len(hang) - da_lam)
+    tt.update(lan_cuoi=datetime.now().isoformat(timespec="minutes"), lan_cuoi_moi=moi, con_lai=con)
+    tt_tep.write_text(json.dumps(tt, ensure_ascii=False), encoding="utf-8")
+    log(f"[bê văn bản cũ] xong lượt: mở {da_lam}, lấy được {moi}, lỗi {loi}, còn khoảng {con} văn bản")
+    telegram(f"Bot egov1 bê văn bản cũ: thêm {moi} văn bản vào kho, còn khoảng {con}.")
+    return 0
+
+
 HE_THONG = "data360x"
 TEN_HE_THONG = "Data360X"
 
@@ -3892,6 +4132,10 @@ def main():
                     help="(egov1) đi một vòng cổng, ghi HTML/ảnh/API lên kho riêng tư để hoàn thiện bộ đọc")
     ap.add_argument("--viec", action="store_true",
                     help="(egov1) lấy việc Chưa/Chờ/Đang xử lý trong Văn bản đến, tải toàn văn, đẩy lên kho riêng tư")
+    ap.add_argument("--lay-lui", action="store_true",
+                    help="(egov1) bê văn bản cũ: đi lùi trong Tra cứu, lấy toàn văn văn bản chưa có lên kho riêng tư (chạy đêm)")
+    ap.add_argument("--tu-ngay", help="(--lay-lui) lấy từ ngày dd/mm/yyyy (mặc định 01/01/2025)")
+    ap.add_argument("--gio", type=float, default=LAY_LUI_GIO, help="(--lay-lui) chạy tối đa bao nhiêu giờ")
     ap.add_argument("--gom-toi-da", type=int, default=TOI_DA_PDF_MOI_LUOT,
                     help=f"tối đa bao nhiêu tệp tri thức tải về mỗi lượt (mặc định {TOI_DA_PDF_MOI_LUOT})")
     a = ap.parse_args()
@@ -3910,6 +4154,8 @@ def main():
             return xuat_phien()
         if a.khao_sat:
             return khao_sat()
+        if a.lay_lui:
+            return lay_lui(parse_ngay(a.tu_ngay or ""), so_gio=a.gio)
         if a.viec:
             return viec_cho_xu_ly(None if a.luu == "kem-theo" else a.luu, so_ngay=a.ngay or 30)
         if a.lay:
