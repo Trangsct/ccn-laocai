@@ -187,6 +187,12 @@ không bao giờ tải, không đẩy lên GitHub. Sửa bộ đọc theo kết 
 `/document/xem-di-index?type=data360`, chi tiết `/document/xem-den-xem?documentId=…`, Quản lý nhiệm vụ `/work/unit/main/1`,
 Tổng quan `/home/default/1`. Cổng lag: chờ "Đang tải dữ liệu…", 100 dòng/trang, Xuất Excel; nhiệm vụ → `nhiem-vu.md`.
 
+**Bê văn bản cũ (Bạn yêu cầu 30/10/2026).** `bot-data360x.py --lay-lui [--tu-ngay 01/01/2025] [--gio 6.5]`: đi lùi trong tab
+Tra cứu egov1, mở từng văn bản chưa có toàn văn trên kho vlncn-laocai, đẩy CHỮ lên `theo-doi/<năm ban hành>/` +
+`danh-muc-<năm>.json` (40 văn bản một commit), tệp gốc cất trên máy (OneDrive "Kho van ban SCT" hoặc `<du-an>\kho-van-ban`,
+không lên GitHub). Nhớ chỗ đã làm ở `bot-profile\lay-lui.json`; văn bản đến chưa đọc trong 30 ngày không mở. TAY 0.4.0 tự
+chạy mỗi đêm 22:15–05:30; yêu cầu tay: `{"loai": "lay-lui", "tu_ngay": "01/01/2024"}` vào `yeu-cau/` kho vlncn-laocai.
+
 **Bạn chốt 30/9/2026 — xây lại bộ công cụ theo `bot/KE-HOACH-XAY-LAI.md`.** Ba điều bắt buộc từ nay:
 (1) mọi file trong `bot/` phải qua máy ảo Windows (`.github/workflows/thu-bo-cai-windows.yml`) trước khi
 merge, không đưa Bạn chạy thử; (2) máy ở Lào Cai chỉ là "tay" chép văn bản, mọi đọc hiểu do Claude Routine

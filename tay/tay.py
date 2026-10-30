@@ -15,6 +15,7 @@ Vòng lặp mỗi CHU_KY phút:
          Routine Claude 07:03 đọc và ra bản tin trước 07:30. Máy phải bật qua đêm (TAY chạy ẩn).
        - quét 30 ngày thứ Tư từ 11:30, hoặc bất cứ lúc nào trong giờ làm việc nếu đã quá 7 ngày chưa quét
        - quét 7 ngày mỗi chiều thứ Hai-Sáu từ 16:30 -> Routine Claude 21:07 nâng cấp plugin
+       - mỗi đêm 22:15 -> 05:30 (cả cuối tuần): bê văn bản cũ trên egov1 vào kho (bot --lay-lui, 30/10/2026)
   3. hàng đợi yêu cầu: kho riêng tư vlncn-laocai, thư mục yeu-cau/*.json, trang_thai "cho" -> nhận (ghi
      "dang" bằng sha cũ, hai máy không tranh nhau) -> làm -> đẩy kết quả -> ghi "xong"/"loi"
   4. nhịp tim trang-thai/tay.json (nhiều nhất mỗi giờ một lần, và ngay sau mỗi việc)
@@ -25,6 +26,7 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "quet", "ngay": 30}
   {"loai": "viec", "ngay": 30}                                     # việc chờ xử lý trên egov1
   {"loai": "khao-sat"}                                             # ghi cấu trúc egov1 lên theo-doi/egov/soi/
+  {"loai": "lay-lui", "tu_ngay": "01/01/2025"}                     # bê văn bản cũ (mặc định chạy mỗi đêm 22:15-05:30)
   {"loai": "giu-phien"}
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
 trang_thai, may, luc, tom_tat.
@@ -60,7 +62,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.3.0 (29/10/2026)"
+PHIEN_BAN = "0.4.0 (30/10/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -176,7 +178,27 @@ def viec_theo_lich(bay_gio: datetime, tt: dict) -> list:
             ra.append(("quet", {"ngay": 30}))
         elif ngay_lam and gio_phut >= (16, 30) and quet and quet[:10] == hom_nay and int(quet[11:13]) < 12:
             ra.append(("quet", {"ngay": 7}))                            # lượt chiều, sau lượt sáng
+    # đêm 22:15 -> 05:30, mọi ngày: bê văn bản cũ trên egov1 vào kho (Bạn yêu cầu 30/10/2026), mỗi đêm một lượt
+    if gio_phut >= (22, 15) or gio_phut < LAY_LUI_DUNG:
+        if (tt.get("lay_lui_luc") or "")[:10] != dem_cua(bay_gio):
+            ra.append(("lay-lui", {}))
     return ra
+
+
+LAY_LUI_DUNG = (5, 30)        # lượt bê văn bản cũ dừng trước lượt việc 05:50
+
+
+def dem_cua(bay_gio: datetime) -> str:
+    """Đêm 30/10 tính từ 22:15 ngày 30 tới 05:30 ngày 31 -> '2026-10-30'."""
+    return (bay_gio - timedelta(hours=6)).strftime("%Y-%m-%d")
+
+
+def gio_con_lai_dem(bay_gio: datetime) -> float:
+    """Số giờ từ bây giờ tới 05:30 sáng kế tiếp."""
+    dung = bay_gio.replace(hour=LAY_LUI_DUNG[0], minute=LAY_LUI_DUNG[1], second=0, microsecond=0)
+    if dung <= bay_gio:
+        dung += timedelta(days=1)
+    return (dung - bay_gio).total_seconds() / 3600
 
 
 # ---------------------------------------------------------------- GitHub
@@ -259,6 +281,15 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         return f"việc chờ xử lý egov1: mã {ma}, kết quả ở theo-doi/viec-cho-xu-ly/{date.today().isoformat()}/"
     if loai == "khao-sat":
         return f"khảo sát egov1: mã {botd.khao_sat()}, kết quả ở theo-doi/egov/soi/"
+    if loai == "lay-lui":
+        bay_gio = datetime.now()
+        ghi_trang_thai(lay_lui_luc=dem_cua(bay_gio))           # mỗi đêm một lượt, lỗi cũng không thử lại cả đêm
+        gio = min(gio_con_lai_dem(bay_gio), float(yc.get("gio") or 24))
+        if gio < 0.5:
+            return "bê văn bản cũ: còn dưới 30 phút trước 05:30, để đêm sau"
+        tu = botd.parse_ngay(yc.get("tu_ngay") or "")
+        ma = botd.lay_lui(tu, so_gio=gio, moi_vong=lambda: KHOA.touch() if KHOA.exists() else None)
+        return f"bê văn bản cũ egov1: mã {ma} (tối đa {gio:.1f} giờ), nhật ký trên máy {BOT_HOME / 'lay-lui.json'}"
     if loai == "lay":
         ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
         luu_kho = yc.get("luu") or f"theo-doi/yeu-cau/{ten}"
@@ -359,7 +390,7 @@ def chay_thu(botd):
     """Máy ảo Windows: mọi thứ trừ Chrome và GitHub. Thất bại thì exit 1 để CI đỏ."""
     print("tay", PHIEN_BAN, "| bot:", getattr(botd, "GOC_WEB", "?"), "| ROOT:", ROOT)
     for ham in ("chay_chinh", "giu_phien", "lay_theo_yeu_cau", "tim_van_ban", "gh", "gh_doc", "gh_ghi",
-                "telegram", "thong_tin_may", "viec_cho_xu_ly", "khao_sat", "chon_he_thong"):
+                "telegram", "thong_tin_may", "viec_cho_xu_ly", "khao_sat", "chon_he_thong", "lay_lui", "parse_ngay"):
         assert hasattr(botd, ham), f"bot thiếu hàm {ham}"
     assert botd.HE_THONG == "egov", botd.HE_THONG      # cổng mặc định từ 29/10/2026
     L = lambda t, tt: [l for l, _ in viec_theo_lich(t, tt)]
@@ -382,6 +413,14 @@ def chay_thu(botd):
     assert v == [("quet", {"ngay": 7})], v                                                  # chiều: quét 7 ngày lần 2
     assert L(datetime(2026, 10, 2, 17, 5), {"quet_luc": "2026-10-02T16:41", "viec_luc": "2026-10-02T05:51",
                                             "giu_phien_luc": "2026-10-02T17:01"}) == []    # đã quét chiều thì thôi
+    # bê văn bản cũ: mỗi đêm 22:15-05:30 một lượt, kể cả cuối tuần; đêm đã chạy thì thôi
+    assert L(datetime(2026, 10, 30, 22, 20), {"quet_luc": "2026-10-30T16:31", "viec_luc": "2026-10-30T05:51"}) \
+        == ["lay-lui"]
+    assert L(datetime(2026, 10, 31, 2, 0), {"lay_lui_luc": "2026-10-30"}) == []           # cùng đêm 30/10
+    assert L(datetime(2026, 11, 1, 1, 0), {"lay_lui_luc": "2026-10-30"}) == ["lay-lui"]   # Chủ nhật rạng sáng
+    assert L(datetime(2026, 10, 31, 5, 35), {"lay_lui_luc": "2026-10-29"}) == []          # 05:35 thứ Bảy: hết đêm
+    assert abs(gio_con_lai_dem(datetime(2026, 10, 30, 22, 15)) - 7.25) < 1e-6
+    assert abs(gio_con_lai_dem(datetime(2026, 10, 31, 4, 30)) - 1.0) < 1e-6
     # bộ đọc egov1: nhận cột theo tiêu đề đúng như ảnh chụp danh sách Văn bản đến (29/10/2026)
     cot = botd._egov_anh_xa_cot(["STT", "Cấp độ", "Trích yếu", "Số ký hiệu", "Ngày Ban Hành", "Ngày Nhận",
                                  "Trạng thái", "Cơ quan ban hành", "Người Ký", "Độ mật", "Nguồn văn bản", ""])
