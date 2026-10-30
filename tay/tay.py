@@ -62,7 +62,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.2 (30/10/2026)"
+PHIEN_BAN = "0.4.3 (30/10/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -287,7 +287,7 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         if theo_lich:
             ghi_trang_thai(lay_lui_luc=dem_cua(bay_gio))       # mỗi đêm một lượt, lỗi cũng không thử lại cả đêm
         gio = min(gio_con_lai_dem(bay_gio), float(yc.get("gio") or 24))
-        if gio < 0.5:
+        if theo_lich and gio < 0.5:                             # lệnh trong hàng đợi: chạy đúng số giờ đã ghi
             return "bê văn bản cũ: còn dưới 30 phút trước 05:30, để đêm sau"
         tu = botd.parse_ngay(yc.get("tu_ngay") or "")
         nhuong = {"luc": time.time(), "co": False}
