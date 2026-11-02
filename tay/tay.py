@@ -62,7 +62,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.3 (30/10/2026)"
+PHIEN_BAN = "0.4.4 (02/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -235,7 +235,9 @@ class GitHub:
 
 # ---------------------------------------------------------------- tự cập nhật
 def tu_cap_nhat(gh: GitHub) -> bool:
-    """Tệp mã trên main khác tệp trên máy thì tải về; trả True nếu tay.py đổi (cần khởi động lại)."""
+    """Tệp mã trên main khác tệp trên máy thì tải về; trả True nếu có tệp đổi (cần khởi động lại).
+    02/11/2026: trước đây chỉ khởi động lại khi tay.py đổi, nên bot-data360x.py mới tải về nằm trên đĩa nhưng TAY vẫn
+    chạy bản đã nạp lúc khởi động (PR 129, 130 của bot không có tác dụng) - nay đổi tệp nào cũng nạp lại."""
     doi_tay = False
     for ten, duong_kho in TEP_MA.items():
         try:
@@ -249,7 +251,7 @@ def tu_cap_nhat(gh: GitHub) -> bool:
             dich.parent.mkdir(parents=True, exist_ok=True)
             dich.write_bytes(noi_dung)
             log(f"Đã cập nhật {ten} từ main ({r['sha'][:7]})")
-            doi_tay = doi_tay or ten == "tay.py"
+            doi_tay = True
         except Exception as e:
             log(f"Không kiểm tra được bản mới của {ten}:", repr(e))
     return doi_tay
@@ -485,7 +487,8 @@ def main():
     gh = GitHub(botd, token)
     # một tiến trình duy nhất trên máy
     try:
-        if KHOA.exists() and time.time() - KHOA.stat().st_mtime < CHU_KY_PHUT * 60 * 2:
+        if KHOA.exists() and time.time() - KHOA.stat().st_mtime < CHU_KY_PHUT * 60 * 2 \
+                and KHOA.read_text().strip() != str(os.getpid()):      # execv khởi động lại giữ nguyên pid
             log("TAY khác đang chạy (tay.lock còn mới) - thoát.")
             return 0
     except Exception:
