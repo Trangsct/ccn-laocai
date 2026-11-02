@@ -2884,6 +2884,7 @@ def _egov_api_danh_sach(page, nguon, tu_ngay, mau_url):
     """Gọi lại API danh sách với EGOV_API_DONG dòng/lượt cho tới khi gặp ngày cũ hơn tu_ngay. None nếu API không dùng được."""
     ra, da, mat, trang = [], set(), 0, 1
     mau = mau_url if isinstance(mau_url, dict) else {"url": mau_url, "method": "GET", "body": "", "ct": ""}
+    so_trang, ly_do_dung = [], "hết trần số trang"     # nhật ký phân trang, đẩy lên kho khi bê văn bản cũ (02/11/2026)
     while trang <= EGOV_API_TRANG_TOI_DA:
         u = _doi_tham_so(mau["url"], length=EGOV_API_DONG, pageSize=EGOV_API_DONG, page=trang, pageIndex=trang,
                          skip=(trang - 1) * EGOV_API_DONG, start=(trang - 1) * EGOV_API_DONG)
@@ -2928,12 +2929,37 @@ def _egov_api_danh_sach(page, nguon, tu_ngay, mau_url):
         ngay = [n for n in (_egov_ngay(r) for r in ra[-moi:] if moi) if n] if moi else []
         log(f"  ({nguon}) API trang {trang}: {len(data)} dòng, đã đọc {len(ra)}/{tong}"
             + (f", tới ngày {min(ngay).strftime('%d/%m/%Y')}" if ngay else ""))
+        so_trang.append({"trang": trang, "dong": len(data), "moi": moi, "tong": tong,
+                         "tu": min(ngay).isoformat() if ngay else "", "den": max(ngay).isoformat() if ngay else ""})
         if not data or moi == 0 or (tong and len(ra) + mat >= tong) or (ngay and max(ngay) < tu_ngay):
+            ly_do_dung = ("trang rỗng" if not data else "không có dòng mới (trang lặp)" if moi == 0
+                          else "đã đủ total" if (tong and len(ra) + mat >= tong) else "đã tới ngày cần lấy")
             break
         trang += 1
     if mat:
         log(f"  ({nguon}) bỏ {mat} văn bản có độ mật (không tải, không ghi)")
+    if EGOV_API_TRANG_TOI_DA == LAY_LUI_TRANG_API:
+        _egov_ghi_phan_trang(nguon, mau, so_trang, ly_do_dung, len(ra), mat, tu_ngay)
     return ra
+
+
+def _egov_ghi_phan_trang(nguon, mau, so_trang, ly_do_dung, so_doc, mat, tu_ngay):
+    """Bê văn bản cũ: đẩy nhật ký phân trang API Tra cứu (đã che mã) lên kho riêng tư để Claude biết vì sao danh sách
+    dừng sớm (02/11/2026: mục lục chỉ về ~4.000 dòng mỗi chiều dù đã nâng trần trang). Lỗi thì bỏ qua."""
+    try:
+        token = doc_config().get("github_token", "")
+        if not token:
+            return
+        ts = datetime.now().strftime("%Y-%m-%d_%H%M")
+        noi_dung = {"nguon": nguon, "tu_ngay": tu_ngay.isoformat(), "ly_do_dung": ly_do_dung, "da_doc": so_doc,
+                    "bo_mat": mat, "so_trang": len(so_trang), "method": mau.get("method"), "url": _che(mau.get("url", "")),
+                    "body": _che(mau.get("body") or "")[:3000], "ct": mau.get("ct"),
+                    "trang_dau": so_trang[:5], "trang_cuoi": so_trang[-10:]}
+        gh_mot_commit(REPO_TRI_THUC, {f"{THU_MUC_TRI_THUC}/egov/soi/{ts}-lay-lui-phan-trang-{nguon}.json":
+                                      json.dumps(noi_dung, ensure_ascii=False, indent=1).encode()},
+                      f"Nhật ký phân trang Tra cứu {nguon}: {ly_do_dung}, {so_doc} dòng"[:120], token)
+    except Exception as e:
+        log("  không đẩy được nhật ký phân trang:", str(e)[:120])
 
 
 def _egov_api_chi_tiet(page, vb):
@@ -3991,7 +4017,7 @@ LAY_LUI_TRANG_API = 8000        # trần số trang mỗi chiều đến/đi. L�
                                 # đủ 4.000 dòng. 8.000 trang x 10 dòng = 80.000 dòng; vẫn dừng sớm khi gặp ngày cũ hơn tu_ngay
                                 # hoặc đã đủ "total" (rà soát VTVL cần văn bản đi từ 01/10/2025, 02/11/2026)
 LAY_LUI_CHUA_DOC_NGAY = 30      # văn bản đến CHƯA ĐỌC nhận trong 30 ngày gần đây: không mở (giữ dấu chưa đọc cho Bạn)
-LAY_LUI_BO_DOC = 3               # tăng khi sửa bộ đọc danh sách -> danh sách lưu trên máy đọc lại ngay (30/10/2026: API POST; 02/11/2026: trần 8.000 trang)
+LAY_LUI_BO_DOC = 4               # tăng khi sửa bộ đọc danh sách -> danh sách lưu trên máy đọc lại ngay (30/10/2026: API POST; 02/11/2026: trần 8.000 trang, nhật ký phân trang)
 LAY_LUI_DIA_TRONG_GB = 20       # ổ còn dưới 20 GB thì không cất tệp gốc nữa, chỉ lấy chữ
 
 
