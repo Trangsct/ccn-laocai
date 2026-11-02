@@ -3986,7 +3986,10 @@ LAY_LUI_TU_NGAY = date(2025, 1, 1)
 LAY_LUI_GIO = 6.5               # mặc định chạy tối đa 6,5 giờ/lượt (22:15 -> 04:45, trước lượt việc 05:50)
 LAY_LUI_MOI_COMMIT = 40         # đẩy một commit sau mỗi 40 văn bản (hoặc 30 phút) - không làm Vercel/Actions quá tải
 LAY_LUI_LIET_KE_LAI_NGAY = 7    # danh sách Tra cứu đọc lại sau 7 ngày (văn bản mới đã có lượt quét ngày lo)
-LAY_LUI_TRANG_API = 400         # 400 trang x 200 dòng = 80.000 dòng mỗi chiều đến/đi
+LAY_LUI_TRANG_API = 8000        # trần số trang mỗi chiều đến/đi. Lượt 30/10/2026 dừng ở ~4.000 dòng (đến tới 27/7, đi tới
+                                # 20/5/2026) vì cổng egov1 không nhận 200 dòng/lượt mà trả ~10 dòng/trang: 400 trang chỉ
+                                # đủ 4.000 dòng. 8.000 trang x 10 dòng = 80.000 dòng; vẫn dừng sớm khi gặp ngày cũ hơn tu_ngay
+                                # hoặc đã đủ "total" (rà soát VTVL cần văn bản đi từ 01/10/2025, 02/11/2026)
 LAY_LUI_CHUA_DOC_NGAY = 30      # văn bản đến CHƯA ĐỌC nhận trong 30 ngày gần đây: không mở (giữ dấu chưa đọc cho Bạn)
 LAY_LUI_BO_DOC = 2               # tăng khi sửa bộ đọc danh sách -> danh sách lưu trên máy đọc lại ngay (30/10/2026: API POST)
 LAY_LUI_DIA_TRONG_GB = 20       # ổ còn dưới 20 GB thì không cất tệp gốc nữa, chỉ lấy chữ
