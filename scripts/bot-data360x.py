@@ -3991,7 +3991,7 @@ LAY_LUI_TRANG_API = 8000        # trần số trang mỗi chiều đến/đi. L�
                                 # đủ 4.000 dòng. 8.000 trang x 10 dòng = 80.000 dòng; vẫn dừng sớm khi gặp ngày cũ hơn tu_ngay
                                 # hoặc đã đủ "total" (rà soát VTVL cần văn bản đi từ 01/10/2025, 02/11/2026)
 LAY_LUI_CHUA_DOC_NGAY = 30      # văn bản đến CHƯA ĐỌC nhận trong 30 ngày gần đây: không mở (giữ dấu chưa đọc cho Bạn)
-LAY_LUI_BO_DOC = 2               # tăng khi sửa bộ đọc danh sách -> danh sách lưu trên máy đọc lại ngay (30/10/2026: API POST)
+LAY_LUI_BO_DOC = 3               # tăng khi sửa bộ đọc danh sách -> danh sách lưu trên máy đọc lại ngay (30/10/2026: API POST; 02/11/2026: trần 8.000 trang)
 LAY_LUI_DIA_TRONG_GB = 20       # ổ còn dưới 20 GB thì không cất tệp gốc nữa, chỉ lấy chữ
 
 
