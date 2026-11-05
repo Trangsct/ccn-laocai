@@ -63,7 +63,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.5 (05/11/2026)"
+PHIEN_BAN = "0.4.6 (05/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -497,7 +497,10 @@ def main():
     # một tiến trình duy nhất trên máy
     try:
         if (KHOA.exists() and time.time() - KHOA.stat().st_mtime < CHU_KY_PHUT * 60 * 2
-                and KHOA.read_text().strip() != str(os.getpid())):        # chính tiến trình này vừa os.execv thì không thoát
+                and KHOA.read_text().strip() not in (str(os.getpid()), os.environ.get("TAY_PID_CU", ""))):
+            # Không thoát khi khóa là của chính tiến trình vừa os.execv. Trên Windows os.execv tạo tiến trình MỚI (PID khác)
+            # nên truyền PID cũ qua biến môi trường TAY_PID_CU (vụ 05/11/2026: TAY 0.4.5 tự thoát sau khi nạp bot mới 14:10,
+            # máy im tới khi lịch canh 30 phút gọi lại).
             log("TAY khác đang chạy (tay.lock còn mới) - thoát.")
             return 0
     except Exception:
@@ -509,6 +512,7 @@ def main():
             KHOA.write_text(str(os.getpid()))
             if mot_vong(botd, gh, may):
                 log("Mã đã đổi - khởi động lại.")
+                os.environ["TAY_PID_CU"] = str(os.getpid())
                 os.execv(sys.executable, [sys.executable] + sys.argv)
         except Exception:
             log("LỖI vòng lặp:", traceback.format_exc())
