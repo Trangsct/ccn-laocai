@@ -4105,18 +4105,46 @@ def ket_thuc_nhiem_vu(ds_viec, y_kien="", luu_vao=None):
                     nut.first.click(timeout=10000)
                     page.wait_for_timeout(3000)
                     page.screenshot(path=str(luu_vao / f"{ten}-sau-bam.png"))
-                    # hộp ý kiến (nếu có) điền câu của Claude rồi bấm xác nhận
-                    o = page.locator("[role=dialog]:visible textarea, .modal.show textarea, .ant-modal:visible textarea, "
-                                     ".p-dialog:visible textarea, .mat-dialog-container:visible textarea")
+                    # Ảnh 05/11/2026 14:07: bấm nút mở hộp "Đánh giá chất lượng nhiệm vụ" (Đạt / Chưa đạt, ô Nhận xét,
+                    # nút Duyệt / Đóng) -> bấm Duyệt mở hộp xác nhận "Nhiệm vụ này sẽ được kết thúc và không phát hành văn
+                    # bản đi" (nút "Đồng ý!" / "Hủy"). Chọn Đạt ("Chưa đạt" trừ 25% điểm chất lượng của chuyên viên).
+                    hop = page.locator("text=Đánh giá chất lượng nhiệm vụ")
+                    for _ in range(20):
+                        if hop.count() and hop.first.is_visible():
+                            break
+                        page.wait_for_timeout(1000)
+                    buoc = []
+                    dat = page.get_by_text("Đạt", exact=True)
+                    if dat.count() and dat.first.is_visible():
+                        dat.first.click(timeout=8000)
+                        buoc.append("Đạt")
+                        page.wait_for_timeout(1000)
+                    o = page.locator("textarea:visible")
                     if y_kien and o.count():
                         try:
                             if not o.first.input_value().strip():
                                 o.first.fill(y_kien)
+                                buoc.append("nhận xét")
                         except Exception:
                             pass
-                    da_bam = _nv_bam_trong_hop(page, NUT_XAC_NHAN)
-                    ghi["ghi_chu"] = f"hộp xác nhận: {da_bam or 'không có'}" + (f"; confirm: {hop_thoai[-1][:80]}"
-                                                                              if hop_thoai else "")
+                    duyet = page.get_by_role("button", name="Duyệt", exact=True)
+                    if not (duyet.count() and duyet.first.is_visible()):
+                        duyet = page.locator("button:visible").filter(has_text=re.compile(r"^\s*Duyệt\s*$"))
+                    if duyet.count() and duyet.first.is_visible():
+                        duyet.first.click(timeout=8000)
+                        buoc.append("Duyệt")
+                        page.wait_for_timeout(2500)
+                    page.screenshot(path=str(luu_vao / f"{ten}-xac-nhan.png"))
+                    # chỉ bấm "Đồng ý!" khi hộp xác nhận nói đúng là kết thúc, không phát hành văn bản đi
+                    chu_hop = page.locator("body").inner_text()
+                    if "không phát hành văn bản" in chu_hop:
+                        dy = page.get_by_role("button", name=re.compile(r"^\s*Đồng ý!?\s*$"))
+                        if not (dy.count() and dy.first.is_visible()):
+                            dy = page.locator("button:visible", has_text=re.compile(r"^\s*Đồng ý!?\s*$"))
+                        if dy.count() and dy.first.is_visible():
+                            dy.first.click(timeout=8000)
+                            buoc.append("Đồng ý!")
+                    ghi["ghi_chu"] = "đã bấm: " + " -> ".join(buoc) + (f"; confirm: {hop_thoai[-1][:80]}" if hop_thoai else "")
                     page.wait_for_timeout(5000)
                     for _ in range(20):
                         if not _egov_dang_tai(page):
