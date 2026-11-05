@@ -4007,6 +4007,150 @@ def viec_cho_xu_ly(luu_vao=None, so_ngay=30, toi_da=EGOV_VIEC_TOI_DA, day_len=Tr
     return 0
 
 
+# ---------------------------------------------------------------- DUYỆT VÀ KẾT THÚC NHIỆM VỤ (Bạn yêu cầu 05/11/2026)
+# Bạn: "Đối với các công việc chỉ tổng hợp lưu, không cần phát hành văn bản thì bấm duyệt và kết thúc nhiệm vụ giúp tôi"
+# (kèm ảnh trang chi tiết nhiệm vụ /work/unit/detail/1/<workId>?statustype=incharge có nút "Duyệt và kết thúc nhiệm vụ").
+# Đây là NGOẠI LỆ DUY NHẤT của quy ước "bot không bấm nút thao tác hồ sơ": chỉ bấm đúng nút này, chỉ cho danh sách workId
+# Claude ghi trong yêu cầu (loại "ket-thuc-nv"), kiểm số ký hiệu văn bản trên trang trước khi bấm, làm thử việc đầu tiên
+# rồi kiểm lại qua API; việc đầu không kết thúc được thì DỪNG, không làm tiếp. Không bao giờ bấm Trả lại, Giao xử lý,
+# Trình duyệt, Ký, Chuyển.
+NUT_KET_THUC = "Duyệt và kết thúc nhiệm vụ"
+NUT_XAC_NHAN = ("Đồng ý", "Xác nhận", "Duyệt và kết thúc nhiệm vụ", "Duyệt và kết thúc", "Kết thúc", "Duyệt", "Lưu",
+                "Có", "OK", "Ok")
+NUT_CAM = ("Trả lại", "Giao xử lý", "Trình duyệt", "Ký", "Chuyển", "Xóa", "Hủy", "Đóng")
+
+
+def _nv_trang_thai(page, wid):
+    """profileStatus của nhiệm vụ wid trong danh sách Phụ trách; '' nếu không còn trong danh sách (đã kết thúc)."""
+    d = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/v1?page=1&length=200&term=&archiveSearch=false&type=incharge"
+                        f"&isLoading=true&defer=true&skip=0", "nhiệm vụ incharge")
+    ds = (d or {}).get("data") if isinstance(d, dict) else None
+    if not isinstance(ds, list):
+        return None
+    for x in ds:
+        if str(x.get("id")) == str(wid):
+            return str(x.get("profileStatus") or "?")
+    return ""
+
+
+def _nv_bam_trong_hop(page, nhan_tu):
+    """Bấm nút xác nhận trong hộp thoại vừa mở (modal); trả nhãn đã bấm hoặc ''."""
+    hop = page.locator("[role=dialog]:visible, .modal.show, .modal-dialog:visible, .ant-modal:visible, "
+                       ".p-dialog:visible, .mat-dialog-container:visible, .swal2-popup:visible, .el-dialog:visible")
+    for nhan in nhan_tu:
+        for vung in ([hop.first] if hop.count() else []):
+            try:
+                nut = vung.get_by_role("button", name=nhan, exact=True)
+                if nut.count() and nut.first.is_visible():
+                    nut.first.click(timeout=8000)
+                    return nhan
+                nut = vung.get_by_text(nhan, exact=True)
+                if nut.count() and nut.first.is_visible():
+                    nut.first.click(timeout=8000)
+                    return nhan
+            except Exception:
+                continue
+    return ""
+
+
+def ket_thuc_nhiem_vu(ds_viec, y_kien="", luu_vao=None):
+    """ds_viec: [{"id": workId, "so": số ký hiệu văn bản}]. Bấm "Duyệt và kết thúc nhiệm vụ" từng việc, kiểm lại qua API.
+    Ghi ket-qua.md + ảnh vào luu_vao. Trả (số đã kết thúc, tổng)."""
+    from playwright.sync_api import sync_playwright
+    luu_vao = Path(luu_vao or (BOT_HOME / "ket-qua" / "ket-thuc-nv" / datetime.now().strftime("%Y-%m-%d_%H%M")))
+    luu_vao.mkdir(parents=True, exist_ok=True)
+    dong, xong = [], 0
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            (luu_vao / "ket-qua.md").write_text("Không mở được egov1 (phiên đăng nhập?)\n", encoding="utf-8")
+            return 0, len(ds_viec)
+        ctx, page = mo
+        _egov_nghe_api(page)
+        hop_thoai = []
+        page.on("dialog", lambda dlg: (hop_thoai.append(dlg.message), dlg.accept()))
+        try:
+            page.goto(EGOV_NHIEM_VU, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(6000)                       # để Chrome gọi API, nhặt header xác thực
+            for i, v in enumerate(ds_viec, 1):
+                wid, so = str(v.get("id", "")), str(v.get("so", ""))
+                ten = f"{i:02d}-{lam_sach(so)[:40]}"
+                ghi = {"so": so, "id": wid, "ket_qua": "", "ghi_chu": ""}
+                try:
+                    truoc = _nv_trang_thai(page, wid)
+                    if truoc == "":
+                        ghi["ket_qua"] = "không còn trong Phụ trách (đã kết thúc trước đó)"
+                        dong.append(ghi)
+                        continue
+                    page.goto(f"{EGOV_GOC}/work/unit/detail/1/{wid}?statustype=incharge", wait_until="domcontentloaded",
+                              timeout=90000)
+                    nut = page.get_by_text(NUT_KET_THUC, exact=True)
+                    for _ in range(60):
+                        if nut.count() and nut.first.is_visible():
+                            break
+                        page.wait_for_timeout(1000)
+                    chu = page.locator("body").inner_text()
+                    if so and bo_dau(so).replace(" ", "")[:12] not in bo_dau(chu).replace(" ", ""):
+                        ghi["ket_qua"] = "BỎ QUA: trang không có số ký hiệu " + so
+                        page.screenshot(path=str(luu_vao / f"{ten}-khong-khop.png"))
+                        dong.append(ghi)
+                        continue
+                    if not (nut.count() and nut.first.is_visible()):
+                        ghi["ket_qua"] = "BỎ QUA: không thấy nút " + NUT_KET_THUC
+                        page.screenshot(path=str(luu_vao / f"{ten}-khong-nut.png"))
+                        dong.append(ghi)
+                        if i == 1:
+                            break
+                        continue
+                    nut.first.click(timeout=10000)
+                    page.wait_for_timeout(3000)
+                    page.screenshot(path=str(luu_vao / f"{ten}-sau-bam.png"))
+                    # hộp ý kiến (nếu có) điền câu của Claude rồi bấm xác nhận
+                    o = page.locator("[role=dialog]:visible textarea, .modal.show textarea, .ant-modal:visible textarea, "
+                                     ".p-dialog:visible textarea, .mat-dialog-container:visible textarea")
+                    if y_kien and o.count():
+                        try:
+                            if not o.first.input_value().strip():
+                                o.first.fill(y_kien)
+                        except Exception:
+                            pass
+                    da_bam = _nv_bam_trong_hop(page, NUT_XAC_NHAN)
+                    ghi["ghi_chu"] = f"hộp xác nhận: {da_bam or 'không có'}" + (f"; confirm: {hop_thoai[-1][:80]}"
+                                                                              if hop_thoai else "")
+                    page.wait_for_timeout(5000)
+                    for _ in range(20):
+                        if not _egov_dang_tai(page):
+                            break
+                        page.wait_for_timeout(1500)
+                    page.screenshot(path=str(luu_vao / f"{ten}-ket-qua.png"))
+                    sau = _nv_trang_thai(page, wid)
+                    ghi["ket_qua"] = (f"ĐÃ KẾT THÚC ({truoc} -> không còn trong Phụ trách)" if sau == ""
+                                      else f"trạng thái {truoc} -> {sau}")
+                    if sau == "" or (sau and sau != truoc):
+                        xong += 1
+                    elif i == 1:
+                        ghi["ket_qua"] += " - VIỆC THỬ ĐẦU KHÔNG ĐỔI TRẠNG THÁI: DỪNG, chờ Claude xem ảnh"
+                        dong.append(ghi)
+                        break
+                except Exception as e:
+                    ghi["ket_qua"] = "LỖI: " + repr(e)[:160]
+                    if i == 1:
+                        dong.append(ghi)
+                        break
+                dong.append(ghi)
+                log(f"  [kết thúc NV] {so}: {ghi['ket_qua']}")
+        finally:
+            ctx.close()
+    md = [f"# Duyệt và kết thúc nhiệm vụ - {datetime.now().strftime('%d/%m/%Y %H:%M')}", "",
+          f"Đã kết thúc {xong}/{len(ds_viec)} việc. Ý kiến ghi kèm (nếu cổng có ô ý kiến): {y_kien or '(không)'}", "",
+          "| # | Số ký hiệu | Kết quả | Ghi chú |", "|---|---|---|---|"]
+    md += [f"| {i} | {g['so']} | {g['ket_qua']} | {g['ghi_chu']} |" for i, g in enumerate(dong, 1)]
+    (luu_vao / "ket-qua.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    (luu_vao / "ket-qua.json").write_text(json.dumps(dong, ensure_ascii=False, indent=1), encoding="utf-8")
+    telegram(f"Bot egov1: duyệt và kết thúc {xong}/{len(ds_viec)} nhiệm vụ.")
+    return xong, len(ds_viec)
+
+
 # ---------------------------------------------------------------- BÊ VĂN BẢN CŨ (Bạn yêu cầu 30/10/2026)
 # "Tôi muốn bê hết văn bản cũ sang kho mới": kho kho-van-ban-sct (28/9/2026) chưa từng được tạo, danh mục thời
 # Data360X có 3.334 văn bản nhưng chỉ 226 văn bản có toàn văn. Chế độ --lay-lui chạy ĐÊM (TAY gọi 22:15), đi lùi

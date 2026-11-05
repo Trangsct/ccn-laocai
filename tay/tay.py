@@ -28,6 +28,7 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "khao-sat"}                                             # ghi cấu trúc egov1 lên theo-doi/egov/soi/
   {"loai": "lay-lui", "tu_ngay": "01/01/2025"}                     # bê văn bản cũ (mặc định chạy mỗi đêm 22:15-05:30)
   {"loai": "giu-phien"}
+  {"loai": "ket-thuc-nv", "viec": [{"id": "<workId>", "so": "<số ký hiệu>"}], "y_kien": "..."}  # Bạn cho phép 05/11/2026
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
 trang_thai, may, luc, tom_tat.
 
@@ -62,7 +63,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.4 (05/11/2026)"
+PHIEN_BAN = "0.4.5 (05/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -318,6 +319,14 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         ma = botd.lay_theo_yeu_cau(yc.get("yeu_cau", ""), str(luu_may), so_ngay=int(yc.get("ngay") or 60))
         so = gh.day_thu_muc(KHO_VIEC, luu_may, luu_kho, f"Lay van ban theo yeu cau: {ten}")
         return f"lấy văn bản: mã {ma}, đẩy {so} tệp vào {luu_kho}/"
+    if loai == "ket-thuc-nv":
+        # Bạn cho phép 05/11/2026: bấm "Duyệt và kết thúc nhiệm vụ" cho việc chỉ tổng hợp, lưu (danh sách do Claude ghi)
+        ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
+        luu_kho = yc.get("luu") or f"theo-doi/egov/ket-thuc-nv/{ten}"
+        luu_may = BOT_HOME / "ket-qua" / "ket-thuc-nv" / ten
+        xong, tong = botd.ket_thuc_nhiem_vu(yc.get("viec") or [], yc.get("y_kien", ""), str(luu_may))
+        so = gh.day_thu_muc(KHO_VIEC, luu_may, luu_kho, f"Ket thuc nhiem vu egov1: {ten}")
+        return f"duyệt và kết thúc nhiệm vụ: {xong}/{tong}, đẩy {so} tệp vào {luu_kho}/"
     if loai == "tim":
         ho_so = yc["ho_so"]
         raw, _ = gh.doc(KHO_VIEC, f"du-thao/{ho_so}/trich-dan.json")
