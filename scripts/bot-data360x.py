@@ -2680,7 +2680,9 @@ NHAN_NHIEM_VU = {"waiting": "Chờ xử lý", "doing": "Đang thực hiện", "a
                  "awaitToApproval": "Chờ phê duyệt", "dueDate": "Đến hạn", "outOfDate": "Quá hạn", "refuse": "Trả lại",
                  "cooperate": "Phối hợp", "incharge": "Phụ trách", "view": "Để biết", "finish": "Đã hoàn thành",
                  "sendDraft": "Dự thảo đã gửi", "draftNotHasMission": "Dự thảo chưa tạo nhiệm vụ"}
-NV_LAY_DANH_SACH = ("outOfDate", "dueDate", "waiting", "doing", "awaitApproval", "refuse")
+NV_LAY_DANH_SACH = ("outOfDate", "dueDate", "waiting", "doing", "awaitApproval", "refuse", "incharge")
+# Bạn yêu cầu 05/11/2026: "ở mục Phụ trách tôi đang có 45 việc, hãy vào xử lý giúp tôi" - đọc thêm danh sách Phụ trách
+# (việc chuyên viên trong Phòng xử lý chính, Bạn phụ trách); lưu nguyên JSON vào kq["tho"] để Claude tra đủ trường.
 
 
 def _egov_nghe_api(page):
@@ -3880,23 +3882,26 @@ def _egov_nhiem_vu_api(page, kq):
     for ma in NV_LAY_DANH_SACH:
         if not dem.get(ma):
             continue
-        d = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/v1?page=1&length=100&term=&archiveSearch=false&type={ma}"
+        d = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/v1?page=1&length=200&term=&archiveSearch=false&type={ma}"
                             f"&isLoading=true&defer=true&skip=0", f"nhiệm vụ {ma}")
         ds = (d or {}).get("data") if isinstance(d, dict) else None
         if not isinstance(ds, list):
             continue
+        kq.setdefault("tho", {})[ma] = ds
         dong = []
         for x in ds:
             vb = (x.get("documentApis") or [{}])[0] if isinstance(x.get("documentApis"), list) else {}
             nguoi = [f"{u.get('fullName', '')} ({u.get('followRoleName', '')})" for u in (x.get("userApis") or [])
-                     if isinstance(u, dict)][:4]
+                     if isinstance(u, dict)][:8]
             ten = _lay(x, "content", "name", "title", "workName")
             han = _lay(x, "endDate", "deadline", "dueDate", "expiredDate", "toDate", "endTime")
             dong.append([re.sub(r"\s+", " ", str(ten or vb.get("abridgment", "")))[:200], _ngay_vn(han),
                          f"{vb.get('symbol', '')} - {vb.get('documentSentCompany', '')}".strip(" -"),
-                         "; ".join(nguoi)])
+                         "; ".join(nguoi),
+                         re.sub(r"\s+", " ", str(vb.get("abridgment", "") or ""))[:200]])
         if dong:
-            kq["danh_sach"][NHAN_NHIEM_VU.get(ma, ma)] = [{"heads": ["Nhiệm vụ", "Hạn", "Văn bản", "Người tham gia"],
+            kq["danh_sach"][NHAN_NHIEM_VU.get(ma, ma)] = [{"heads": ["Nhiệm vụ", "Hạn", "Văn bản", "Người tham gia",
+                                                                      "Trích yếu văn bản"],
                                                             "rows": dong}]
             log(f"  [nhiệm vụ] {NHAN_NHIEM_VU.get(ma, ma)}: {len(dong)} nhiệm vụ")
     return True
