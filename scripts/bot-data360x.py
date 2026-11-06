@@ -4114,12 +4114,20 @@ def ket_thuc_nhiem_vu(ds_viec, y_kien="", luu_vao=None):
                             break
                         page.wait_for_timeout(1000)
                     buoc = []
+                    if not (hop.count() and hop.first.is_visible()):
+                        # Vụ 06/11/2026 (13/THANHPHUC): TP đã trình Giám đốc duyệt kết thúc, nút không mở hộp đánh giá;
+                        # bot cũ vẫn điền chữ vào ô "Thêm ý kiến..." của trang. Không có hộp thì bỏ qua, không điền gì.
+                        ghi["ket_qua"] = "BỎ QUA: bấm nút nhưng không mở hộp Đánh giá chất lượng (việc có thể đang chờ cấp khác duyệt)"
+                        page.screenshot(path=str(luu_vao / f"{ten}-khong-hop.png"))
+                        dong.append(ghi)
+                        continue
                     dat = page.get_by_text("Đạt", exact=True)
                     if dat.count() and dat.first.is_visible():
                         dat.first.click(timeout=8000)
                         buoc.append("Đạt")
                         page.wait_for_timeout(1000)
-                    o = page.locator("textarea:visible")
+                    o = page.locator(".modal:visible textarea, [role=dialog]:visible textarea, .p-dialog:visible textarea, "
+                                     ".ant-modal:visible textarea, .mat-dialog-container:visible textarea")
                     if y_kien and o.count():
                         try:
                             if not o.first.input_value().strip():
