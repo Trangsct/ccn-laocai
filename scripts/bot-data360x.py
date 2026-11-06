@@ -1921,14 +1921,46 @@ def phan_so(so_ky_hieu):
     return m.group(1) if m else so_ky_hieu
 
 
+MA_VB = re.compile(r"^id:\s*([0-9A-Fa-f]{32})(?:\s+(\S.*))?$")
+
+
+def _tach_ma_vb(yeu_cau):
+    """"id:5F7DCF75...0C71 649/BC-UBND" -> [("5F7D...", "649/BC-UBND")]: mở thẳng văn bản đến trên egov1 theo
+    documentId (Bạn chốt 06/11/2026: vụ 649/BC-UBND xã Mậu A - tìm theo số không ra, từ khóa thì quá rộng)."""
+    ra = []
+    for muc in re.split(r"[;\n]+", yeu_cau or ""):
+        m = MA_VB.match(muc.strip().strip('"\''))
+        if m:
+            ra.append((m.group(1).upper(), (m.group(2) or "").strip()))
+    return ra
+
+
+def _egov_kiem_mat_truoc(page, vb):
+    """Mở theo mã thì chưa biết Độ mật từ danh sách: mở trang chi tiết, đọc ô "Độ mật" (và dấu Mật/Tối mật/Tuyệt
+    mật); văn bản mật thì bỏ, không tải, không ghi (quy tắc bất di bất dịch của Bạn). Trả True khi được lấy."""
+    try:
+        page.goto(vb["url_chi_tiet"], wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(3500)
+        chu = page.locator("body").inner_text(timeout=15000)
+    except Exception as e:
+        log("    không mở được trang chi tiết để xem Độ mật:", str(e)[:100])
+        return False
+    m = re.search(r"Độ\s*mật\s*:?\s*\n?\s*([^\n]{1,30})", chu)
+    vb["do_mat"] = (m.group(1).strip() if m else "")
+    if _egov_la_mat(vb) or re.search(r"\b(TỐI MẬT|TUYỆT MẬT)\b", chu) or bo_dau(vb["do_mat"]).startswith("mat"):
+        log(f"    BỎ: văn bản có Độ mật '{vb['do_mat'] or 'mật'}' - không tải, không ghi")
+        return False
+    return True
+
+
 def _tach_yeu_cau(yeu_cau):
     """"5511/SCT-CN; 3226/QĐ-UBND; tiêu chí lựa chọn chủ đầu tư" -> ([số ký hiệu chuẩn hóa], [từ khóa không dấu]).
     Mục có dấu "/" là số ký hiệu (khớp đúng), còn lại là từ khóa (khớp trong trích yếu, không phân biệt dấu)."""
     so, tu_khoa = {}, []
     for muc in re.split(r"[;\n]+", yeu_cau or ""):
         muc = muc.strip().strip('"\'')
-        if not muc:
-            continue
+        if not muc or MA_VB.match(muc):
+            continue                                       # mã văn bản egov1: _tach_ma_vb lo
         if "/" in muc:
             so[_chuan_so(muc)] = muc
         else:
@@ -1957,9 +1989,10 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     luu_vao.mkdir(parents=True, exist_ok=True)
     yeu_cau = sua_vo_ma(yeu_cau)
     so, tu_khoa = _tach_yeu_cau(yeu_cau)
+    ma_vb = _tach_ma_vb(yeu_cau) if HE_THONG == "egov" else []
     tu_khoa_goc = [rut_gon_tu_khoa(m.strip().strip('"\'')) for m in re.split(r"[;\n]+", yeu_cau or "")
-                   if m.strip().strip('"\'') and "/" not in m]
-    if not so and not tu_khoa:
+                   if m.strip().strip('"\'') and "/" not in m and not MA_VB.match(m.strip().strip('"\''))]
+    if not so and not tu_khoa and not ma_vb:
         log("Yêu cầu rỗng: cần ít nhất một số ký hiệu hoặc từ khóa.")
         return 2
     tu_ngay = date.today() - timedelta(days=so_ngay)
@@ -1982,7 +2015,8 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                     return 3
             chuoi_tim = sorted({phan_so(v) for v in so.values()}) + tu_khoa_goc
             da_co = set()      # khử trùng trên CẢ hai bảng (vụ 17/9: 5612/TTr-SCT bị ghi hai lần)
-            for nguon in ("den", "di"):
+            can_lay = []       # (vb, nguon, ly_do, khoa)
+            for nguon in (("den", "di") if chuoi_tim else ()):
                 # Gõ từng mục vào ô tìm kiếm của cổng; ô tìm không có thì lật trang trong khoảng ngày như cũ
                 rows = []
                 for chuoi in chuoi_tim:
@@ -2016,6 +2050,19 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                             bo_qua_tk[ly_do] = bo_qua_tk.get(ly_do, 0) + 1
                             continue
                     log(f"  thấy {vb['so_ky_hieu']} ({nguon}, {ly_do}) - {vb['trich_yeu'][:60]}")
+                    can_lay.append((vb, nguon, ly_do, khoa))
+            for ma, nhan in ma_vb:
+                if ma in da_co:
+                    continue
+                da_co.add(ma)
+                vb = {"so_ky_hieu": nhan or f"ma-{ma[:8]}", "trich_yeu": "", "ngay_ban_hanh": "", "don_vi": "",
+                      "nguoi_ky": "", "nguon": "den", "id_data360x": ma, "he_thong": "egov",
+                      "url_chi_tiet": f"{GOC_WEB}/document/xem-den-xem?documentId={ma}&t=0&hxl="}
+                log(f"  mở thẳng theo mã {ma} ({nhan or 'không ghi số'})")
+                if not _egov_kiem_mat_truoc(page, vb):
+                    continue
+                can_lay.append((vb, "den", f"mã văn bản egov1 {ma}", _chuan_so(nhan) if nhan else ""))
+            for vb, nguon, ly_do, khoa in can_lay:
                     # Chrome bị đóng giữa chừng (vụ 17/9/2026: cả lượt đổ, mọi văn bản sau đều "Target closed")
                     # -> mở lại rồi làm tiếp, không bỏ cả lượt.
                     try:
