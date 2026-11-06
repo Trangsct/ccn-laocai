@@ -722,17 +722,68 @@ def tai_bang_req(ctx, url):
     return None, ""
 
 
-def mo_trinh_duyet(p, headless=False, thu_nho=False):
-    """thu_nho=True: mở Chrome ở dạng thu nhỏ dưới thanh tác vụ (lượt giữ phiên mỗi giờ, không làm phiền)."""
+_CTX_AN = set()          # id() các ctx đang chạy ẩn (headless), để cho_dang_nhap biết phải mở lại cửa sổ thấy được
+UA_TEP = BOT_HOME / "ua-chrome.txt"
+
+
+def chay_an() -> bool:
+    """Bạn chốt 06/11/2026: bot chạy ngầm, không hiện cửa sổ Chrome. Muốn xem bot làm thì đặt "chay_an": false
+    trong config.json hoặc biến môi trường BOT_HIEN=1. Đăng nhập lại vẫn luôn mở cửa sổ thấy được."""
+    if os.environ.get("BOT_HIEN") == "1":
+        return False
+    return doc_config().get("chay_an", True) is not False
+
+
+def _ua_that(p, args):
+    """User-Agent của Chrome thật (bỏ chữ HeadlessChrome) để cổng không phân biệt lượt chạy ẩn; nhớ trong ngày."""
+    try:
+        dong = UA_TEP.read_text(encoding="utf-8").split("\n", 1)
+        if dong[0] == date.today().isoformat() and "Chrome/" in dong[1]:
+            return dong[1].strip()
+    except Exception:
+        pass
+    ua = ""
+    try:
+        b = p.chromium.launch(headless=True, channel="chrome" if os.name == "nt" else None, args=args)
+        try:
+            ua = b.new_page().evaluate("navigator.userAgent")
+        finally:
+            b.close()
+    except Exception as e:
+        log("  không đọc được User-Agent của Chrome:", str(e)[:90])
+    ua = ua.replace("HeadlessChrome", "Chrome")
+    if ua:
+        try:
+            UA_TEP.write_text(date.today().isoformat() + "\n" + ua, encoding="utf-8")
+        except Exception:
+            pass
+    return ua
+
+
+def mo_trinh_duyet(p, headless=None, thu_nho=False, hien=False):
+    """Mở Chrome hồ sơ bot (phiên egov1 đã đăng nhập).
+    hien=True: cửa sổ thấy được (đăng nhập lần đầu, đăng nhập lại, xuất phiên).
+    Còn lại: chạy ẩn nếu chay_an() (mặc định từ 06/11/2026), không thì cửa sổ thường; thu_nho=True thu nhỏ xuống thanh tác vụ."""
     PROFILE.mkdir(parents=True, exist_ok=True)
     args = ["--disable-blink-features=AutomationControlled"]
-    if thu_nho:
+    if hien:
+        headless = False
+    elif headless is None:
+        headless = chay_an()
+    if thu_nho and not headless:
         args.append("--start-minimized")
+    them = {}
+    if headless:
+        ua = _ua_that(p, args)
+        if ua:
+            them["user_agent"] = ua
     ctx = p.chromium.launch_persistent_context(
         str(PROFILE), headless=headless, channel="chrome" if os.name == "nt" else None,
         viewport={"width": 1400, "height": 900}, locale="vi-VN", timezone_id="Asia/Ho_Chi_Minh",
-        accept_downloads=True, args=args,
+        accept_downloads=True, args=args, **them,
     )
+    if headless:
+        _CTX_AN.add(id(ctx))
     _tao_req(p, ctx)
     return ctx
 
@@ -770,7 +821,7 @@ def xuat_phien():
     cfg = doc_config()
     token = cfg.get("github_token", "")      # thiếu token vẫn chạy được: cuối cùng sẽ đi đường dán tay
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet(p, hien=True)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
@@ -859,6 +910,17 @@ def cho_dang_nhap(ctx, page, p=None):
     Trả (ok, ctx, page): Chrome bị đóng giữa chừng (vụ 16/9/2026 - lượt quét thứ Tư chết sau 17 giây vì
     TargetClosedError) thì mở lại cửa sổ và chờ tiếp thay vì đổ cả lượt chạy; vì thế ctx/page có thể là mới.
     """
+    if id(ctx) in _CTX_AN and p is not None:
+        # đang chạy ẩn: Bạn không thấy cửa sổ để đăng nhập -> đóng, mở lại Chrome thấy được ở trang đăng nhập
+        _CTX_AN.discard(id(ctx))
+        try:
+            ctx.close()
+        except Exception:
+            pass
+        ctx = mo_trinh_duyet(p, hien=True)
+        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
+        page.bring_to_front()
     thong_bao_windows(f"Bot cần bạn đăng nhập lại {TEN_HE_THONG}", "Đăng nhập trong cửa sổ Chrome vừa mở, bot sẽ tự chạy tiếp.")
     telegram(f"Bot {TEN_HE_THONG}: phiên đăng nhập hết hạn. Hãy đăng nhập lại trong cửa sổ Chrome trên máy cơ quan.")
     for lan in range(SO_LAN_CHO_DANG_NHAP):
@@ -879,7 +941,7 @@ def cho_dang_nhap(ctx, page, p=None):
                     ctx.close()
                 except Exception:
                     pass
-                ctx = mo_trinh_duyet(p, headless=False)
+                ctx = mo_trinh_duyet(p, hien=True)
                 page = ctx.pages[0] if ctx.pages else ctx.new_page()
                 page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
                 page.bring_to_front()
@@ -1696,7 +1758,7 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
 
     thay, thieu = [], list(can.keys())
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
@@ -1905,7 +1967,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
 
     thay, thieu_so, dem_tk, bo_qua_tk, loi_chung, ten_da_dung = [], set(so.keys()), {}, {}, "", set()
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
@@ -1964,7 +2026,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
                             ctx.close()
                         except Exception:
                             pass
-                        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+                        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p)
                         page = ctx.pages[0] if ctx.pages else ctx.new_page()
                         page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
                         page.wait_for_timeout(2000)
@@ -2069,7 +2131,7 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
     viec_tom = ""
 
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet_online(p, phien) if online else mo_trinh_duyet(p)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
@@ -2207,10 +2269,10 @@ def chay_chinh(soi=False, so_ngay=None, online=False, gom=True, gom_toi_da=TOI_D
 def giu_phien():
     """Mở trang chủ cổng (egov1 hoặc Data360X) bằng phiên đã có rồi đóng (~20 giây), để cổng không cắt phiên.
     Bạn chốt 24/9/2026: chạy MỖI GIỜ trong giờ làm việc (trước đó chỉ thứ Tư -> phiên hết gần như mỗi ngày),
-    cửa sổ Chrome thu nhỏ. Chỉ dùng lại phiên có sẵn; phiên hết thì báo để Bạn đăng nhập."""
+    cửa sổ Chrome thu nhỏ (từ 06/11/2026 chạy ẩn hẳn). Chỉ dùng lại phiên có sẵn; phiên hết thì báo để Bạn đăng nhập."""
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet(p, headless=False, thu_nho=True)
+        ctx = mo_trinh_duyet(p, thu_nho=True)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
@@ -2229,7 +2291,7 @@ def giu_phien():
 def dang_nhap_lan_dau():
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        ctx = mo_trinh_duyet(p, headless=False)
+        ctx = mo_trinh_duyet(p, hien=True)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
         print(f"\nHãy đăng nhập {TEN_HE_THONG} ({GOC_WEB}) trong cửa sổ Chrome vừa mở (nhập mã xác thực như thường).")
@@ -3699,7 +3761,7 @@ def _egov_da_khao_sat_len_kho():
 
 def _mo_cong_san_sang(p, ctx=None):
     """Mở Chrome hồ sơ bot ở trang chủ hệ thống đang dùng; phiên hết thì chờ Bạn đăng nhập. Trả (ctx, page) hoặc None."""
-    ctx = ctx or mo_trinh_duyet(p, headless=False)
+    ctx = ctx or mo_trinh_duyet(p)
     page = ctx.pages[0] if ctx.pages else ctx.new_page()
     page.goto(TRANG_CHU, wait_until="domcontentloaded", timeout=90000)
     page.wait_for_timeout(3000)
