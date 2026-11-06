@@ -63,7 +63,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.6 (05/11/2026)"
+PHIEN_BAN = "0.4.7 (06/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -170,6 +170,9 @@ def viec_theo_lich(bay_gio: datetime, tt: dict) -> list:
     # sáng sớm: việc chờ xử lý rồi quét 7 ngày, cho bản tin 07:30 (máy bật qua đêm)
     if ngay_lam and gio_phut >= (5, 50) and (tt.get("viec_luc") or "")[:10] != hom_nay:
         ra.append(("viec", {"ngay": 30}))
+    # chiều tối: việc chờ xử lý lượt 2 cho bản tin 19:00 (Bạn chốt 06/11/2026: bản tin 7h30 sáng và 19h tối)
+    if ngay_lam and gio_phut >= (18, 15) and (tt.get("viec_toi_luc") or "")[:10] != hom_nay:
+        ra.append(("viec", {"ngay": 30, "buoi": "toi"}))
     if ngay_lam and gio_phut >= (5, 50) and (not quet or quet[:10] != hom_nay):
         ra.append(("quet", {"ngay": 7}))
     if gio_lam:
@@ -275,12 +278,14 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         return f"quét {yc.get('ngay') or 30} ngày, mã {ma}"
     if loai == "viec":
         if getattr(botd, "HE_THONG", "") != "egov":
-            ghi_trang_thai(viec_luc=datetime.now().isoformat(timespec="minutes"))
+            ghi_trang_thai(viec_luc=datetime.now().isoformat(timespec="minutes"),
+                           **({"viec_toi_luc": datetime.now().isoformat(timespec="minutes")} if yc.get("buoi") == "toi" else {}))
             return "bỏ qua: việc chờ xử lý chỉ có trên egov1"
         luu_may = BOT_HOME / "ket-qua" / "viec" / date.today().isoformat()
         ma = botd.viec_cho_xu_ly(str(luu_may), so_ngay=int(yc.get("ngay") or 30))
         if ma == 0:
-            ghi_trang_thai(viec_luc=datetime.now().isoformat(timespec="minutes"))
+            luc = datetime.now().isoformat(timespec="minutes")
+            ghi_trang_thai(viec_luc=luc, **({"viec_toi_luc": luc} if yc.get("buoi") == "toi" else {}))
         return f"việc chờ xử lý egov1: mã {ma}, kết quả ở theo-doi/viec-cho-xu-ly/{date.today().isoformat()}/"
     if loai == "khao-sat":
         return f"khảo sát egov1: mã {botd.khao_sat()}, kết quả ở theo-doi/egov/soi/"
