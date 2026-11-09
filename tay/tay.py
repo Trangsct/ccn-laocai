@@ -66,7 +66,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.10 (09/11/2026)"
+PHIEN_BAN = "0.4.11 (09/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -373,19 +373,23 @@ def _lich_get(url, timeout=60):
 
 
 def _lich_qua_trinh_duyet(botd) -> bytes:
-    """Bảng lịch do JavaScript nạp sau (vụ 09/11/2026: GET thường chỉ được khung trang 6,8 KB, 0 mục) -> mở bằng Chrome của bot
-    (chạy ẩn), chờ bảng #table-plans-id rồi lấy HTML đã dựng. Không đăng nhập, không bấm gì."""
+    """Bảng lịch do JavaScript nạp sau (vụ 09/11/2026: GET thường chỉ được khung trang 6,8 KB, 0 mục) -> mở bằng Chrome riêng
+    (chạy ẩn, KHÔNG dùng hồ sơ egov1, không đăng nhập, không bấm gì), chờ bảng #table-plans-id rồi lấy HTML đã dựng.
+    Tắt chế độ tự nâng http -> https của Chrome: trang chỉ có http, hồ sơ bot chặn với ERR_BLOCKED_BY_CLIENT (09/11/2026 22:53)."""
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        ctx = botd.mo_trinh_duyet(p)
+        b = p.chromium.launch(headless=True, channel="chrome" if os.name == "nt" else None,
+                              args=["--disable-features=HttpsUpgrades,HttpsFirstBalancedModeAutoEnable,HttpsFirstModeV2",
+                                    "--disable-blink-features=AutomationControlled"])
         try:
+            ctx = b.new_context(ignore_https_errors=True, locale="vi-VN", viewport={"width": 1600, "height": 1000})
             page = ctx.new_page()
             page.goto(LICH_LDAO_URL, wait_until="domcontentloaded", timeout=90000)
             page.wait_for_selector("#table-plans-id", timeout=60000)
             page.wait_for_timeout(3000)
             return page.content().encode("utf-8")
         finally:
-            ctx.close()
+            b.close()
 
 
 def tai_lich_lanh_dao(gh, botd=None) -> str:
