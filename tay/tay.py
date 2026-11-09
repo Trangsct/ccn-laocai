@@ -28,6 +28,7 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "khao-sat"}                                             # ghi cấu trúc egov1 lên theo-doi/egov/soi/
   {"loai": "lay-lui", "tu_ngay": "01/01/2025"}                     # bê văn bản cũ (mặc định chạy mỗi đêm 22:15-05:30)
   {"loai": "giu-phien"}
+  {"loai": "nhat-ky", "ly_do": "..."}                              # đẩy đuôi nhật ký lên theo-doi/tay/nhat-ky/ (09/11/2026)
   {"loai": "ket-thuc-nv", "viec": [{"id": "<workId>", "so": "<số ký hiệu>"}], "y_kien": "..."}  # Bạn cho phép 05/11/2026
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
 trang_thai, may, luc, tom_tat.
@@ -45,6 +46,7 @@ import base64
 import hashlib
 import importlib.util
 import json
+import re
 import os
 import socket
 import subprocess
@@ -63,7 +65,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.7 (06/11/2026)"
+PHIEN_BAN = "0.4.8 (09/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -311,12 +313,15 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
             return nhuong["co"]
 
         ma = botd.lay_lui(tu, so_gio=gio, moi_vong=moi_vong)
+        day_nhat_ky(gh, f"sau lượt bê văn bản cũ (mã {ma})")
         if nhuong["co"]:
             xu_ly_hang_doi(botd, gh, socket.gethostname())
             if theo_lich:
                 ghi_trang_thai(lay_lui_luc="")                 # vòng sau (10 phút) làm tiếp lượt đêm
             return f"bê văn bản cũ: tạm dừng để làm yêu cầu trong hàng đợi (mã {ma}), vòng sau làm tiếp"
         return f"bê văn bản cũ egov1: mã {ma} (tối đa {gio:.1f} giờ), nhật ký trên máy {BOT_HOME / 'lay-lui.json'}"
+    if loai == "nhat-ky":
+        return "đẩy nhật ký: " + day_nhat_ky(gh, yc.get("ly_do") or "theo yêu cầu", int(yc.get("dong") or 400), int(yc.get("ngay") or 2))
     if loai == "lay":
         ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
         luu_kho = yc.get("luu") or f"theo-doi/yeu-cau/{ten}"
@@ -346,6 +351,42 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
                             f"Soat du thao: tai van ban vien dan cua {ho_so}")
         return f"tìm văn bản viện dẫn: mã {ma}, đẩy {so} tệp"
     raise RuntimeError(f"không biết loại việc '{loai}'")
+
+
+_CHE = [re.compile(r"(?i)(authorization|token|cookie|password|matkhau|secret)([\"']?\s*[:=]\s*)[^\n,;}]+"),
+        re.compile(r"(?i)bearer\s+\S+"), re.compile(r"eyJ[\w-]{8,}\.[\w-]{8,}\.[\w-]{8,}"),
+        re.compile(r"(ghp|gho|ghs|github_pat)_\w+")]
+
+
+def _che(dong: str) -> str:
+    for i, m in enumerate(_CHE):
+        dong = m.sub((lambda x: x.group(1) + x.group(2) + "***") if i == 0 else (lambda x: "***"), dong)
+    return dong
+
+
+def day_nhat_ky(gh, ly_do: str, so_dong=400, so_ngay=2) -> str:
+    """Đẩy đuôi nhật ký TAY + bot (hôm nay, hôm qua) và lay-lui.json lên kho riêng tư (Bạn không dùng Telegram — 09/11/2026):
+    theo-doi/tay/nhat-ky/<ngày>.log. Che mọi chuỗi giống mã đăng nhập trước khi đẩy."""
+    if gh is None:
+        return "không có GitHub"
+    phan = [f"# Nhật ký TAY {PHIEN_BAN} - {datetime.now().isoformat(timespec='minutes')} - {ly_do}", ""]
+    for ngay in [date.today() - timedelta(days=i) for i in range(max(1, so_ngay) - 1, -1, -1)]:
+        for ten in (f"tay-{ngay.isoformat()}.log", f"{ngay.isoformat()}.log"):
+            f = LOG_DIR / ten
+            if f.exists():
+                dong = f.read_text(encoding="utf-8", errors="replace").splitlines()[-so_dong:]
+                phan += [f"## {ten} ({len(dong)} dòng cuối)"] + [_che(x) for x in dong] + [""]
+    tt = BOT_HOME / "lay-lui.json"
+    if tt.exists():
+        phan += ["## lay-lui.json", _che(tt.read_text(encoding="utf-8", errors="replace")[:20000]), ""]
+    duong = f"theo-doi/tay/nhat-ky/{date.today().isoformat()}.log"
+    try:
+        _, sha = gh.doc(KHO_VIEC, duong)
+        gh.ghi(KHO_VIEC, duong, "\n".join(phan).encode("utf-8"), f"tay: nhat ky {ly_do}", sha)
+        return duong
+    except Exception as e:
+        log("Không đẩy được nhật ký:", repr(e))
+        return f"lỗi {e!r}"
 
 
 def co_yeu_cau_cho(gh: GitHub) -> bool:
@@ -394,6 +435,8 @@ def xu_ly_hang_doi(botd, gh: GitHub, may: str, chay_thu=False) -> int:
         yc["xong_luc"] = datetime.now().isoformat(timespec="minutes")
         gh.ghi(KHO_VIEC, duong, json.dumps(yc, ensure_ascii=False, indent=2).encode(),
                f"tay {may}: {yc['trang_thai']} {muc['name']}", sha)
+        if yc.get("trang_thai") == "loi":
+            day_nhat_ky(gh, f"việc lỗi {muc['name']}")
         botd.telegram(f"TAY {may}: {yc.get('loai')} {muc['name']} -> {yc['trang_thai']}: {yc.get('tom_tat', '')}")
         lam += 1
     return lam
