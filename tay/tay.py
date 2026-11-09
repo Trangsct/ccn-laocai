@@ -66,7 +66,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.11 (09/11/2026)"
+PHIEN_BAN = "0.4.12 (09/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -421,7 +421,8 @@ def tai_lich_lanh_dao(gh, botd=None) -> str:
             ten = re.search(r'title="([^"]*)"', the)
             if not href or "DownloadPlanAttachmentFile" not in href.group(1):
                 continue
-            url = _h.unescape(href.group(1))
+            from urllib.parse import urljoin
+            url = urljoin(LICH_LDAO_URL, _h.unescape(href.group(1)))   # trang dựng bằng JS cho href tương đối (09/11/2026)
             if url in da_url:                       # một tệp gắn ở nhiều ô lịch: tải một lần
                 continue
             da_url.add(url)
