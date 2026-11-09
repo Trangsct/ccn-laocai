@@ -66,7 +66,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.9 (09/11/2026)"
+PHIEN_BAN = "0.4.10 (09/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -326,7 +326,7 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         return f"bê văn bản cũ egov1: mã {ma} (tối đa {gio:.1f} giờ), nhật ký trên máy {BOT_HOME / 'lay-lui.json'}"
     if loai == "lich-lanh-dao":
         ghi_trang_thai(lich_ldao_luc=datetime.now().isoformat(timespec="minutes"))
-        return tai_lich_lanh_dao(gh)
+        return tai_lich_lanh_dao(gh, botd)
     if loai == "nhat-ky":
         return "đẩy nhật ký: " + day_nhat_ky(gh, yc.get("ly_do") or "theo yêu cầu", int(yc.get("dong") or 400), int(yc.get("ngay") or 2))
     if loai == "lay":
@@ -372,7 +372,23 @@ def _lich_get(url, timeout=60):
         return r.status, r.read(), dict(r.headers)
 
 
-def tai_lich_lanh_dao(gh) -> str:
+def _lich_qua_trinh_duyet(botd) -> bytes:
+    """Bảng lịch do JavaScript nạp sau (vụ 09/11/2026: GET thường chỉ được khung trang 6,8 KB, 0 mục) -> mở bằng Chrome của bot
+    (chạy ẩn), chờ bảng #table-plans-id rồi lấy HTML đã dựng. Không đăng nhập, không bấm gì."""
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        ctx = botd.mo_trinh_duyet(p)
+        try:
+            page = ctx.new_page()
+            page.goto(LICH_LDAO_URL, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_selector("#table-plans-id", timeout=60000)
+            page.wait_for_timeout(3000)
+            return page.content().encode("utf-8")
+        finally:
+            ctx.close()
+
+
+def tai_lich_lanh_dao(gh, botd=None) -> str:
     """Tải trang Lịch Lãnh đạo Sở + tệp đính kèm -> theo-doi/lich-lanh-dao/<hôm nay>/ (lich.html, tệp, tep.json; lỗi: loi.txt).
     Không đăng nhập, không bấm gì; chỉ GET trang và các liên kết DownloadPlanAttachmentFile."""
     import html as _h
@@ -387,6 +403,10 @@ def tai_lich_lanh_dao(gh) -> str:
     so_muc, tep = 0, []
     try:
         ma, noi_dung, _ = _lich_get(LICH_LDAO_URL)
+        if b"table-plans-id" not in noi_dung and botd is not None:
+            noi_dung = _lich_qua_trinh_duyet(botd)
+        if b"table-plans-id" not in noi_dung:
+            raise RuntimeError(f"trang không có bảng lịch #table-plans-id ({len(noi_dung)} byte) - không ghi đè lich.html")
         (thu / "lich.html").write_bytes(noi_dung)
         chu = noi_dung.decode("utf-8", errors="replace")
         so_muc = len(re.findall(r'title="Nội dung làm việc"', chu))
