@@ -3458,6 +3458,31 @@ def _egov_fetch(page, url):
 
 
 def _egov_mo_va_tai_tep(ctx, page, vb, soi_dir=None):
+    """Như _egov_mo_va_tai_tep_mot; văn bản cũ chuyển từ Data360X (documentId toàn chữ số) mà trang xem-den-xem không có tệp
+    thì thử trang xem-den-360-xem (vụ 06–09/11/2026: 6.525 văn bản số chỉ 6 có toàn văn; Bạn báo 09/11/2026 "đã chuyển hết
+    toàn bộ tài liệu sang egov")."""
+    _egov_mo_va_tai_tep_mot(ctx, page, vb, soi_dir)
+    if _EGOV_TEP["chinh"] is not None or _EGOV_TEP["khac"]:
+        return
+    m = re.search(r"/document/xem-den-xem\?documentId=(\d+)", vb.get("url_chi_tiet") or "")
+    if not m:
+        return
+    url360 = f"{EGOV_GOC}/document/xem-den-360-xem?documentId={m.group(1)}"
+    log(f"  {vb.get('so_ky_hieu')}: thử trang văn bản cũ {url360}")
+    goc = vb["url_chi_tiet"]
+    vb["url_chi_tiet"] = url360
+    try:
+        _egov_mo_va_tai_tep_mot(ctx, page, vb, soi_dir)
+    except Exception as e:
+        log("    trang 360 lỗi:", str(e)[:120])
+    if _EGOV_TEP["chinh"] is None and not _EGOV_TEP["khac"]:
+        vb["url_chi_tiet"] = goc
+        _EGOV_TEP["khoa"] = _egov_khoa(vb)
+    else:
+        log(f"    trang 360 có {1 if _EGOV_TEP['chinh'] else 0} văn bản chính, {len(_EGOV_TEP['khac'])} đính kèm")
+
+
+def _egov_mo_va_tai_tep_mot(ctx, page, vb, soi_dir=None):
     """Mở trang chi tiết, tải MỌI tệp (văn bản chính + đính kèm) một lần, cất vào _EGOV_TEP."""
     import hashlib
     _EGOV_TEP.update(khoa=_egov_khoa(vb), chinh=None, khac=[])

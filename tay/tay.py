@@ -28,6 +28,7 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "khao-sat"}                                             # ghi cấu trúc egov1 lên theo-doi/egov/soi/
   {"loai": "lay-lui", "tu_ngay": "01/01/2025"}                     # bê văn bản cũ (mặc định chạy mỗi đêm 22:15-05:30)
   {"loai": "giu-phien"}
+  {"loai": "lich-lanh-dao"}                                        # tải Lịch Lãnh đạo Sở (tự chạy 06:20 thứ Hai–Sáu)
   {"loai": "nhat-ky", "ly_do": "..."}                              # đẩy đuôi nhật ký lên theo-doi/tay/nhat-ky/ (09/11/2026)
   {"loai": "ket-thuc-nv", "viec": [{"id": "<workId>", "so": "<số ký hiệu>"}], "y_kien": "..."}  # Bạn cho phép 05/11/2026
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
@@ -65,7 +66,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.8 (09/11/2026)"
+PHIEN_BAN = "0.4.9 (09/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -175,6 +176,9 @@ def viec_theo_lich(bay_gio: datetime, tt: dict) -> list:
     # chiều tối: việc chờ xử lý lượt 2 cho bản tin 19:00 (Bạn chốt 06/11/2026: bản tin 7h30 sáng và 19h tối)
     if ngay_lam and gio_phut >= (18, 15) and (tt.get("viec_toi_luc") or "")[:10] != hom_nay:
         ra.append(("viec", {"ngay": 30, "buoi": "toi"}))
+    # 06:20: Lịch Lãnh đạo Sở (hợp đồng vlncn-laocai/theo-doi/lich-lanh-dao/README.md, Bạn yêu cầu 09/11/2026)
+    if ngay_lam and gio_phut >= (6, 20) and (tt.get("lich_ldao_luc") or "")[:10] != hom_nay:
+        ra.append(("lich-lanh-dao", {}))
     if ngay_lam and gio_phut >= (5, 50) and (not quet or quet[:10] != hom_nay):
         ra.append(("quet", {"ngay": 7}))
     if gio_lam:
@@ -320,6 +324,9 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
                 ghi_trang_thai(lay_lui_luc="")                 # vòng sau (10 phút) làm tiếp lượt đêm
             return f"bê văn bản cũ: tạm dừng để làm yêu cầu trong hàng đợi (mã {ma}), vòng sau làm tiếp"
         return f"bê văn bản cũ egov1: mã {ma} (tối đa {gio:.1f} giờ), nhật ký trên máy {BOT_HOME / 'lay-lui.json'}"
+    if loai == "lich-lanh-dao":
+        ghi_trang_thai(lich_ldao_luc=datetime.now().isoformat(timespec="minutes"))
+        return tai_lich_lanh_dao(gh)
     if loai == "nhat-ky":
         return "đẩy nhật ký: " + day_nhat_ky(gh, yc.get("ly_do") or "theo yêu cầu", int(yc.get("dong") or 400), int(yc.get("ngay") or 2))
     if loai == "lay":
@@ -351,6 +358,77 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
                             f"Soat du thao: tai van ban vien dan cua {ho_so}")
         return f"tìm văn bản viện dẫn: mã {ma}, đẩy {so} tệp"
     raise RuntimeError(f"không biết loại việc '{loai}'")
+
+
+LICH_LDAO_URL = "http://lichlanhdaosocongthuong.com/WorkingSchedule/Detail?DisplayType=1"
+LICH_LDAO_DUOI = (".pdf", ".doc", ".docx", ".xls", ".xlsx")
+
+
+def _lich_get(url, timeout=60):
+    import urllib.request
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.status, r.read(), dict(r.headers)
+
+
+def tai_lich_lanh_dao(gh) -> str:
+    """Tải trang Lịch Lãnh đạo Sở + tệp đính kèm -> theo-doi/lich-lanh-dao/<hôm nay>/ (lich.html, tệp, tep.json; lỗi: loi.txt).
+    Không đăng nhập, không bấm gì; chỉ GET trang và các liên kết DownloadPlanAttachmentFile."""
+    import html as _h
+    import urllib.error
+    hom_nay = date.today().isoformat()
+    thu = BOT_HOME / "ket-qua" / "lich-lanh-dao" / hom_nay
+    if thu.exists():
+        for f in thu.iterdir():
+            if f.is_file():
+                f.unlink()
+    thu.mkdir(parents=True, exist_ok=True)
+    so_muc, tep = 0, []
+    try:
+        ma, noi_dung, _ = _lich_get(LICH_LDAO_URL)
+        (thu / "lich.html").write_bytes(noi_dung)
+        chu = noi_dung.decode("utf-8", errors="replace")
+        so_muc = len(re.findall(r'title="Nội dung làm việc"', chu))
+        da_ten, da_url = set(), set()
+        for a in re.finditer(r"<a\b[^>]*download-attachent-td-plans[^>]*>", chu):
+            the = a.group(0)
+            href = re.search(r'href="([^"]+)"', the)
+            ten = re.search(r'title="([^"]*)"', the)
+            if not href or "DownloadPlanAttachmentFile" not in href.group(1):
+                continue
+            url = _h.unescape(href.group(1))
+            if url in da_url:                       # một tệp gắn ở nhiều ô lịch: tải một lần
+                continue
+            da_url.add(url)
+            ten = re.sub(r'[\\/:*?"<>|\x00-\x1f]', "_", _h.unescape(ten.group(1) if ten else "")).strip() or "tep"
+            if not ten.lower().endswith(LICH_LDAO_DUOI):
+                continue
+            goc, duoi = ten.rsplit(".", 1)
+            k, ten_luu = 2, ten
+            while ten_luu.lower() in da_ten:
+                ten_luu, k = f"{goc}_{k}.{duoi}", k + 1
+            try:
+                _, b, _ = _lich_get(url, timeout=120)
+            except Exception as e:
+                log(f"  lịch lãnh đạo: không tải được {ten}: {e!r}")
+                continue
+            if len(b) > 20 * 1024 * 1024:
+                log(f"  lịch lãnh đạo: {ten} quá 20 MB - bỏ")
+                continue
+            da_ten.add(ten_luu.lower())
+            (thu / ten_luu).write_bytes(b)
+            tep.append({"ten": ten_luu, "url": url, "kich_thuoc": len(b)})
+        (thu / "tep.json").write_text(json.dumps(tep, ensure_ascii=False, indent=2), encoding="utf-8")
+    except urllib.error.HTTPError as e:
+        (thu / "loi.txt").write_text(f"HTTP {e.code}\n{e.read()[:300]!r}", encoding="utf-8")
+    except Exception as e:
+        (thu / "loi.txt").write_text(f"{e!r}"[:300], encoding="utf-8")
+    msg = f"Lịch Lãnh đạo Sở {date.today().strftime('%d/%m/%Y')}: {so_muc} mục, {len(tep)} tệp"
+    if (thu / "loi.txt").exists():
+        msg += " (lỗi tải trang)"
+    so = gh.day_thu_muc(KHO_VIEC, thu, f"theo-doi/lich-lanh-dao/{hom_nay}", msg) if gh else 0
+    return f"{msg}; đẩy {so} tệp"
 
 
 _CHE = [re.compile(r"(?i)(authorization|token|cookie|password|matkhau|secret)([\"']?\s*[:=]\s*)[^\n,;}]+"),
