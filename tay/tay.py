@@ -66,7 +66,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.12 (09/11/2026)"
+PHIEN_BAN = "0.4.13 (09/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -212,6 +212,12 @@ def gio_con_lai_dem(bay_gio: datetime) -> float:
 
 
 # ---------------------------------------------------------------- GitHub
+def _q(duong: str) -> str:
+    """Mã hóa đường dẫn cho Contents API (tên tệp có dấu cách, tiếng Việt — vụ Lịch Lãnh đạo 09/11/2026: InvalidURL)."""
+    from urllib.parse import quote
+    return quote(duong, safe="/%")
+
+
 class GitHub:
     def __init__(self, botd, token):
         self.b, self.token = botd, token
@@ -224,10 +230,10 @@ class GitHub:
         return r if isinstance(r, list) else []
 
     def doc(self, repo, duong):
-        return self.b.gh_doc(repo, duong, self.token)
+        return self.b.gh_doc(repo, _q(duong), self.token)
 
     def ghi(self, repo, duong, noi_dung: bytes, msg, sha=None):
-        return self.b.gh_ghi(repo, duong, noi_dung, msg, self.token, sha)
+        return self.b.gh_ghi(repo, _q(duong), noi_dung, msg, self.token, sha)
 
     def day_thu_muc(self, repo, thu_muc_may: Path, duong_kho: str, msg):
         """Đẩy mọi tệp trong một thư mục trên máy lên kho (từng tệp, không cần git clone)."""
@@ -422,7 +428,8 @@ def tai_lich_lanh_dao(gh, botd=None) -> str:
             if not href or "DownloadPlanAttachmentFile" not in href.group(1):
                 continue
             from urllib.parse import urljoin
-            url = urljoin(LICH_LDAO_URL, _h.unescape(href.group(1)))   # trang dựng bằng JS cho href tương đối (09/11/2026)
+            href_goc = _h.unescape(href.group(1))   # ghi vào tep.json đúng như trong lich.html để bộ đọc ghép được
+            url = urljoin(LICH_LDAO_URL, href_goc)  # trang dựng bằng JS cho href tương đối (09/11/2026)
             if url in da_url:                       # một tệp gắn ở nhiều ô lịch: tải một lần
                 continue
             da_url.add(url)
@@ -443,7 +450,7 @@ def tai_lich_lanh_dao(gh, botd=None) -> str:
                 continue
             da_ten.add(ten_luu.lower())
             (thu / ten_luu).write_bytes(b)
-            tep.append({"ten": ten_luu, "url": url, "kich_thuoc": len(b)})
+            tep.append({"ten": ten_luu, "url": href_goc, "kich_thuoc": len(b)})
         (thu / "tep.json").write_text(json.dumps(tep, ensure_ascii=False, indent=2), encoding="utf-8")
     except urllib.error.HTTPError as e:
         (thu / "loi.txt").write_text(f"HTTP {e.code}\n{e.read()[:300]!r}", encoding="utf-8")
