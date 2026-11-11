@@ -4716,25 +4716,26 @@ def _ph_con_tren_danh_sach(page, v):
 
 
 def _ph_mo_tu_danh_sach(page, v, anh=None):
-    """Mở việc như người dùng: vào ô Phối hợp, bấm dòng có số ký hiệu (lượt thử 11/11/2026: mở thẳng
-    /work/unit/detail/1/<id>?statustype=cooperate thì thanh dưới chỉ có Giao xử lý · Tiện ích · Quay lại).
+    """Mở việc như người dùng: vào ô Phối hợp, lọc MỘT cột (Số đến, rồi Số văn bản — mỗi lần trên trang tải lại, lượt thử 5
+    11/11/2026: lọc chồng hai cột ra 0 dòng), bấm dòng tìm được. Mở thẳng /work/unit/detail/1/<id> thì trang không có nút.
     Bấm một dòng của danh sách chỉ là mở trang, không phải thao tác hồ sơ. Trả True nếu đã mở được."""
-    page.goto(PH_DS_URL, wait_until="domcontentloaded", timeout=90000)
-    page.wait_for_timeout(4000)
-    for _ in range(30):
-        if not _egov_dang_tai(page):
-            break
-        page.wait_for_timeout(1500)
-    if not (_ph_loc(page, v.get("so_den") or "", "Số đến")
-            and page.locator("tbody tr:visible", has_text=v.get("so_den") or "§").count()):
-        _ph_loc(page, v.get("so") or "")
-    if anh:
-        page.screenshot(path=str(anh("2a-danh-sach")))
-    cu = page.url
-    for khoa in [k for k in (v.get("so_den"), v.get("so"), (v.get("trich_yeu") or "")[:40]) if k]:
-        dong = page.locator("tr:visible", has_text=khoa)
+    for cot, gia_tri in (("Số đến", v.get("so_den")), ("Số văn bản", v.get("so"))):
+        if not gia_tri:
+            continue
+        page.goto(PH_DS_URL, wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(4000)
+        for _ in range(30):
+            if not _egov_dang_tai(page):
+                break
+            page.wait_for_timeout(1500)
+        if not _ph_loc(page, gia_tri, cot):
+            continue
+        dong = page.locator("tbody tr:visible", has_text=gia_tri)
+        if anh:
+            page.screenshot(path=str(anh("2a-danh-sach")))
         if not dong.count():
             continue
+        cu = page.url
         lk = dong.first.locator("a:visible")
         try:
             (lk.first if lk.count() else dong.first.locator("td").nth(2)).click(timeout=8000)
@@ -4745,6 +4746,7 @@ def _ph_mo_tu_danh_sach(page, v, anh=None):
                 break
             page.wait_for_timeout(500)
         if page.url != cu:
+            log(f"    [phối hợp] mở {v.get('so')} từ danh sách (lọc {cot})")
             return True
     return False
 
