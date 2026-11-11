@@ -4634,7 +4634,8 @@ def _ph_viec(x):
             "trich_yeu": re.sub(r"\s+", " ", str(vb.get("abridgment") or "")).strip(),
             "ten_nhiem_vu": re.sub(r"\s+", " ", str(x.get("content") or "")).strip()[:300],
             "nguoi_giao": nguoi_giao, "phu_trach": _ph_nguoi(x, "Phụ trách"), "xu_ly_chinh": _ph_nguoi(x, "Xử lý chính"),
-            "han": _ngay_vn(x.get("deadLineDate")), "tep": [], "ket_qua": "", "ghi_chu": ""}
+            "han": _ngay_vn(x.get("deadLineDate")), "phoi_hop": _ph_nguoi(x, "Phối hợp"),
+            "tep": [], "ket_qua": "", "ghi_chu": ""}
 
 
 def _ph_md(rows, ngay):
@@ -4651,10 +4652,52 @@ def _ph_md(rows, ngay):
     return "\n".join(dong) + "\n"
 
 
+PH_DS_URL = EGOV_GOC + "/work/unit/main/1?statustype=cooperate"
+
+
+def _ph_mo_tu_danh_sach(page, v, anh=None):
+    """Mở việc như người dùng: vào ô Phối hợp, bấm dòng có số ký hiệu (lượt thử 11/11/2026: mở thẳng
+    /work/unit/detail/1/<id>?statustype=cooperate thì thanh dưới chỉ có Giao xử lý · Tiện ích · Quay lại).
+    Bấm một dòng của danh sách chỉ là mở trang, không phải thao tác hồ sơ. Trả True nếu đã mở được."""
+    page.goto(PH_DS_URL, wait_until="domcontentloaded", timeout=90000)
+    page.wait_for_timeout(4000)
+    for _ in range(30):
+        if not _egov_dang_tai(page):
+            break
+        page.wait_for_timeout(1500)
+    if anh:
+        page.screenshot(path=str(anh("2a-danh-sach")))
+    cu = page.url
+    for khoa in [k for k in (v.get("so"), v.get("so_den"), (v.get("trich_yeu") or "")[:40]) if k]:
+        dong = page.locator("tr:visible", has_text=khoa)
+        if not dong.count():
+            continue
+        lk = dong.first.locator("a:visible")
+        try:
+            (lk.first if lk.count() else dong.first.locator("td").nth(2)).click(timeout=8000)
+        except Exception:
+            continue
+        for _ in range(20):
+            if page.url != cu:
+                break
+            page.wait_for_timeout(500)
+        if page.url != cu:
+            return True
+    return False
+
+
 def _ph_bam_hoan_thanh(page, v, anh=None):
-    """Mở trang chi tiết nhiệm vụ phối hợp, kiểm số ký hiệu, bấm Hoàn thành phối hợp -> Đồng ý!. Trả ghi chú các bước."""
-    page.goto(f"{EGOV_GOC}/work/unit/detail/1/{v['id']}?statustype=cooperate", wait_until="domcontentloaded",
-              timeout=90000)
+    """Mở trang chi tiết nhiệm vụ phối hợp (bấm từ danh sách, không được thì mở thẳng), kiểm số ký hiệu, bấm Hoàn thành
+    phối hợp -> Đồng ý!. Trả ghi chú các bước."""
+    tu_ds = False
+    try:
+        tu_ds = _ph_mo_tu_danh_sach(page, v, anh)
+    except Exception as e:
+        log("    [phối hợp] mở từ danh sách lỗi:", str(e)[:120])
+    if not tu_ds:
+        page.goto(f"{EGOV_GOC}/work/unit/detail/1/{v['id']}?statustype=cooperate", wait_until="domcontentloaded",
+                  timeout=90000)
+    v["url_mo"] = page.url
     nut = page.get_by_role("button", name=NUT_HOAN_THANH_PH, exact=True)
     for _ in range(60):
         if not (nut.count() and nut.first.is_visible()):
@@ -4672,7 +4715,9 @@ def _ph_bam_hoan_thanh(page, v, anh=None):
     if v["so"] and bo_dau(v["so"]).replace(" ", "")[:12] not in bo_dau(chu).replace(" ", ""):
         raise RuntimeError(f"trang không có số ký hiệu {v['so']} - không bấm")
     if not (nut.count() and nut.first.is_visible()):
-        raise RuntimeError(f"không thấy nút '{NUT_HOAN_THANH_PH}'")
+        nut_co = page.locator("button:visible, a.btn:visible").all_inner_texts()
+        raise RuntimeError(f"không thấy nút '{NUT_HOAN_THANH_PH}' (mở {'từ danh sách' if tu_ds else 'thẳng'}: {page.url}; "
+                           f"nút trên trang: {', '.join(t.strip() for t in nut_co if t.strip())[:200]})")
     nut.first.click(timeout=10000)
     dy = page.get_by_role("button", name=re.compile(r"^\s*Đồng ý!?\s*$"))
     for _ in range(20):
@@ -4755,6 +4800,13 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                 log("[phối hợp] không đọc được danh sách ô Phối hợp qua API - dừng")
                 (luu_vao / "README.md").write_text("Không đọc được danh sách ô Phối hợp (API).\n", encoding="utf-8")
                 return 0, 0
+            def _gon(o):
+                if isinstance(o, dict):
+                    return {k: _gon(w) for k, w in o.items()
+                            if k not in ("userName", "phoneNumber", "email", "attachments", "filePath")}
+                return [_gon(w) for w in o] if isinstance(o, list) else o
+            (luu_vao / "api-phoi-hop.json").write_text(json.dumps(_gon(ds[:5]), ensure_ascii=False, indent=1),
+                                                       encoding="utf-8")
             hang = [x for x in ds if str(x.get("id")) not in da_bam]
             log(f"[phối hợp] ô Phối hợp có {len(ds)} việc, chưa bấm {len(hang)}; lượt này tối đa {toi_da or 'hết'}")
             if toi_da:
@@ -4898,6 +4950,8 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
             ctx.close()
     for v in rows:
         v.pop("_anh", None)
+        if v.get("url_mo") and v.get("ket_qua") != "da-hoan-thanh":
+            v["ghi_chu"] = (v.get("ghi_chu") or "") + f" [trang: {v['url_mo']}]"
     moi_id = {v["id"] for v in rows}
     tat_ca = [v for v in cu if isinstance(v, dict) and v.get("id") not in moi_id] + rows
     (luu_vao / "ket-qua.json").write_text(json.dumps(tat_ca, ensure_ascii=False, indent=1), encoding="utf-8")
