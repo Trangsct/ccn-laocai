@@ -4381,7 +4381,7 @@ def _lay_lui_liet_ke(page, tu_ngay) -> dict:
     return ra
 
 
-def _lay_lui_day(cho_ghi: dict, muc_moi: dict, token, ghi_chu) -> int:
+def _lay_lui_day(cho_ghi: dict, muc_moi: dict, token, ghi_chu, tien_to="Bê văn bản cũ egov1") -> int:
     """Một commit: các .md + danh-muc-<năm>.json (đọc LẠI bản mới nhất trên GitHub rồi trộn, để không đè mục lượt
     quét ngày vừa ghi)."""
     if not cho_ghi and not muc_moi:
@@ -4398,7 +4398,7 @@ def _lay_lui_day(cho_ghi: dict, muc_moi: dict, token, ghi_chu) -> int:
             elif not dm[i].get("tep"):
                 dm[i].update({k: v for k, v in m.items() if v not in ("", None, [])})
         tep[duong] = json.dumps(dm, ensure_ascii=False, indent=1).encode()
-    so = gh_mot_commit(REPO_TRI_THUC, tep, f"Bê văn bản cũ egov1: {ghi_chu}", token)
+    so = gh_mot_commit(REPO_TRI_THUC, tep, f"{tien_to}: {ghi_chu}", token)
     cho_ghi.clear()
     muc_moi.clear()
     return so
@@ -4578,6 +4578,342 @@ def lay_lui(tu_ngay=None, so_gio=LAY_LUI_GIO, toi_da=None, moi_vong=None):
     return 0
 
 
+# ---------------------------------------------------------------- VIỆC PHỐI HỢP (Bạn yêu cầu 11/11/2026)
+# Bạn: "với các nhiệm vụ phối hợp thì bạn cho bot vào tải file về, sau đó bấm hoàn thành phối hợp giúp tôi".
+# Hợp đồng: vlncn-laocai/theo-doi/egov/phoi-hop/README.md. Đây là NGOẠI LỆ THỨ HAI của quy ước "bot không bấm nút
+# thao tác hồ sơ" (sau "Duyệt và kết thúc nhiệm vụ" 05/11/2026): CHỈ ô Phối hợp, CHỈ nút "Hoàn thành phối hợp" rồi
+# "Đồng ý!" trong hộp xác nhận. Thứ tự bắt buộc: tải toàn văn + đính kèm -> ĐẨY bản chữ lên kho -> mới bấm. Văn bản có
+# Độ mật khác "Thường": không tải, không bấm. Việc bấm đầu tiên không rời ô Phối hợp thì DỪNG, không bấm việc khác.
+# Không bao giờ bấm Giao xử lý, Tiện ích, không ghi ý kiến.
+PH_THU_MUC = "theo-doi/egov/phoi-hop"
+NUT_HOAN_THANH_PH = "Hoàn thành phối hợp"
+PH_MOI_COMMIT = 40
+
+
+def _ph_danh_sach(page):
+    """Mọi nhiệm vụ ô Phối hợp (API type=cooperate, lật trang tới khi hết dòng mới). None nếu API không trả."""
+    ra, thay = [], set()
+    for trang in range(1, 21):
+        d = _egov_api(page, f"{EGOV_GATEWAY}/work/api/works/v1?page={trang}&length=200&term=&archiveSearch=false"
+                            f"&type=cooperate&isLoading=true&defer=true&skip={(trang - 1) * 200}", "nhiệm vụ phối hợp")
+        ds = (d or {}).get("data") if isinstance(d, dict) else None
+        if not isinstance(ds, list):
+            return None if trang == 1 else ra
+        moi = [x for x in ds if isinstance(x, dict) and str(x.get("id")) not in thay]
+        for x in moi:
+            thay.add(str(x.get("id")))
+        ra += moi
+        tong = _lay(d, "recordsTotal", "recordsFiltered", "total", "totalCount")
+        if not moi or len(ds) < 200 or (str(tong).isdigit() and len(ra) >= int(tong)):
+            break
+    return ra
+
+
+def _ph_con_trong_o(page, wid):
+    """True/False: nhiệm vụ wid còn trong ô Phối hợp; None nếu không đọc được."""
+    ds = _ph_danh_sach(page)
+    return None if ds is None else any(str(x.get("id")) == str(wid) for x in ds)
+
+
+def _ph_nguoi(x, vai):
+    ten = []
+    for u in (x.get("userApis") or []) + (x.get("userMonitors") or []):
+        if isinstance(u, dict) and bo_dau(u.get("followRoleName") or "") == bo_dau(vai) and u.get("fullName"):
+            if u["fullName"] not in ten:
+                ten.append(u["fullName"])
+    return ", ".join(ten)
+
+
+def _ph_viec(x):
+    """Một nhiệm vụ API -> bản ghi ket-qua.json (các trường theo hợp đồng)."""
+    vb = (x.get("documentApis") or [{}])[0] if isinstance(x.get("documentApis"), list) and x.get("documentApis") else {}
+    gui = x.get("userSender")
+    nguoi_giao = (gui.get("fullName") if isinstance(gui, dict) else str(gui or "")) or _ph_nguoi(x, "Người giao")
+    return {"id": str(x.get("id", "")), "so_den": str(vb.get("number") or ""), "so": str(vb.get("symbol") or ""),
+            "ngay": _ngay_vn(vb.get("publishTime")), "don_vi": str(vb.get("documentSentCompany") or ""),
+            "trich_yeu": re.sub(r"\s+", " ", str(vb.get("abridgment") or "")).strip(),
+            "ten_nhiem_vu": re.sub(r"\s+", " ", str(x.get("content") or "")).strip()[:300],
+            "nguoi_giao": nguoi_giao, "phu_trach": _ph_nguoi(x, "Phụ trách"), "xu_ly_chinh": _ph_nguoi(x, "Xử lý chính"),
+            "han": _ngay_vn(x.get("deadLineDate")), "tep": [], "ket_qua": "", "ghi_chu": ""}
+
+
+def _ph_md(rows, ngay):
+    dong = [f"# Việc phối hợp trên egov1 — {'/'.join(reversed(ngay.split('-')))}", "",
+            "Bot tải toàn văn + đính kèm (chữ ở `theo-doi/<năm>/`, tệp gốc trên máy) rồi bấm **Hoàn thành phối hợp → Đồng ý!**"
+            " (Bạn yêu cầu 11/11/2026; hợp đồng `theo-doi/egov/phoi-hop/README.md`).", "",
+            "| # | Số đến | Số văn bản | Ngày | Đơn vị | Trích yếu | Nhiệm vụ | Người giao | Phụ trách | Xử lý chính | Hạn | Kết quả | Ghi chú |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    c = lambda s: str(s or "").replace("|", "/").replace("\n", " ")
+    for i, v in enumerate(rows, 1):
+        dong.append(f"| {i} | {c(v['so_den'])} | {c(v['so'])} | {c(v['ngay'])} | {c(v['don_vi'])} | {c(v['trich_yeu'])[:160]} | "
+                    f"{c(v['ten_nhiem_vu'])[:80]} | {c(v['nguoi_giao'])} | {c(v['phu_trach'])} | {c(v['xu_ly_chinh'])} | "
+                    f"{c(v['han'])} | {c(v['ket_qua'])} | {c(v['ghi_chu'])} |")
+    return "\n".join(dong) + "\n"
+
+
+def _ph_bam_hoan_thanh(page, v, anh=None):
+    """Mở trang chi tiết nhiệm vụ phối hợp, kiểm số ký hiệu, bấm Hoàn thành phối hợp -> Đồng ý!. Trả ghi chú các bước."""
+    page.goto(f"{EGOV_GOC}/work/unit/detail/1/{v['id']}?statustype=cooperate", wait_until="domcontentloaded",
+              timeout=90000)
+    nut = page.get_by_role("button", name=NUT_HOAN_THANH_PH, exact=True)
+    for _ in range(60):
+        if not (nut.count() and nut.first.is_visible()):
+            nut = page.get_by_text(NUT_HOAN_THANH_PH, exact=True)
+        if nut.count() and nut.first.is_visible():
+            break
+        page.wait_for_timeout(1000)
+    for _ in range(20):
+        if not _egov_dang_tai(page):
+            break
+        page.wait_for_timeout(1000)
+    if anh:
+        page.screenshot(path=str(anh("2-truoc-bam")))
+    chu = page.locator("body").inner_text()
+    if v["so"] and bo_dau(v["so"]).replace(" ", "")[:12] not in bo_dau(chu).replace(" ", ""):
+        raise RuntimeError(f"trang không có số ký hiệu {v['so']} - không bấm")
+    if not (nut.count() and nut.first.is_visible()):
+        raise RuntimeError(f"không thấy nút '{NUT_HOAN_THANH_PH}'")
+    nut.first.click(timeout=10000)
+    dy = page.get_by_role("button", name=re.compile(r"^\s*Đồng ý!?\s*$"))
+    for _ in range(20):
+        if dy.count() and dy.first.is_visible():
+            break
+        page.wait_for_timeout(500)
+    if anh:
+        page.screenshot(path=str(anh("3-hop-xac-nhan")))
+    if not (dy.count() and dy.first.is_visible()):
+        raise RuntimeError("bấm nút nhưng không thấy hộp xác nhận có nút 'Đồng ý!'")
+    # chỉ bấm "Đồng ý!" của đúng hộp "Hoàn thành phối hợp! Xác nhận" (nút trên trang cũng có chữ "Hoàn thành phối hợp"
+    # nên kiểm trong hộp, hoặc tiêu đề có dấu "!")
+    hop = page.locator(".swal2-popup:visible, [role=dialog]:visible, .modal.show, .modal-dialog:visible, .ant-modal:visible, "
+                       ".p-dialog:visible, .mat-dialog-container:visible, .el-dialog:visible")
+    if hop.count():
+        if "hoan thanh phoi hop" not in bo_dau(hop.first.inner_text()):
+            raise RuntimeError("hộp xác nhận không nói 'Hoàn thành phối hợp' - không bấm Đồng ý")
+        trong = hop.first.get_by_role("button", name=re.compile(r"^\s*Đồng ý!?\s*$"))
+        if trong.count() and trong.first.is_visible():
+            dy = trong
+    elif not re.search(r"Hoàn thành phối hợp\s*!", page.locator("body").inner_text()):
+        raise RuntimeError("không nhận ra hộp 'Hoàn thành phối hợp! Xác nhận' - không bấm Đồng ý")
+    dy.first.click(timeout=8000)
+    page.wait_for_timeout(4000)
+    for _ in range(20):
+        if not _egov_dang_tai(page):
+            break
+        page.wait_for_timeout(1500)
+    if anh:
+        page.screenshot(path=str(anh("4-sau-bam")))
+    return f"{NUT_HOAN_THANH_PH} -> Đồng ý!"
+
+
+def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
+    """--phoi-hop: đọc ô Phối hợp, tải toàn văn + đính kèm từng việc, đẩy bản chữ lên kho, rồi bấm Hoàn thành phối hợp.
+    toi_da: số việc tối đa lượt này (lượt thử 3); chup_anh: chụp ảnh n việc đầu; bam=False: chỉ tải, không bấm.
+    Kết quả: luu_vao/ket-qua.json, README.md, anh/ -> theo-doi/egov/phoi-hop/<ngày>/. Trả (đã hoàn thành, số việc lượt này)."""
+    from playwright.sync_api import sync_playwright
+    ngay = date.today().isoformat()
+    luu_vao = Path(luu_vao or (BOT_HOME / "ket-qua" / "phoi-hop" / ngay))
+    luu_vao.mkdir(parents=True, exist_ok=True)
+    token = doc_config().get("github_token", "")
+    if HE_THONG != "egov" or not token:
+        log("Phối hợp: chỉ chạy trên egov1 và cần github_token")
+        return 0, 0
+    da_bam, sha_bam = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/_da-bam.json", token, {})
+    cu, _ = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/{ngay}/ket-qua.json", token, [])
+    cu = cu.get("viec", []) if isinstance(cu, dict) else cu
+    kho_goc = _lay_lui_kho_goc()
+    try:
+        cat_goc = shutil.disk_usage(kho_goc.anchor or str(kho_goc)).free > LAY_LUI_DIA_TRONG_GB * 1024 ** 3
+    except Exception:
+        cat_goc = False
+    co_tep, ten_da_dung, nam_da_doc = {}, set(), set()
+
+    def doc_dm(nam):
+        if nam in nam_da_doc:
+            return
+        nam_da_doc.add(nam)
+        dm, _ = _json_gh(REPO_TRI_THUC, f"{THU_MUC_TRI_THUC}/danh-muc-{nam}.json", token, [])
+        for m in dm:
+            if m.get("tep"):
+                co_tep[_lay_lui_khoa(m)] = m["tep"]
+                ten_da_dung.add(m["tep"].rsplit(".", 1)[0])
+
+    rows, xong = [], 0
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            (luu_vao / "README.md").write_text("Không mở được egov1 (phiên đăng nhập?)\n", encoding="utf-8")
+            return 0, 0
+        ctx, page = mo
+        _egov_nghe_api(page)
+        page.on("dialog", lambda dlg: dlg.dismiss())        # hộp confirm của trình duyệt: không tự đồng ý
+        try:
+            page.goto(EGOV_NHIEM_VU, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(6000)
+            ds = _ph_danh_sach(page)
+            if ds is None:
+                log("[phối hợp] không đọc được danh sách ô Phối hợp qua API - dừng")
+                (luu_vao / "README.md").write_text("Không đọc được danh sách ô Phối hợp (API).\n", encoding="utf-8")
+                return 0, 0
+            hang = [x for x in ds if str(x.get("id")) not in da_bam]
+            log(f"[phối hợp] ô Phối hợp có {len(ds)} việc, chưa bấm {len(hang)}; lượt này tối đa {toi_da or 'hết'}")
+            if toi_da:
+                hang = hang[:int(toi_da)]
+            # ---- bước 1: tải, ghi chữ (chưa bấm gì)
+            cho_ghi, muc_moi, cho_bam = {}, {}, []
+            for i, x in enumerate(hang, 1):
+                v = _ph_viec(x)
+                rows.append(v)
+                anh = (lambda buoc, i=i, v=v: (luu_vao / "anh").mkdir(exist_ok=True) or
+                       luu_vao / "anh" / f"{i:02d}-{lam_sach_vn(v['so'])[:30] or v['id'][:8]}-{buoc}.png") \
+                    if i <= int(chup_anh or 0) else None
+                v["_anh"] = anh
+                docs = [d for d in (x.get("documentApis") or []) if isinstance(d, dict) and d.get("id")]
+                if not docs:
+                    v.update(ket_qua="loi-tai", ghi_chu="nhiệm vụ không kèm văn bản - không bấm, Bạn xem trên egov1")
+                    continue
+                du = True
+                for d in docs:
+                    if d.get("isOutgoingDocument"):
+                        v["ghi_chu"] += f"{d.get('symbol')}: văn bản đi, bot chưa có đường mở; "
+                        du = False
+                        continue
+                    vb = {"so_ky_hieu": str(d.get("symbol") or f"ma-{str(d['id'])[:8]}"),
+                          "trich_yeu": re.sub(r"\s+", " ", str(d.get("abridgment") or "")).strip(),
+                          "ngay_ban_hanh": _ngay_vn(d.get("publishTime")), "don_vi": str(d.get("documentSentCompany") or ""),
+                          "nguoi_ky": "", "loai": "", "nguon": "den", "id_data360x": str(d["id"]), "he_thong": "egov",
+                          "url_chi_tiet": f"{EGOV_GOC}/document/xem-den-xem?documentId={d['id']}&t=0&hxl="}
+                    nam = (parse_ngay(vb["ngay_ban_hanh"]) or date.today()).year
+                    doc_dm(nam)
+                    k = _lay_lui_khoa(vb)
+                    if not _egov_kiem_mat_truoc(page, vb):
+                        if "do_mat" in vb:
+                            v.update(ket_qua="bo-qua-mat", ghi_chu=f"Độ mật: {vb['do_mat'] or 'mật'} - không tải, không bấm")
+                        else:
+                            v["ghi_chu"] += f"{vb['so_ky_hieu']}: không mở được trang văn bản; "
+                            du = False
+                        break
+                    if k in co_tep:                       # chữ đã có trên kho (lượt quét/bê văn bản cũ)
+                        v["tep"].append(co_tep[k])
+                        if anh:
+                            page.screenshot(path=str(anh("1-van-ban")))
+                        continue
+                    try:
+                        pdf = _egov_tai_pdf(ctx, page, vb)
+                        dinh_kem = _egov_tai_dinh_kem(ctx, page, vb)
+                    except Exception as e:
+                        log(f"  [phối hợp] lỗi tải {vb['so_ky_hieu']}: {e!r}"[:200])
+                        pdf, dinh_kem = None, []
+                    if anh:
+                        page.screenshot(path=str(anh("1-van-ban")))
+                    so_tep = (1 if pdf else 0) + sum(1 for t in dinh_kem if t.get("bytes"))
+                    can = max(1, len([a for a in (d.get("attachments") or []) if isinstance(a, dict)]))
+                    if so_tep < can:
+                        v["ghi_chu"] += f"{vb['so_ky_hieu']}: tải được {so_tep}/{can} tệp; "
+                        du = False
+                        continue
+                    ct = _egov_api_chi_tiet(page, vb)
+                    linh_vuc = xep_linh_vuc(vb)
+                    thu_muc = f"{THU_MUC_TRI_THUC}/{nam}"
+                    ten_goc = lam_sach_vn(vb["so_ky_hieu"]) or f"vb-{vb['id_data360x'][:12]}"
+                    if f"{thu_muc}/{ten_goc}" in ten_da_dung:
+                        ten_goc += "_" + vb["id_data360x"][:12]
+                    dau = [f"# {vb['so_ky_hieu']} - {vb['trich_yeu']}", "",
+                           f"- Ngày ban hành: {vb['ngay_ban_hanh']} | Nguồn: văn bản đến (nhiệm vụ phối hợp egov1)"
+                           f" | Đơn vị: {vb['don_vi']}",
+                           f"- Nhiệm vụ phối hợp: {v['ten_nhiem_vu']} | Xử lý chính: {v['xu_ly_chinh']} | Hạn: {v['han']}",
+                           f"- Lĩnh vực: {', '.join(linh_vuc)}",
+                           f"- Bản gốc trên egov1: {vb['url_chi_tiet']}"]
+                    if ct.get("but_phe"):
+                        dau += ["", "## Bút phê, chỉ đạo trên egov1", ""] + [f"> {y}" for y in ct["but_phe"].splitlines()]
+                    dau += ["", "> Chữ dưới đây lấy từ lớp text của PDF. Số và ngày ở trường ký số có thể "
+                            "không nằm trong lớp text - lấy theo các dòng trên, hoặc mở bản gốc."]
+                    goi, ten_chinh = dong_goi_ho_so(vb, ten_goc, pdf, dinh_kem, dau)
+                    md = [(t, b) for t, b in goi if t.lower().endswith(".md")]
+                    if not any(t == ten_goc + ".md" for t, _ in md):
+                        md.append((ten_goc + ".md", ("\n".join(dau) + "\n\n*(Bản scan, không có lớp chữ. Tệp gốc: "
+                                   + (f"{kho_goc}\\{nam}\\{ten_chinh}" if cat_goc else "mở trên egov1") + ")*\n").encode()))
+                    for t, b in md:
+                        cho_ghi[f"{thu_muc}/{t}"] = b
+                    if cat_goc:
+                        try:
+                            (kho_goc / str(nam)).mkdir(parents=True, exist_ok=True)
+                            for t, b in goi:
+                                if not t.lower().endswith(".md"):
+                                    (kho_goc / str(nam) / t).write_bytes(b)
+                        except Exception as e:
+                            log("  [phối hợp] không cất được tệp gốc:", str(e)[:120])
+                    duong = f"{thu_muc}/{ten_goc}.md"
+                    ten_da_dung.add(f"{thu_muc}/{ten_goc}")
+                    muc_moi.setdefault(nam, {})[k] = {
+                        **{y: vb.get(y, "") for y in ("so_ky_hieu", "ngay_ban_hanh", "trich_yeu", "don_vi", "nguoi_ky",
+                                                      "nguon", "url_chi_tiet")},
+                        "loai": ct.get("loai", ""), "linh_vuc": linh_vuc, "gom_luc": ngay, "tep": duong}
+                    co_tep[k] = duong
+                    v["tep"].append(duong)
+                if v["ket_qua"]:
+                    continue
+                if not du:
+                    v["ket_qua"] = "loi-tai"
+                    v["ghi_chu"] = (v["ghi_chu"] + "không bấm").strip()
+                    continue
+                cho_bam.append(v)
+                if sum(len(m) for m in muc_moi.values()) >= PH_MOI_COMMIT:
+                    try:
+                        _lay_lui_day(cho_ghi, muc_moi, token, f"phối hợp, +{len(cho_bam)} việc", "Việc chờ xử lý egov1")
+                    except Exception as e:
+                        log("  [phối hợp] đẩy chữ lỗi:", str(e)[:150])
+                        break
+            # ---- đẩy phần chữ còn lại; chưa đẩy được thì KHÔNG bấm việc nào chưa lên kho
+            try:
+                _lay_lui_day(cho_ghi, muc_moi, token, f"phối hợp {ngay}: chữ {len(cho_bam)} việc", "Việc chờ xử lý egov1")
+            except Exception as e:
+                log("  [phối hợp] đẩy chữ lỗi - không bấm:", str(e)[:150])
+                for v in cho_bam:
+                    v.update(ket_qua="loi-tai", ghi_chu="chưa ghi được bản chữ lên kho - không bấm")
+                cho_bam = []
+            # ---- bước 2: bấm Hoàn thành phối hợp
+            for j, v in enumerate(cho_bam):
+                if not bam:
+                    v.update(ket_qua="loi-bam", ghi_chu="đã tải; lượt chạy với bam=False nên chưa bấm")
+                    continue
+                try:
+                    v["ghi_chu"] = "đã bấm: " + _ph_bam_hoan_thanh(page, v, v["_anh"])
+                    con = _ph_con_trong_o(page, v["id"])
+                    if con is False:
+                        v["ket_qua"] = "da-hoan-thanh"
+                        da_bam[v["id"]] = {"so": v["so"], "luc": datetime.now().isoformat(timespec="minutes")}
+                        xong += 1
+                    else:
+                        v.update(ket_qua="loi-bam", ghi_chu=v["ghi_chu"] + ("; việc vẫn còn trong ô Phối hợp" if con
+                                                                             else "; không kiểm lại được qua API"))
+                except Exception as e:
+                    v.update(ket_qua="loi-bam", ghi_chu=str(e)[:200])
+                log(f"  [phối hợp] {v['so']}: {v['ket_qua']} - {v['ghi_chu']}")
+                if j == 0 and v["ket_qua"] != "da-hoan-thanh":
+                    for w in cho_bam[1:]:
+                        w.update(ket_qua="loi-bam", ghi_chu="đã tải; DỪNG vì việc bấm đầu tiên không thành - chờ Claude xem ảnh")
+                    break
+        finally:
+            ctx.close()
+    for v in rows:
+        v.pop("_anh", None)
+    moi_id = {v["id"] for v in rows}
+    tat_ca = [v for v in cu if isinstance(v, dict) and v.get("id") not in moi_id] + rows
+    (luu_vao / "ket-qua.json").write_text(json.dumps(tat_ca, ensure_ascii=False, indent=1), encoding="utf-8")
+    (luu_vao / "README.md").write_text(_ph_md(tat_ca, ngay), encoding="utf-8")
+    if day_len:
+        so = _day_thu_muc(token, luu_vao, f"{PH_THU_MUC}/{ngay}", f"Việc chờ xử lý egov1 {ngay}: phối hợp {xong}/{len(rows)} việc")
+        try:
+            gh_ghi(REPO_TRI_THUC, f"{PH_THU_MUC}/_da-bam.json", json.dumps(da_bam, ensure_ascii=False, indent=1).encode(),
+                   f"Việc chờ xử lý egov1 {ngay}: sổ phối hợp đã bấm", token, sha_bam)
+        except Exception as e:
+            log("  [phối hợp] không ghi được _da-bam.json:", str(e)[:120])
+        log(f"[phối hợp] đã đẩy {so} tệp lên vlncn-laocai/{PH_THU_MUC}/{ngay}/")
+    telegram(f"Bot egov1 phối hợp: bấm hoàn thành {xong}/{len(rows)} việc.")
+    return xong, len(rows)
+
+
 HE_THONG = "data360x"
 TEN_HE_THONG = "Data360X"
 
@@ -4636,6 +4972,9 @@ def main():
     ap.add_argument("--lay-lui", action="store_true",
                     help="(egov1) bê văn bản cũ: đi lùi trong Tra cứu, lấy toàn văn văn bản chưa có lên kho riêng tư (chạy đêm)")
     ap.add_argument("--tu-ngay", help="(--lay-lui) lấy từ ngày dd/mm/yyyy (mặc định 01/01/2025)")
+    ap.add_argument("--phoi-hop", type=int, nargs="?", const=0, metavar="TOI_DA",
+                    help="(egov1) ô Phối hợp: tải toàn văn từng việc rồi bấm Hoàn thành phối hợp (TOI_DA việc, 0 = hết)")
+    ap.add_argument("--chup-anh", type=int, default=0, help="(--phoi-hop) chụp ảnh N việc đầu")
     ap.add_argument("--gio", type=float, default=LAY_LUI_GIO, help="(--lay-lui) chạy tối đa bao nhiêu giờ")
     ap.add_argument("--gom-toi-da", type=int, default=TOI_DA_PDF_MOI_LUOT,
                     help=f"tối đa bao nhiêu tệp tri thức tải về mỗi lượt (mặc định {TOI_DA_PDF_MOI_LUOT})")
@@ -4657,6 +4996,9 @@ def main():
             return khao_sat()
         if a.lay_lui:
             return lay_lui(parse_ngay(a.tu_ngay or ""), so_gio=a.gio)
+        if a.phoi_hop is not None:
+            xong, tong = phoi_hop(toi_da=a.phoi_hop or None, chup_anh=a.chup_anh)
+            return 0 if xong == tong else 1
         if a.viec:
             return viec_cho_xu_ly(None if a.luu == "kem-theo" else a.luu, so_ngay=a.ngay or 30)
         if a.lay:
