@@ -4655,6 +4655,58 @@ def _ph_md(rows, ngay):
 PH_DS_URL = EGOV_GOC + "/work/unit/main/1?statustype=cooperate"
 
 
+_JS_PH_O_LOC = r"""(ten) => {
+  const norm = s => (s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  for (const th of document.querySelectorAll('thead th, thead td')) {
+    if (norm(th.innerText) !== norm(ten)) continue;
+    const tr = th.parentElement, i = Array.from(tr.children).indexOf(th);
+    for (let r = tr.nextElementSibling; r; r = r.nextElementSibling) {
+      const o = r.children[i] && r.children[i].querySelector('input');
+      if (o) { o.setAttribute('data-ph-loc', '1'); return true; }
+    }
+  }
+  return false;
+}"""
+
+
+def _ph_loc(page, so):
+    """Gõ số ký hiệu vào ô lọc cột "Số văn bản" của danh sách ô Phối hợp (mỗi trang 10 dòng: lượt thử 11/11/2026 không thấy
+    955/CV-UBND, 48/QĐ-XPVPHC trên trang 1 nên phải mở thẳng, trang mở thẳng không có nút). Gõ vào ô lọc chỉ là tìm kiếm."""
+    if not so:
+        return False
+    try:
+        if not page.evaluate(_JS_PH_O_LOC, "Số văn bản"):
+            return False
+        o = page.locator("input[data-ph-loc='1']").first
+        o.fill(so)
+        o.press("Enter")
+        page.wait_for_timeout(2500)
+        for _ in range(20):
+            if not _egov_dang_tai(page):
+                break
+            page.wait_for_timeout(1000)
+        return True
+    except Exception as e:
+        log("    [phối hợp] không lọc được danh sách:", str(e)[:120])
+        return False
+
+
+def _ph_con_tren_danh_sach(page, so):
+    """True/False: còn dòng có số ký hiệu `so` trong ô Phối hợp (giao diện, đã lọc); None nếu không kiểm được."""
+    try:
+        page.goto(PH_DS_URL, wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(4000)
+        for _ in range(30):
+            if not _egov_dang_tai(page):
+                break
+            page.wait_for_timeout(1500)
+        if not _ph_loc(page, so):
+            return None
+        return page.locator("tbody tr:visible", has_text=so).count() > 0
+    except Exception:
+        return None
+
+
 def _ph_mo_tu_danh_sach(page, v, anh=None):
     """Mở việc như người dùng: vào ô Phối hợp, bấm dòng có số ký hiệu (lượt thử 11/11/2026: mở thẳng
     /work/unit/detail/1/<id>?statustype=cooperate thì thanh dưới chỉ có Giao xử lý · Tiện ích · Quay lại).
@@ -4665,6 +4717,7 @@ def _ph_mo_tu_danh_sach(page, v, anh=None):
         if not _egov_dang_tai(page):
             break
         page.wait_for_timeout(1500)
+    _ph_loc(page, v.get("so") or "")
     if anh:
         page.screenshot(path=str(anh("2a-danh-sach")))
     cu = page.url
@@ -4741,7 +4794,15 @@ def _ph_bam_hoan_thanh(page, v, anh=None):
     elif not re.search(r"Hoàn thành phối hợp\s*!", page.locator("body").inner_text()):
         raise RuntimeError("không nhận ra hộp 'Hoàn thành phối hợp! Xác nhận' - không bấm Đồng ý")
     dy.first.click(timeout=8000)
-    page.wait_for_timeout(4000)
+    v["thong_bao"] = ""
+    for _ in range(24):                     # ảnh lượt thử 2 (11/11/2026): góc phải hiện "Báo cáo thành công"
+        chu = page.locator("body").inner_text()
+        m = re.search(r"[^\n]{0,40}thành công[^\n]{0,20}", chu)
+        if m:
+            v["thong_bao"] = m.group(0).strip()
+            break
+        page.wait_for_timeout(500)
+    page.wait_for_timeout(2000)
     for _ in range(20):
         if not _egov_dang_tai(page):
             break
@@ -4932,14 +4993,19 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                     continue
                 try:
                     v["ghi_chu"] = "đã bấm: " + _ph_bam_hoan_thanh(page, v, v["_anh"])
-                    con = _ph_con_trong_o(page, v["id"])
-                    if con is False:
+                    # API danh sách type=cooperate VẪN liệt kê việc đã bấm (lượt thử 2, 11/11/2026: 1684/UBND báo "Báo cáo
+                    # thành công", dòng biến khỏi danh sách nhưng API và ô đếm chưa đổi) -> chấm theo thông báo + giao diện.
+                    con = _ph_con_tren_danh_sach(page, v["so"]) if v["so"] else None
+                    tb = v.pop("thong_bao", "")
+                    if "thanh cong" in bo_dau(tb) or con is False:
                         v["ket_qua"] = "da-hoan-thanh"
+                        v["ghi_chu"] += f"; egov1 báo: {tb or '(không thấy thông báo)'}" + (
+                            "; dòng đã rời danh sách" if con is False else "; danh sách còn hiện dòng" if con else "")
                         da_bam[v["id"]] = {"so": v["so"], "luc": datetime.now().isoformat(timespec="minutes")}
                         xong += 1
                     else:
-                        v.update(ket_qua="loi-bam", ghi_chu=v["ghi_chu"] + ("; việc vẫn còn trong ô Phối hợp" if con
-                                                                             else "; không kiểm lại được qua API"))
+                        v.update(ket_qua="loi-bam", ghi_chu=v["ghi_chu"] + "; không thấy thông báo thành công" + (
+                            ", việc vẫn còn trong danh sách Phối hợp" if con else ""))
                 except Exception as e:
                     v.update(ket_qua="loi-bam", ghi_chu=str(e)[:200])
                 log(f"  [phối hợp] {v['so']}: {v['ket_qua']} - {v['ghi_chu']}")
