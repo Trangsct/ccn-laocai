@@ -4925,6 +4925,7 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                     v.update(ket_qua="loi-tai", ghi_chu="chưa ghi được bản chữ lên kho - không bấm")
                 cho_bam = []
             # ---- bước 2: bấm Hoàn thành phối hợp
+            bam_that = 0                                    # số việc đã thật sự bấm Đồng ý!
             for j, v in enumerate(cho_bam):
                 if not bam:
                     v.update(ket_qua="loi-bam", ghi_chu="đã tải; lượt chạy với bam=False nên chưa bấm")
@@ -4942,10 +4943,16 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                 except Exception as e:
                     v.update(ket_qua="loi-bam", ghi_chu=str(e)[:200])
                 log(f"  [phối hợp] {v['so']}: {v['ket_qua']} - {v['ghi_chu']}")
-                if j == 0 and v["ket_qua"] != "da-hoan-thanh":
-                    for w in cho_bam[1:]:
-                        w.update(ket_qua="loi-bam", ghi_chu="đã tải; DỪNG vì việc bấm đầu tiên không thành - chờ Claude xem ảnh")
-                    break
+                # Không thấy nút / hộp xác nhận lạ: bot chưa bấm gì, an toàn -> sang việc sau (lượt thử 11/11/2026: việc
+                # 955/CV-UBND không có nút, bot dừng nên chưa thử 1684/UBND vốn có nút). Đã bấm Đồng ý! mà việc chưa rời ô
+                # Phối hợp, và chưa có việc nào bấm thành công trước đó -> DỪNG, chờ Claude xem ảnh.
+                if v["ghi_chu"].startswith("đã bấm"):
+                    bam_that += 1
+                    if v["ket_qua"] != "da-hoan-thanh" and xong == 0:
+                        for w in cho_bam[j + 1:]:
+                            w.update(ket_qua="loi-bam",
+                                     ghi_chu="đã tải; DỪNG vì lần bấm đầu tiên không làm việc rời ô Phối hợp - chờ Claude xem ảnh")
+                        break
         finally:
             ctx.close()
     for v in rows:
