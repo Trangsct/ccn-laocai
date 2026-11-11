@@ -4669,13 +4669,14 @@ _JS_PH_O_LOC = r"""(ten) => {
 }"""
 
 
-def _ph_loc(page, so):
+def _ph_loc(page, so, cot="Số văn bản"):
     """Gõ số ký hiệu vào ô lọc cột "Số văn bản" của danh sách ô Phối hợp (mỗi trang 10 dòng: lượt thử 11/11/2026 không thấy
     955/CV-UBND, 48/QĐ-XPVPHC trên trang 1 nên phải mở thẳng, trang mở thẳng không có nút). Gõ vào ô lọc chỉ là tìm kiếm."""
     if not so:
         return False
     try:
-        if not page.evaluate(_JS_PH_O_LOC, "Số văn bản"):
+        page.evaluate("() => document.querySelectorAll('[data-ph-loc]').forEach(e => e.removeAttribute('data-ph-loc'))")
+        if not page.evaluate(_JS_PH_O_LOC, cot):
             return False
         o = page.locator("input[data-ph-loc='1']").first
         o.fill(so)
@@ -4691,20 +4692,27 @@ def _ph_loc(page, so):
         return False
 
 
-def _ph_con_tren_danh_sach(page, so):
-    """True/False: còn dòng có số ký hiệu `so` trong ô Phối hợp (giao diện, đã lọc); None nếu không kiểm được."""
-    try:
-        page.goto(PH_DS_URL, wait_until="domcontentloaded", timeout=90000)
-        page.wait_for_timeout(4000)
-        for _ in range(30):
-            if not _egov_dang_tai(page):
-                break
-            page.wait_for_timeout(1500)
-        if not _ph_loc(page, so):
-            return None
-        return page.locator("tbody tr:visible", has_text=so).count() > 0
-    except Exception:
-        return None
+def _ph_con_tren_danh_sach(page, v):
+    """True/False: việc v còn dòng trong ô Phối hợp (giao diện, lọc theo Số đến rồi Số văn bản); None nếu không lọc được."""
+    da_loc = False
+    for cot, gia_tri in (("Số đến", v.get("so_den")), ("Số văn bản", v.get("so"))):
+        if not gia_tri:
+            continue
+        try:
+            page.goto(PH_DS_URL, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_timeout(4000)
+            for _ in range(30):
+                if not _egov_dang_tai(page):
+                    break
+                page.wait_for_timeout(1500)
+            if not _ph_loc(page, gia_tri, cot):
+                continue
+            da_loc = True
+            if page.locator("tbody tr:visible", has_text=gia_tri).count() > 0:
+                return True
+        except Exception:
+            continue
+    return False if da_loc else None
 
 
 def _ph_mo_tu_danh_sach(page, v, anh=None):
@@ -4717,11 +4725,13 @@ def _ph_mo_tu_danh_sach(page, v, anh=None):
         if not _egov_dang_tai(page):
             break
         page.wait_for_timeout(1500)
-    _ph_loc(page, v.get("so") or "")
+    if not (_ph_loc(page, v.get("so_den") or "", "Số đến")
+            and page.locator("tbody tr:visible", has_text=v.get("so_den") or "§").count()):
+        _ph_loc(page, v.get("so") or "")
     if anh:
         page.screenshot(path=str(anh("2a-danh-sach")))
     cu = page.url
-    for khoa in [k for k in (v.get("so"), v.get("so_den"), (v.get("trich_yeu") or "")[:40]) if k]:
+    for khoa in [k for k in (v.get("so_den"), v.get("so"), (v.get("trich_yeu") or "")[:40]) if k]:
         dong = page.locator("tr:visible", has_text=khoa)
         if not dong.count():
             continue
@@ -4748,8 +4758,7 @@ def _ph_bam_hoan_thanh(page, v, anh=None):
     except Exception as e:
         log("    [phối hợp] mở từ danh sách lỗi:", str(e)[:120])
     if not tu_ds:
-        page.goto(f"{EGOV_GOC}/work/unit/detail/1/{v['id']}?statustype=cooperate", wait_until="domcontentloaded",
-                  timeout=90000)
+        raise RuntimeError("không mở được việc từ danh sách ô Phối hợp (lọc Số văn bản không ra dòng) - không bấm")
     v["url_mo"] = page.url
     nut = page.get_by_role("button", name=NUT_HOAN_THANH_PH, exact=True)
     for _ in range(60):
@@ -4874,6 +4883,7 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                 hang = hang[:int(toi_da)]
             # ---- bước 1: tải, ghi chữ (chưa bấm gì)
             cho_ghi, muc_moi, cho_bam = {}, {}, []
+            thay_tren_ds = khong_thay = 0
             for i, x in enumerate(hang, 1):
                 v = _ph_viec(x)
                 rows.append(v)
@@ -4881,6 +4891,22 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                        luu_vao / "anh" / f"{i:02d}-{lam_sach_vn(v['so'])[:30] or v['id'][:8]}-{buoc}.png") \
                     if i <= int(chup_anh or 0) else None
                 v["_anh"] = anh
+                # Giao diện là chuẩn: API type=cooperate còn liệt kê việc đã hoàn thành phối hợp (lượt thử 3, 11/11/2026:
+                # lọc "955/CV-UBND" trong ô Phối hợp ra 0 bản ghi, ô đếm 68, nhưng API vẫn trả). Lọc không ra thì không
+                # tải, không bấm, ghi một lần vào sổ để các lượt sau bỏ qua.
+                if v["so"] or v["so_den"]:
+                    tren = _ph_con_tren_danh_sach(page, v)
+                    if tren is True:
+                        thay_tren_ds += 1
+                    elif tren is False:
+                        khong_thay += 1
+                        v.update(ket_qua="khong-con", ghi_chu="lọc Số đến/Số văn bản trong ô Phối hợp trên egov1 ra 0 bản ghi "
+                                                              "(có thể đã hoàn thành phối hợp) - không tải, không bấm; lượt sau kiểm lại")
+                        if khong_thay >= 3 and thay_tren_ds == 0:
+                            log("[phối hợp] 3 việc đầu đều lọc không ra - ô lọc có thể hỏng: DỪNG")
+                            v["ghi_chu"] += "; DỪNG lượt: 3 việc liền lọc không ra, chờ Claude xem ảnh"
+                            break
+                        continue
                 docs = [d for d in (x.get("documentApis") or []) if isinstance(d, dict) and d.get("id")]
                 if not docs:
                     v.update(ket_qua="loi-tai", ghi_chu="nhiệm vụ không kèm văn bản - không bấm, Bạn xem trên egov1")
@@ -4995,7 +5021,7 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                     v["ghi_chu"] = "đã bấm: " + _ph_bam_hoan_thanh(page, v, v["_anh"])
                     # API danh sách type=cooperate VẪN liệt kê việc đã bấm (lượt thử 2, 11/11/2026: 1684/UBND báo "Báo cáo
                     # thành công", dòng biến khỏi danh sách nhưng API và ô đếm chưa đổi) -> chấm theo thông báo + giao diện.
-                    con = _ph_con_tren_danh_sach(page, v["so"]) if v["so"] else None
+                    con = _ph_con_tren_danh_sach(page, v)
                     tb = v.pop("thong_bao", "")
                     if "thanh cong" in bo_dau(tb) or con is False:
                         v["ket_qua"] = "da-hoan-thanh"
