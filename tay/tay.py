@@ -68,7 +68,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.19 (11/11/2026)"
+PHIEN_BAN = "0.4.20 (14/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -429,6 +429,8 @@ def tai_lich_lanh_dao(gh, botd=None) -> str:
             if f.is_file():
                 f.unlink()
     thu.mkdir(parents=True, exist_ok=True)
+    # Hợp đồng theo-doi/lich-lanh-dao/README.md (10/11/2026): KHÔNG đẩy PDF lên GitHub (trước đây ~66 MB mỗi đợt).
+    thu_tep = BOT_HOME / "ket-qua" / "lich-lanh-dao-tep" / hom_nay
     so_muc, tep = 0, []
     try:
         ma, noi_dung, _ = _lich_get(LICH_LDAO_URL)
@@ -468,7 +470,8 @@ def tai_lich_lanh_dao(gh, botd=None) -> str:
                 log(f"  lịch lãnh đạo: {ten} quá 20 MB - bỏ")
                 continue
             da_ten.add(ten_luu.lower())
-            (thu / ten_luu).write_bytes(b)
+            thu_tep.mkdir(parents=True, exist_ok=True)
+            (thu_tep / ten_luu).write_bytes(b)                  # chỉ cất trên máy; kho chỉ nhận lich.html + tep.json
             tep.append({"ten": ten_luu, "url": href_goc, "kich_thuoc": len(b)})
         (thu / "tep.json").write_text(json.dumps(tep, ensure_ascii=False, indent=2), encoding="utf-8")
     except urllib.error.HTTPError as e:
@@ -535,16 +538,16 @@ def xu_ly_hang_doi(botd, gh: GitHub, may: str, chay_thu=False) -> int:
     """Nhận và làm từng yêu cầu 'cho' trong yeu-cau/. Trả về số việc đã làm."""
     lam = 0
     for muc in gh.liet_ke(KHO_VIEC, "yeu-cau"):
-        if muc.get("type") != "file" or not muc["name"].endswith(".json"):
-            continue
+        if muc.get("type") != "file" or not muc["name"].endswith(".json") or muc["name"].startswith("_"):
+            continue                                            # tệp "_*.json" là sổ, không phải việc (vụ _bu-gp.json 11/11/2026)
         duong = muc["path"]
         raw, sha = gh.doc(KHO_VIEC, duong)
         try:
             yc = json.loads(raw)
         except Exception:
             continue
-        if yc.get("trang_thai", "cho") != "cho":
-            continue
+        if not isinstance(yc, dict) or not yc.get("loai") or yc.get("trang_thai", "cho") != "cho":
+            continue                                            # không có "loai" thì không phải yêu cầu
         # nhận việc: ghi bằng sha cũ; máy kia đã nhận trước thì GitHub trả 409, bỏ qua
         yc.update(trang_thai="dang", may=may, luc=datetime.now().isoformat(timespec="minutes"))
         try:

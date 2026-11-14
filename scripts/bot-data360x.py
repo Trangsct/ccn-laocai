@@ -527,13 +527,25 @@ def gh(method, url, body=None, token=None):
     req = urllib.request.Request(url, method=method, data=json.dumps(body).encode() if body else None,
                                  headers={"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json",
                                           "Content-Type": "application/json", "X-GitHub-Api-Version": "2022-11-28"})
-    try:
-        with urllib.request.urlopen(req, timeout=120) as r:
-            return json.loads(r.read() or b"{}")
-    except urllib.error.HTTPError as e:
-        if e.code == 404 and method == "GET":
-            return None
-        raise RuntimeError(f"GitHub {e.code}: {e.read()[:200]!r}")
+    # Lỗi mạng (hết giờ bắt tay SSL, đứt kết nối) hoặc GitHub 502/503/504: thử lại 3 lần, nghỉ 5-15-30 giây.
+    # Vụ 11/11/2026: một lần "handshake operation timed out" làm hỏng cả yêu cầu lấy 8 giấy phép.
+    for lan, nghi in enumerate((5, 15, 30, 0)):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return json.loads(r.read() or b"{}")
+        except urllib.error.HTTPError as e:
+            if e.code == 404 and method == "GET":
+                return None
+            if e.code in (502, 503, 504) and nghi:
+                log(f"GitHub {e.code}, thử lại lần {lan + 2} sau {nghi} giây")
+                time.sleep(nghi)
+                continue
+            raise RuntimeError(f"GitHub {e.code}: {e.read()[:200]!r}")
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
+            if not nghi:
+                raise
+            log(f"GitHub lỗi mạng ({str(e)[:80]}), thử lại lần {lan + 2} sau {nghi} giây")
+            time.sleep(nghi)
 
 
 def gh_doc(repo, path, token):
@@ -3463,6 +3475,20 @@ def _egov_mo_va_tai_tep(ctx, page, vb, soi_dir=None):
     toàn bộ tài liệu sang egov")."""
     m = re.search(r"/document/xem-den-xem\?documentId=(\d+)", vb.get("url_chi_tiet") or "")
     if not m:
+        # Văn bản ĐI lấy từ API danh sách không có đường dẫn; tìm lại trên danh sách thường không thấy dòng (vụ 11/11/2026:
+        # 6674, 5763/GP-SCT "không thấy dòng ... để mở chi tiết" -> không tải được PDF giấy phép). 240 văn bản đi đã lấy
+        # được đều ở trang /document/xem-di-360-xem?documentId=<mã 32 ký tự> -> mở thẳng trang đó trước, không có tệp thì về cách cũ.
+        ma = str(vb.get("id_data360x") or "")
+        if vb.get("nguon") == "di" and not vb.get("url_chi_tiet") and re.fullmatch(r"[0-9A-Fa-f]{32}", ma):
+            vb["url_chi_tiet"] = f"{EGOV_GOC}/document/xem-di-360-xem?documentId={ma}"
+            try:
+                _egov_mo_va_tai_tep_mot(ctx, page, vb, soi_dir)
+            except Exception as e:
+                log("    trang xem-di-360-xem lỗi:", str(e)[:120])
+            if _EGOV_TEP["chinh"] is not None or _EGOV_TEP["khac"]:
+                log(f"    văn bản đi {vb.get('so_ky_hieu')}: lấy được qua trang xem-di-360-xem")
+                return
+            vb["url_chi_tiet"] = ""
         _egov_mo_va_tai_tep_mot(ctx, page, vb, soi_dir)
         return
     # văn bản số (Data360X cũ): trang 360 trước — lượt 09/11/2026 22:45 lấy được 8/8 qua trang này; không có thì về trang thường

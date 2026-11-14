@@ -210,3 +210,10 @@ d0ed26b  fix: popup bản đồ bị clip khi viewport thấp — tự cuộn + 
 bbc3707  fix: popup bản đồ bị che — autoPanPadding tính động theo header+nav
 118064d  docs: thêm CLAUDE.md hướng dẫn cho AI agent
 ```
+
+**TAY 0.4.20 (14/11/2026, Bạn: "nâng cấp cho bot ổn định trên máy tôi").** (1) `gh()` thử lại 3 lần khi lỗi mạng / GitHub 502–504
+(vụ 11/11: một lần hết giờ bắt tay SSL làm hỏng cả yêu cầu lấy 8 giấy phép). (2) Văn bản ĐI có mã 32 ký tự mà chưa có đường dẫn:
+`_egov_mo_va_tai_tep` mở thẳng `/document/xem-di-360-xem?documentId=<mã>` trước, không có tệp mới về cách tìm trên danh sách
+(vụ 6674, 5763/GP-SCT "không thấy dòng … để mở chi tiết"). (3) Hàng đợi bỏ qua tệp `_*.json` và tệp không có `loai`.
+(4) Lịch Lãnh đạo Sở: tệp đính kèm cất ở `bot-profile\ket-qua\lich-lanh-dao-tep\<ngày>` trên máy, kho chỉ nhận `lich.html` + `tep.json`.
+
