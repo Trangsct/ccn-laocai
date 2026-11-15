@@ -223,3 +223,10 @@ lĩnh vực của một plugin (kể cả công văn vụ việc, giấy phép S
 `mang_quy_dinh` (logic cũ) dùng để gắn nhãn **[quy định]** trong bản tin. Văn bản vụ việc chỉ đưa CHỮ lên kho (bản scan > 3 MB không đưa).
 Quyết định 12/9/2026 "chỉ tải văn bản mang quy định" là lịch sử.
 
+
+**TAY 0.4.22 (15/11/2026, Bạn chốt: "dùng song song cả 2 máy" — laptop và máy bàn cơ quan).** Hai máy cùng cài TAY, cùng tài khoản egov1
+của Bạn. Việc theo lịch chia qua sổ chung `trang-thai/tay-lich.json` ở kho vlncn-laocai (`moc` = mốc đã làm, `dang` = máy đang làm, ghi bằng
+sha nên chỉ một máy nhận; máy kia giữ quá 3 giờ — bê văn bản cũ 9 giờ — thì máy này nhận lại; không tới được GitHub thì làm như một máy).
+Giữ phiên: máy nào giữ phiên máy ấy. Hàng đợi `yeu-cau/` vốn đã chia theo sha. Nhịp tim `trang-thai/tay.json` thêm `cac_may`.
+Hàm thuần `gop_moc`, `duoc_nhan` có phép thử trong `--chay-thu`. Cài máy thứ hai: dòng PowerShell `cai-tay.bat` ở `bot/HUONG-DAN-CAI-BOT.md`.
+Chưa kiểm trên cổng thật: egov1 có cho hai máy cùng đăng nhập một tài khoản hay không.

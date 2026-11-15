@@ -68,7 +68,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.21 (15/11/2026)"
+PHIEN_BAN = "0.4.22 (15/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -150,6 +150,109 @@ def ghi_trang_thai(**kv):
     TRANG_THAI.parent.mkdir(parents=True, exist_ok=True)
     TRANG_THAI.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
     return d
+
+
+# ---------------------------------------------------------------- hai máy chạy song song (0.4.22, Bạn chốt 15/11/2026)
+# Sổ chung trang-thai/tay-lich.json ở kho việc: "moc" = mốc đã làm việc theo lịch (máy nào làm cũng ghi), "dang" = máy đang làm.
+# Máy bật sau đọc mốc của máy kia nên không làm lại; hai máy cùng tới giờ thì máy ghi được trước (sha) nhận việc.
+# GitHub không tới được thì làm như một máy (thà trùng còn hơn bỏ việc).
+LICH_CHUNG = "trang-thai/tay-lich.json"
+MOC_CHUNG = ("viec_luc", "viec_toi_luc", "quet_luc", "quet30_luc", "lich_ldao_luc", "phoi_hop_luc", "lay_lui_luc")
+GIU_CHO_GIO = {"lay-lui": 9}          # việc khác: 3 giờ; quá hạn coi như máy kia chết giữa chừng, máy này nhận lại
+
+
+def gop_moc(may_nay: dict, chung: dict) -> dict:
+    """Thuần túy: mốc chung mới hơn thì lấy về máy. Trả các khóa cần ghi vào trạng thái máy."""
+    doi = {}
+    for k in MOC_CHUNG:
+        c = chung.get(k) or ""
+        if c and c > (may_nay.get(k) or ""):
+            doi[k] = c
+    if "phoi_hop_tu_dong" in chung and bool(chung["phoi_hop_tu_dong"]) != bool(may_nay.get("phoi_hop_tu_dong")):
+        doi["phoi_hop_tu_dong"] = bool(chung["phoi_hop_tu_dong"])
+    return doi
+
+
+def duoc_nhan(so: dict, may: str, loai: str, bay_gio: datetime) -> bool:
+    """Thuần túy: máy này có được nhận việc theo lịch `loai` không (máy khác đang giữ và còn hạn thì không)."""
+    d = (so.get("dang") or {}).get(loai)
+    if not d or d.get("may") == may:
+        return True
+    try:
+        tuoi = (bay_gio - datetime.fromisoformat(d["luc"])).total_seconds() / 3600
+    except Exception:
+        return True
+    return tuoi >= GIU_CHO_GIO.get(loai, 3) or tuoi < -1
+
+
+def _doc_lich_chung(gh):
+    raw, sha = gh.doc(KHO_VIEC, LICH_CHUNG)
+    try:
+        so = json.loads(raw) if raw else {}
+    except Exception:
+        so = {}
+    return (so if isinstance(so, dict) else {}), sha
+
+
+def dong_bo_lich(gh):
+    """Đầu mỗi vòng: lấy mốc chung về máy."""
+    try:
+        so, _ = _doc_lich_chung(gh)
+        doi = gop_moc(doc_trang_thai(), so.get("moc") or {})
+        if doi:
+            ghi_trang_thai(**doi)
+            log("Lịch chung: lấy mốc của máy khác", doi)
+    except Exception as e:
+        log("Không đọc được lịch chung (làm như một máy):", repr(e)[:150])
+
+
+def nhan_lich(gh, may: str, loai: str) -> bool:
+    try:
+        so, sha = _doc_lich_chung(gh)
+    except Exception as e:
+        log("Không đọc được lịch chung, vẫn làm:", repr(e)[:150])
+        return True
+    bay_gio = datetime.now()
+    if not duoc_nhan(so, may, loai, bay_gio):
+        log(f"Theo lịch: {loai} - máy {so['dang'][loai].get('may')} đang làm, bỏ qua vòng này.")
+        return False
+    so.setdefault("dang", {})[loai] = {"may": may, "luc": bay_gio.isoformat(timespec="minutes")}
+    try:
+        gh.ghi(KHO_VIEC, LICH_CHUNG, json.dumps(so, ensure_ascii=False, indent=2).encode(),
+               f"tay {may}: nhan lich {loai}", sha)
+    except Exception as e:
+        log(f"Theo lịch: {loai} - không ghi được sổ chung (máy khác vừa nhận?), bỏ qua vòng này:", repr(e)[:150])
+        return False
+    return True
+
+
+def tra_lich(gh, may: str, loai=None):
+    """Sau việc: ghi mốc của máy này lên sổ chung, bỏ dấu đang làm. Thử 3 lần khi máy kia ghi chen."""
+    for _ in range(3):
+        try:
+            so, sha = _doc_lich_chung(gh)
+            tt = doc_trang_thai()
+            moc = dict(so.get("moc") or {})
+            for k in MOC_CHUNG:
+                v = tt.get(k) or ""
+                if k == "lay_lui_luc" and loai == "lay-lui":
+                    moc[k] = v                                  # máy vừa làm quyết: "" = đêm nay còn làm tiếp
+                elif v > (moc.get(k) or ""):
+                    moc[k] = v
+            if "phoi_hop_tu_dong" in tt:
+                moc["phoi_hop_tu_dong"] = bool(tt["phoi_hop_tu_dong"])
+            dang = dict(so.get("dang") or {})
+            if loai and (dang.get(loai) or {}).get("may") == may:
+                dang.pop(loai)
+            moi = {"moc": moc, "dang": dang}
+            if moi == {"moc": so.get("moc") or {}, "dang": so.get("dang") or {}}:
+                return
+            gh.ghi(KHO_VIEC, LICH_CHUNG, json.dumps(moi, ensure_ascii=False, indent=2).encode(),
+                   f"tay {may}: xong lich {loai or 'hang doi'}", sha)
+            return
+        except Exception as e:
+            log("Không ghi được lịch chung:", repr(e)[:150])
+            time.sleep(3)
 
 
 def sha_git(duong: Path) -> str:
@@ -585,7 +688,16 @@ def nhip_tim(botd, gh: GitHub, may: str, ep=False):
                 "giu_phien_luc": tt.get("giu_phien_luc"), "quet_luc": tt.get("quet_luc"),
                 "viec_luc": tt.get("viec_luc"), "cong": getattr(botd, "TEN_HE_THONG", "")}
     try:
-        _, sha = gh.doc(KHO_VIEC, "trang-thai/tay.json")
+        raw, sha = gh.doc(KHO_VIEC, "trang-thai/tay.json")
+        try:
+            cu = json.loads(raw) if raw else {}
+        except Exception:
+            cu = {}
+        cac_may = dict(cu.get("cac_may") or {})
+        if cu.get("may") and cu.get("may") != may:              # tệp bản cũ (một máy): chép máy kia vào sổ các máy
+            cac_may.setdefault(cu["may"], {k: cu.get(k) for k in ("loai_may", "mang", "luc", "phien_ban")})
+        cac_may[may] = {k: noi_dung[k] for k in ("loai_may", "mang", "luc", "phien_ban")}
+        noi_dung["cac_may"] = cac_may
         gh.ghi(KHO_VIEC, "trang-thai/tay.json", json.dumps(noi_dung, ensure_ascii=False, indent=2).encode(),
                f"tay {may}: nhip tim {noi_dung['luc']}", sha)
         ghi_trang_thai(nhip_tim_gio=gio)
@@ -597,12 +709,21 @@ def mot_vong(botd, gh: GitHub, may: str, chay_thu=False) -> bool:
     """Một vòng: cập nhật, lịch, hàng đợi, nhịp tim. Trả True nếu phải khởi động lại (mã đổi)."""
     if not chay_thu and tu_cap_nhat(gh):
         return True
+    if not chay_thu:
+        dong_bo_lich(gh)
     for loai, yc in viec_theo_lich(datetime.now(), doc_trang_thai()):
+        chung = loai != "giu-phien" and not chay_thu          # giữ phiên: máy nào giữ phiên máy ấy
+        if chung and not nhan_lich(gh, may, loai):
+            continue
         try:
             log(f"Theo lịch: {loai} -> " + lam_viec(botd, gh, loai, yc, chay_thu))
         except Exception:
             log("LỖI việc theo lịch:", traceback.format_exc())
+        if chung:
+            tra_lich(gh, may, loai)
     da_lam = 0 if chay_thu else xu_ly_hang_doi(botd, gh, may, chay_thu)
+    if da_lam:
+        tra_lich(gh, may)                                     # việc trong hàng đợi cũng đổi mốc (quét, việc, bật lịch phối hợp)
     if not chay_thu:
         nhip_tim(botd, gh, may, ep=da_lam > 0)
     don_log()
@@ -680,6 +801,18 @@ def chay_thu(botd):
     yc = {"loai": "lay", "yeu_cau": "5511/SCT-CN; tiêu chí lựa chọn chủ đầu tư", "ngay": 60}
     so, tu_khoa = botd._tach_yeu_cau(yc["yeu_cau"])
     assert so and tu_khoa, (so, tu_khoa)
+    # hai máy song song (0.4.22)
+    assert gop_moc({"viec_luc": "2026-11-16T05:54"}, {"viec_luc": "2026-11-16T05:52", "quet_luc": "2026-11-16T06:10",
+                                                       "phoi_hop_tu_dong": True}) \
+        == {"quet_luc": "2026-11-16T06:10", "phoi_hop_tu_dong": True}
+    assert gop_moc({"quet_luc": "2026-11-16T06:10"}, {}) == {}
+    t0 = datetime(2026, 11, 16, 6, 0)
+    so = {"dang": {"quet": {"may": "A", "luc": "2026-11-16T05:55"}, "lay-lui": {"may": "A", "luc": "2026-11-15T22:20"}}}
+    assert not duoc_nhan(so, "B", "quet", t0) and duoc_nhan(so, "A", "quet", t0) and duoc_nhan(so, "B", "viec", t0)
+    assert duoc_nhan(so, "B", "quet", datetime(2026, 11, 16, 9, 0))                  # máy A chết quá 3 giờ
+    assert not duoc_nhan(so, "B", "lay-lui", t0) and duoc_nhan(so, "B", "lay-lui", datetime(2026, 11, 16, 7, 30))
+    assert L(datetime(2026, 11, 16, 6, 30), {"giu_phien_luc": "2026-11-16T06:01", **gop_moc({}, {
+        "viec_luc": "2026-11-16T05:54", "quet_luc": "2026-11-16T06:10"})}) == []      # máy B bật sau: không làm lại
     ghi_trang_thai(chay_thu_luc=datetime.now().isoformat(timespec="minutes"))
     don_log()
     print("CHAY THU OK: nạp bot, cổng egov1, lịch, phân tích yêu cầu, ghi trạng thái, dọn log.")
