@@ -68,7 +68,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.23 (15/11/2026)"
+PHIEN_BAN = "0.4.24 (16/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -156,6 +156,9 @@ def ghi_trang_thai(**kv):
 # Sổ chung trang-thai/tay-lich.json ở kho việc: "moc" = mốc đã làm việc theo lịch (máy nào làm cũng ghi), "dang" = máy đang làm.
 # Máy bật sau đọc mốc của máy kia nên không làm lại; hai máy cùng tới giờ thì máy ghi được trước (sha) nhận việc.
 # GitHub không tới được thì làm như một máy (thà trùng còn hơn bỏ việc).
+# Vụ đêm 15/11/2026: một yêu cầu phối hợp "chạy hết" 96 việc giữ máy 7,5 giờ (23:16 -> 06:53), mọi việc khác trong hàng đợi và
+# việc theo lịch sáng phải chờ. Từ 0.4.24 mỗi lượt tối đa 20 việc; phần còn lại lượt sáng hôm sau làm tiếp.
+PHOI_HOP_MOI_LUOT = 20
 LICH_CHUNG = "trang-thai/tay-lich.json"
 MOC_CHUNG = ("viec_luc", "viec_toi_luc", "quet_luc", "quet30_luc", "lich_ldao_luc", "phoi_hop_luc", "lay_lui_luc")
 GIU_CHO_GIO = {"lay-lui": 9}          # việc khác: 3 giờ; quá hạn coi như máy kia chết giữa chừng, máy này nhận lại
@@ -469,7 +472,7 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         if "loai" not in yc:                                   # lượt theo lịch: mỗi sáng một lần, lỗi cũng không thử lại
             ghi_trang_thai(phoi_hop_luc=datetime.now().isoformat(timespec="minutes"))
         ngay = date.today().isoformat()
-        xong, tong = botd.phoi_hop(str(BOT_HOME / "ket-qua" / "phoi-hop" / ngay), toi_da=yc.get("toi_da") or None,
+        xong, tong = botd.phoi_hop(str(BOT_HOME / "ket-qua" / "phoi-hop" / ngay), toi_da=int(yc.get("toi_da") or PHOI_HOP_MOI_LUOT),
                                    chup_anh=int(yc.get("chup_anh") or 0), bam=yc.get("bam", True) is not False)
         return f"phối hợp egov1: bấm hoàn thành {xong}/{tong} việc, kết quả ở theo-doi/egov/phoi-hop/{ngay}/"
     if loai == "tim":
