@@ -558,7 +558,14 @@ def gh(method, url, body=None, token=None):
                 log(f"GitHub {e.code}, thử lại lần {lan + 2} sau {nghi} giây")
                 time.sleep(nghi)
                 continue
-            raise RuntimeError(f"GitHub {e.code}: {e.read()[:200]!r}")
+            than = e.read()[:200]
+            if e.code == 409 and b"but expected" in than and nghi:
+                # Nhánh main vừa có commit khác chen vào (hai máy, workflow, PR gộp cùng lúc) - không phải lệch sha của
+                # tệp nên gửi lại y nguyên là được. Vụ 15/11/2026: yêu cầu lấy 4 văn bản hỏng vì một lần 409 kiểu này.
+                log(f"GitHub 409 (main vừa đổi), thử lại lần {lan + 2} sau {min(nghi, 6)} giây")
+                time.sleep(min(nghi, 6))
+                continue
+            raise RuntimeError(f"GitHub {e.code}: {than!r}")
         except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
             if not nghi:
                 raise
