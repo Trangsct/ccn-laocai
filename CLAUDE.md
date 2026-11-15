@@ -230,3 +230,8 @@ sha nên chỉ một máy nhận; máy kia giữ quá 3 giờ — bê văn bản
 Giữ phiên: máy nào giữ phiên máy ấy. Hàng đợi `yeu-cau/` vốn đã chia theo sha. Nhịp tim `trang-thai/tay.json` thêm `cac_may`.
 Hàm thuần `gop_moc`, `duoc_nhan` có phép thử trong `--chay-thu`. Cài máy thứ hai: dòng PowerShell `cai-tay.bat` ở `bot/HUONG-DAN-CAI-BOT.md`.
 Chưa kiểm trên cổng thật: egov1 có cho hai máy cùng đăng nhập một tài khoản hay không.
+
+**TAY 0.4.23–0.4.24 (15–16/11/2026).** 0.4.23: `gh()` gửi lại khi GitHub 409 "is at … but expected" (nhánh main vừa có commit khác chen vào).
+0.4.24: ô Phối hợp mỗi lượt tối đa `PHOI_HOP_MOI_LUOT` = 20 việc (đêm 15/11 một yêu cầu "chạy hết" 96 việc giữ máy 7,5 giờ, chặn hàng đợi
+và việc theo lịch sáng); phần còn lại lượt sáng sau làm tiếp. Kết quả đêm 15/11: bấm 41/96, 50 việc "khong-con" (lọc ra 0 bản ghi — chưa
+rõ là đã hết thật hay bộ lọc Số đến/Số văn bản của bot trượt; cần soi khi có lượt sau), 2 mật bỏ qua, 3 lỗi tải/bấm.
