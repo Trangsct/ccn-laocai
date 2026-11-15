@@ -119,7 +119,7 @@ LOAI_VAN_BAN = [
 # TUYỆT ĐỐI không đẩy văn bản nội bộ sang skill-sct hay ccn-laocai: hai kho đó CÔNG KHAI ra Internet.
 REPO_TRI_THUC = "vlncn-laocai"
 THU_MUC_TRI_THUC = "theo-doi"
-TOI_DA_PDF_MOI_LUOT = 60       # chặn trần để một lượt quét bù 120 ngày không phình kho (30 -> 60 từ 10/10/2026: một tuần ~90 tệp)
+TOI_DA_PDF_MOI_LUOT = 120      # chặn trần để một lượt quét bù 120 ngày không phình kho (30 -> 60 từ 10/10/2026: một tuần ~90 tệp)
 LAY_TOI_DA_MOI_TU_KHOA = 12    # --lay: một từ khóa rộng ("quy chuẩn kỹ thuật quốc gia") không được kéo về hàng chục hồ sơ
 PDF_TOI_DA_MB = 12
 
@@ -204,21 +204,30 @@ TU_KHOA_BO_QUA = ("giay moi", "moi hop", "moi du", "goi thau", "ho so moi thau",
                   "lich cong tac", "lich tiep cong dan")
 
 
-def dang_gom(vb):
-    """Có tải PDF về để Claude đọc và cập nhật plugin không?
+def mang_quy_dinh(vb):
+    """Văn bản MANG QUY ĐỊNH (nghị định, thông tư, quyết định, kế hoạch, hướng dẫn, dự thảo…): đọc là có thể phải sửa plugin.
+    Bản tin đánh dấu [quy định] để lượt nâng cấp plugin đọc trước."""
+    sk = (vb.get("so_ky_hieu") or "").upper()
+    ty = " " + bo_dau(vb.get("trich_yeu", "")) + " "
+    return any(k in sk for k in KY_HIEU_QUY_PHAM) or any(t in ty for t in TU_KHOA_QUY_PHAM)
 
-    Bạn chốt 12/9/2026 sau lượt chạy đầu: tải mọi văn bản khớp từ khóa thì một lượt 30 ngày kéo về
-    101 MB / 40 tệp, phần lớn là công văn trao đổi từng dự án và cả giấy mời họp - đọc không sửa được
-    plugin nào. Nay chỉ tải văn bản MANG QUY ĐỊNH; văn bản còn lại vẫn vào mục lục đầy đủ (có số, ngày,
-    trích yếu, đường dẫn trang chi tiết) nên cần bản gốc nào thì gọi bot tải riêng văn bản đó.
+
+def dang_gom(vb):
+    """Có tải toàn văn về để Claude đọc và cập nhật plugin không?
+
+    Lịch sử: Bạn chốt 12/9/2026 chỉ tải văn bản mang quy định vì lượt đầu kéo 101 MB / 40 tệp PDF. Từ 12/9 kho chỉ nhận
+    CHỮ (vài chục KB một văn bản) nên lý do dung lượng không còn. Bạn nhắc 15/11/2026: mục đích ban đầu là "tự động vào
+    TOÀN BỘ văn bản đến và đi để đọc và cập nhật cho toàn bộ hệ thống plugin" -> nay tải MỌI văn bản đi, đến thuộc lĩnh vực
+    của một plugin (kể cả công văn từng vụ việc và giấy phép, giấy chứng nhận Sở cấp), chỉ bỏ giấy mời, hồ sơ mời thầu,
+    lịch công tác. Văn bản không thuộc lĩnh vực nào (việc của phòng khác) vẫn chỉ ghi mục lục.
     """
-    if not xep_linh_vuc(vb) or la_giay_phep_ca_biet(vb):
+    if not xep_linh_vuc(vb):
         return False
     sk = (vb.get("so_ky_hieu") or "").upper()
     ty = " " + bo_dau(vb.get("trich_yeu", "")) + " "
     if "/GM-" in sk or any(t in ty for t in TU_KHOA_BO_QUA):
         return False
-    return any(k in sk for k in KY_HIEU_QUY_PHAM) or any(t in ty for t in TU_KHOA_QUY_PHAM)
+    return True
 
 
 def trich_chu_pdf(pdf_bytes):
@@ -340,9 +349,17 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
                     if ten_chinh and not _cung_van_ban_gh(f"{thu_muc}/{ten_chinh}", vb, danh_muc, token):
                         ten_goc += "_" + (str(vb.get("id_data360x") or "") or lam_sach_vn(vb["ngay_ban_hanh"]))
                         goi, ten_chinh = dong_goi_ho_so(vb, ten_goc, pdf, dinh_kem, dau)
+                    # Văn bản từng vụ việc (không mang quy định): kho chỉ nhận CHỮ để không phình (từ 15/11/2026 tải mọi văn
+                    # bản thuộc lĩnh vực, tới 120 văn bản một lượt). Giữ tệp .md/.txt; bản scan không có chữ chỉ giữ khi <= 3 MB.
+                    if not mang_quy_dinh(vb):
+                        goi = [(t, d) for t, d in goi
+                               if t.lower().endswith((".md", ".txt")) or (t == ten_chinh and len(d) <= 3 * 1024 * 1024)]
+                        if ten_chinh and not any(t == ten_chinh for t, _ in goi):
+                            loi.append(f"{vb['so_ky_hieu']}: bản scan trên 3 MB, không đưa lên kho (tệp gốc xem trên egov1)")
+                            ten_chinh = next((t for t, _ in goi if t.lower().endswith(".md")), "")
                     for ten_t, du_lieu in goi:          # ghi một lần cuối lượt (gh_mot_commit)
                         cho_ghi[f"{thu_muc}/{ten_t}"] = du_lieu
-                    duong = f"{thu_muc}/{ten_chinh}"
+                    duong = f"{thu_muc}/{ten_chinh}" if ten_chinh else ""
                     ghi["tep"] = duong
                     ghi["dinh_kem"] = [{"ten": d["ten"], "tai_duoc": bool(d.get("bytes"))} for d in dinh_kem]
                     da_tai += 1
@@ -365,10 +382,10 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
             "Cách dùng: Claude đọc mục nào thì mở tệp PDF tương ứng trong `theo-doi/`, đối chiếu plugin "
             "cùng tên trong kho `skill-sct`, sửa nếu có quy định/số liệu mới rồi nâng phiên bản plugin.",
             "",
-            "Văn bản không có đường dẫn PDF là loại không mang quy định (công văn trao đổi từng việc, "
-            "giấy mời, hồ sơ mời thầu) nên chỉ ghi mục lục. Cần bản gốc của một văn bản trong đó thì mở "
-            "`url_chi_tiet` của nó trong `danh-muc-<năm>.json`, hoặc chạy workflow *Tim van ban vien dan "
-            "(may co quan)*.", ""]
+            "Từ 15/11/2026 bot tải toàn văn MỌI văn bản đi, đến thuộc lĩnh vực của một plugin (trừ giấy mời, mời thầu, lịch). "
+            "Mục có nhãn **[quy định]** là văn bản mang quy định (nghị định, thông tư, quyết định, kế hoạch, hướng dẫn, dự thảo) - "
+            "đọc trước, có thể phải sửa plugin. Mục còn lại là văn bản từng vụ việc - dùng để cập nhật tiến độ hồ sơ "
+            "(`trang-thai/`), số liệu hiện trạng; không có gì mới thì bỏ qua.", ""]
     for ma, ten in ten_lv.items():
         nhom = [r for r in moi if ma in r["linh_vuc"]]
         if not nhom:
@@ -380,9 +397,10 @@ def gom_tri_thuc(ctx, page, van_ban, token, tu_ngay, toi_da=TOI_DA_PDF_MOI_LUOT)
         for r in nhom[:40]:
             # Nhãn đúng với lý do (vụ 29/10/2026: mọi công văn trao đổi đều bị ghi "chưa tải được PDF" dù bot không hề thử)
             tep = f" -> `{r['tep']}`" if r.get("tep") else (
-                " *(giấy phép cá biệt, đã vào cơ sở dữ liệu giấy phép)*" if la_giay_phep_ca_biet(r)
-                else " *(chưa tải được PDF)*" if dang_gom(r)
-                else " *(công văn trao đổi, chỉ ghi mục lục - cần bản gốc thì sai bot lấy)*")
+                " *(chưa tải được toàn văn - lượt bê văn bản ban đêm thử lại)*" if dang_gom(r)
+                else " *(giấy mời, mời thầu, lịch - chỉ ghi mục lục)*")
+            if mang_quy_dinh(r):
+                tep = " **[quy định]**" + tep
             dau_tl = "" if not isinstance(r, dict) else ("" if r.get("da_tra_loi") else "⚠️ CHƯA trả lời - ")
             dong.append(f"- {dau_tl}[{huong.get(r['nguon'], r['nguon'])}] **{r['so_ky_hieu']}** "
                         f"ngày {r['ngay_ban_hanh']} - {r['trich_yeu']}{tep}")

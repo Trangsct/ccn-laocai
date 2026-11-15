@@ -217,3 +217,9 @@ bbc3707  fix: popup bản đồ bị che — autoPanPadding tính động theo h
 (vụ 6674, 5763/GP-SCT "không thấy dòng … để mở chi tiết"). (3) Hàng đợi bỏ qua tệp `_*.json` và tệp không có `loai`.
 (4) Lịch Lãnh đạo Sở: tệp đính kèm cất ở `bot-profile\ket-qua\lich-lanh-dao-tep\<ngày>` trên máy, kho chỉ nhận `lich.html` + `tep.json`.
 
+**TAY 0.4.21 (15/11/2026, Bạn nhắc mục đích ban đầu: "tự động vào TOÀN BỘ văn bản đến và đi để đọc và cập nhật cho toàn bộ hệ thống plugin").**
+Đo ngày 15/11: 14 ngày gần nhất chỉ 0/413 văn bản đi và 278/1251 văn bản đến có toàn văn. `dang_gom` nay tải MỌI văn bản đi, đến thuộc
+lĩnh vực của một plugin (kể cả công văn vụ việc, giấy phép Sở cấp), chỉ bỏ giấy mời, mời thầu, lịch; trần 60 → 120 văn bản một lượt.
+`mang_quy_dinh` (logic cũ) dùng để gắn nhãn **[quy định]** trong bản tin. Văn bản vụ việc chỉ đưa CHỮ lên kho (bản scan > 3 MB không đưa).
+Quyết định 12/9/2026 "chỉ tải văn bản mang quy định" là lịch sử.
+
