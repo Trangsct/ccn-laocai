@@ -4995,6 +4995,12 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
         log("Phối hợp: chỉ chạy trên egov1 và cần github_token")
         return 0, 0
     da_bam, sha_bam = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/_da-bam.json", token, {})
+    # Sổ việc "không còn" (0.4.28, 16/11/2026): API type=cooperate vẫn liệt kê việc đã hoàn thành phối hợp; trước đây mỗi lượt
+    # lại lọc lại đúng các việc đó, 3 việc đầu lọc không ra là DỪNG -> lịch phối hợp sáng 16/11 kẹt ở 0/3. Nay việc đã lọc
+    # không ra 2 lượt thì bỏ hẳn; mới 1 lượt thì xếp cuối để kiểm lại một lần; quy tắc DỪNG chỉ tính việc chưa từng gặp.
+    khong_con, sha_kc = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/_khong-con.json", token, {})
+    if not isinstance(khong_con, dict):
+        khong_con = {}
     cu, _ = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/{ngay}/ket-qua.json", token, [])
     cu = cu.get("viec", []) if isinstance(cu, dict) else cu
     kho_goc = _lay_lui_kho_goc()
@@ -5038,7 +5044,9 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                 return [_gon(w) for w in o] if isinstance(o, list) else o
             (luu_vao / "api-phoi-hop.json").write_text(json.dumps(_gon(ds[:5]), ensure_ascii=False, indent=1),
                                                        encoding="utf-8")
-            hang = [x for x in ds if str(x.get("id")) not in da_bam]
+            hang = [x for x in ds if str(x.get("id")) not in da_bam
+                    and int((khong_con.get(str(x.get("id"))) or {}).get("lan", 0)) < 2]
+            hang.sort(key=lambda x: 1 if str(x.get("id")) in khong_con else 0)      # việc chưa từng gặp làm trước
             log(f"[phối hợp] ô Phối hợp có {len(ds)} việc, chưa bấm {len(hang)}; lượt này tối đa {toi_da or 'hết'}")
             if toi_da:
                 hang = hang[:int(toi_da)]
@@ -5060,7 +5068,11 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                     if tren is True:
                         thay_tren_ds += 1
                     elif tren is False:
-                        khong_thay += 1
+                        da_gap = str(v["id"]) in khong_con
+                        kc = khong_con.setdefault(str(v["id"]), {"so": v["so"], "lan": 0})
+                        kc.update(lan=int(kc.get("lan", 0)) + 1, luc=datetime.now().isoformat(timespec="minutes"))
+                        if not da_gap:
+                            khong_thay += 1
                         v.update(ket_qua="khong-con", ghi_chu="lọc Số đến/Số văn bản trong ô Phối hợp trên egov1 ra 0 bản ghi "
                                                               "(có thể đã hoàn thành phối hợp) - không tải, không bấm; lượt sau kiểm lại")
                         if khong_thay >= 3 and thay_tren_ds == 0:
@@ -5223,6 +5235,11 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                    f"Việc chờ xử lý egov1 {ngay}: sổ phối hợp đã bấm", token, sha_bam)
         except Exception as e:
             log("  [phối hợp] không ghi được _da-bam.json:", str(e)[:120])
+        try:
+            gh_ghi(REPO_TRI_THUC, f"{PH_THU_MUC}/_khong-con.json", json.dumps(khong_con, ensure_ascii=False, indent=1).encode(),
+                   f"Việc chờ xử lý egov1 {ngay}: sổ phối hợp không còn", token, sha_kc)
+        except Exception as e:
+            log("  [phối hợp] không ghi được _khong-con.json:", str(e)[:120])
         log(f"[phối hợp] đã đẩy {so} tệp lên vlncn-laocai/{PH_THU_MUC}/{ngay}/")
     telegram(f"Bot egov1 phối hợp: bấm hoàn thành {xong}/{len(rows)} việc.")
     return xong, len(rows)
