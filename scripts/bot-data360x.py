@@ -1972,6 +1972,17 @@ def _tach_ma_vb(yeu_cau):
     return ra
 
 
+def _gia_tri_do_mat(chu):
+    """Giá trị ô "Độ mật" trên trang chi tiết. Ô để trống thì dòng kế tiếp là NHÃN của ô khác ("Mã định danh văn bản: -",
+    "Độ khẩn: Thường"...) - không phải giá trị. Vụ 15/11/2026: 2 việc phối hợp bị bỏ nhầm với ghi chú "Độ mật: Mã định
+    danh văn bản: -". Bạn nhắc 16/11/2026: văn bản mật đi đường giấy, không có trên egov1 - bộ lọc mật vẫn giữ làm chốt chặn,
+    nhưng chỉ nhận giá trị thật (Thường, Mật, Tối mật, Tuyệt mật...)."""
+    v = (chu or "").strip()
+    if ":" in v or len(v) > 20:
+        return ""
+    return v
+
+
 def _egov_kiem_mat_truoc(page, vb):
     """Mở theo mã thì chưa biết Độ mật từ danh sách: mở trang chi tiết, đọc ô "Độ mật" (và dấu Mật/Tối mật/Tuyệt
     mật); văn bản mật thì bỏ, không tải, không ghi (quy tắc bất di bất dịch của Bạn). Trả True khi được lấy."""
@@ -1983,7 +1994,7 @@ def _egov_kiem_mat_truoc(page, vb):
         log("    không mở được trang chi tiết để xem Độ mật:", str(e)[:100])
         return False
     m = re.search(r"Độ\s*mật\s*:?\s*\n?\s*([^\n]{1,30})", chu)
-    vb["do_mat"] = (m.group(1).strip() if m else "")
+    vb["do_mat"] = _gia_tri_do_mat(m.group(1) if m else "")
     if _egov_la_mat(vb) or re.search(r"\b(TỐI MẬT|TUYỆT MẬT)\b", chu) or bo_dau(vb["do_mat"]).startswith("mat"):
         log(f"    BỎ: văn bản có Độ mật '{vb['do_mat'] or 'mật'}' - không tải, không ghi")
         return False
@@ -3893,6 +3904,93 @@ def _mo_cong_san_sang(p, ctx=None):
             ctx.close()
             return None
     return ctx, page
+
+
+def soi_trang(urls, luu_vao, mo_dong_dau=False, bam_menu=False):
+    """Yêu cầu "soi" của TAY (16/11/2026): mở từng trang egov1 Claude cần tìm hiểu (chỉ ĐỌC), ghi HTML, ảnh, chữ, bảng,
+    liên kết, nút bấm, lời gọi API vào luu_vao. mo_dong_dau: mở trang chi tiết của dòng đầu để ghi các nút thao tác;
+    bam_menu: bấm nút ba chấm của dòng đầu để ghi các mục trong menu (không bấm mục nào). Không bấm nút thao tác hồ sơ."""
+    from playwright.sync_api import sync_playwright
+    luu_vao = Path(luu_vao)
+    luu_vao.mkdir(parents=True, exist_ok=True)
+    urls = [u for u in urls if isinstance(u, str) and u.startswith(EGOV_GOC + "/")][:8]      # chỉ cổng egov1
+    buoc, mang = [], []
+    js_nut = """() => [...document.querySelectorAll('button, a.btn, [role=button], .dropdown-item, .dropdown-menu a, li[role=menuitem]')]
+        .filter(e => e.offsetParent !== null).map(e => ({chu: (e.innerText || e.title || e.getAttribute('aria-label') || '').trim().slice(0, 80),
+        href: e.getAttribute('href') || '', cls: (e.className || '').toString().slice(0, 80), onclick: (e.getAttribute('onclick') || '').slice(0, 120)}))
+        .filter(x => x.chu || x.onclick).slice(0, 200)"""
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            return 3
+        ctx, page = mo
+
+        def _resp(r):
+            try:
+                if r.request.resource_type in ("xhr", "fetch") and "json" in (r.headers.get("content-type") or "").lower():
+                    d = r.json()
+                    mang.append({"url": _che(r.url)[:400], "method": r.request.method, "gui": _che(r.request.post_data or "")[:600],
+                                 "status": r.status, "hinh": _hinh_json(d), "mau": _che(json.dumps(d, ensure_ascii=False))[:3000]})
+            except Exception:
+                pass
+
+        def chup(ten):
+            try:
+                page.wait_for_timeout(2500)
+                (luu_vao / f"{ten}.html").write_text(page.content(), encoding="utf-8")
+                (luu_vao / f"{ten}.txt").write_text(page.locator("body").inner_text(timeout=20000), encoding="utf-8")
+                try:
+                    page.screenshot(path=str(luu_vao / f"{ten}.png"), full_page=True)
+                except Exception:
+                    pass
+                bang = _egov_doc_bang(page)
+                if bang:
+                    bang = {**bang, "rows": bang["rows"][:40]}
+                (luu_vao / f"{ten}.json").write_text(json.dumps(
+                    {"url": page.url, "tieu_de": page.title(), "bang": bang, "nut": page.evaluate(js_nut),
+                     "lien_ket": page.evaluate(_JS_LIEN_KET)}, ensure_ascii=False, indent=1), encoding="utf-8")
+                buoc.append({"ten": ten, "url": page.url, "so_dong": len((bang or {}).get("rows") or [])})
+                log(f"  soi: {ten} -> {page.url}")
+            except Exception as e:
+                buoc.append({"ten": ten, "loi": repr(e)[:200]})
+
+        page.on("response", _resp)
+        try:
+            for i, u in enumerate(urls, 1):
+                try:
+                    page.goto(u, wait_until="domcontentloaded", timeout=90000)
+                    try:
+                        page.wait_for_function("() => !document.body.innerText.includes('Đang tải dữ liệu')", timeout=EGOV_CHO_LAG_GIAY * 1000)
+                    except Exception:
+                        pass
+                    chup(f"{i:02d}-trang")
+                    if bam_menu:
+                        try:
+                            nut = page.locator("table tbody tr").first.locator("i.fa-ellipsis-v, .fa-ellipsis-v, [data-toggle=dropdown], [data-bs-toggle=dropdown], button:has(i)").last
+                            nut.click(timeout=8000)
+                            chup(f"{i:02d}-menu")
+                            page.keyboard.press("Escape")
+                        except Exception as e:
+                            buoc.append({"ten": f"{i:02d}-menu", "loi": repr(e)[:200]})
+                    if mo_dong_dau:
+                        try:
+                            href = page.evaluate("() => { const a = document.querySelector('table tbody tr a[href]'); return a ? a.href : '' }")
+                            if href and href.startswith(EGOV_GOC):
+                                page.goto(href, wait_until="domcontentloaded", timeout=90000)
+                            else:
+                                page.locator("table tbody tr a, table tbody tr td span[style*=color], table tbody tr td").nth(0).click(timeout=8000)
+                            page.wait_for_timeout(5000)
+                            chup(f"{i:02d}-chi-tiet")
+                        except Exception as e:
+                            buoc.append({"ten": f"{i:02d}-chi-tiet", "loi": repr(e)[:200]})
+                except Exception as e:
+                    buoc.append({"ten": f"{i:02d}-trang", "url": u, "loi": repr(e)[:200]})
+        finally:
+            (luu_vao / "api.json").write_text(json.dumps(mang[-120:], ensure_ascii=False, indent=1), encoding="utf-8")
+            (luu_vao / "README.md").write_text("# Soi trang egov1 theo yêu cầu - " + datetime.now().strftime("%d/%m/%Y %H:%M") + "\n\n"
+                                               + "\n".join(f"- {b}" for b in buoc) + "\n", encoding="utf-8")
+            ctx.close()
+    return 0
 
 
 def khao_sat():

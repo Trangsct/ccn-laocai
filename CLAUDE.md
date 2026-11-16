@@ -235,3 +235,9 @@ Chưa kiểm trên cổng thật: egov1 có cho hai máy cùng đăng nhập m�
 0.4.24: ô Phối hợp mỗi lượt tối đa `PHOI_HOP_MOI_LUOT` = 20 việc (đêm 15/11 một yêu cầu "chạy hết" 96 việc giữ máy 7,5 giờ, chặn hàng đợi
 và việc theo lịch sáng); phần còn lại lượt sáng sau làm tiếp. Kết quả đêm 15/11: bấm 41/96, 50 việc "khong-con" (lọc ra 0 bản ghi — chưa
 rõ là đã hết thật hay bộ lọc Số đến/Số văn bản của bot trượt; cần soi khi có lượt sau), 2 mật bỏ qua, 3 lỗi tải/bấm.
+
+**TAY 0.4.25 (16/11/2026).** (1) `_gia_tri_do_mat`: ô "Độ mật" trống thì nhãn kế tiếp ("Mã định danh văn bản: -") không còn bị đọc thành
+giá trị — 2 việc phối hợp đêm 15/11 bị bỏ nhầm là "mật" (Bạn nhắc: văn bản mật đi đường giấy, không có trên egov1; bộ lọc mật vẫn giữ làm
+chốt chặn). (2) Yêu cầu mới `{"loai": "soi", "urls": ["https://egov1.laocai.gov.vn/..."], "mo_dong_dau": true, "bam_menu": true}`:
+`soi_trang` mở trang egov1 (chỉ đọc), ghi HTML, chữ, ảnh, bảng, nút, lời gọi API → `theo-doi/egov/soi/<ten>/` để Claude viết bộ đọc cho
+trang mới (Quản lý nhiệm vụ → Phụ trách `statustype=incharge`; Văn bản đi → Phối hợp `/work/unit/main/2?statustype=cooperate`).
