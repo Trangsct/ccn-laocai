@@ -241,3 +241,7 @@ giá trị — 2 việc phối hợp đêm 15/11 bị bỏ nhầm là "mật" (B
 chốt chặn). (2) Yêu cầu mới `{"loai": "soi", "urls": ["https://egov1.laocai.gov.vn/..."], "mo_dong_dau": true, "bam_menu": true}`:
 `soi_trang` mở trang egov1 (chỉ đọc), ghi HTML, chữ, ảnh, bảng, nút, lời gọi API → `theo-doi/egov/soi/<ten>/` để Claude viết bộ đọc cho
 trang mới (Quản lý nhiệm vụ → Phụ trách `statustype=incharge`; Văn bản đi → Phối hợp `/work/unit/main/2?statustype=cooperate`).
+
+**TAY 0.4.26 (16/11/2026, Bạn chốt: "luôn bấm kết thúc trong mục Phụ trách khi nhiệm vụ đã xong").** `ket_thuc_nhiem_vu` nhận ý kiến riêng
+từng việc (`viec[i].y_kien`, không có thì dùng `y_kien` chung) để ghi số văn bản đi đã trả lời. Danh sách việc do kho vlncn-laocai tự ghi
+(`scripts/khop_van_ban_di.yeu_cau_ket_thuc`): việc trong Sổ nhiệm vụ đã Xong mà còn nằm ở mục Phụ trách trên egov1.
