@@ -4409,10 +4409,10 @@ def ket_thuc_nhiem_vu(ds_viec, y_kien="", luu_vao=None):
                         page.wait_for_timeout(1000)
                     o = page.locator(".modal:visible textarea, [role=dialog]:visible textarea, .p-dialog:visible textarea, "
                                      ".ant-modal:visible textarea, .mat-dialog-container:visible textarea")
-                    if y_kien and o.count():
+                    if (v.get("y_kien") or y_kien) and o.count():
                         try:
                             if not o.first.input_value().strip():
-                                o.first.fill(y_kien)
+                                o.first.fill(str(v.get("y_kien") or y_kien)[:500])
                                 buoc.append("nhận xét")
                         except Exception:
                             pass
