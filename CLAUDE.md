@@ -248,3 +248,7 @@ từng việc (`viec[i].y_kien`, không có thì dùng `y_kien` chung) để ghi
 
 **TAY 0.4.27 (16/11/2026).** Đọc tệp lớn từ GitHub (`gh_doc`, danh-muc-<năm>.json > 1 MB) đứt giữa chừng (`IncompleteRead`) thì đọc lại tối đa
 4 lần; `gh()` cũng thử lại với `http.client.HTTPException` — lượt bê văn bản cũ giao lại đêm 15/11 hỏng vì lỗi này.
+
+**TAY 0.4.28 (16/11/2026).** Ô Phối hợp: sổ `theo-doi/egov/phoi-hop/_khong-con.json` (kho vlncn-laocai) đếm số lượt một việc "lọc không ra"
+(API `type=cooperate` vẫn liệt kê việc đã hoàn thành). Lọc không ra 2 lượt → bỏ hẳn; 1 lượt → xếp cuối, kiểm lại một lần; quy tắc
+"3 việc đầu lọc không ra thì DỪNG" chỉ tính việc chưa từng gặp. Trước đó lượt sáng 16/11 kẹt ở 0/3 vì gặp lại đúng 3 việc cũ.
