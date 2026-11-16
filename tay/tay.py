@@ -68,7 +68,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.24 (16/11/2026)"
+PHIEN_BAN = "0.4.25 (16/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -448,6 +448,13 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         return tai_lich_lanh_dao(gh, botd)
     if loai == "nhat-ky":
         return "đẩy nhật ký: " + day_nhat_ky(gh, yc.get("ly_do") or "theo yêu cầu", int(yc.get("dong") or 400), int(yc.get("ngay") or 2))
+    if loai == "soi":
+        # 16/11/2026: Claude cần tìm hiểu một trang egov1 (chỉ đọc) trước khi viết bộ đọc/bộ xử lý cho trang đó
+        ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
+        luu_may = BOT_HOME / "ket-qua" / "soi" / ten
+        ma = botd.soi_trang(yc.get("urls") or [], str(luu_may), mo_dong_dau=bool(yc.get("mo_dong_dau")), bam_menu=bool(yc.get("bam_menu")))
+        so = gh.day_thu_muc(KHO_VIEC, luu_may, f"theo-doi/egov/soi/{ten}", f"Khảo sát egov1 theo yêu cầu: {ten}")
+        return f"soi trang: mã {ma}, đẩy {so} tệp vào theo-doi/egov/soi/{ten}/"
     if loai == "lay":
         ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
         luu_kho = yc.get("luu") or f"theo-doi/yeu-cau/{ten}"
@@ -738,7 +745,7 @@ def chay_thu(botd):
     print("tay", PHIEN_BAN, "| bot:", getattr(botd, "GOC_WEB", "?"), "| ROOT:", ROOT)
     for ham in ("chay_chinh", "giu_phien", "lay_theo_yeu_cau", "tim_van_ban", "gh", "gh_doc", "gh_ghi",
                 "telegram", "thong_tin_may", "viec_cho_xu_ly", "khao_sat", "chon_he_thong", "lay_lui", "parse_ngay",
-                "phoi_hop"):
+                "phoi_hop", "soi_trang"):
         assert hasattr(botd, ham), f"bot thiếu hàm {ham}"
     assert botd.HE_THONG == "egov", botd.HE_THONG      # cổng mặc định từ 29/10/2026
     # các phép thử cũ bỏ "lich-lanh-dao" (thêm 0.4.10, có phép thử riêng ngay dưới)
