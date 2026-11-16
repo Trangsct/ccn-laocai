@@ -245,3 +245,6 @@ trang mới (Quản lý nhiệm vụ → Phụ trách `statustype=incharge`; Vă
 **TAY 0.4.26 (16/11/2026, Bạn chốt: "luôn bấm kết thúc trong mục Phụ trách khi nhiệm vụ đã xong").** `ket_thuc_nhiem_vu` nhận ý kiến riêng
 từng việc (`viec[i].y_kien`, không có thì dùng `y_kien` chung) để ghi số văn bản đi đã trả lời. Danh sách việc do kho vlncn-laocai tự ghi
 (`scripts/khop_van_ban_di.yeu_cau_ket_thuc`): việc trong Sổ nhiệm vụ đã Xong mà còn nằm ở mục Phụ trách trên egov1.
+
+**TAY 0.4.27 (16/11/2026).** Đọc tệp lớn từ GitHub (`gh_doc`, danh-muc-<năm>.json > 1 MB) đứt giữa chừng (`IncompleteRead`) thì đọc lại tối đa
+4 lần; `gh()` cũng thử lại với `http.client.HTTPException` — lượt bê văn bản cũ giao lại đêm 15/11 hỏng vì lỗi này.

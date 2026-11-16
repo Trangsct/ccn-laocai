@@ -35,6 +35,7 @@ import subprocess
 import sys
 import time
 import unicodedata
+import http.client
 import urllib.request
 import urllib.error
 from urllib.parse import parse_qs, parse_qsl, urlencode, urljoin, urlparse
@@ -566,7 +567,7 @@ def gh(method, url, body=None, token=None):
                 time.sleep(min(nghi, 6))
                 continue
             raise RuntimeError(f"GitHub {e.code}: {than!r}")
-        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError, http.client.HTTPException) as e:
             if not nghi:
                 raise
             log(f"GitHub lỗi mạng ({str(e)[:80]}), thử lại lần {lan + 2} sau {nghi} giây")
@@ -584,8 +585,17 @@ def gh_doc(repo, path, token):
             f"https://api.github.com/repos/{GITHUB_OWNER}/{repo}/contents/{path}?ref=main",
             headers={"Authorization": "Bearer " + token, "Accept": "application/vnd.github.raw",
                      "X-GitHub-Api-Version": "2022-11-28"})
-        with urllib.request.urlopen(req, timeout=300) as rr:
-            return rr.read(), r["sha"]
+        # Tệp lớn (danh-muc-<năm>.json > 1 MB) hay đứt giữa chừng trên wifi: IncompleteRead làm hỏng cả lượt bê văn bản cũ đêm
+        # 15/11/2026 -> đọc lại tối đa 4 lần.
+        for lan, nghi in enumerate((5, 15, 30, 0)):
+            try:
+                with urllib.request.urlopen(req, timeout=300) as rr:
+                    return rr.read(), r["sha"]
+            except (http.client.HTTPException, urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
+                if not nghi or isinstance(e, urllib.error.HTTPError):
+                    raise
+                log(f"GitHub đọc tệp lớn đứt ({str(e)[:80]}), đọc lại lần {lan + 2} sau {nghi} giây")
+                time.sleep(nghi)
     return base64.b64decode(r["content"]), r["sha"]
 
 
