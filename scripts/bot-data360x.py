@@ -3919,7 +3919,7 @@ def _mo_cong_san_sang(p, ctx=None):
 PH_VBDI_URL = EGOV_GOC + "/work/unit/main/2?statustype=cooperate"      # Văn bản đi -> ô Phối hợp
 
 
-def phoi_hop_van_ban_di(luu_vao=None, toi_da=1, bam=True):
+def phoi_hop_van_ban_di(luu_vao=None, toi_da=1, bam=False):
     """Văn bản đi -> ô Phối hợp (Bạn yêu cầu 16/11/2026: "nghiên cứu giải quyết công việc trong mục … Phối hợp của Văn bản đi").
     Khảo sát 16/11 (theo-doi/egov/soi/2026-11-16_0715-…): mỗi dòng là một văn bản đi "Trả lời nhiệm vụ" Phòng được phối hợp; dòng có ô
     chọn, đầu trang có nút "Hoàn thành phối hợp"; menu ba chấm chỉ có "Xem chi tiết".

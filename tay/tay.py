@@ -449,10 +449,10 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
     if loai == "nhat-ky":
         return "đẩy nhật ký: " + day_nhat_ky(gh, yc.get("ly_do") or "theo yêu cầu", int(yc.get("dong") or 400), int(yc.get("ngay") or 2))
     if loai == "phoi-hop-vbdi":
-        # Bạn yêu cầu 16/11/2026: Văn bản đi -> ô Phối hợp. Chỉ bấm dòng đã có số văn bản đi + ngày phát hành; mặc định 1 việc/lượt.
+        # Bạn yêu cầu 16/11/2026: Văn bản đi -> ô Phối hợp. Mặc định CHỈ ĐỌC; chỉ bấm khi yêu cầu ghi "bam": true (Bạn đã gật), chỉ dòng đã phát hành, 1 việc/lượt.
         ngay = date.today().isoformat()
         luu_may = BOT_HOME / "ket-qua" / "phoi-hop-vbdi" / (yc.get("ten") or ngay)
-        xong, tong = botd.phoi_hop_van_ban_di(str(luu_may), toi_da=int(yc.get("toi_da") or 1), bam=yc.get("bam", True) is not False)
+        xong, tong = botd.phoi_hop_van_ban_di(str(luu_may), toi_da=int(yc.get("toi_da") or 1), bam=yc.get("bam") is True)
         so = gh.day_thu_muc(KHO_VIEC, luu_may, f"theo-doi/egov/phoi-hop/{ngay}/van-ban-di", f"Việc chờ xử lý egov1 {ngay}: phối hợp văn bản đi {xong}/{tong}")
         return f"phối hợp văn bản đi: bấm hoàn thành {xong}/{tong} dòng, đẩy {so} tệp vào theo-doi/egov/phoi-hop/{ngay}/van-ban-di/"
     if loai == "soi":
