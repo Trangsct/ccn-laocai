@@ -3916,6 +3916,129 @@ def _mo_cong_san_sang(p, ctx=None):
     return ctx, page
 
 
+PH_VBDI_URL = EGOV_GOC + "/work/unit/main/2?statustype=cooperate"      # Văn bản đi -> ô Phối hợp
+
+
+def phoi_hop_van_ban_di(luu_vao=None, toi_da=1, bam=False):
+    """Văn bản đi -> ô Phối hợp (Bạn yêu cầu 16/11/2026: "nghiên cứu giải quyết công việc trong mục … Phối hợp của Văn bản đi").
+    Khảo sát 16/11 (theo-doi/egov/soi/2026-11-16_0715-…): mỗi dòng là một văn bản đi "Trả lời nhiệm vụ" Phòng được phối hợp; dòng có ô
+    chọn, đầu trang có nút "Hoàn thành phối hợp"; menu ba chấm chỉ có "Xem chi tiết".
+    Quy tắc: CHỈ bấm với dòng đã có Số văn bản đi VÀ Ngày phát hành (văn bản đã phát hành, việc phối hợp đã xong về thực chất);
+    dòng chưa phát hành thì không bấm, ghi lại để Claude báo Bạn (Phòng còn phải góp ý). Mỗi lần chọn MỘT dòng, bấm, xác nhận hộp
+    "Hoàn thành phối hợp", tải lại trang kiểm dòng đã hết. Chụp ảnh từng bước. Trả (số đã hoàn thành, số dòng)."""
+    from playwright.sync_api import sync_playwright
+    ngay = date.today().isoformat()
+    luu_vao = Path(luu_vao or (BOT_HOME / "ket-qua" / "phoi-hop-vbdi" / ngay))
+    (luu_vao / "anh").mkdir(parents=True, exist_ok=True)
+    rows, xong = [], 0
+
+    def doc_bang(page):
+        page.goto(PH_VBDI_URL, wait_until="domcontentloaded", timeout=90000)
+        page.wait_for_timeout(4000)
+        for _ in range(60):
+            if not _egov_dang_tai(page):
+                break
+            page.wait_for_timeout(1500)
+        page.wait_for_timeout(1500)
+        b = _egov_doc_bang(page) or {}
+        heads = [re.sub(r"\s+", " ", h or "").strip() for h in (b.get("heads") or [])]
+        cot = lambda ten: next((i for i, h in enumerate(heads) if bo_dau(h) == bo_dau(ten)), -1)
+        ix = {k: cot(t) for k, t in (("den", "Số văn bản đến"), ("di", "Số văn bản đi"), ("ngay", "Ngày phát hành"),
+                                     ("ty", "Trích yếu"), ("loai", "Loại"), ("ky", "Người ký/duyệt"))}
+        ra = []
+        for r in (b.get("rows") or []):
+            o = r.get("o") if isinstance(r, dict) else r
+            lay = lambda k: re.sub(r"\s+", " ", str(o[ix[k]])).strip() if ix[k] >= 0 and ix[k] < len(o) else ""
+            ra.append({"so_den": lay("den"), "so_di": lay("di"), "ngay": lay("ngay"), "trich_yeu": lay("ty")[:300],
+                       "loai": lay("loai"), "nguoi_ky": lay("ky"), "ket_qua": "", "ghi_chu": ""})
+        return ra, ix
+
+    with sync_playwright() as p:
+        mo = _mo_cong_san_sang(p)
+        if not mo:
+            (luu_vao / "README.md").write_text("Không mở được egov1 (phiên đăng nhập?)\n", encoding="utf-8")
+            return 0, 0
+        ctx, page = mo
+        page.on("dialog", lambda dlg: dlg.dismiss())
+        try:
+            rows, ix = doc_bang(page)
+            page.screenshot(path=str(luu_vao / "anh" / "0-danh-sach.png"), full_page=True)
+            if ix.get("di", -1) < 0 or ix.get("ngay", -1) < 0:
+                raise RuntimeError("bảng không có cột 'Số văn bản đi' / 'Ngày phát hành' - giao diện đổi, không bấm")
+            da_lam = 0
+            for i, v in enumerate(rows, 1):
+                if not (v["so_di"] and "/" in v["so_di"] and parse_ngay(v["ngay"])):
+                    v.update(ket_qua="chua-phat-hanh", ghi_chu="chưa có số văn bản đi / ngày phát hành - không bấm, Phòng còn phải phối hợp")
+                    continue
+                if not bam:
+                    v.update(ket_qua="chi-doc", ghi_chu="lượt chỉ đọc")
+                    continue
+                if da_lam >= int(toi_da or 1):
+                    v.update(ket_qua="de-luot-sau", ghi_chu=f"lượt này tối đa {toi_da} việc")
+                    continue
+                da_lam += 1
+                try:
+                    doc_bang(page)
+                    dong = page.locator("tbody tr:visible", has_text=v["so_di"])
+                    if dong.count() != 1:
+                        raise RuntimeError(f"tìm thấy {dong.count()} dòng có {v['so_di']} - không bấm")
+                    o_chon = dong.first.locator("input[type=checkbox]")
+                    if o_chon.count() != 1:
+                        raise RuntimeError("dòng không có đúng một ô chọn - không bấm")
+                    o_chon.first.check(timeout=8000)
+                    if page.locator("tbody tr:visible input[type=checkbox]:checked").count() != 1:
+                        raise RuntimeError("số ô đang chọn khác 1 - không bấm")
+                    page.screenshot(path=str(luu_vao / "anh" / f"{i:02d}-1-da-chon.png"), full_page=True)
+                    nut = page.get_by_role("button", name=NUT_HOAN_THANH_PH, exact=True)
+                    if not (nut.count() and nut.first.is_visible()):
+                        raise RuntimeError(f"không thấy nút '{NUT_HOAN_THANH_PH}'")
+                    nut.first.click(timeout=10000)
+                    dy = page.get_by_role("button", name=re.compile(r"^\s*Đồng ý!?\s*$"))
+                    for _ in range(20):
+                        if dy.count() and dy.first.is_visible():
+                            break
+                        page.wait_for_timeout(500)
+                    page.screenshot(path=str(luu_vao / "anh" / f"{i:02d}-2-hop-xac-nhan.png"))
+                    hop = page.locator(".swal2-popup:visible, [role=dialog]:visible, .modal.show, .modal-dialog:visible")
+                    if not (dy.count() and dy.first.is_visible() and hop.count()
+                            and "hoan thanh phoi hop" in bo_dau(hop.first.inner_text())):
+                        page.keyboard.press("Escape")
+                        raise RuntimeError("không nhận ra hộp xác nhận 'Hoàn thành phối hợp' - không bấm Đồng ý")
+                    trong = hop.first.get_by_role("button", name=re.compile(r"^\s*Đồng ý!?\s*$"))
+                    (trong.first if trong.count() else dy.first).click(timeout=8000)
+                    tb = ""
+                    for _ in range(24):
+                        m = re.search(r"[^\n]{0,40}thành công[^\n]{0,20}", page.locator("body").inner_text())
+                        if m:
+                            tb = m.group(0).strip()
+                            break
+                        page.wait_for_timeout(500)
+                    page.wait_for_timeout(2500)
+                    page.screenshot(path=str(luu_vao / "anh" / f"{i:02d}-3-sau-bam.png"), full_page=True)
+                    con, _ = doc_bang(page)
+                    if any(x["so_di"] == v["so_di"] for x in con):
+                        v.update(ket_qua="loi-bam", ghi_chu=f"đã bấm Hoàn thành phối hợp -> Đồng ý nhưng dòng vẫn còn; egov1 báo: {tb or 'không thấy thông báo'}")
+                    else:
+                        v.update(ket_qua="da-hoan-thanh", ghi_chu=f"đã bấm: Hoàn thành phối hợp -> Đồng ý!; egov1 báo: {tb or '(không thấy thông báo)'}; dòng đã hết")
+                        xong += 1
+                except Exception as e:
+                    v.update(ket_qua="loi-bam", ghi_chu=str(e)[:300])
+                    log("  [phối hợp văn bản đi] lỗi:", str(e)[:200])
+                    break                                     # lỗi một việc thì dừng cả lượt, chờ Claude xem ảnh
+        except Exception as e:
+            rows.append({"so_den": "", "so_di": "", "ngay": "", "trich_yeu": "", "loai": "", "nguoi_ky": "", "ket_qua": "loi", "ghi_chu": str(e)[:300]})
+        finally:
+            ctx.close()
+    (luu_vao / "ket-qua.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
+    md = [f"# Văn bản đi → ô Phối hợp trên egov1 — {date.today():%d/%m/%Y}", "",
+          f"Đã bấm Hoàn thành phối hợp {xong}/{len(rows)} dòng (chỉ bấm dòng đã có số văn bản đi và ngày phát hành).", "",
+          "| # | Số văn bản đến | Số văn bản đi | Ngày phát hành | Trích yếu | Kết quả | Ghi chú |", "|---|---|---|---|---|---|---|"]
+    md += [f"| {i} | {v['so_den']} | {v['so_di']} | {v['ngay']} | {v['trich_yeu'][:140]} | {v['ket_qua']} | {v['ghi_chu'][:200]} |"
+           for i, v in enumerate(rows, 1)]
+    (luu_vao / "README.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    return xong, len(rows)
+
+
 def soi_trang(urls, luu_vao, mo_dong_dau=False, bam_menu=False):
     """Yêu cầu "soi" của TAY (16/11/2026): mở từng trang egov1 Claude cần tìm hiểu (chỉ ĐỌC), ghi HTML, ảnh, chữ, bảng,
     liên kết, nút bấm, lời gọi API vào luu_vao. mo_dong_dau: mở trang chi tiết của dòng đầu để ghi các nút thao tác;
