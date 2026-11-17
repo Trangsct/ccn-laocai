@@ -252,3 +252,9 @@ từng việc (`viec[i].y_kien`, không có thì dùng `y_kien` chung) để ghi
 **TAY 0.4.28 (16/11/2026).** Ô Phối hợp: sổ `theo-doi/egov/phoi-hop/_khong-con.json` (kho vlncn-laocai) đếm số lượt một việc "lọc không ra"
 (API `type=cooperate` vẫn liệt kê việc đã hoàn thành). Lọc không ra 2 lượt → bỏ hẳn; 1 lượt → xếp cuối, kiểm lại một lần; quy tắc
 "3 việc đầu lọc không ra thì DỪNG" chỉ tính việc chưa từng gặp. Trước đó lượt sáng 16/11 kẹt ở 0/3 vì gặp lại đúng 3 việc cũ.
+
+**TAY 0.4.29 (17/11/2026).** Yêu cầu mới `{"loai": "phoi-hop-vbdi"}`: `phoi_hop_van_ban_di` đọc ô Văn bản đi → Phối hợp
+(`/work/unit/main/2?statustype=cooperate`), ghi bảng (số văn bản đến, số văn bản đi, ngày phát hành, trích yếu) vào
+`theo-doi/egov/phoi-hop/<ngày>/van-ban-di/` kho vlncn-laocai. Mặc định CHỈ ĐỌC. Chỉ khi yêu cầu ghi `"bam": true` (Bạn đã đồng ý) mới
+chọn từng dòng ĐÃ có số văn bản đi + ngày phát hành, bấm "Hoàn thành phối hợp" → "Đồng ý!", `toi_da` mặc định 1 việc/lượt, chụp ảnh từng bước,
+lỗi một việc thì dừng cả lượt. Dòng chưa phát hành không bao giờ bấm.
