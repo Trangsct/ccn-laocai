@@ -258,3 +258,9 @@ từng việc (`viec[i].y_kien`, không có thì dùng `y_kien` chung) để ghi
 `theo-doi/egov/phoi-hop/<ngày>/van-ban-di/` kho vlncn-laocai. Mặc định CHỈ ĐỌC. Chỉ khi yêu cầu ghi `"bam": true` (Bạn đã đồng ý) mới
 chọn từng dòng ĐÃ có số văn bản đi + ngày phát hành, bấm "Hoàn thành phối hợp" → "Đồng ý!", `toi_da` mặc định 1 việc/lượt, chụp ảnh từng bước,
 lỗi một việc thì dừng cả lượt. Dòng chưa phát hành không bao giờ bấm.
+
+**TAY 0.4.30 (19/11/2026, Bạn chốt sau vụ bot bấm "Hoàn thành phối hợp" cho 8888/STC-TĐ khi Phòng chưa góp ý).** `phoi_hop(..., chi_bam=…)`:
+bot CHỈ bấm việc có id hoặc số ký hiệu trong `chi_bam` của yêu cầu (kho vlncn-laocai ghi: việc đã có văn bản đi của Sở trả lời, hoặc Bạn
+nhắn đã xong). Không có `chi_bam` = không bấm việc nào (lượt theo lịch chỉ tải). Việc đã tải mà chưa được duyệt ghi `cho-duyet` và vào sổ
+`theo-doi/egov/phoi-hop/_cho-duyet.json` — lượt sau không tải lại. Hàm thuần `_ph_duoc_bam` có phép thử trong `--chay-thu`.
+KHÔNG ghi yêu cầu `phoi-hop` nào khi còn máy chạy bản dưới 0.4.30 (bản cũ không biết `chi_bam`, sẽ bấm hết).

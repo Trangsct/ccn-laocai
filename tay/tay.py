@@ -33,6 +33,7 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "ket-thuc-nv", "viec": [{"id": "<workId>", "so": "<số ký hiệu>"}], "y_kien": "..."}  # Bạn cho phép 05/11/2026
   {"loai": "phoi-hop", "toi_da": 3, "chup_anh": 3}                 # ô Phối hợp: tải rồi bấm Hoàn thành phối hợp (11/11/2026)
   {"loai": "phoi-hop", "bat_lich": true}                           # Bạn duyệt lượt thử -> làm hết, bật lịch hằng sáng
+  {"loai": "phoi-hop", "chi_bam": ["<id hoặc số ký hiệu>"]}        # 19/11/2026: CHỈ bấm việc trong danh sách; không có thì chỉ tải
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
 trang_thai, may, luc, tom_tat.
 
@@ -68,7 +69,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.29 (17/11/2026)"
+PHIEN_BAN = "0.4.30 (19/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -487,7 +488,8 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
             ghi_trang_thai(phoi_hop_luc=datetime.now().isoformat(timespec="minutes"))
         ngay = date.today().isoformat()
         xong, tong = botd.phoi_hop(str(BOT_HOME / "ket-qua" / "phoi-hop" / ngay), toi_da=int(yc.get("toi_da") or PHOI_HOP_MOI_LUOT),
-                                   chup_anh=int(yc.get("chup_anh") or 0), bam=yc.get("bam", True) is not False)
+                                   chup_anh=int(yc.get("chup_anh") or 0), bam=yc.get("bam", True) is not False,
+                                   chi_bam=yc.get("chi_bam") or [])      # 19/11/2026: chỉ bấm việc trong danh sách duyệt
         return f"phối hợp egov1: bấm hoàn thành {xong}/{tong} việc, kết quả ở theo-doi/egov/phoi-hop/{ngay}/"
     if loai == "tim":
         ho_so = yc["ho_so"]
@@ -823,6 +825,10 @@ def chay_thu(botd):
                                                        "phoi_hop_tu_dong": True}) \
         == {"quet_luc": "2026-11-16T06:10", "phoi_hop_tu_dong": True}
     assert gop_moc({"quet_luc": "2026-11-16T06:10"}, {}) == {}
+    # 19/11/2026: ô Phối hợp chỉ bấm việc trong danh sách duyệt; không có danh sách thì không bấm việc nào
+    assert not botd._ph_duoc_bam("id-1", "8888/STC-TĐ", None) and not botd._ph_duoc_bam("id-1", "8888/STC-TĐ", set())
+    assert botd._ph_duoc_bam("id-1", "8888/STC-TĐ", {"id-1"}) and botd._ph_duoc_bam("id-2", "7749/CAT", {"7749/CAT"})
+    assert not botd._ph_duoc_bam("id-3", "", {"id-1", ""}) and not botd._ph_duoc_bam("", "", {""})
     t0 = datetime(2026, 11, 16, 6, 0)
     so = {"dang": {"quet": {"may": "A", "luc": "2026-11-16T05:55"}, "lay-lui": {"may": "A", "luc": "2026-11-15T22:20"}}}
     assert not duoc_nhan(so, "B", "quet", t0) and duoc_nhan(so, "A", "quet", t0) and duoc_nhan(so, "B", "viec", t0)

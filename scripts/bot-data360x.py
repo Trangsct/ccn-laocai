@@ -4920,6 +4920,18 @@ def _ph_viec(x):
             "tep": [], "ket_qua": "", "ghi_chu": ""}
 
 
+def _ph_duoc_bam(ma, so, chi_bam):
+    """Thuần túy (Bạn chốt 19/11/2026): việc chỉ được bấm Hoàn thành phối hợp khi id hoặc số ký hiệu nằm trong danh sách duyệt.
+    Danh sách rỗng / None = không việc nào được bấm."""
+    chi_bam = chi_bam or ()
+    return bool(ma) and str(ma) in chi_bam or bool(so) and str(so) in chi_bam
+
+
+def _ph_so(x):
+    vb = (x.get("documentApis") or [{}])[0] if isinstance(x.get("documentApis"), list) and x.get("documentApis") else {}
+    return str((vb or {}).get("symbol") or "") if isinstance(vb, dict) else ""
+
+
 def _ph_md(rows, ngay):
     dong = [f"# Việc phối hợp trên egov1 — {'/'.join(reversed(ngay.split('-')))}", "",
             "Bot tải toàn văn + đính kèm (chữ ở `theo-doi/<năm>/`, tệp gốc trên máy) rồi bấm **Hoàn thành phối hợp → Đồng ý!**"
@@ -5105,9 +5117,12 @@ def _ph_bam_hoan_thanh(page, v, anh=None):
     return f"{NUT_HOAN_THANH_PH} -> Đồng ý!"
 
 
-def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
+def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True, chi_bam=None):
     """--phoi-hop: đọc ô Phối hợp, tải toàn văn + đính kèm từng việc, đẩy bản chữ lên kho, rồi bấm Hoàn thành phối hợp.
     toi_da: số việc tối đa lượt này (lượt thử 3); chup_anh: chụp ảnh n việc đầu; bam=False: chỉ tải, không bấm.
+    chi_bam (Bạn chốt 19/11/2026, sau vụ 8888/STC-TĐ bị bấm khi Phòng chưa góp ý): danh sách id / số ký hiệu ĐƯỢC PHÉP bấm - việc đã
+    có văn bản đi của Sở trả lời, hoặc Bạn nhắn đã xong (kho vlncn-laocai ghi vào yêu cầu). Việc ngoài danh sách chỉ tải, ghi
+    "cho-duyet" và vào sổ _cho-duyet.json (lượt sau không tải lại). Không có chi_bam = không bấm việc nào.
     Kết quả: luu_vao/ket-qua.json, README.md, anh/ -> theo-doi/egov/phoi-hop/<ngày>/. Trả (đã hoàn thành, số việc lượt này)."""
     from playwright.sync_api import sync_playwright
     ngay = date.today().isoformat()
@@ -5118,6 +5133,10 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
         log("Phối hợp: chỉ chạy trên egov1 và cần github_token")
         return 0, 0
     da_bam, sha_bam = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/_da-bam.json", token, {})
+    chi_bam = {str(x).strip() for x in (chi_bam or []) if str(x).strip()}
+    cho_duyet, sha_cd = _json_gh(REPO_TRI_THUC, f"{PH_THU_MUC}/_cho-duyet.json", token, {})
+    if not isinstance(cho_duyet, dict):
+        cho_duyet = {}
     # Sổ việc "không còn" (0.4.28, 16/11/2026): API type=cooperate vẫn liệt kê việc đã hoàn thành phối hợp; trước đây mỗi lượt
     # lại lọc lại đúng các việc đó, 3 việc đầu lọc không ra là DỪNG -> lịch phối hợp sáng 16/11 kẹt ở 0/3. Nay việc đã lọc
     # không ra 2 lượt thì bỏ hẳn; mới 1 lượt thì xếp cuối để kiểm lại một lần; quy tắc DỪNG chỉ tính việc chưa từng gặp.
@@ -5167,9 +5186,11 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                 return [_gon(w) for w in o] if isinstance(o, list) else o
             (luu_vao / "api-phoi-hop.json").write_text(json.dumps(_gon(ds[:5]), ensure_ascii=False, indent=1),
                                                        encoding="utf-8")
+            duoc = lambda x: _ph_duoc_bam(x.get("id"), _ph_so(x), chi_bam)
             hang = [x for x in ds if str(x.get("id")) not in da_bam
-                    and int((khong_con.get(str(x.get("id"))) or {}).get("lan", 0)) < 2]
-            hang.sort(key=lambda x: 1 if str(x.get("id")) in khong_con else 0)      # việc chưa từng gặp làm trước
+                    and int((khong_con.get(str(x.get("id"))) or {}).get("lan", 0)) < 2
+                    and (duoc(x) or str(x.get("id")) not in cho_duyet)]             # việc đã tải, đang chờ duyệt: không tải lại
+            hang.sort(key=lambda x: (0 if duoc(x) else 1, 1 if str(x.get("id")) in khong_con else 0))   # việc được duyệt bấm trước
             log(f"[phối hợp] ô Phối hợp có {len(ds)} việc, chưa bấm {len(hang)}; lượt này tối đa {toi_da or 'hết'}")
             if toi_da:
                 hang = hang[:int(toi_da)]
@@ -5313,6 +5334,12 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                 if not bam:
                     v.update(ket_qua="loi-bam", ghi_chu="đã tải; lượt chạy với bam=False nên chưa bấm")
                     continue
+                if not _ph_duoc_bam(v["id"], v["so"], chi_bam):
+                    v.update(ket_qua="cho-duyet", ghi_chu="đã tải; chưa có văn bản đi của Sở trả lời và Bạn chưa báo xong - KHÔNG bấm")
+                    cho_duyet[str(v["id"])] = {"so": v["so"], "ngay": v.get("ngay", ""), "don_vi": v.get("don_vi", ""),
+                                               "trich_yeu": (v.get("trich_yeu") or "")[:300], "xu_ly_chinh": v.get("xu_ly_chinh", ""),
+                                               "han": v.get("han", ""), "luc": datetime.now().isoformat(timespec="minutes")}
+                    continue
                 try:
                     v["ghi_chu"] = "đã bấm: " + _ph_bam_hoan_thanh(page, v, v["_anh"])
                     # API danh sách type=cooperate VẪN liệt kê việc đã bấm (lượt thử 2, 11/11/2026: 1684/UBND báo "Báo cáo
@@ -5324,6 +5351,7 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
                         v["ghi_chu"] += f"; egov1 báo: {tb or '(không thấy thông báo)'}" + (
                             "; dòng đã rời danh sách" if con is False else "; danh sách còn hiện dòng" if con else "")
                         da_bam[v["id"]] = {"so": v["so"], "luc": datetime.now().isoformat(timespec="minutes")}
+                        cho_duyet.pop(str(v["id"]), None)
                         xong += 1
                     else:
                         v.update(ket_qua="loi-bam", ghi_chu=v["ghi_chu"] + "; không thấy thông báo thành công" + (
@@ -5356,6 +5384,8 @@ def phoi_hop(luu_vao=None, toi_da=None, chup_anh=0, bam=True, day_len=True):
         try:
             gh_ghi(REPO_TRI_THUC, f"{PH_THU_MUC}/_da-bam.json", json.dumps(da_bam, ensure_ascii=False, indent=1).encode(),
                    f"Việc chờ xử lý egov1 {ngay}: sổ phối hợp đã bấm", token, sha_bam)
+            gh_ghi(REPO_TRI_THUC, f"{PH_THU_MUC}/_cho-duyet.json", json.dumps(cho_duyet, ensure_ascii=False, indent=1).encode(),
+                   f"Việc chờ xử lý egov1 {ngay}: sổ phối hợp chờ duyệt", token, sha_cd)
         except Exception as e:
             log("  [phối hợp] không ghi được _da-bam.json:", str(e)[:120])
         try:
