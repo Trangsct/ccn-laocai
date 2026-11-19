@@ -84,5 +84,5 @@
     "silent": true,
     "autoJobCancelation": true
   },
-  "ignoreCommand": "git rev-parse -q --verify HEAD^ >/dev/null || exit 1; git diff --quiet HEAD^ HEAD -- . ':(exclude)bot' ':(exclude)scripts' ':(exclude)tay' ':(exclude)docs' ':(exclude).github' ':(exclude).claude' ':(exclude)*.md' ':(exclude)CLAUDE.md'"
+  "ignoreCommand": "git rev-parse -q --verify HEAD^ >/dev/null 2>&1 && { git diff --quiet HEAD^ HEAD -- . ':!bot' ':!scripts' ':!tay' ':!docs' ':!.github' ':!.claude' ':!*.md'; exit $?; }; echo \"$VERCEL_GIT_COMMIT_MESSAGE\" | grep -qE '^(TAY|Bot|Ô) '"
 }

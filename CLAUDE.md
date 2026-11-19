@@ -264,3 +264,10 @@ bot CHỈ bấm việc có id hoặc số ký hiệu trong `chi_bam` của yêu 
 nhắn đã xong). Không có `chi_bam` = không bấm việc nào (lượt theo lịch chỉ tải). Việc đã tải mà chưa được duyệt ghi `cho-duyet` và vào sổ
 `theo-doi/egov/phoi-hop/_cho-duyet.json` — lượt sau không tải lại. Hàm thuần `_ph_duoc_bam` có phép thử trong `--chay-thu`.
 KHÔNG ghi yêu cầu `phoi-hop` nào khi còn máy chạy bản dưới 0.4.30 (bản cũ không biết `chi_bam`, sẽ bấm hết).
+
+**Vercel dựng lại cả trang web mỗi lần sửa bot (phát hiện 19/11/2026, Vercel báo dùng 75% dung lượng 10 GB).** `.vercelignore` có dòng `.git`
+nên bước `ignoreCommand` không còn kho git → `git rev-parse` lỗi → luôn dựng: mỗi bản TAY tạo 2 lượt dựng (preview + production) của toàn bộ
+trang (~100 MB), 27 lượt trong 7 ngày. Đã bỏ dòng `.git` khỏi `.vercelignore`; `ignoreCommand` (≤ 256 ký tự) nay: có git thì so tệp đổi
+(bỏ qua khi chỉ đổi `bot/`, `scripts/`, `tay/`, `docs/`, `.github/`, `.claude/`, `*.md`), không có git thì xét câu commit — bỏ qua khi bắt đầu
+bằng "TAY ", "Bot ", "Ô ". **Commit sửa bot luôn bắt đầu bằng "TAY <phiên bản>:"**. Kiểm: sau khi merge một bản TAY, danh sách deployments của
+dự án Vercel `deploy` phải ra CANCELED chứ không phải READY.
