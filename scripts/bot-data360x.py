@@ -1818,6 +1818,7 @@ def tim_van_ban(can_tim, luu_vao, so_ngay_lui=3, online=False):
                 ok, ctx, page = cho_dang_nhap(ctx, page, p)
                 if not ok:
                     return 3
+            _EGOV_TIM_BO_QUA.clear()
             for nguon in ("den", "di"):
                 # Tìm từng số trong ô tìm kiếm của cổng (17/9/2026); không có ô tìm thì lật trang như cũ
                 rows = []
@@ -2029,7 +2030,7 @@ def _tach_yeu_cau(yeu_cau):
     return so, tu_khoa
 
 
-def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
+def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False, nguon=None):
     """CÁNH TAY CỦA CLAUDE (Bạn chốt 17/9/2026): Claude đang làm việc cần văn bản nào thì ra lệnh cho bot vào
     Data360X lấy đúng văn bản đó, không phải chờ lượt quét tuần.
 
@@ -2037,6 +2038,7 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
     Quét cả văn bản đến và đi trong so_ngay ngày gần nhất, tải mọi dòng khớp, lưu vào luu_vao:
       <số>.md   chữ trong văn bản (kèm số, ngày, đơn vị, đường dẫn bản gốc ở đầu) - bản scan thì .pdf
       _ket-qua.json + README.md   thấy gì, thiếu gì, để Claude đọc ngay
+    nguon: "den" / "di" = chỉ tìm một chiều (TAY 0.5.2: lượt 22/11/2026 lấy 20 văn bản đi mất 20 phút tìm vô ích bên văn bản đến).
     """
     from playwright.sync_api import sync_playwright
 
@@ -2074,7 +2076,9 @@ def lay_theo_yeu_cau(yeu_cau, luu_vao, so_ngay=60, online=False):
             chuoi_tim = sorted({phan_so(v) for v in so.values()}) + tu_khoa_goc
             da_co = set()      # khử trùng trên CẢ hai bảng (vụ 17/9: 5612/TTr-SCT bị ghi hai lần)
             can_lay = []       # (vb, nguon, ly_do, khoa)
-            for nguon in (("den", "di") if chuoi_tim else ()):
+            _EGOV_TIM_BO_QUA.clear()
+            chieu = (nguon,) if nguon in ("den", "di") else ("den", "di")
+            for nguon in (chieu if chuoi_tim else ()):
                 # Gõ từng mục vào ô tìm kiếm của cổng; ô tìm không có thì lật trang trong khoảng ngày như cũ
                 rows = []
                 for chuoi in chuoi_tim:
@@ -3422,8 +3426,25 @@ def _egov_go_tim(page, chuoi):
     return True
 
 
+_EGOV_TIM_BO_QUA = {}     # nguon -> (giờ, các dòng) khi API Tra cứu bỏ qua term (TAY 0.5.2)
+
+
+def _api_bo_qua_term(rows, chuoi):
+    """True nếu API trả cả danh sách thay vì kết quả tìm (vụ 22/11/2026: tab Tra cứu văn bản đi trả 4.000 dòng cho
+    mọi số, mỗi lần đọc lại mất 1 phút)."""
+    if len(rows) <= 50:
+        return False
+    c = bo_dau(chuoi)
+    khop = sum(1 for r in rows if c in bo_dau(f"{r.get('so_ky_hieu', '')} {r.get('trich_yeu', '')}"))
+    return khop * 2 < len(rows)
+
+
 def _egov_tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
     """Thay tim_tren_cong của Data360X: gõ số ký hiệu / từ khóa vào ô tìm của bảng rồi đọc kết quả."""
+    nho = _EGOV_TIM_BO_QUA.get(nguon)
+    if nho and time.time() - nho[0] < 3600:
+        log(f"  ({nguon}) API tìm '{chuoi}': dùng lại {len(nho[1])} dòng đã đọc (cổng bỏ qua từ khóa)")
+        return nho[1]
     kq = _egov_mo_danh_sach(page, nguon, tra_cuu=True)
     if not kq:
         return None
@@ -3432,6 +3453,8 @@ def _egov_tim_tren_cong(page, nguon, chuoi, toi_da_trang=10):
         rows = _egov_api_danh_sach(page, nguon, date(2000, 1, 1), _doi_tham_so(moi[1], term=chuoi))
         if rows is not None:
             log(f"  ({nguon}) API tìm '{chuoi}': {len(rows)} dòng")
+            if _api_bo_qua_term(rows, chuoi):
+                _EGOV_TIM_BO_QUA[nguon] = (time.time(), rows)
             return rows
     if not _egov_go_tim(page, chuoi):
         log(f"  ({nguon}) không thấy ô tìm kiếm - lật trang như cũ")
@@ -3524,8 +3547,10 @@ def _egov_mo_va_tai_tep(ctx, page, vb, soi_dir=None):
         # Văn bản ĐI lấy từ API danh sách không có đường dẫn; tìm lại trên danh sách thường không thấy dòng (vụ 11/11/2026:
         # 6674, 5763/GP-SCT "không thấy dòng ... để mở chi tiết" -> không tải được PDF giấy phép). 240 văn bản đi đã lấy
         # được đều ở trang /document/xem-di-360-xem?documentId=<mã 32 ký tự> -> mở thẳng trang đó trước, không có tệp thì về cách cũ.
+        # TAY 0.5.2: văn bản đi cũ chuyển từ Data360X có mã toàn chữ số (vụ 22/11/2026: 5667/QĐ-SCT mã 2969074 ... 20 văn bản
+        # tháng 9 đều "không thấy dòng") -> cũng thử trang xem-di-360-xem như văn bản đến số mở ở xem-den-360-xem.
         ma = str(vb.get("id_data360x") or "")
-        if vb.get("nguon") == "di" and not vb.get("url_chi_tiet") and re.fullmatch(r"[0-9A-Fa-f]{32}", ma):
+        if vb.get("nguon") == "di" and not vb.get("url_chi_tiet") and re.fullmatch(r"[0-9A-Fa-f]{32}|\d{4,}", ma):
             vb["url_chi_tiet"] = f"{EGOV_GOC}/document/xem-di-360-xem?documentId={ma}"
             try:
                 _egov_mo_va_tai_tep_mot(ctx, page, vb, soi_dir)

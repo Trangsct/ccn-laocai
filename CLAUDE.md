@@ -288,6 +288,8 @@ giây xem lại, Bạn rời máy là làm ngay. (4) Bước `mo-web` (chỉ htt
 `ranh_giay` để Claude trên web chọn máy. Phía gửi: `scripts/tay_man_hinh.py` kho vlncn-laocai (`may`, `chup`, `gui`, `ket-qua`) — chỉ dùng git,
 commit đúng một tệp lên main bằng `mktree --missing` (không nạp cả cây: kho có tên tệp Windows không cho, và clone `--filter=blob:none`).
 
+**TAY 0.5.2 (22/11/2026, Bạn: "tiếp tục hoàn thiện tool làm việc").** Lượt `lay` 20 văn bản đi tháng 9 (5667/QĐ-SCT…) chạy 45 phút mà không tải được tệp nào. Ba nguyên nhân, ba chỗ sửa: (1) văn bản đi cũ chuyển từ Data360X có mã toàn chữ số (2969074) chứ không phải mã 32 ký tự → `_egov_mo_va_tai_tep` nay cũng mở thẳng `xem-di-360-xem?documentId=<số>` trước khi tìm trên danh sách (danh sách không bao giờ thấy dòng). (2) API tab Tra cứu văn bản đi bỏ qua `term=`: mỗi số đọc lại 4.000 dòng (~1 phút) → `_api_bo_qua_term` nhận ra, `_EGOV_TIM_BO_QUA` giữ danh sách cho cả lượt (xóa đầu mỗi `lay_theo_yeu_cau`, `tim_van_ban`; hạn 1 giờ). (3) Yêu cầu `lay` nhận `"nguon": "di"` hoặc `"den"` để chỉ tìm một chiều (lượt trên mất 17 phút tìm 20 số văn bản đi bên văn bản đến).
+
 **Vercel dựng lại cả trang web mỗi lần sửa bot (phát hiện 19/11/2026, Vercel báo dùng 75% dung lượng 10 GB).** `.vercelignore` có dòng `.git`
 nên bước `ignoreCommand` không còn kho git → `git rev-parse` lỗi → luôn dựng: mỗi bản TAY tạo 2 lượt dựng (preview + production) của toàn bộ
 trang (~100 MB), 27 lượt trong 7 ngày. Đã bỏ dòng `.git` khỏi `.vercelignore`; `ignoreCommand` (≤ 256 ký tự) nay: có git thì so tệp đổi

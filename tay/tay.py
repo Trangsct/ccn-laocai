@@ -73,7 +73,7 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.5.1 (22/11/2026)"
+PHIEN_BAN = "0.5.2 (22/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
@@ -475,7 +475,8 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
         ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M")
         luu_kho = yc.get("luu") or f"theo-doi/yeu-cau/{ten}"
         luu_may = BOT_HOME / "ket-qua" / ten
-        ma = botd.lay_theo_yeu_cau(yc.get("yeu_cau", ""), str(luu_may), so_ngay=int(yc.get("ngay") or 60))
+        chieu = {"nguon": yc["nguon"]} if yc.get("nguon") in ("den", "di") else {}     # 0.5.2: chỉ tìm một chiều
+        ma = botd.lay_theo_yeu_cau(yc.get("yeu_cau", ""), str(luu_may), so_ngay=int(yc.get("ngay") or 60), **chieu)
         so = gh.day_thu_muc(KHO_VIEC, luu_may, luu_kho, f"Lay van ban theo yeu cau: {ten}")
         return f"lấy văn bản: mã {ma}, đẩy {so} tệp vào {luu_kho}/"
     if loai == "ket-thuc-nv":
@@ -907,6 +908,12 @@ def chay_thu(botd):
                 "phoi_hop", "soi_trang", "phoi_hop_van_ban_di"):
         assert hasattr(botd, ham), f"bot thiếu hàm {ham}"
     assert botd.HE_THONG == "egov", botd.HE_THONG      # cổng mặc định từ 29/10/2026
+    # 0.5.2: API Tra cứu bỏ qua từ khóa -> nhận ra để đọc danh sách một lần; lay_theo_yeu_cau nhận nguon
+    _ds = [{"so_ky_hieu": f"{n}/SCT-CN", "trich_yeu": "x"} for n in range(5000, 5100)]
+    assert botd._api_bo_qua_term(_ds, "5050") and not botd._api_bo_qua_term(_ds[:3], "5050")
+    assert not botd._api_bo_qua_term([{"so_ky_hieu": f"5050/SCT-{i}", "trich_yeu": ""} for i in range(60)], "5050")
+    import inspect as _ins
+    assert "nguon" in _ins.signature(botd.lay_theo_yeu_cau).parameters
     # các phép thử cũ bỏ "lich-lanh-dao" (thêm 0.4.10, có phép thử riêng ngay dưới)
     L = lambda t, tt: [l for l, _ in viec_theo_lich(t, tt) if l != "lich-lanh-dao"]
     assert "lich-lanh-dao" in [l for l, _ in viec_theo_lich(datetime(2026, 11, 10, 6, 25), {})]
