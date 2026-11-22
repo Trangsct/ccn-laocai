@@ -278,6 +278,16 @@ không làm; kéo chuột lên GÓC TRÊN BÊN TRÁI là dừng khẩn (cả hai
 4000 ký tự, chờ 30 giây mỗi bước. KHÔNG dùng để gõ mật khẩu, đăng nhập hộ, giải captcha, chuyển tiền, mở liên kết lạ.
 `man_hinh.py`, `man_hinh_mcp.py` nằm cạnh `tay.py` và tự cập nhật như `tay.py` (`TEP_MA`); đổi `man_hinh.py` thì TAY khởi động lại.
 
+**TAY 0.5.1 (22/11/2026, Bạn: TAY là "cánh tay, con mắt, con chuột, bàn phím" cho Claude trên máy VÀ Claude trên web).**
+(1) CHUÔNG: giữa hai vòng 10 phút, cứ 20 giây `Chuong.rung()` hỏi `contents/yeu-cau` kho vlncn-laocai với `If-None-Match`; 304 không tính
+giới hạn gọi API (đo 22/11: 3 lần hỏi tốn 1 lượt); đổi thì làm vòng mới ngay → mọi loại yêu cầu, không riêng màn hình, được nhận sau ~20 giây.
+Bỏ chế độ "nhanh 15 phút" của 0.5.0. (2) `het_han` (ISO, có múi giờ) cho yêu cầu `man-hinh`: quá hạn thì nhận rồi ghi `loi` "quá hạn",
+không bấm theo tọa độ của ảnh cũ. (3) Chờ Bạn rời máy mặc định 20 giây (Bạn hay ngồi ngay máy nhắn Claude trên web); đang chờ thì cứ 20
+giây xem lại, Bạn rời máy là làm ngay. (4) Bước `mo-web` (chỉ http/https, `os.startfile`) — cả MCP (`mo_web`). (5) Ảnh qua hàng đợi là JPG
+(nhẹ 3–5 lần; `"dinh_dang": "png"` nếu cần nét). (6) Nhịp tim `trang-thai/tay.json` (và `cac_may`) thêm `man_hinh`, `man_hinh_khoa`,
+`ranh_giay` để Claude trên web chọn máy. Phía gửi: `scripts/tay_man_hinh.py` kho vlncn-laocai (`may`, `chup`, `gui`, `ket-qua`) — chỉ dùng git,
+commit đúng một tệp lên main bằng `mktree --missing` (không nạp cả cây: kho có tên tệp Windows không cho, và clone `--filter=blob:none`).
+
 **Vercel dựng lại cả trang web mỗi lần sửa bot (phát hiện 19/11/2026, Vercel báo dùng 75% dung lượng 10 GB).** `.vercelignore` có dòng `.git`
 nên bước `ignoreCommand` không còn kho git → `git rev-parse` lỗi → luôn dựng: mỗi bản TAY tạo 2 lượt dựng (preview + production) của toàn bộ
 trang (~100 MB), 27 lượt trong 7 ngày. Đã bỏ dòng `.git` khỏi `.vercelignore`; `ignoreCommand` (≤ 256 ký tự) nay: có git thì so tệp đổi

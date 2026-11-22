@@ -21,6 +21,7 @@ Bước (dict, khóa "lam"):
   {"lam": "cuon", "so": -5}                         cuộn chuột (âm = xuống); "x", "y" để cuộn tại một điểm
   {"lam": "cho", "giay": 2}                         chờ (tối đa 30 giây)
   {"lam": "cua-so", "tieu_de": "Google Drive"}      đưa cửa sổ có tiêu đề chứa chuỗi này lên trước
+  {"lam": "mo-web", "url": "https://drive.google.com"}   mở trang web bằng trình duyệt mặc định (chỉ http, https)
 
 AN TOÀN (giữ nguyên các nguyên tắc của TAY):
   - DỪNG KHẨN: Bạn kéo chuột lên GÓC TRÊN BÊN TRÁI màn hình -> mọi bước còn lại bị hủy.
@@ -252,6 +253,13 @@ def chup(vung=None):
                  f"cửa sổ đang chọn: {cs.get('tieu_de', '') or '(không có)'}")
 
 
+def anh_jpg(anh, chat_luong=80) -> bytes:
+    """Ảnh gửi lên kho qua hàng đợi: JPG nhẹ hơn PNG 3-5 lần, chữ vẫn đọc được."""
+    b = io.BytesIO()
+    anh.convert("RGB").save(b, "JPEG", quality=chat_luong, optimize=True)
+    return b.getvalue()
+
+
 def anh_png(anh) -> bytes:
     b = io.BytesIO()
     anh.save(b, "PNG", optimize=True)
@@ -467,6 +475,12 @@ def kiem_buoc(ds) -> list:
             if isinstance(g, bool) or not isinstance(g, (int, float)) or not 0 < g <= TOI_DA_CHO:
                 raise ValueError(f"bước {i}: 'giay' từ 0 đến {TOI_DA_CHO}")
             n["giay"] = float(g)
+        elif lam == "mo-web":
+            url = b.get("url")
+            if not isinstance(url, str) or not url.lower().startswith(("http://", "https://")) or len(url) > 2000 \
+                    or any(c in url for c in ' "\n\r\t'):
+                raise ValueError(f"bước {i}: 'url' phải là địa chỉ http:// hoặc https:// (không dấu cách)")
+            n["url"] = url
         elif lam == "cua-so":
             if not isinstance(b.get("tieu_de"), str) or not b["tieu_de"].strip():
                 raise ValueError(f"bước {i} thiếu 'tieu_de'")
@@ -508,14 +522,19 @@ def lam_buoc(b: dict):
         while time.time() < het:                  # chờ mà vẫn nghe dừng khẩn
             time.sleep(0.2)
             kiem_dung_khan()
+    elif lam == "mo-web":
+        os.startfile(b["url"])                    # trình duyệt mặc định của Bạn; đã kiểm chỉ http, https
+        return None, "đã mở trang (trang tải chậm thì thêm bước cho)"
     elif lam == "cua-so":
         cs = chon_cua_so(b["tieu_de"])
         return None, f"đã chọn cửa sổ '{cs['tieu_de']}' ({cs['ung_dung']})"
     return None, "OK"
 
 
-def chay(ds, thu_muc, chup_cuoi=True, log=print) -> dict:
-    """Làm cả danh sách bước, lưu ảnh và README.md vào thu_muc. Không ném lỗi: lỗi ghi vào kết quả."""
+def chay(ds, thu_muc, chup_cuoi=True, log=print, dinh_dang="png") -> dict:
+    """Làm cả danh sách bước, lưu ảnh và README.md vào thu_muc. Không ném lỗi: lỗi ghi vào kết quả.
+    dinh_dang "jpg" cho ảnh đẩy lên kho (nhẹ), "png" khi dùng trên máy."""
+    duoi, ghi_anh = (".jpg", anh_jpg) if dinh_dang == "jpg" else (".png", anh_png)
     from pathlib import Path
     thu_muc = Path(thu_muc)
     thu_muc.mkdir(parents=True, exist_ok=True)
@@ -536,8 +555,8 @@ def chay(ds, thu_muc, chup_cuoi=True, log=print) -> dict:
             try:
                 anh, ghi_chu = lam_buoc(b)
                 if anh is not None:
-                    ten = f"{i:02d}-chup.png"
-                    (thu_muc / ten).write_bytes(anh_png(anh))
+                    ten = f"{i:02d}-chup{duoi}"
+                    (thu_muc / ten).write_bytes(ghi_anh(anh))
                     anh_ds.append(ten)
                     ghi_chu = f"{ghi_chu} -> {ten}"
                 dong.append((i, mo_ta(b), ghi_chu))
@@ -553,9 +572,9 @@ def chay(ds, thu_muc, chup_cuoi=True, log=print) -> dict:
             try:
                 time.sleep(0.5)
                 anh, ghi_chu = chup()
-                (thu_muc / "cuoi.png").write_bytes(anh_png(anh))
-                anh_ds.append("cuoi.png")
-                dong.append(("cuối", "chup", f"{ghi_chu} -> cuoi.png"))
+                (thu_muc / f"cuoi{duoi}").write_bytes(ghi_anh(anh))
+                anh_ds.append(f"cuoi{duoi}")
+                dong.append(("cuối", "chup", f"{ghi_chu} -> cuoi{duoi}"))
             except Exception as e:
                 dong.append(("cuối", "chup", f"LỖI: {e}"))
     cua_so = []
