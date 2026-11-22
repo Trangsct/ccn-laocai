@@ -265,6 +265,19 @@ nhắn đã xong). Không có `chi_bam` = không bấm việc nào (lượt theo
 `theo-doi/egov/phoi-hop/_cho-duyet.json` — lượt sau không tải lại. Hàm thuần `_ph_duoc_bam` có phép thử trong `--chay-thu`.
 KHÔNG ghi yêu cầu `phoi-hop` nào khi còn máy chạy bản dưới 0.4.30 (bản cũ không biết `chi_bam`, sẽ bấm hết).
 
+**TAY 0.5.0 (22/11/2026, Bạn: "viết thêm công cụ điều khiển màn hình cho nó").** Lõi `tay/man_hinh.py` (chỉ ctypes + Pillow, không
+pyautogui): chụp màn hình (thu về rộng 1568, dấu thập đỏ = chuột), bấm / bấm đúp / chuột phải, di, kéo, gõ Unicode (tiếng Việt không qua
+Unikey), phím và tổ hợp (`ctrl+s`, `win+r`), cuộn, liệt kê và đưa cửa sổ lên trước. Tọa độ LUÔN theo ảnh chụp toàn màn hình.
+Hai lối vào: (1) yêu cầu `{"loai": "man-hinh", "tren_may": "<tên máy>", "buoc": [...]}` trong `yeu-cau/` kho vlncn-laocai (bước và
+khóa xem docstring `man_hinh.py`), kết quả ảnh + README.md vào `theo-doi/man-hinh/<ten>/`; sau mỗi yêu cầu màn hình TAY xem hàng đợi
+mỗi 30 giây trong 15 phút để Claude làm tiếp từng nhịp chụp → bấm → chụp. (2) `tay/man_hinh_mcp.py`: máy chủ MCP stdio tự viết (không
+cần gói `mcp`) cho Claude Code chạy trên máy: `claude mcp add --scope user man-hinh -- python D:\du-an\bot\man_hinh_mcp.py`.
+CHỐT AN TOÀN: lối (1) TẮT cho tới khi Bạn tự ghi `"man_hinh": true` vào `bot-profile\config.json` của từng máy; chỉ làm khi Bạn đã rời
+chuột, bàn phím `cho_ranh` giây (mặc định 60), không thì yêu cầu nằm `cho` (không làm lượt bê văn bản đêm phải nhường); màn khóa thì
+không làm; kéo chuột lên GÓC TRÊN BÊN TRÁI là dừng khẩn (cả hai lối); bấm vào góc đó bị từ chối từ khâu kiểm bước. Tối đa 60 bước, gõ
+4000 ký tự, chờ 30 giây mỗi bước. KHÔNG dùng để gõ mật khẩu, đăng nhập hộ, giải captcha, chuyển tiền, mở liên kết lạ.
+`man_hinh.py`, `man_hinh_mcp.py` nằm cạnh `tay.py` và tự cập nhật như `tay.py` (`TEP_MA`); đổi `man_hinh.py` thì TAY khởi động lại.
+
 **Vercel dựng lại cả trang web mỗi lần sửa bot (phát hiện 19/11/2026, Vercel báo dùng 75% dung lượng 10 GB).** `.vercelignore` có dòng `.git`
 nên bước `ignoreCommand` không còn kho git → `git rev-parse` lỗi → luôn dựng: mỗi bản TAY tạo 2 lượt dựng (preview + production) của toàn bộ
 trang (~100 MB), 27 lượt trong 7 ngày. Đã bỏ dòng `.git` khỏi `.vercelignore`; `ignoreCommand` (≤ 256 ký tự) nay: có git thì so tệp đổi
