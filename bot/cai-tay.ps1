@@ -80,6 +80,7 @@ if ($chrome) { Tot "Chrome: $chrome" } else { Loi 'Khong thay Google Chrome tren
 Tieu-De '3/5  Tai tay.py, bot-data360x.py va file phu tro'
 $ok = $true
 foreach ($cap in @(@('tay/tay.py', "$BotDir\tay.py"), @('scripts/bot-data360x.py', "$BotDir\bot-data360x.py"),
+                   @('tay/man_hinh.py', "$BotDir\man_hinh.py"), @('tay/man_hinh_mcp.py', "$BotDir\man_hinh_mcp.py"),
                    @('bot/dang-nhap-lan-dau.bat', "$BotDir\dang-nhap-lan-dau.bat"), @('bot/cai-tay.bat', "$BotDir\cai-tay.bat"))) {
     if (Tai $cap[0] $cap[1]) { Bao "da tai $(Split-Path $cap[1] -Leaf)" } else { Loi "KHONG tai duoc $($cap[0])"; $ok = $false }
 }

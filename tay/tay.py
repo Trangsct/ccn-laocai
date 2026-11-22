@@ -34,6 +34,10 @@ Tệp yêu cầu (Claude hoặc workflow yeu-cau.yml ghi):
   {"loai": "phoi-hop", "toi_da": 3, "chup_anh": 3}                 # ô Phối hợp: tải rồi bấm Hoàn thành phối hợp (11/11/2026)
   {"loai": "phoi-hop", "bat_lich": true}                           # Bạn duyệt lượt thử -> làm hết, bật lịch hằng sáng
   {"loai": "phoi-hop", "chi_bam": ["<id hoặc số ký hiệu>"]}        # 19/11/2026: CHỈ bấm việc trong danh sách; không có thì chỉ tải
+  {"loai": "man-hinh", "tren_may": "<tên máy>", "buoc": [{"lam": "chup"}, {"lam": "bam", "x": 640, "y": 300}],
+   "het_han": "2026-11-22T10:45:00+07:00", "cho_ranh": 20}         # 22/11/2026: điều khiển màn hình (man_hinh.py), xem lam_man_hinh
+Hàng đợi có CHUÔNG (0.5.1): giữa hai vòng 10 phút, cứ NGHE_GIAY giây hỏi GitHub thư mục yeu-cau/ có đổi không (ETag, 304 không tính
+giới hạn gọi API); đổi thì làm vòng mới ngay -> Claude trên web gửi việc khoảng 20 giây sau là TAY nhận.
 Kết quả về đúng thư mục "luu" trong kho riêng tư (README.md + .md/.pdf), tệp yêu cầu được cập nhật
 trang_thai, may, luc, tom_tat.
 
@@ -69,11 +73,14 @@ for _luong in (sys.stdout, sys.stderr):
         pass
 
 CHU_KY_PHUT = 10
-PHIEN_BAN = "0.4.30 (19/11/2026)"
+PHIEN_BAN = "0.5.1 (22/11/2026)"
 OWNER = "Trangsct"
 KHO_MA = "ccn-laocai"          # công khai: tay.py, bot-data360x.py
 KHO_VIEC = "vlncn-laocai"      # riêng tư: yeu-cau/, theo-doi/, trang-thai/
-TEP_MA = {"tay.py": "tay/tay.py", "bot-data360x.py": "scripts/bot-data360x.py"}
+TEP_MA = {"tay.py": "tay/tay.py", "bot-data360x.py": "scripts/bot-data360x.py",
+          "man_hinh.py": "tay/man_hinh.py", "man_hinh_mcp.py": "tay/man_hinh_mcp.py"}
+TEP_CANH_TAY = ("man_hinh.py", "man_hinh_mcp.py")     # nằm cạnh tay.py (trên máy: bot/, trong kho: tay/)
+TEP_KHOI_DONG_LAI = ("tay.py", "bot-data360x.py", "man_hinh.py")
 GIU_LOG_NGAY = 14
 QUET_QUA_HAN_NGAY = 7
 
@@ -365,14 +372,15 @@ class GitHub:
 
 # ---------------------------------------------------------------- tự cập nhật
 def tu_cap_nhat(gh: GitHub) -> bool:
-    """Tệp mã trên main khác tệp trên máy thì tải về; trả True nếu tay.py hoặc bot-data360x.py đổi (khởi động lại)."""
+    """Tệp mã trên main khác tệp trên máy thì tải về; trả True nếu tay.py, bot-data360x.py, man_hinh.py đổi (khởi động lại)."""
     doi_tay = False
     for ten, duong_kho in TEP_MA.items():
         try:
             r = gh.api("GET", f"https://api.github.com/repos/{OWNER}/{KHO_MA}/contents/{duong_kho}?ref=main")
             if not r:
                 continue
-            dich = (Path(__file__).resolve() if ten == "tay.py" else BOT_DIR / ten)
+            dich = (Path(__file__).resolve() if ten == "tay.py"
+                    else Path(__file__).resolve().parent / ten if ten in TEP_CANH_TAY else BOT_DIR / ten)
             if dich.exists() and sha_git(dich) == r["sha"]:
                 continue
             noi_dung = base64.b64decode(r["content"])
@@ -381,7 +389,7 @@ def tu_cap_nhat(gh: GitHub) -> bool:
             log(f"Đã cập nhật {ten} từ main ({r['sha'][:7]})")
             # bot-data360x.py đã nạp sẵn trong bộ nhớ (nap_bot) nên đổi tệp cũng phải khởi động lại mới có hiệu lực
             # (vụ 05/11/2026: bot mới đọc danh sách Phụ trách đã tải về nhưng lượt việc 11:29 vẫn chạy bản cũ).
-            doi_tay = doi_tay or ten in ("tay.py", "bot-data360x.py")
+            doi_tay = doi_tay or ten in TEP_KHOI_DONG_LAI
         except Exception as e:
             log(f"Không kiểm tra được bản mới của {ten}:", repr(e))
     return doi_tay
@@ -491,6 +499,8 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
                                    chup_anh=int(yc.get("chup_anh") or 0), bam=yc.get("bam", True) is not False,
                                    chi_bam=yc.get("chi_bam") or [])      # 19/11/2026: chỉ bấm việc trong danh sách duyệt
         return f"phối hợp egov1: bấm hoàn thành {xong}/{tong} việc, kết quả ở theo-doi/egov/phoi-hop/{ngay}/"
+    if loai == "man-hinh":
+        return lam_man_hinh(gh, yc)
     if loai == "tim":
         ho_so = yc["ho_so"]
         raw, _ = gh.doc(KHO_VIEC, f"du-thao/{ho_so}/trich-dan.json")
@@ -505,6 +515,128 @@ def lam_viec(botd, gh: GitHub, loai: str, yc: dict, chay_thu=False) -> str:
                             f"Soat du thao: tai van ban vien dan cua {ho_so}")
         return f"tìm văn bản viện dẫn: mã {ma}, đẩy {so} tệp"
     raise RuntimeError(f"không biết loại việc '{loai}'")
+
+
+# ---------------------------------------------------------------- màn hình (0.5.0, 22/11/2026)
+# Bạn yêu cầu 22/11/2026: "viết thêm công cụ điều khiển màn hình" cho TAY. Lõi ở man_hinh.py (cạnh tay.py).
+# Chốt an toàn: (1) TẮT cho đến khi Bạn ghi "man_hinh": true vào bot-profile/config.json trên từng máy;
+# (2) chỉ làm khi Bạn đã rời chuột, bàn phím "cho_ranh" giây (mặc định 60), không thì để yêu cầu nằm "cho";
+# (3) màn khóa thì không làm; (4) Bạn kéo chuột lên góc trên bên trái là dừng khẩn;
+# (5) yêu cầu có "tren_may" thì chỉ máy đó nhận (màn hình là của từng máy).
+# 0.5.1: Bạn muốn TAY là "cánh tay, con mắt, con chuột, bàn phím" cho cả Claude trên máy và Claude trên web.
+# (6) "het_han" (ISO, có múi giờ): quá hạn thì KHÔNG làm, ghi "loi" — tọa độ tính từ ảnh cũ bấm muộn là bấm bừa;
+# (7) chờ Bạn rời máy mặc định 20 giây (Bạn hay ngồi ngay máy nhắn Claude trên web rồi chờ).
+MAN_HINH_CHO_RANH = 20
+NGHE_GIAY = 20                    # chuông hàng đợi
+_man_hinh = None
+_hoan_man_hinh = {"can": None}    # có yêu cầu màn hình đang chờ Bạn rời máy: số giây rảnh cần có
+
+
+def nap_man_hinh():
+    global _man_hinh
+    if _man_hinh is None:
+        duong = Path(__file__).resolve().parent / "man_hinh.py"
+        if not duong.exists():
+            raise RuntimeError(f"chưa có {duong} (vòng sau TAY tự tải từ main)")
+        spec = importlib.util.spec_from_file_location("man_hinh", duong)
+        _man_hinh = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_man_hinh)
+    return _man_hinh
+
+
+def man_hinh_bat(cfg: dict) -> bool:
+    return cfg.get("man_hinh") is True
+
+
+def qua_han(yc: dict, bay_gio=None) -> bool:
+    """het_han ISO 8601 (nên có múi giờ; không có thì hiểu là giờ máy). Sai định dạng coi như quá hạn cho an toàn."""
+    h = yc.get("het_han")
+    if not h:
+        return False
+    try:
+        han = datetime.fromisoformat(str(h).replace("Z", "+00:00"))
+    except ValueError:
+        return True
+    if han.tzinfo is None:
+        han = han.astimezone()
+    return (bay_gio or datetime.now().astimezone()) > han
+
+
+def nhan_duoc_man_hinh(yc: dict, may: str, cfg: dict, giay_ranh=None) -> str:
+    """'' = máy này nhận được yêu cầu màn hình ngay; khác '' = lý do để nằm chờ (máy khác hoặc lúc khác làm)."""
+    dich = (yc.get("tren_may") or "").strip()
+    if dich and dich.lower() != may.lower():
+        return f"dành cho máy {dich}"
+    if not man_hinh_bat(cfg):
+        return 'máy này chưa bật điều khiển màn hình ("man_hinh": true trong config.json)'
+    if qua_han(yc):
+        return ""                                               # nhận để ghi "loi: quá hạn", không để nằm mãi
+    can = yc.get("cho_ranh", MAN_HINH_CHO_RANH)
+    can = MAN_HINH_CHO_RANH if isinstance(can, bool) or not isinstance(can, (int, float)) else max(0, can)
+    if giay_ranh is None:
+        try:
+            giay_ranh = nap_man_hinh().giay_ranh()
+        except Exception as e:
+            return f"không đo được: {e!r}"[:200]
+    if giay_ranh < can:
+        if giay_ranh < 1e8:
+            _hoan_man_hinh["can"] = min(can, _hoan_man_hinh["can"] or can)
+        return f"Bạn đang dùng máy (rảnh {giay_ranh:.0f}/{can:.0f} giây)"
+    return ""
+
+
+def lam_man_hinh(gh, yc: dict) -> str:
+    """Làm các bước trên màn hình, đẩy ảnh + README.md vào theo-doi/man-hinh/<ten>/ (kho riêng tư)."""
+    if qua_han(yc):
+        raise RuntimeError(f"quá hạn {yc.get('het_han')}: không làm (tọa độ lấy từ ảnh cũ, bấm muộn là bấm bừa)")
+    mh = nap_man_hinh()
+    mh.kiem_buoc(yc.get("buoc"))                                # sai thì ném lỗi trước khi động vào chuột
+    ten = yc.get("ten") or datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    luu_may = BOT_HOME / "ket-qua" / "man-hinh" / ten
+    luu_kho = yc.get("luu") or f"theo-doi/man-hinh/{ten}"
+    kq = mh.chay(yc["buoc"], luu_may, chup_cuoi=yc.get("chup_cuoi", True) is not False, log=log,
+                 dinh_dang="png" if yc.get("dinh_dang") == "png" else "jpg")
+    ghi_trang_thai(man_hinh_luc=datetime.now().isoformat(timespec="seconds"))
+    so = gh.day_thu_muc(KHO_VIEC, luu_may, luu_kho, f"Man hinh {ten}: {kq['xong']}/{kq['tong']} buoc") if gh else 0
+    tom = f"màn hình: {kq['xong']}/{kq['tong']} bước, {len(kq['anh'])} ảnh, đẩy {so} tệp vào {luu_kho}/"
+    if kq["loi"]:
+        raise RuntimeError(f"{tom}; dừng: {kq['loi']}")
+    return tom
+
+
+class Chuong:
+    """Hỏi GitHub thư mục yeu-cau/ có đổi không bằng ETag (If-None-Match). 304 = không đổi, không tính giới hạn gọi API."""
+
+    def __init__(self, token):
+        self.token, self.etag = token, None
+
+    def rung(self) -> bool:
+        import urllib.error
+        import urllib.request
+        h = {"Authorization": "Bearer " + self.token, "Accept": "application/vnd.github+json",
+             "X-GitHub-Api-Version": "2022-11-28"}
+        if self.etag:
+            h["If-None-Match"] = self.etag
+        req = urllib.request.Request(f"https://api.github.com/repos/{OWNER}/{KHO_VIEC}/contents/yeu-cau?ref=main", headers=h)
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                cu, self.etag = self.etag, r.headers.get("ETag")
+                return cu is not None and cu != self.etag   # lần đầu chỉ ghi nhớ ETag
+        except urllib.error.HTTPError:                           # 304 = không đổi; lỗi khác: chờ vòng 10 phút
+            return False
+        except Exception:
+            return False                                         # mất mạng: vòng 10 phút vẫn chạy như cũ
+
+
+def nen_thu_lai_man_hinh() -> bool:
+    """Có yêu cầu màn hình đang chờ Bạn rời máy và nay Bạn đã rời đủ lâu."""
+    can = _hoan_man_hinh["can"]
+    if can is None:
+        return False
+    try:
+        return nap_man_hinh().giay_ranh() >= can
+    except Exception:
+        return False
 
 
 LICH_LDAO_URL = "http://lichlanhdaosocongthuong.com/WorkingSchedule/Detail?DisplayType=1"
@@ -649,7 +781,11 @@ def co_yeu_cau_cho(gh: GitHub) -> bool:
         for muc in gh.liet_ke(KHO_VIEC, "yeu-cau"):
             if muc.get("type") == "file" and muc["name"].endswith(".json"):
                 raw, _ = gh.doc(KHO_VIEC, muc["path"])
-                if raw and json.loads(raw).get("trang_thai", "cho") == "cho":
+                yc = json.loads(raw) if raw else {}
+                if isinstance(yc, dict) and yc.get("loai") and yc.get("trang_thai", "cho") == "cho":
+                    if yc["loai"] == "man-hinh" and nhan_duoc_man_hinh(yc, socket.gethostname(), gh.b.doc_config(),
+                                                                         giay_ranh=1e9):
+                        continue                                # máy khác / chưa bật: không nhường lượt đêm vì nó
                     return True
     except Exception as e:
         log("Không đọc được hàng đợi:", repr(e)[:150])
@@ -659,6 +795,7 @@ def co_yeu_cau_cho(gh: GitHub) -> bool:
 def xu_ly_hang_doi(botd, gh: GitHub, may: str, chay_thu=False) -> int:
     """Nhận và làm từng yêu cầu 'cho' trong yeu-cau/. Trả về số việc đã làm."""
     lam = 0
+    _hoan_man_hinh["can"] = None
     for muc in gh.liet_ke(KHO_VIEC, "yeu-cau"):
         if muc.get("type") != "file" or not muc["name"].endswith(".json") or muc["name"].startswith("_"):
             continue                                            # tệp "_*.json" là sổ, không phải việc (vụ _bu-gp.json 11/11/2026)
@@ -670,6 +807,11 @@ def xu_ly_hang_doi(botd, gh: GitHub, may: str, chay_thu=False) -> int:
             continue
         if not isinstance(yc, dict) or not yc.get("loai") or yc.get("trang_thai", "cho") != "cho":
             continue                                            # không có "loai" thì không phải yêu cầu
+        if yc["loai"] == "man-hinh" and not chay_thu:
+            ly_do = nhan_duoc_man_hinh(yc, may, botd.doc_config())
+            if ly_do:                                           # để nguyên "cho": máy khác hoặc lúc Bạn rời máy sẽ làm
+                log(f"Chưa làm {muc['name']} (màn hình): {ly_do}")
+                continue
         # nhận việc: ghi bằng sha cũ; máy kia đã nhận trước thì GitHub trả 409, bỏ qua
         yc.update(trang_thai="dang", may=may, luc=datetime.now().isoformat(timespec="minutes"))
         try:
@@ -705,7 +847,14 @@ def nhip_tim(botd, gh: GitHub, may: str, ep=False):
     noi_dung = {"may": may, "loai_may": thong_tin.get("loai", ""), "mang": thong_tin.get("mang", ""),
                 "luc": datetime.now().isoformat(timespec="minutes"), "phien_ban": PHIEN_BAN,
                 "giu_phien_luc": tt.get("giu_phien_luc"), "quet_luc": tt.get("quet_luc"),
-                "viec_luc": tt.get("viec_luc"), "cong": getattr(botd, "TEN_HE_THONG", "")}
+                "viec_luc": tt.get("viec_luc"), "cong": getattr(botd, "TEN_HE_THONG", ""),
+                "man_hinh": man_hinh_bat(botd.doc_config())}
+    if noi_dung["man_hinh"]:                                    # 0.5.1: Claude trên web chọn máy theo các ô này
+        try:
+            mh = nap_man_hinh()
+            noi_dung.update(man_hinh_khoa=mh.man_hinh_khoa(), ranh_giay=int(mh.giay_ranh()))
+        except Exception as e:
+            noi_dung["man_hinh_loi"] = repr(e)[:120]
     try:
         raw, sha = gh.doc(KHO_VIEC, "trang-thai/tay.json")
         try:
@@ -715,7 +864,8 @@ def nhip_tim(botd, gh: GitHub, may: str, ep=False):
         cac_may = dict(cu.get("cac_may") or {})
         if cu.get("may") and cu.get("may") != may:              # tệp bản cũ (một máy): chép máy kia vào sổ các máy
             cac_may.setdefault(cu["may"], {k: cu.get(k) for k in ("loai_may", "mang", "luc", "phien_ban")})
-        cac_may[may] = {k: noi_dung[k] for k in ("loai_may", "mang", "luc", "phien_ban")}
+        cac_may[may] = {k: noi_dung[k] for k in ("loai_may", "mang", "luc", "phien_ban", "man_hinh", "man_hinh_khoa",
+                                                  "ranh_giay") if k in noi_dung}
         noi_dung["cac_may"] = cac_may
         gh.ghi(KHO_VIEC, "trang-thai/tay.json", json.dumps(noi_dung, ensure_ascii=False, indent=2).encode(),
                f"tay {may}: nhip tim {noi_dung['luc']}", sha)
@@ -836,9 +986,61 @@ def chay_thu(botd):
     assert not duoc_nhan(so, "B", "lay-lui", t0) and duoc_nhan(so, "B", "lay-lui", datetime(2026, 11, 16, 7, 30))
     assert L(datetime(2026, 11, 16, 6, 30), {"giu_phien_luc": "2026-11-16T06:01", **gop_moc({}, {
         "viec_luc": "2026-11-16T05:54", "quet_luc": "2026-11-16T06:10"})}) == []      # máy B bật sau: không làm lại
+    # 0.5.0 (22/11/2026): màn hình. Chỉ kiểm bước và điều kiện nhận, không bấm, không gõ.
+    mh = nap_man_hinh()
+    b = mh.kiem_buoc([{"lam": "chup"}, {"lam": "bam", "x": 640, "y": 300, "lan": 2}, {"lam": "go", "chu": "Sở Công Thương\n"},
+                      {"lam": "phim", "phim": "ctrl+shift+s"}, {"lam": "cuon", "so": -3}, {"lam": "cho", "giay": 1.5},
+                      {"lam": "cua-so", "tieu_de": "Google Drive"}, {"lam": "keo", "x": 10, "y": 10, "x2": 50, "y2": 60},
+                      {"lam": "chup", "vung": [0, 0, 300, 200]}])
+    assert [x["lam"] for x in b] == ["chup", "bam", "go", "phim", "cuon", "cho", "cua-so", "keo", "chup"], b
+    assert b[1] == {"lam": "bam", "x": 640, "y": 300, "nut": "trai", "lan": 2}, b[1]
+    assert mh.tach_to_hop("ctrl+shift+s") == [0x11, 0x10, 0x53] and mh.tach_to_hop("ctrl++") == [0x11, 0xBB]
+    assert mh.tach_to_hop("alt+F4") == [0x12, 0x73] and mh.tach_to_hop("win+r") == [0x5B, 0x52]
+    for sai in ([], [{"lam": "xoa-het"}], [{"lam": "bam", "x": 1, "y": 1}], [{"lam": "bam", "x": "a", "y": 5}],
+                [{"lam": "go", "chu": ""}], [{"lam": "cho", "giay": 99}], [{"lam": "phim", "phim": "ctrl+khong-co"}],
+                [{"lam": "chup"}] * (mh.TOI_DA_BUOC + 1), [{"lam": "cuon", "so": 0}], [{"lam": "bam", "x": True, "y": 9}]):
+        try:
+            mh.kiem_buoc(sai)
+            raise AssertionError(f"lẽ ra phải từ chối {sai!r:.80}")
+        except ValueError:
+            pass
+    assert "go 'abc' (3 ký tự)" == mh.mo_ta({"lam": "go", "chu": "abc"})
+    yc = {"loai": "man-hinh", "buoc": [{"lam": "chup"}]}
+    assert nhan_duoc_man_hinh(yc, "MAY-A", {}, giay_ranh=999).startswith("máy này chưa bật")
+    assert nhan_duoc_man_hinh(yc, "MAY-A", {"man_hinh": "true"}, giay_ranh=999).startswith("máy này chưa bật")
+    assert nhan_duoc_man_hinh(yc, "MAY-A", {"man_hinh": True}, giay_ranh=999) == ""
+    assert nhan_duoc_man_hinh(yc, "MAY-A", {"man_hinh": True}, giay_ranh=10).startswith("Bạn đang dùng máy")
+    assert nhan_duoc_man_hinh({**yc, "cho_ranh": 0}, "MAY-A", {"man_hinh": True}, giay_ranh=0) == ""
+    assert nhan_duoc_man_hinh({**yc, "tren_may": "MAY-B"}, "may-a", {"man_hinh": True}, giay_ranh=999) == "dành cho máy MAY-B"
+    assert nhan_duoc_man_hinh({**yc, "tren_may": "MAY-A"}, "may-a", {"man_hinh": True}, giay_ranh=999) == ""
+    # 0.5.1: hạn dùng, chờ rời máy, mo-web
+    from datetime import timezone
+    vn = timezone(timedelta(hours=7))
+    t = datetime(2026, 11, 22, 10, 0, tzinfo=vn)
+    assert not qua_han({}, t) and not qua_han({"het_han": "2026-11-22T10:05:00+07:00"}, t)
+    assert qua_han({"het_han": "2026-11-22T02:59:00Z"}, t) and not qua_han({"het_han": "2026-11-22T03:01:00Z"}, t)
+    assert qua_han({"het_han": "hom-qua"}, t)
+    cu = {**yc, "het_han": "2020-01-01T00:00:00+07:00"}
+    assert nhan_duoc_man_hinh(cu, "MAY-A", {"man_hinh": True}, giay_ranh=0) == ""      # quá hạn: nhận để ghi lỗi
+    try:
+        lam_man_hinh(None, cu)
+        raise AssertionError("yêu cầu quá hạn lẽ ra phải bị từ chối")
+    except RuntimeError as e:
+        assert "quá hạn" in str(e)
+    _hoan_man_hinh["can"] = None
+    assert nhan_duoc_man_hinh(yc, "MAY-A", {"man_hinh": True}, giay_ranh=5).startswith("Bạn đang dùng máy")
+    assert _hoan_man_hinh["can"] == MAN_HINH_CHO_RANH
+    _hoan_man_hinh["can"] = None
+    assert mh.kiem_buoc([{"lam": "mo-web", "url": "https://drive.google.com/drive/computers"}])[0]["url"].startswith("https://")
+    for sai in ("file:///C:/Windows/system32/cmd.exe", "javascript:alert(1)", "https://a b", "C:\\x.exe"):
+        try:
+            mh.kiem_buoc([{"lam": "mo-web", "url": sai}])
+            raise AssertionError(f"lẽ ra phải từ chối {sai}")
+        except ValueError:
+            pass
     ghi_trang_thai(chay_thu_luc=datetime.now().isoformat(timespec="minutes"))
     don_log()
-    print("CHAY THU OK: nạp bot, cổng egov1, lịch, phân tích yêu cầu, ghi trạng thái, dọn log.")
+    print("CHAY THU OK: nạp bot, cổng egov1, lịch, phân tích yêu cầu, màn hình, ghi trạng thái, dọn log.")
     return 0
 
 
@@ -868,6 +1070,7 @@ def main():
     except Exception:
         pass
     log(f"TAY {PHIEN_BAN} bắt đầu trên {may}, thư mục {ROOT}")
+    chuong = Chuong(token)
     while True:
         try:
             KHOA.parent.mkdir(parents=True, exist_ok=True)
@@ -880,7 +1083,15 @@ def main():
             log("LỖI vòng lặp:", traceback.format_exc())
         if a.mot_lan:
             return 0
-        time.sleep(CHU_KY_PHUT * 60)
+        het = time.time() + CHU_KY_PHUT * 60
+        while time.time() < het:
+            time.sleep(NGHE_GIAY)
+            if chuong.rung():
+                log("Chuông: hàng đợi yeu-cau/ vừa đổi, làm vòng mới ngay")
+                break
+            if nen_thu_lai_man_hinh():
+                log("Bạn đã rời máy: làm yêu cầu màn hình đang chờ")
+                break
 
 
 if __name__ == "__main__":
