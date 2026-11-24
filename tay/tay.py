@@ -907,6 +907,11 @@ def chay_thu(botd):
                 "phoi_hop", "soi_trang", "phoi_hop_van_ban_di"):
         assert hasattr(botd, ham), f"bot thiếu hàm {ham}"
     assert botd.HE_THONG == "egov", botd.HE_THONG      # cổng mặc định từ 29/10/2026
+    # 24/11/2026: lượt đọc rỗng hoàn toàn không được ghi đè bản tốt của ngày
+    assert botd._viec_doc_hong([], {"o_dem": [], "tong_quan": [], "danh_sach": {}}) and botd._viec_doc_hong([], None)
+    assert not botd._viec_doc_hong([{"so_ky_hieu": "1/CV"}], None)
+    assert not botd._viec_doc_hong([], {"o_dem": [{"nhan": "Chờ xử lý", "so": 0}]})
+    assert not botd._viec_doc_hong([], {"o_dem": [], "tho": {"incharge": [{"id": "x"}]}})
     # các phép thử cũ bỏ "lich-lanh-dao" (thêm 0.4.10, có phép thử riêng ngay dưới)
     L = lambda t, tt: [l for l, _ in viec_theo_lich(t, tt) if l != "lich-lanh-dao"]
     assert "lich-lanh-dao" in [l for l, _ in viec_theo_lich(datetime(2026, 11, 10, 6, 25), {})]

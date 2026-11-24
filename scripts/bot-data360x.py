@@ -4150,6 +4150,14 @@ def _la_viec_cho(vb):
     return tt.startswith(("chua", "cho ", "cho xu", "dang"))
 
 
+def _viec_doc_hong(viec, nv):
+    """Hợp đồng dữ liệu của lượt "việc chờ xử lý": đọc được coi là HỎNG khi không có việc nào còn mở VÀ trang Quản lý nhiệm vụ
+    cũng không cho ô đếm, bảng tổng quan hay danh sách nào (vụ 24/11/2026 09:32: cuối lượt quét 2 giờ cổng trả rỗng, bot ghi đè
+    "0 việc" lên bản 07:35 đang tốt, suýt làm Sổ nhiệm vụ đóng 58 việc). Lượt hỏng thì KHÔNG đẩy lên kho."""
+    nv = nv or {}
+    return not viec and not (nv.get("o_dem") or nv.get("tong_quan") or nv.get("danh_sach") or (nv.get("tho") or {}))
+
+
 def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIEC_TOI_DA, day_len=True):
     """Từ danh sách Văn bản đến đã quét: lọc việc còn mở, tải toàn văn + đính kèm của việc CHƯA lấy lần nào,
     ghi luu_vao/README.md (bảng mọi việc còn mở) + danh-sach.json, rồi đẩy lên theo-doi/viec-cho-xu-ly/<ngày>/."""
@@ -4205,6 +4213,7 @@ def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIE
         dong.append(f"| {i} | {v['so_ky_hieu']} | {v.get('ngay_nhan', '')} | {v.get('trang_thai', '')} | "
                     f"{v.get('vai_tro', '')} | {v.get('nguoi_xu_ly_chinh', '')} | "
                     f"{v.get('do_khan', '')} | {v.get('don_vi', '')} | {v['trich_yeu'].replace('|', '/')} | {tep} |")
+    nv = None
     try:
         nv = _egov_nhiem_vu(page)
         (luu_vao / "nhiem-vu.md").write_text(_nhiem_vu_md(nv), encoding="utf-8")
@@ -4218,6 +4227,9 @@ def _egov_lay_viec(ctx, page, van_ban_den, luu_vao: Path, token, toi_da=EGOV_VIE
     (luu_vao / "README.md").write_text("\n".join(dong) + "\n", encoding="utf-8")
     (luu_vao / "danh-sach.json").write_text(json.dumps(viec, ensure_ascii=False, indent=1), encoding="utf-8")
     log(f"[việc] {len(viec)} việc còn mở, tải mới {moi} việc -> {luu_vao}")
+    if _viec_doc_hong(viec, nv):
+        log("[việc] ĐỌC HỎNG: không có việc nào và không đọc được trang nhiệm vụ - KHÔNG đẩy lên kho, giữ bản trước của ngày.")
+        return len(viec), moi
     if day_len and token:
         so = _day_thu_muc(token, luu_vao, f"{THU_MUC_VIEC}/{ngay}", f"Việc chờ xử lý egov1 {ngay}: {len(viec)} việc")
         try:
